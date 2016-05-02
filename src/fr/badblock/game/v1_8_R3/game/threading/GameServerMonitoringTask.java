@@ -15,7 +15,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 
-public class GameServerMonitoringTask implements Runnable {
+public class GameServerMonitoringTask extends GameServerTask {
 	
 	public GameServerMonitoringTask(APIConfig config) {
 		TaskManager.scheduleAsyncRepeatingTask("gameServerMonitoring", this, 0, config.ticksBetweenMonitoreLogs);

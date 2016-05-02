@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPSClient;
@@ -16,18 +15,18 @@ import org.apache.commons.net.ftp.FTPSClient;
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
 
-public class GameServerSendLogsThread {
+public class GameServerSendLogsTask extends GameServerTask {
 	
 	private APIConfig	config;
 	
-	public GameServerSendLogsThread(APIConfig config) {
+	public GameServerSendLogsTask(APIConfig config) {
 		this.config = config;
-		new Timer().schedule(new TimerTask() {
-			@Override
-			public void run() {	
-				doLog();
-			}
-		}, 0, config.timeBetweenLogs);
+		new Timer().schedule(this, 0, config.timeBetweenLogs);
+	}
+	
+	@Override
+	public void run() {
+		doLog();
 	}
 	
 	public void doLog() {

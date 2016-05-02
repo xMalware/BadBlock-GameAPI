@@ -1,13 +1,6 @@
 package fr.badblock.game.v1_8_R3.game;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.OptionalInt;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -17,12 +10,11 @@ import com.google.gson.Gson;
 import fr.badblock.common.docker.factories.ServerConfigurationFactory;
 import fr.badblock.game.v1_8_R3.game.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.v1_8_R3.game.threading.GameServerMonitoringTask;
-import fr.badblock.game.v1_8_R3.game.threading.GameServerSendLogsThread;
+import fr.badblock.game.v1_8_R3.game.threading.GameServerSendLogsTask;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.utils.general.JsonUtils;
-import fr.badblock.game.v1_8_R3.game.GameServerMessages.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -39,7 +31,7 @@ public class GameServerManager {
 	private String						serverName;
 	private String						logsFile;
 	private long						joinTime;
-	private GameServerSendLogsThread	gameServerSendLogsThread;
+	private GameServerSendLogsTask		gameServerSendLogsTask;
 	private boolean						loaded;
 	private ServerConfigurationFactory	serverConfigurationFactory;
 
@@ -70,7 +62,7 @@ public class GameServerManager {
 
 			new GameServerKeeperAliveTask(config);
 			new GameServerMonitoringTask(config);
-			new GameServerSendLogsThread(config);
+			new GameServerSendLogsTask(config);
 
 			this.setLoaded(true);
 		}
@@ -82,7 +74,7 @@ public class GameServerManager {
 		this.forceCommand("timings paste");
 		if (this.isLoaded()) {
 			if(!GameAPI.TEST_MODE)
-				getGameServerSendLogsThread().doLog();
+				getGameServerSendLogsTask().doLog();
 			keepAlive(GameState.STOPPING);
 		}
 
