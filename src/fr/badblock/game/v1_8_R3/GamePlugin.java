@@ -18,8 +18,10 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 
 import fr.badblock.game.v1_8_R3.achievements.GameAchievements;
+import fr.badblock.game.v1_8_R3.commands.FeedCommand;
 import fr.badblock.game.v1_8_R3.commands.FlyCommand;
 import fr.badblock.game.v1_8_R3.commands.GameModeCommand;
+import fr.badblock.game.v1_8_R3.commands.HealCommand;
 import fr.badblock.game.v1_8_R3.commands.LagCommand;
 import fr.badblock.game.v1_8_R3.entities.CustomCreatures;
 import fr.badblock.game.v1_8_R3.fakeentities.FakeEntities;
@@ -223,6 +225,8 @@ public class GamePlugin extends GameAPI {
 			 */
 			GameAPI.logColor("&b[GameAPI] &aRegistering commands...");
 			new FlyCommand();
+			new HealCommand();
+			new FeedCommand();
 			new GameModeCommand();
 			new LagCommand();
 
