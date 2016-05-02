@@ -4,6 +4,9 @@ import fr.badblock.gameapi.GameAPI;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author xMalware
+ */
 @Getter public enum GameServerMessages {
 
 	PREFIX("§b[GameServer] "),

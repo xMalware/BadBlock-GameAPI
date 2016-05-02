@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.game.GameServerManager;
+import fr.badblock.game.v1_8_R3.game.threading.GameServerKeeperAliveTask;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 
@@ -31,8 +32,9 @@ public class GameServerListener extends BadListener {
 		Server server = gamePlugin.getServer();
 		String serverName = server.getServerName();
 		GameServerManager gameServerManager = gamePlugin.getGameServerManager();
-		gameServerManager.incrementJoinTime();
-		gameServerManager.keepAlive();
+		GameServerKeeperAliveTask gameServerKeeperAliveTask = gameServerManager.getGameServerKeeperAliveTask();
+		gameServerKeeperAliveTask.incrementJoinTime();
+		gameServerKeeperAliveTask.keepAlive();
 		
 		if (joinedMessage) GameAPI.i18n().sendMessage(player, "gameserver.join", serverName);
 	}

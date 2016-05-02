@@ -20,18 +20,17 @@ import lombok.Setter;
 
 /**
  * GameServer Manager (this system know where and when send any information about the currently instance)
+ * @author xMalware
  */
 @Getter@Setter
 public class GameServerManager {
 
 	private	Gson						gson;
 	private APIConfig					apiConfig;
-	private	String						version						= "0.1";
 	private ConsoleCommandSender		console;
-	private String						serverName;
-	private String						logsFile;
-	private long						joinTime;
 	private GameServerSendLogsTask		gameServerSendLogsTask;
+	private GameServerKeeperAliveTask	gameServerKeeperAliveTask;
+	private GameServerMonitoringTask	gameServerMonitoringTask;
 	private boolean						loaded;
 	private ServerConfigurationFactory	serverConfigurationFactory;
 
@@ -58,11 +57,10 @@ public class GameServerManager {
 				Bukkit.shutdown();
 				return;
 			}
-			this.incrementJoinTime();
 
-			new GameServerKeeperAliveTask(config);
-			new GameServerMonitoringTask(config);
-			new GameServerSendLogsTask(config);
+			this.setGameServerKeeperAliveTask(new GameServerKeeperAliveTask(config));
+			this.setGameServerMonitoringTask(new GameServerMonitoringTask(config));
+			this.setGameServerSendLogsTask(new GameServerSendLogsTask(config));
 
 			this.setLoaded(true);
 		}
@@ -72,28 +70,14 @@ public class GameServerManager {
 		GameServerMessages.UNLOADING.log();
 
 		this.forceCommand("timings paste");
-		if (this.isLoaded()) {
-			if(!GameAPI.TEST_MODE)
-				getGameServerSendLogsTask().doLog();
-			keepAlive(GameState.STOPPING);
+		if (this.isLoaded() && !GameAPI.TEST_MODE) {
+			getGameServerSendLogsTask().doLog();
+			this.getGameServerKeeperAliveTask().sendStopPacket();
 		}
 
 		GameServerMessages.UNLOADED.log();
 	}
-
-	public void incrementJoinTime() {
-		this.setJoinTime(System.currentTimeMillis() + this.getApiConfig().uselessUntilTime);
-	}
-
-	public void keepAlive() {
-		keepAlive(GameAPI.getAPI().getGameServer().getGameState());
-	}
-
-	public void keepAlive(GameState status) {
-		if(!GameAPI.TEST_MODE)
-			GameAPI.getAPI().getLadderDatabase().keepAlive(status, Bukkit.getOnlinePlayers().size(), GameAPI.getAPI().getGameServer().getMaxPlayers());
-	}
-
+	
 	private void forceCommand(String message) {
 		Bukkit.dispatchCommand(console, message);
 	}
