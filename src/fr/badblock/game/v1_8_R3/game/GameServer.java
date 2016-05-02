@@ -48,21 +48,19 @@ import lombok.Setter;
 	
 	@Override
 	public void whileRunningConnection(WhileRunningConnectionTypes type) {
-		if (type.equals(WhileRunningConnectionTypes.SPECTATOR)) {
-			cancelReconnectionInvitations(); // on annule tout de même au passage
-			return;
-		}else if (type.equals(WhileRunningConnectionTypes.BACKUP))
-			this.type = type;
+		this.type = type;
+		
+		if(type == WhileRunningConnectionTypes.SPECTATOR)
+			cancelReconnectionInvitations();
 	}
 
 	@Override
 	public void cancelReconnectionInvitations() {
 		type = WhileRunningConnectionTypes.SPECTATOR;
 		
-		GameAPI gameApi = GameAPI.getAPI();
-		LadderSpeaker ladderSpeaker = gameApi.getLadderDatabase();
-		players.keySet().forEach(uuid -> ladderSpeaker.sendReconnectionInvitation(uuid, false));
+		LadderSpeaker ladderSpeaker = GameAPI.getAPI().getLadderDatabase();
 		
+		players.keySet().forEach(uuid -> ladderSpeaker.sendReconnectionInvitation(uuid, false));
 		players.clear();
 	}
 }

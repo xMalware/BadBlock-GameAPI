@@ -6,10 +6,11 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.World.Environment;
 
+import com.google.gson.JsonObject;
+
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.InGameData;
-import fr.badblock.gameapi.players.data.PlayerData;
 import fr.badblock.gameapi.utils.CustomObjective;
 import lombok.Getter;
 
@@ -20,6 +21,8 @@ public class GameOfflinePlayer implements BadblockOfflinePlayer {
 	private Map<Class<?>, InGameData> 	 inGameData  		  = null;
 	@Getter
 	private GamePlayerData 				 playerData 		  = null;
+	@Getter
+	private JsonObject					 object				  = null;
 	
 	@Override
 	public UUID getUniqueId() {

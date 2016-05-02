@@ -63,7 +63,7 @@ public class GameServerManager {
 		Bukkit.dispatchCommand(this.getConsole(), "timings paste");
 		if(!GameAPI.TEST_MODE)
 			getGameServerSendLogsThread().doLog();
-		keepAlive(GameState.STOPING);
+		keepAlive(GameState.STOPPING);
 
 		GameAPI.logColor("&b[GameServer] &aUnloaded!");
 	}
