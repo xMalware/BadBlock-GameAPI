@@ -27,7 +27,7 @@ public class GameServerSendLogsThread {
 			public void run() {	
 				doLog();
 			}
-		}, 0, 60000);
+		}, 0, config.timeBetweenLogs);
 	}
 	
 	public void doLog() {

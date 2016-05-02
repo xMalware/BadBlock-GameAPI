@@ -10,14 +10,15 @@ import org.bukkit.Bukkit;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.game.GameServerManager;
+import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class GameServerMonitoringTask implements Runnable {
 	
-	public GameServerMonitoringTask() {
-		TaskManager.scheduleAsyncRepeatingTask("gameServerMonitoring", this, 0, 2400);
+	public GameServerMonitoringTask(APIConfig config) {
+		TaskManager.scheduleAsyncRepeatingTask("gameServerMonitoring", this, 0, config.ticksBetweenMonitoreLogs);
 	}
 
 	@Override
