@@ -81,6 +81,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private PermissiblePlayer 			 permissions 		  = null;
 
 	private Location 					 jail 				  = null;
+	@Getter
 	private Map<Class<?>, InGameData> 	 inGameData  		  = null;
 
 	private String 						 bossBarMessage 	  = null;
@@ -100,6 +101,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private BadblockTeam				 team				  = null;
 	@Setter
 	private boolean						 adminMode			  = false;
+	@Getter
+	private JsonObject					 object				  = null;
 	
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -109,11 +112,14 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recréé à la récéptions des données
 		this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
 
-		if(offlinePlayer != null) return;
+		if(offlinePlayer != null) {
+			object = offlinePlayer.getObject();
+		} else object = new JsonObject();
 		
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
+				object = result;
 				updateData(result);
 
 				while (!hasJoined)
@@ -135,11 +141,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	public void updateData(JsonObject object) {
 		if (object.has("game")) {
+			this.object.add("game", object.get("game"));
 			playerData = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).create()
 					.fromJson(object.get("game"), GamePlayerData.class);
 		}
 
 		if (object.has("permissions")) {
+			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
 		}
 	}

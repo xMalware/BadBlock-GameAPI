@@ -4,12 +4,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.google.common.collect.Maps;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
+import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
+import fr.badblock.game.v1_8_R3.players.GameOfflinePlayer;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.LadderSpeaker;
@@ -39,11 +39,9 @@ import lombok.Setter;
 		GamePlugin.getInstance().getGameServerManager().keepAlive();
 	}
 
-	@EventHandler
-	public void onPlayerDisconnect(PlayerQuitEvent event) {
-		BadblockPlayer player = (BadblockPlayer) event.getPlayer();
-		
-		
+	public void remember(BadblockPlayer player){
+		GameOfflinePlayer offline = new GameOfflinePlayer((GameBadblockPlayer) player);
+		players.put(player.getUniqueId(), offline);
 	}
 	
 	@Override
