@@ -81,6 +81,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private PermissiblePlayer 			 permissions 		  = null;
 
 	private Location 					 jail 				  = null;
+	@Getter
 	private Map<Class<?>, InGameData> 	 inGameData  		  = null;
 
 	private String 						 bossBarMessage 	  = null;
@@ -100,6 +101,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private BadblockTeam				 team				  = null;
 	@Setter
 	private boolean						 adminMode			  = false;
+	@Getter
+	private JsonObject					 object				  = null;
 	
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -107,18 +110,22 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		this.inGameData  = Maps.newConcurrentMap();
 
 		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recréé à la récéptions des données
-		this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : playerData.getData());
+		this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
 
+		if(offlinePlayer != null) {
+			object = offlinePlayer.getObject();
+		} else object = new JsonObject();
+		
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
+				object = result;
 				updateData(result);
 
 				while (!hasJoined)
 					try {
 						Thread.sleep(10L);
-					} catch (InterruptedException unused) {
-					}
+					} catch (InterruptedException unused) {}
 
 				synchronized (Bukkit.getServer()) {
 					Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
@@ -134,11 +141,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	public void updateData(JsonObject object) {
 		if (object.has("game")) {
+			this.object.add("game", object.get("game"));
 			playerData = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).create()
 					.fromJson(object.get("game"), GamePlayerData.class);
 		}
 
 		if (object.has("permissions")) {
+			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
 		}
 	}
@@ -254,8 +263,18 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
+	public String[] getTranslatedMessage(String key, Object... args) {
+		return getI18n().get(getLocale(), key, args);
+	}
+
+	@Override
+	public void postResult(Result result) {
+		//TODO
+	}
+	
+	@Override
 	public void sendTranslatedMessage(String key, Object... args) {
-		sendMessage(getI18n().get(getLocale(), key, args));
+		sendMessage(getTranslatedMessage(key, args));
 	}
 
 	@Override
@@ -267,7 +286,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void sendTranslatedActionBar(String key, Object... args) {
-		sendActionBar(getI18n().get(getLocale(), key, args)[0]);
+		sendActionBar(getTranslatedMessage(key, args)[0]);
 	}
 
 	@Override
@@ -312,7 +331,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void sendTranslatedBossBar(String key, Object... args) {
-		sendBossBar(getI18n().get(getLocale(), key, args)[0]);
+		sendBossBar(getTranslatedMessage(key, args)[0]);
 	}
 
 	@Override
@@ -385,7 +404,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void showTranslatedFloatingText(Location location, long lifeTime, double offset, String key,
 			Object... args) {
-		showFloatingText(getI18n().get(key, args)[0], location, lifeTime, offset);
+		showFloatingText(getTranslatedMessage(key, args)[0], location, lifeTime, offset);
 	}
 
 	@Override
@@ -649,17 +668,5 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public boolean hasAdminMode(){
 		return adminMode;
-	}
-
-	@Override
-	public String[] getTranslatedMessage(String key, Object... args) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void postResult(Result result) {
-		// TODO Auto-generated method stub
-		
 	}
 }

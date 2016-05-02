@@ -155,6 +155,11 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	}
 	
 	@Override
+	public void sendReconnectionInvitation(UUID uniqueId, boolean invited) {
+		// TODO
+	}
+	
+	@Override
 	public void handle(PacketPlayerData packet) {
 		if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.SEND){
 			Callback<JsonObject> callback = requestedPlayers.get(packet.getKey().toLowerCase());
@@ -175,7 +180,6 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 				callback.done(new JsonParser().parse(packet.getData()).getAsJsonObject(), null);
 			}
 		} else if(packet.getType() == DataType.PERMISSION && packet.getAction() == DataAction.SEND){
-			System.out.println("d");
 			new PermissionManager(new JsonParser().parse(packet.getData()).getAsJsonArray());
 		}
 	}
@@ -189,10 +193,4 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	@Override public void handle(PacketMatchmakingKeepalive packet){}
 	@Override public void handle(PacketMatchmakingPing packet){}
 	@Override public void handle(PacketMatchmakingPong packet){}
-
-	@Override
-	public void sendReconnectionInvitation(UUID uniqueId, boolean invited) {
-		// TODO Auto-generated method stub
-		
-	}
 }

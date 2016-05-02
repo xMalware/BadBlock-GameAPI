@@ -57,6 +57,7 @@ import fr.badblock.game.v1_8_R3.players.GameJoinItems;
 import fr.badblock.game.v1_8_R3.players.GameKit;
 import fr.badblock.game.v1_8_R3.players.GameScoreboard;
 import fr.badblock.game.v1_8_R3.players.GameTeam;
+import fr.badblock.game.v1_8_R3.technologies.RabbitSpeaker;
 import fr.badblock.game.v1_8_R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.LadderSpeaker;
@@ -76,7 +77,6 @@ import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.servers.MapProtector;
-import fr.badblock.gameapi.technologies.RabbitSpeaker;
 import fr.badblock.gameapi.utils.CustomObjective;
 import fr.badblock.gameapi.utils.JsonConfiguration;
 import fr.badblock.gameapi.utils.general.JsonUtils;
@@ -173,7 +173,7 @@ public class GamePlugin extends GameAPI {
 			ladderDatabase   = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
 			ladderDatabase.askForPermissions();
 			
-			rabbitSpeaker = new RabbitSpeaker();
+			rabbitSpeaker = new RabbitSpeaker(config);
 
 
 			GameAPI.logColor("&b[GameAPI] &aLoading NMS classes...");

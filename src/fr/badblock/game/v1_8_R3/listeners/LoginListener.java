@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
 import fr.badblock.game.v1_8_R3.players.GameOfflinePlayer;
 import fr.badblock.gameapi.BadListener;
@@ -23,10 +24,9 @@ import net.minecraft.server.v1_8_R3.EntityPlayer;
 public class LoginListener extends BadListener {
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onLogin(PlayerLoginEvent e){
-		Reflector reflector = new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
-		
+		Reflector 			  reflector 	= new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getUniqueId());
-		GameBadblockPlayer player;
+		GameBadblockPlayer    player;
 
 		try {
 			player = new GameBadblockPlayer((CraftServer) Bukkit.getServer(), (EntityPlayer) reflector.getReflected(), (GameOfflinePlayer) offlinePlayer);
@@ -36,12 +36,21 @@ public class LoginListener extends BadListener {
 			exception.printStackTrace();
 		}
 	}
-	
+
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
-		
+
 		p.loadInjector();
 		p.setHasJoined(true);
+
+		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getUniqueId());
+
+		if(offlinePlayer != null){
+			p.changePlayerDimension(offlinePlayer.getFalseDimension());
+			p.showCustomObjective(offlinePlayer.getCustomObjective());
+			
+			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getUniqueId());
+		}
 	}
 }
