@@ -36,7 +36,7 @@ import lombok.Setter;
 		this.gameState = gameState;
 		if (gameState == GameState.FINISHED) cancelReconnectionInvitations();
 		
-		GamePlugin.getInstance().getGameServerManager().keepAlive();
+		GamePlugin.getInstance().getGameServerManager().getGameServerKeeperAliveTask().keepAlive(gameState);
 	}
 
 	public void remember(BadblockPlayer player){

@@ -12,6 +12,7 @@ import java.util.Timer;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPSClient;
 
+import fr.badblock.common.docker.factories.ServerConfigurationFactory;
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
 
@@ -39,7 +40,8 @@ public class GameServerSendLogsTask extends GameServerTask {
 				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 				ftpClient.execPBSZ(0); 
 				ftpClient.execPROT("P");
-				String logFile = "/logs/" + GamePlugin.getInstance().getGameServerManager().getLogsFile();
+				ServerConfigurationFactory serverConfigurationFactory = GamePlugin.getInstance().getGameServerManager().getServerConfigurationFactory();
+				String logFile = "/logs/" + serverConfigurationFactory.getLogFolder() + serverConfigurationFactory.getLogFile();
 				String[] splitter = logFile.split("/");
 				String old = "";
 				int nb = splitter.length;
