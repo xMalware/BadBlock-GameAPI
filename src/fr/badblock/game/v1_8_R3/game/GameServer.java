@@ -12,6 +12,7 @@ import com.google.common.collect.Maps;
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.databases.LadderSpeaker;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -19,11 +20,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * GameServer sous l'override de l'API
- * @author xMalware
- * @author LeLanN
+ * Overrided GameServer interface; for r1.8_3builds
+ * @authors xMalware & LeLanN
  */
 @Getter@Setter public class GameServer extends BadListener implements fr.badblock.gameapi.game.GameServer {
+	
 	private GameState 						 gameState  	= GameState.WAITING;
 	private int 	  				    	 maxPlayers 	= Bukkit.getMaxPlayers();
 	private WhileRunningConnectionTypes 	 type 	    	= WhileRunningConnectionTypes.SPECTATOR;
@@ -33,37 +34,34 @@ import lombok.Setter;
 	@Override
 	public void setGameState(GameState gameState) {
 		this.gameState = gameState;
-		
-		if(gameState == GameState.FINISHED){
-			cancelReconnectionInvatations();
-		}
+		if (gameState == GameState.FINISHED) cancelReconnectionInvitations();
 		
 		GamePlugin.getInstance().getGameServerManager().keepAlive();
 	}
 
 	@EventHandler
-	public void onDisconnect(PlayerQuitEvent e){
-		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+	public void onPlayerDisconnect(PlayerQuitEvent event) {
+		BadblockPlayer player = (BadblockPlayer) event.getPlayer();
 		
 		
 	}
 	
 	@Override
 	public void whileRunningConnection(WhileRunningConnectionTypes type) {
-		if(type == WhileRunningConnectionTypes.SPECTATOR){
-			cancelReconnectionInvatations(); // on annule tout de même au passage
-		} else if(type == WhileRunningConnectionTypes.BACKUP){
+		if (type.equals(WhileRunningConnectionTypes.SPECTATOR)) {
+			cancelReconnectionInvitations(); // on annule tout de même au passage
+			return;
+		}else if (type.equals(WhileRunningConnectionTypes.BACKUP))
 			this.type = type;
-		}
 	}
 
 	@Override
-	public void cancelReconnectionInvatations() {
+	public void cancelReconnectionInvitations() {
 		type = WhileRunningConnectionTypes.SPECTATOR;
 		
-		for(UUID uniqueId : players.keySet()){
-			GameAPI.getAPI().getLadderDatabase().sendReconnectionInvitation(uniqueId, false);
-		}
+		GameAPI gameApi = GameAPI.getAPI();
+		LadderSpeaker ladderSpeaker = gameApi.getLadderDatabase();
+		players.keySet().forEach(uuid -> ladderSpeaker.sendReconnectionInvitation(uuid, false));
 		
 		players.clear();
 	}
