@@ -57,6 +57,7 @@ import fr.badblock.game.v1_8_R3.players.GameJoinItems;
 import fr.badblock.game.v1_8_R3.players.GameKit;
 import fr.badblock.game.v1_8_R3.players.GameScoreboard;
 import fr.badblock.game.v1_8_R3.players.GameTeam;
+import fr.badblock.game.v1_8_R3.technologies.RabbitSpeaker;
 import fr.badblock.game.v1_8_R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.LadderSpeaker;
@@ -123,7 +124,9 @@ public class GamePlugin extends GameAPI {
 	private LadderSpeaker				ladderDatabase;
 	@Getter
 	private GameServerManager			gameServerManager;
-
+	@Getter
+	private RabbitSpeaker				rabbitSpeaker;
+	
 	// Packet system
 	@Getter
 	private ConcurrentMap<Class<? extends BadblockInPacket>, ConcurrentSet<InPacketListener<?>>>		packetInListeners	= new ConcurrentHashMap<>();
@@ -169,6 +172,8 @@ public class GamePlugin extends GameAPI {
 			new PermissionManager(new JsonArray());
 			ladderDatabase   = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
 			ladderDatabase.askForPermissions();
+			
+			rabbitSpeaker = new RabbitSpeaker(config);
 
 
 			GameAPI.logColor("&b[GameAPI] &aLoading NMS classes...");
@@ -419,4 +424,5 @@ public class GamePlugin extends GameAPI {
 	public DefaultItems getDefaultItems() {
 		return null; //TODO
 	}
+	
 }
