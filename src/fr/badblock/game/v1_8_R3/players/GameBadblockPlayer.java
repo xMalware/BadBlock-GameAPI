@@ -30,6 +30,7 @@ import fr.badblock.game.v1_8_R3.watchers.MetadataIndex;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
+import fr.badblock.gameapi.game.result.Result;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
 import fr.badblock.gameapi.packets.out.play.PlayBlockAction;
 import fr.badblock.gameapi.packets.out.play.PlayCamera;
@@ -93,24 +94,20 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private BadblockMode 				 badblockMode 		  = BadblockMode.PLAYER;
 	@Setter
 	private boolean 					 hasJoined 			  = false;
-	@Setter
+	@Getter@Setter
 	private Environment 				 customEnvironment 	  = null;
 	@Getter@Setter
 	private BadblockTeam				 team				  = null;
 	@Setter
 	private boolean						 adminMode			  = false;
 	
-	public GameBadblockPlayer(CraftServer server, EntityPlayer entity) {
+	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
 
-		this.inGameData = Maps.newConcurrentMap();
+		this.inGameData  = Maps.newConcurrentMap();
 
-		this.playerData = new GamePlayerData(); // On initialise pour ne pas
-												// provoquer de
-												// NullPointerException, mais
-												// sera recréé à la récéptions
-												// des données
-		this.permissions = PermissionManager.getInstance().createPlayer(getName(), new JsonObject());
+		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recréé à la récéptions des données
+		this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : playerData.getData());
 
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
@@ -652,5 +649,17 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public boolean hasAdminMode(){
 		return adminMode;
+	}
+
+	@Override
+	public String[] getTranslatedMessage(String key, Object... args) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void postResult(Result result) {
+		// TODO Auto-generated method stub
+		
 	}
 }

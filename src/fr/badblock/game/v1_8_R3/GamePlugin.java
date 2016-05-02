@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -68,6 +69,7 @@ import fr.badblock.gameapi.packets.watchers.WatcherArmorStand;
 import fr.badblock.gameapi.packets.watchers.WatcherEntity;
 import fr.badblock.gameapi.particles.ParticleEffect;
 import fr.badblock.gameapi.particles.ParticleEffectType;
+import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.PlayerAchievement;
 import fr.badblock.gameapi.players.kits.PlayerKit;
@@ -309,15 +311,20 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public BadblockTeam getTeam(String key) {
+	public BadblockTeam getTeam(@NonNull String key) {
 		return teams.get(key.toLowerCase());
 	}
 
 	@Override
-	public void unregisterTeam(BadblockTeam team) {
+	public void unregisterTeam(@NonNull BadblockTeam team) {
 		teams.values().remove(team);
 	}
 
+	@Override
+	public BadblockOfflinePlayer getOfflinePlayer(@NonNull UUID uniqueId) {
+		return gameServer.getPlayers().get(uniqueId);
+	}
+	
 	@Override
 	public CustomMerchantInventory getCustomMarchantInventory() {
 		return new GameMerchantInventory();
@@ -329,22 +336,22 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public Collection<PlayerAchievement> getAchievements(String game) {
+	public Collection<PlayerAchievement> getAchievements(@NonNull String game) {
 		return achievements.getAchievements(game);
 	}
 
 	@Override
-	public PlayerAchievement getAchievement(String key) {
+	public PlayerAchievement getAchievement(@NonNull String key) {
 		return achievements.getAchievement(key);
 	}
 
 	@Override
-	public CustomObjective buildCustomObjective(String name) {
+	public CustomObjective buildCustomObjective(@NonNull String name) {
 		return new GameCustomObjective(name);
 	}
 
 	@SuppressWarnings("unchecked") @Override
-	public <T extends BadblockOutPacket> T createPacket(Class<T> clazz) {
+	public <T extends BadblockOutPacket> T createPacket(@NonNull Class<T> clazz) {
 		Class<? extends GameBadblockOutPacket> gameClass = GameBadblockOutPackets.getPacketClass(clazz);
 
 		if(gameClass == null) return null;
@@ -358,7 +365,7 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public <T extends BadblockInPacket> void listenAtPacket(InPacketListener<T> listener) {
+	public <T extends BadblockInPacket> void listenAtPacket(@NonNull InPacketListener<T> listener) {
 		Class<? extends BadblockInPacket> packet = listener.getGenericPacketClass();
 		
 		ConcurrentSet<InPacketListener<?>> list = packetInListeners.get(packet);
@@ -371,7 +378,7 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public <T extends BadblockOutPacket> void listenAtPacket(OutPacketListener<T> listener) {
+	public <T extends BadblockOutPacket> void listenAtPacket(@NonNull OutPacketListener<T> listener) {
 		Class<? extends BadblockOutPacket> packet = listener.getGenericPacketClass();
 		
 		ConcurrentSet<OutPacketListener<?>> list = packetOutListeners.get(packet);
@@ -384,12 +391,12 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public <T extends WatcherEntity> T createWatcher(Class<T> clazz) {
+	public <T extends WatcherEntity> T createWatcher(@NonNull Class<T> clazz) {
 		return GameWatchers.buildWatch(clazz);
 	}
 
 	@Override
-	public <T extends WatcherEntity> FakeEntity<T> spawnFakeLivingEntity(Location location, EntityType type, Class<T> clazz) {
+	public <T extends WatcherEntity> FakeEntity<T> spawnFakeLivingEntity(@NonNull Location location, @NonNull EntityType type, @NonNull Class<T> clazz) {
 		return FakeEntities.spawnFakeLivingEntity(location, type, clazz);
 	}
 

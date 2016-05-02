@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
@@ -188,4 +189,10 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	@Override public void handle(PacketMatchmakingKeepalive packet){}
 	@Override public void handle(PacketMatchmakingPing packet){}
 	@Override public void handle(PacketMatchmakingPong packet){}
+
+	@Override
+	public void sendReconnectionInvitation(UUID uniqueId, boolean invited) {
+		// TODO Auto-generated method stub
+		
+	}
 }

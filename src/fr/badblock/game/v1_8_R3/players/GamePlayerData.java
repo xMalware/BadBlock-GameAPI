@@ -32,6 +32,13 @@ public class GamePlayerData implements PlayerData {
 	
 	private transient Map<String, PlayerData> 	datas 		 = Maps.newConcurrentMap();
 	private transient JsonObject 				data		 = new JsonObject();
+	private transient JsonObject 				object		 = new JsonObject();
+
+	public void setData(JsonObject data){
+		if(data.has("other")){
+			this.data = data.get("other").getAsJsonObject();
+		}
+	}
 	
 	@Override
 	public void addBadcoins(int badcoins) {
