@@ -13,7 +13,6 @@ import fr.badblock.game.v1_8_R3.game.threading.GameServerMonitoringTask;
 import fr.badblock.game.v1_8_R3.game.threading.GameServerSendLogsTask;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
 import fr.badblock.gameapi.GameAPI;
-import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import lombok.Getter;
 import lombok.Setter;
