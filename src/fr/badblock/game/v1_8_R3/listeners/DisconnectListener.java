@@ -6,8 +6,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.gameapi.BadListener;
+import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.PlayerReconnectionPropositionEvent;
 import fr.badblock.gameapi.game.GameServer.WhileRunningConnectionTypes;
+import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class DisconnectListener extends BadListener {
@@ -15,6 +17,7 @@ public class DisconnectListener extends BadListener {
 	public void onQuit(PlayerQuitEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 		
+		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING) return;
 		boolean backup = GamePlugin.getInstance().getGameServer().getType() == WhileRunningConnectionTypes.BACKUP;
 		
 		if(backup){
