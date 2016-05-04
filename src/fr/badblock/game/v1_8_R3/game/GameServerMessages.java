@@ -9,7 +9,7 @@ import lombok.Setter;
  */
 @Getter public enum GameServerMessages {
 
-	PREFIX("§b[GameServer] "),
+	PREFIX("&b[GameServer] "),
 	GAMESERVER_FILE_NOT_FOUND(PREFIX.toString() + "&cFile not found : gameServer.json"),
 	SENDING_SHUTDOWN_SIGNAL(PREFIX.toString() + "&cSending a shutdown signal"),
 	GAMESERVER_FILE_INVALID(PREFIX.toString() + "&cInvalid gameServer.json configuration"),
@@ -28,7 +28,7 @@ import lombok.Setter;
 	}
 	
 	public void log() {
-		GameAPI.log(this.toString());
+		GameAPI.logColor(this.toString());
 	}
 	
 }
