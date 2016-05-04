@@ -1,6 +1,7 @@
 package fr.badblock.game.v1_8_R3.game;
 
 import java.io.File;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;
@@ -34,7 +35,7 @@ public class GameServerManager {
 	private ServerConfigurationFactory	serverConfigurationFactory;
 
 	public GameServerManager(APIConfig config) {
-		this.setApiConfig(apiConfig);
+		this.setApiConfig(config);
 		this.setGson(JsonUtils.getGson());
 		this.setConsole(Bukkit.getConsoleSender());
 
