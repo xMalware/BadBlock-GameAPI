@@ -6,6 +6,8 @@ import java.util.OptionalInt;
 
 import org.bukkit.Bukkit;
 
+import com.google.common.primitives.Chars;
+
 import fr.badblock.common.docker.factories.GameAliveFactory;
 import fr.badblock.common.docker.factories.ServerConfigurationFactory;
 import fr.badblock.game.v1_8_R3.GamePlugin;
@@ -40,10 +42,7 @@ import lombok.Setter;
 	}	
 	
 	public void incrementJoinTime() {
-		this.setJoinTime(System.currentTimeMillis() + 
-				this.getGameServerManager().
-				getApiConfig().
-				uselessUntilTime);
+		this.setJoinTime(System.currentTimeMillis() + this.getGameServerManager().getApiConfig().uselessUntilTime);
 	}
 
 	public void keepAlive() {
@@ -77,9 +76,9 @@ import lombok.Setter;
 	}
 	
 	public void setFirstServer() {
-		String string = this.getGameServerManager().getServerConfigurationFactory().getLogFolder().split("/")[0];
-		int serverId = Integer.parseInt(Bukkit.getServerName().replace(string, ""));
-
+		ServerConfigurationFactory serverConfigurationFactory = this.getGameServerManager().getServerConfigurationFactory();
+		String string = serverConfigurationFactory.getLogFolder().split("/")[0];
+		long serverId = serverConfigurationFactory.getId();
 		OptionalInt optionalInt = Arrays.stream(new File("..").listFiles()).mapToInt((file) -> {
 			if(file.isDirectory())
 				try {
@@ -87,7 +86,6 @@ import lombok.Setter;
 				} catch(Exception unused){}
 			return -1;
 		}).filter((value) ->  value > 0).min();
-
 		this.setFirstServer(optionalInt.isPresent() && optionalInt.getAsInt() == serverId);
 	}
 
