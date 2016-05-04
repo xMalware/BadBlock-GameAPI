@@ -48,8 +48,13 @@ public class GameI18n implements I18n {
 				}
 			}
 		}
-		
+
 		Locale def = Locale.FRENCH_FRANCE;
+		
+		if(!languages.containsKey(def)){
+			languages.put(def, new GameLanguage(def, new File(folder, def.getLocaleId())));
+		}
+		 def = Locale.FRENCH_FRANCE;
 		
 		if(!languages.containsKey(def)){
 			languages.put(def, new GameLanguage(def, new File(folder, def.getLocaleId())));
