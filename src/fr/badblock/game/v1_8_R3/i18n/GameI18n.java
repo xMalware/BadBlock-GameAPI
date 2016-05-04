@@ -54,7 +54,7 @@ public class GameI18n implements I18n {
 		if(!languages.containsKey(def)){
 			languages.put(def, new GameLanguage(def, new File(folder, def.getLocaleId())));
 		}
-		 def = Locale.FRENCH_FRANCE;
+		def = Locale.ENGLISH_US;
 		
 		if(!languages.containsKey(def)){
 			languages.put(def, new GameLanguage(def, new File(folder, def.getLocaleId())));
