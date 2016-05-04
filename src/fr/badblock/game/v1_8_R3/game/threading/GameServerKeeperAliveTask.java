@@ -40,7 +40,10 @@ import lombok.Setter;
 	}	
 	
 	public void incrementJoinTime() {
-		this.setJoinTime(System.currentTimeMillis() + this.getGameServerManager().getApiConfig().uselessUntilTime);
+		this.setJoinTime(System.currentTimeMillis() + 
+				this.getGameServerManager().
+				getApiConfig().
+				uselessUntilTime);
 	}
 
 	public void keepAlive() {

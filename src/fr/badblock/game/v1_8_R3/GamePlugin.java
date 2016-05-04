@@ -234,6 +234,7 @@ public class GamePlugin extends GameAPI {
 			// GameServer après tout
 			this.gameServer 	   = new GameServer();
 			this.gameServerManager = new GameServerManager(config);
+			this.getGameServerManager().start();
 			
 			nano = System.nanoTime() - nano;
 			

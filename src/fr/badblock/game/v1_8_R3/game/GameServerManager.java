@@ -38,7 +38,9 @@ public class GameServerManager {
 		this.setApiConfig(config);
 		this.setGson(JsonUtils.getGson());
 		this.setConsole(Bukkit.getConsoleSender());
-
+	}
+	
+	public void start() {
 		// Activation du timing
 		forceCommand("timings on");
 
@@ -58,9 +60,9 @@ public class GameServerManager {
 				return;
 			}
 
-			this.setGameServerKeeperAliveTask(new GameServerKeeperAliveTask(config));
-			this.setGameServerMonitoringTask(new GameServerMonitoringTask(config));
-			this.setGameServerSendLogsTask(new GameServerSendLogsTask(config));
+			this.setGameServerKeeperAliveTask(new GameServerKeeperAliveTask(this.getApiConfig()));
+			this.setGameServerMonitoringTask(new GameServerMonitoringTask(this.getApiConfig()));
+			this.setGameServerSendLogsTask(new GameServerSendLogsTask(this.getApiConfig()));
 
 			this.setLoaded(true);
 		}
