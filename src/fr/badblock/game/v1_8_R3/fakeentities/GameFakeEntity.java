@@ -34,6 +34,8 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 	@Getter private final int 		 id;
 	@Getter private final EntityType type;
 	
+	private boolean destroyed = false;
+	
 	@Getter private Location   location;
 	@Getter private float      headYaw;
 	
@@ -60,6 +62,8 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 	
 	@Override
 	public void show(BadblockPlayer player) {
+		if(destroyed) return;
+		
 		getSpawnPacket().send(player);
 		GameAPI.getAPI().createPacket(PlayEntityMetadata.class)
 						.setEntityId(id)
@@ -150,6 +154,15 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 										.setEntities(new int[]{id}));
 		
 		viewingPlayers.clear();
+	}
+	
+	@Override
+	public void destroy(){
+		if(viewingPlayers.size() != 0)
+			remove();
+		
+		FakeEntities.destroy(this);
+		this.destroyed = true;
 	}
 
 	public abstract BadblockOutPacket getSpawnPacket();

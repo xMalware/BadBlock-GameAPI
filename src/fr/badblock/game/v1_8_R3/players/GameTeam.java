@@ -1,6 +1,7 @@
 package fr.badblock.game.v1_8_R3.players;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -10,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
@@ -40,23 +42,23 @@ public class GameTeam implements BadblockTeam {
 	private String 	  hexColor;
 	@Getter
 	private int	   maxPlayers;
-	
+
 	private Map<Class<?>, TeamData> teamData = null;
 
 	private List<UUID> 				players  = null;
-	
+
 	@SuppressWarnings("deprecation")
 	public GameTeam(ConfigurationSection section, int maxPlayers){
 		this.teamData 		= Maps.newConcurrentMap();
 		this.players		= new ArrayList<>();
 		this.maxPlayers 	= maxPlayers;
-		
+
 		this.key			= section.getString("key");
 		this.color			= ChatColor.getByChar((char) section.getInt("colorCode"));
 		this.dyeColor		= DyeColor.getByWoolData((byte) section.getInt("woolColor"));
 		this.hexColor		= section.getString("hexColor");
 	}
-	
+
 	@Override
 	public TranslatableString getTabPrefix(ChatColor color) {
 		return new TranslatableString("teams." + key + ".tabprefix", color.getChar());
@@ -71,14 +73,14 @@ public class GameTeam implements BadblockTeam {
 	public TranslatableString getChatPrefix() {
 		return new TranslatableString("teams." + key + ".chatprefix");
 	}
-	
+
 	@Override
 	public Color geNormalColor() {
 		int start = 1;
 		if(hexColor.length() == 6){
 			start = 0;
 		}
-		
+
 		int r = 0; int g = 0; int b = 0;
 		try{
 			r = Integer.valueOf(hexColor.substring(start, start + 2), 16) ;
@@ -93,13 +95,40 @@ public class GameTeam implements BadblockTeam {
 	@Override
 	public int playersCurrentlyOnline() {
 		int count = 0;
-		
+
 		for(UUID uniqueId : players){
 			if(Bukkit.getPlayer(uniqueId) != null)
 				count++;
 		}
-		
+
 		return count;
+	}
+
+	@Override
+	public Collection<BadblockPlayer> getOnlinePlayers() {
+		List<BadblockPlayer> players = new ArrayList<>();
+
+		for(UUID uniqueId : this.players){
+			BadblockPlayer player = (BadblockPlayer) Bukkit.getPlayer(uniqueId);
+
+			if(player != null)
+				players.add(player);
+		}
+
+		return players;
+	}
+
+	@Override
+	public Collection<String> getAllPlayers() {
+		List<String> players = new ArrayList<>();
+
+		for(UUID uniqueId : this.players){
+			OfflinePlayer player = Bukkit.getOfflinePlayer(uniqueId);
+
+			players.add(player.getName());
+		}
+
+		return players;
 	}
 
 	@Override
@@ -111,25 +140,25 @@ public class GameTeam implements BadblockTeam {
 		} else if(playersCurrentlyOnline() == getMaxPlayers()){
 			player.sendTranslatedMessage("teams.full", getChatName()); return false;
 		}
-		
+
 		PlayerJoinTeamEvent e = new PlayerJoinTeamEvent(player, player.getTeam(), this, reason);
 		Bukkit.getPluginManager().callEvent(e);
-		
+
 		if(e.isCancelled()){
 			e.getCancelReason().send(player); return false;
 		}
-		
-		
+
+
 		if(player.getTeam() != null){
 			player.getTeam().leaveTeam(player); // on leave l'ancienne team
 		}
-		
+
 		((GameBadblockPlayer) player).setTeam(this);
 		players.add(player.getUniqueId());
-		
+
 		player.sendTranslatedTitle("teams.joinTeam", getChatName());
 		player.sendTimings(10, 40, 10);
-		
+
 		return true;
 	}
 
@@ -158,42 +187,41 @@ public class GameTeam implements BadblockTeam {
 
 	private String[] lore(Locale locale){
 		List<String> result = new ArrayList<>();
-		
+
 		if(playersCurrentlyOnline() == getMaxPlayers()){
 			result.add(GameAPI.i18n().get(locale, "teams.joinitem.lorefull")[0]);
 		} else {
 			result.add(GameAPI.i18n().get(locale, "teams.joinitem.loreclick", playersCurrentlyOnline())[0]);
 		}
-		
+
 		result.add("");
-		
+
 		for(UUID uniqueId : players){
 			Player player = Bukkit.getPlayer(uniqueId);
-			
+
 			if(player != null){
 				result.add(GameAPI.i18n().get(locale, "teams.joinitem.knowPlayer", player.getName())[0]);
 			}
 		}
-		
+
 		return result.toArray(new String[0]);
 	}
-	
+
 	@SuppressWarnings("deprecation") @Override
 	public ItemStackExtra createJoinItem(Locale locale) {
 		return GameAPI.getAPI().createItemStackFactory()
-							   .displayName(GameAPI.i18n().get(locale, "teams.joinitem.displayname", getChatName())[0])
-							   .lore(lore(locale))
-							   .type(Material.WOOL)
-							   .durability(getDyeColor().getWoolData())
-							   .asExtra(playersCurrentlyOnline())
-							   .listenAs(new ItemEvent(){
-									@Override
-									public boolean call(ItemAction action, BadblockPlayer player) {
-										player.closeInventory();
-										joinTeam(player, JoinReason.WHILE_WAITING);
-										return true;
-									}
-							   }, ItemPlaces.INVENTORY_CLICKABLE);
+				.displayName(GameAPI.i18n().get(locale, "teams.joinitem.displayname", getChatName())[0])
+				.lore(lore(locale))
+				.type(Material.WOOL)
+				.durability(getDyeColor().getWoolData())
+				.asExtra(playersCurrentlyOnline())
+				.listenAs(new ItemEvent(){
+					@Override
+					public boolean call(ItemAction action, BadblockPlayer player) {
+						player.closeInventory();
+						joinTeam(player, JoinReason.WHILE_WAITING);
+						return true;
+					}
+				}, ItemPlaces.INVENTORY_CLICKABLE);
 	}
-
 }

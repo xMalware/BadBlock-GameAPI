@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import fr.badblock.game.v1_8_R3.achievements.GameAchievements;
 import fr.badblock.game.v1_8_R3.commands.FeedCommand;
@@ -23,6 +24,7 @@ import fr.badblock.game.v1_8_R3.commands.FlyCommand;
 import fr.badblock.game.v1_8_R3.commands.GameModeCommand;
 import fr.badblock.game.v1_8_R3.commands.HealCommand;
 import fr.badblock.game.v1_8_R3.commands.LagCommand;
+import fr.badblock.game.v1_8_R3.configuration.GameConfiguration;
 import fr.badblock.game.v1_8_R3.entities.CustomCreatures;
 import fr.badblock.game.v1_8_R3.fakeentities.FakeEntities;
 import fr.badblock.game.v1_8_R3.game.GameServer;
@@ -34,7 +36,6 @@ import fr.badblock.game.v1_8_R3.itemstack.GameItemStackFactory;
 import fr.badblock.game.v1_8_R3.itemstack.ItemStackExtras;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.DefaultKitContentManager;
-import fr.badblock.game.v1_8_R3.jsonconfiguration.GameJsonConfiguration;
 import fr.badblock.game.v1_8_R3.ladder.GameLadderSpeaker;
 import fr.badblock.game.v1_8_R3.listeners.ChangeWorldEvent;
 import fr.badblock.game.v1_8_R3.listeners.FakeDeathCaller;
@@ -62,6 +63,7 @@ import fr.badblock.game.v1_8_R3.players.GameTeam;
 import fr.badblock.game.v1_8_R3.technologies.RabbitSpeaker;
 import fr.badblock.game.v1_8_R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.configuration.BadConfiguration;
 import fr.badblock.gameapi.databases.LadderSpeaker;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.packets.BadblockInPacket;
@@ -80,7 +82,6 @@ import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.servers.MapProtector;
 import fr.badblock.gameapi.utils.CustomObjective;
-import fr.badblock.gameapi.utils.JsonConfiguration;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.itemstack.DefaultItems;
@@ -421,13 +422,18 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public JsonConfiguration getJsonConfiguration() {
-		return new GameJsonConfiguration();
+	public BadConfiguration loadConfiguration(File file) {
+		return loadConfiguration(JsonUtils.loadObject(file));
 	}
-
+	
+	@Override
+	public BadConfiguration loadConfiguration(JsonObject object) {
+		return new GameConfiguration(object);
+	}
+	
 	@Override
 	public DefaultItems getDefaultItems() {
 		return null; //TODO
 	}
-	
+
 }

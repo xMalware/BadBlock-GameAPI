@@ -30,7 +30,7 @@ public class GameServerListener extends BadListener {
 	public void update(Player player, int addedPlayers, boolean joinedMessage) {
 		GamePlugin gamePlugin = GamePlugin.getInstance();
 		// En mode test, pouf!
-		if (gamePlugin.TEST_MODE) return;
+		if (GameAPI.TEST_MODE) return;
 		Server server = gamePlugin.getServer();
 		String serverName = server.getServerName();
 		GameServerManager gameServerManager = gamePlugin.getGameServerManager();
