@@ -60,6 +60,7 @@ import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
+import fr.badblock.gameapi.utils.selections.CuboidSelection;
 import fr.badblock.gameapi.utils.selections.Vector3f;
 import fr.badblock.permissions.PermissiblePlayer;
 import fr.badblock.permissions.PermissionManager;
@@ -103,6 +104,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private boolean						 adminMode			  = false;
 	@Getter
 	private JsonObject					 object				  = null;
+	
+	@Getter@Setter
+	private Vector3f					 firstVector,
+										 secondVector;
+	
 	
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -665,6 +671,15 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				time = 10;
 			}
 		}
+	}
+	
+	@Override
+	public CuboidSelection getSelection() {
+		if(firstVector != null && secondVector != null){
+			return new CuboidSelection(getWorld().getName(), firstVector, secondVector);
+		}
+		
+		return null;
 	}
 	
 	@Override

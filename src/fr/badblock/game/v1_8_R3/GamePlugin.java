@@ -19,6 +19,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import fr.badblock.game.v1_8_R3.achievements.GameAchievements;
+import fr.badblock.game.v1_8_R3.commands.AdminModeCommand;
 import fr.badblock.game.v1_8_R3.commands.FeedCommand;
 import fr.badblock.game.v1_8_R3.commands.FlyCommand;
 import fr.badblock.game.v1_8_R3.commands.GameModeCommand;
@@ -42,6 +43,7 @@ import fr.badblock.game.v1_8_R3.listeners.FakeDeathCaller;
 import fr.badblock.game.v1_8_R3.listeners.GameServerListener;
 import fr.badblock.game.v1_8_R3.listeners.JailedPlayerListener;
 import fr.badblock.game.v1_8_R3.listeners.LoginListener;
+import fr.badblock.game.v1_8_R3.listeners.PlayerSelectionListener;
 import fr.badblock.game.v1_8_R3.listeners.ProjectileHitBlockCaller;
 import fr.badblock.game.v1_8_R3.listeners.fixs.ArrowBugFixListener;
 import fr.badblock.game.v1_8_R3.listeners.fixs.PlayerTeleportFix;
@@ -196,6 +198,7 @@ public class GamePlugin extends GameAPI {
 			new GameServerListener();			// Permet la gestion des joueurs vers Docker
 			new FakeDeathCaller();				// Permet de gérer les fausses morts et la détections du joueur
 			new ChangeWorldEvent();				// Permet de mieux gérer les fausses dimensions
+			new PlayerSelectionListener();	    // Permet aux administrateurs de définir une zone
 			joinItems = new GameJoinItems();    // Items donné à l'arrivée du joueur
 			
 			/** Correction de bugs Bukkit */
@@ -225,6 +228,7 @@ public class GamePlugin extends GameAPI {
 			 * Chargement des commandes par défaut
 			 */
 			GameAPI.logColor("&b[GameAPI] &aRegistering commands...");
+			new AdminModeCommand();
 			new FlyCommand();
 			new HealCommand();
 			new FeedCommand();

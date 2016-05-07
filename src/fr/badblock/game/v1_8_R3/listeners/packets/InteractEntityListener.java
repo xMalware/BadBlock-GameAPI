@@ -9,7 +9,7 @@ import fr.badblock.gameapi.packets.InPacketListener;
 import fr.badblock.gameapi.packets.in.play.PlayInUseEntity;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
-public class InteractListener extends InPacketListener<PlayInUseEntity> {
+public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 
 	@Override
 	public void listen(BadblockPlayer player, PlayInUseEntity packet) {
