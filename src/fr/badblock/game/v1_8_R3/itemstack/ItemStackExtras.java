@@ -83,8 +83,10 @@ public class ItemStackExtras implements Listener {
 
 		test(e.getCurrentItem(), player, e);
 		
-		if(e.getClickedInventory() != null)
-			test(e.getClickedInventory().getItem(e.getSlot()), player, e);
+		if(e.getClickedInventory() != null && e.getCurrentItem() == null) {
+			ItemStack is = e.getClickedInventory().getItem(e.getSlot());
+			test(is, player, e);
+		}
 	}
 	
 	private void test(ItemStack is, BadblockPlayer player, InventoryClickEvent e){

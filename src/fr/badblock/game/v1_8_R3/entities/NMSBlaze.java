@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 
 import fr.badblock.gameapi.utils.entities.CreatureType;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
@@ -343,5 +344,10 @@ public class NMSBlaze extends EntityBlaze implements CustomCreature {
 		}
 	    this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true, new Class[0]));
 	    this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+	}
+
+	@Override
+	public Entity getBukkit() {
+		return getBukkitEntity();
 	}
 }

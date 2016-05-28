@@ -9,6 +9,7 @@ import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
@@ -52,11 +53,12 @@ import fr.badblock.gameapi.particles.ParticleEffect;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.InGameData;
-import fr.badblock.gameapi.utils.CustomObjective;
+import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.i18n.I18n;
 import fr.badblock.gameapi.utils.i18n.Locale;
+import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
@@ -67,7 +69,6 @@ import fr.badblock.permissions.PermissionManager;
 import io.netty.channel.Channel;
 import lombok.Getter;
 import lombok.Setter;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.ChunkCoordIntPair;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -120,6 +121,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		if(offlinePlayer != null) {
 			object = offlinePlayer.getObject();
+			
+			team 	   = offlinePlayer.getTeam();
+			inGameData = offlinePlayer.getInGameData();
+			
+			return;
 		} else object = new JsonObject();
 		
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
@@ -142,7 +148,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	public void loadInjector() {
 		Channel channel = getHandle().playerConnection.networkManager.channel;
-		channel.pipeline().addBefore("packet_handler", "api", new BadblockInjector());
+		channel.pipeline().addBefore("packet_handler", "api", new BadblockInjector(this));
 	}
 
 	public void updateData(JsonObject object) {
@@ -263,6 +269,16 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public int getPing() {
 		return getHandle().ping;
 	}
+	
+	@Override
+	public void playSound(Sound sound) {
+		playSound(getLocation(), sound);
+	}
+
+	@Override
+	public void playSound(Location location, Sound sound) {
+		playSound(location, sound, 3.0f, 1.0f);
+	}
 
 	protected Locale getLocale() {
 		return playerData.getLocale() == null ? Locale.FRENCH_FRANCE : playerData.getLocale();
@@ -287,7 +303,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendActionBar(String message) {
 		message = getI18n().replaceColors(message);
 		getAPI().createPacket(PlayChat.class).setType(ChatType.ACTION)
-				.setComponents(TextComponent.fromLegacyText(message)).send(this);
+				.setContent(message).send(this);
 	}
 
 	@Override
@@ -345,6 +361,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		title = getI18n().replaceColors(title);
 		subtitle = getI18n().replaceColors(subtitle);
 
+		getAPI().createPacket(PlayTitle.class).setAction(Action.RESET).send(this);
 		getAPI().createPacket(PlayTitle.class).setAction(Action.TITLE).setContent(title).send(this);
 		getAPI().createPacket(PlayTitle.class).setAction(Action.SUBTITLE).setContent(subtitle).send(this);
 	}
@@ -436,9 +453,23 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
+	@Getter private Location centerJail = null;
+	@Getter private double   radius 	= 0.0d;
+	
+	@Override
+	public void pseudoJail(Location location, double radius) {
+		this.centerJail = location;
+		this.radius		= radius;
+	}
+	
 	@Override
 	public boolean isJailed() {
 		return jail != null;
+	}
+	
+	@Override
+	public boolean isPseudoJailed(){
+		return centerJail != null;
 	}
 
 	@Override
@@ -492,7 +523,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void sendPacket(BadblockOutPacket packet) {
 		try {
-			Packet<?> nmsPacket = ((GameBadblockOutPacket) packet).buildPacket();
+			Packet<?> nmsPacket = ((GameBadblockOutPacket) packet).buildPacket(this);
 			getHandle().playerConnection.sendPacket(nmsPacket);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -506,6 +537,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void showCustomObjective(CustomObjective objective) {
+		if(objective == null) return;
+		
 		objective.showObjective(this);
 	}
 
@@ -535,8 +568,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public String getGroupPrefix() {
-		return permissions.getParent().getDisplayName();
+	public TranslatableString getGroupPrefix() {
+		return new TranslatableString("permissions.chat." + permissions.getParent().getName());
 	}
 
 	@Override
@@ -571,8 +604,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			} else if (spectatorRunnable == null) {
 				setGameMode(GameMode.SPECTATOR);
 
-				spectatorRunnable = new TooFarRunnable();
-				spectatorRunnable.runTaskTimer(GameAPI.getAPI(), 0, 20L);
+				if(!isPseudoJailed() || newMode == BadblockMode.SPECTATOR){
+					spectatorRunnable = new TooFarRunnable();
+					spectatorRunnable.runTaskTimer(GameAPI.getAPI(), 0, 20L);
+				}
 			}
 
 			badblockMode = newMode;

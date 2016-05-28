@@ -1,6 +1,6 @@
 package fr.badblock.game.v1_8_R3.jsonconfiguration;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.bukkit.inventory.ItemStack;
 
@@ -17,19 +17,21 @@ public class DefaultKitContentManager implements PlayerKitContentManager {
 	public void give(JsonObject content, BadblockPlayer player) {
 		BadConfiguration configuration = GameAPI.getAPI().loadConfiguration(content);
 		
-		player.getInventory().setContents(to(configuration.getValueList("content", MapItemStack.class)));
-		player.getInventory().setArmorContents(to(configuration.getValueList("armor", MapItemStack.class)));
+		player.clearInventory();
+		
+		player.getInventory().setContents(configuration.getValueList("content", MapItemStack.class).getHandle().toArray(new ItemStack[0]));
+		player.getInventory().setArmorContents(configuration.getValueList("armor", MapItemStack.class).getHandle().toArray(new ItemStack[0]));
+	
+		player.updateInventory();
 	}
 	
-	private ItemStack[] to(List<MapItemStack> list){
-		ItemStack[] is = new ItemStack[list.size()];
+	@Override
+	public JsonObject createFromInventory(BadblockPlayer player) {
+		BadConfiguration configuration = GameAPI.getAPI().loadConfiguration(new JsonObject());
 		
-		int i = 0;
-		for(MapItemStack mis : list){
-			is[i] = mis.getHandle();
-			i++;
-		}
+		configuration.setValueList("content", MapItemStack.toMapList(Arrays.asList(player.getInventory().getContents())));
+		configuration.setValueList("armor", MapItemStack.toMapList(Arrays.asList(player.getInventory().getArmorContents())));
 		
-		return is;
+		return configuration.save();
 	}
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -92,6 +93,25 @@ public class GameTeam implements BadblockTeam {
 		return Color.fromRGB(r, g, b);
 	}
 
+	public BadblockPlayer getRandomPlayer(){
+		Collection<BadblockPlayer> list = getOnlinePlayers();
+		
+		int max = new Random().nextInt(list.size());
+		int i   = 0;
+		
+		for(BadblockPlayer player : list){
+			
+			if(i == max){
+				return player;
+			}
+			
+			i++;
+			
+		}
+		
+		return null;
+	}
+	
 	@Override
 	public int playersCurrentlyOnline() {
 		int count = 0;
@@ -156,7 +176,8 @@ public class GameTeam implements BadblockTeam {
 		((GameBadblockPlayer) player).setTeam(this);
 		players.add(player.getUniqueId());
 
-		player.sendTranslatedTitle("teams.joinTeam", getChatName());
+		if(reason == JoinReason.WHILE_WAITING)
+			player.sendTranslatedTitle("teams.joinTeam", getChatName());
 		player.sendTimings(10, 40, 10);
 
 		return true;
@@ -196,13 +217,28 @@ public class GameTeam implements BadblockTeam {
 
 		result.add("");
 
+		result.add(GameAPI.i18n().get(locale, "teams.joinitem.players")[0]);
+		
+		int count = 0;
+		
 		for(UUID uniqueId : players){
 			Player player = Bukkit.getPlayer(uniqueId);
 
 			if(player != null){
+				count++;
 				result.add(GameAPI.i18n().get(locale, "teams.joinitem.knowPlayer", player.getName())[0]);
 			}
 		}
+		
+		int free = maxPlayers - count;
+		
+		for(;count<maxPlayers;count++){
+			result.add(GameAPI.i18n().get(locale, "teams.joinitem.place")[0]);
+		}
+		
+		result.add("");
+		
+		result.add(GameAPI.i18n().get(locale, "teams.joinitem.free", free)[0]);
 
 		return result.toArray(new String[0]);
 	}

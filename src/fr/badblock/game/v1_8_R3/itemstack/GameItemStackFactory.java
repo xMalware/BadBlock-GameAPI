@@ -129,17 +129,18 @@ public class GameItemStackFactory implements ItemStackFactory {
 		item.addUnsafeEnchantments(enchants);
 		
 		ItemMeta meta = item.getItemMeta();
-		meta.spigot().setUnbreakable(unbreakable);
+		if(meta != null)
+			meta.spigot().setUnbreakable(unbreakable);
 		
 		I18n i18n = GameAPI.i18n();
 		
-		if(displayName != null){
+		if(meta != null && displayName != null){
 			if(locale != null){
 				meta.setDisplayName(i18n.get(locale, displayName)[0]);
 			} else meta.setDisplayName(i18n.replaceColors(displayName));
 		}
 		
-		if(lore != null){
+		if(meta != null && lore != null){
 			if(locale != null){
 				if(lore.length != 0)
 					meta.setLore(Arrays.asList(i18n.get(locale, lore[0])));

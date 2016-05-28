@@ -49,6 +49,13 @@ public class GamePlayRespawn extends GameBadblockOutPacket implements PlayRespaw
 	
 	@SuppressWarnings("deprecation") @Override
 	public Packet<?> buildPacket() throws Exception {
+		if(dimension == null)
+			dimension = Environment.NORMAL;
+		if(difficulty == null)
+			difficulty = Difficulty.NORMAL;
+		if(worldType == null)
+			worldType = WorldType.NORMAL;
+		
 		return new PacketPlayOutRespawn(dimension.getId(),
 				EnumDifficulty.getById(difficulty.getValue()),
 				net.minecraft.server.v1_8_R3.WorldType.getType(worldType.getName()),

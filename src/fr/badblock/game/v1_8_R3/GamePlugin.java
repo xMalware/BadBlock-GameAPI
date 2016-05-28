@@ -1,8 +1,10 @@
 package fr.badblock.game.v1_8_R3;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +14,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Maps;
@@ -24,6 +28,7 @@ import fr.badblock.game.v1_8_R3.commands.FeedCommand;
 import fr.badblock.game.v1_8_R3.commands.FlyCommand;
 import fr.badblock.game.v1_8_R3.commands.GameModeCommand;
 import fr.badblock.game.v1_8_R3.commands.HealCommand;
+import fr.badblock.game.v1_8_R3.commands.KitsCommand;
 import fr.badblock.game.v1_8_R3.commands.LagCommand;
 import fr.badblock.game.v1_8_R3.configuration.GameConfiguration;
 import fr.badblock.game.v1_8_R3.entities.CustomCreatures;
@@ -39,20 +44,22 @@ import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.DefaultKitContentManager;
 import fr.badblock.game.v1_8_R3.ladder.GameLadderSpeaker;
 import fr.badblock.game.v1_8_R3.listeners.ChangeWorldEvent;
+import fr.badblock.game.v1_8_R3.listeners.DisconnectListener;
 import fr.badblock.game.v1_8_R3.listeners.FakeDeathCaller;
 import fr.badblock.game.v1_8_R3.listeners.GameServerListener;
 import fr.badblock.game.v1_8_R3.listeners.JailedPlayerListener;
 import fr.badblock.game.v1_8_R3.listeners.LoginListener;
+import fr.badblock.game.v1_8_R3.listeners.MoveListener;
 import fr.badblock.game.v1_8_R3.listeners.PlayerSelectionListener;
 import fr.badblock.game.v1_8_R3.listeners.ProjectileHitBlockCaller;
 import fr.badblock.game.v1_8_R3.listeners.fixs.ArrowBugFixListener;
-import fr.badblock.game.v1_8_R3.listeners.fixs.PlayerTeleportFix;
 import fr.badblock.game.v1_8_R3.listeners.fixs.UselessDamageFixListener;
 import fr.badblock.game.v1_8_R3.listeners.mapprotector.BlockMapProtectorListener;
 import fr.badblock.game.v1_8_R3.listeners.mapprotector.DefaultMapProtector;
 import fr.badblock.game.v1_8_R3.listeners.mapprotector.EntityMapProtectorListener;
 import fr.badblock.game.v1_8_R3.listeners.mapprotector.PlayerMapProtectorListener;
 import fr.badblock.game.v1_8_R3.listeners.packets.CameraListener;
+import fr.badblock.game.v1_8_R3.listeners.packets.InteractEntityListener;
 import fr.badblock.game.v1_8_R3.merchant.GameMerchantInventory;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket.GameBadblockOutPackets;
@@ -67,6 +74,7 @@ import fr.badblock.game.v1_8_R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.configuration.BadConfiguration;
 import fr.badblock.gameapi.databases.LadderSpeaker;
+import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent.JoinReason;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.packets.BadblockInPacket;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
@@ -77,13 +85,15 @@ import fr.badblock.gameapi.packets.watchers.WatcherEntity;
 import fr.badblock.gameapi.particles.ParticleEffect;
 import fr.badblock.gameapi.particles.ParticleEffectType;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
+import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.PlayerAchievement;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
+import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.servers.MapProtector;
-import fr.badblock.gameapi.utils.CustomObjective;
+import fr.badblock.gameapi.utils.entities.CustomCreature;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.itemstack.DefaultItems;
@@ -97,13 +107,16 @@ import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import net.minecraft.server.v1_8_R3.EntityInsentient;
+import net.minecraft.server.v1_8_R3.World;
 
 public class GamePlugin extends GameAPI {
 	public static final String FOLDER_I18N 		   = "i18n",
 							   FOLDER_ACHIEVEMENTS = "achievements",
 							   FOLDER_KITS		   = "kits",
 							   CONFIG_DATABASES	   = "databases.json";
-
+	public static Thread thread;
+	
 	@Getter private static GamePlugin   instance;
 
 	@Getter 
@@ -140,6 +153,7 @@ public class GamePlugin extends GameAPI {
 	
 	@Override
 	public void onEnable() {
+		thread		= Thread.currentThread();
 		instance 	= this;
 		GameAPI.API = this;
 
@@ -192,6 +206,7 @@ public class GamePlugin extends GameAPI {
 			 * Chargement des Listeners
 			 */
 			new LoginListener(); 				// Met le BadblockPlayer à la connection
+			new DisconnectListener(); 			// Gère la déconnection
 			new JailedPlayerListener(); 		// Permet de bien jail les joueurs
 			new ItemStackExtras(); 		 	    // Permet de bien gérer les items spéciaux
 			new ProjectileHitBlockCaller();		// Permet d'appeler un event lorsque un projectile rencontre un block
@@ -199,13 +214,14 @@ public class GamePlugin extends GameAPI {
 			new FakeDeathCaller();				// Permet de gérer les fausses morts et la détections du joueur
 			new ChangeWorldEvent();				// Permet de mieux gérer les fausses dimensions
 			new PlayerSelectionListener();	    // Permet aux administrateurs de définir une zone
+			new MoveListener();
 			joinItems = new GameJoinItems();    // Items donné à l'arrivée du joueur
 			
 			/** Correction de bugs Bukkit */
 
 			new ArrowBugFixListener();			// Permet de corriger un bug avec les flèches se lançant mal
 			new UselessDamageFixListener();		// Enlève les dégats inutiles lors d'une chute
-			new PlayerTeleportFix();			// Permet de bien voir le joueur lorsqu'il respawn (bug Bukkit)
+			//new PlayerTeleportFix();			// Permet de bien voir le joueur lorsqu'il respawn (bug Bukkit)
 
 			/** Protection et optimisations par défaut */
 
@@ -217,7 +233,8 @@ public class GamePlugin extends GameAPI {
 			GameAPI.logColor("&b[GameAPI] &aRegistering packets listeners ...");
 			
 			new CameraListener().register();	// Packet pour voir à la place du joueur en spec (aucun event sur Bukkit)
-			
+			new InteractEntityListener().register();
+
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 			
 			GameAPI.logColor("&b[GameAPI] &aCreating scoreboard...");
@@ -234,6 +251,7 @@ public class GamePlugin extends GameAPI {
 			new FeedCommand();
 			new GameModeCommand();
 			new LagCommand();
+			new KitsCommand();
 
 			GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
 			// GameServer après tout
@@ -334,6 +352,59 @@ public class GamePlugin extends GameAPI {
 	public void unregisterTeam(@NonNull BadblockTeam team) {
 		teams.values().remove(team);
 	}
+	
+	@Override
+	public void balanceTeams(boolean sameSize) {
+		List<BadblockTeam> unfilled = new ArrayList<>();
+		
+		for(BadblockTeam team : getTeams()){
+			if(team.getOnlinePlayers().size() < team.getMaxPlayers()){
+				unfilled.add(team);
+			}
+		}
+		
+		for(Player player : Bukkit.getOnlinePlayers()){
+			BadblockPlayer p = (BadblockPlayer) player;
+		
+			if(p.getTeam() == null){
+				if(unfilled.isEmpty()){
+					p.sendPlayer("lobby"); // kick
+					continue;
+				}
+				
+				BadblockTeam team = unfilled.get(0);
+				
+				team.joinTeam(p, JoinReason.REBALANCING);
+
+				if(team.getOnlinePlayers().size() == team.getMaxPlayers()){
+					unfilled.remove(0);
+				}
+			}
+		}
+		
+		if(!unfilled.isEmpty() && sameSize){
+			int playersByTeam = Bukkit.getOnlinePlayers().size() / getTeams().size();
+			
+			for(BadblockTeam team : getTeams()){
+				
+				if(team.getOnlinePlayers().size() < playersByTeam){
+					
+					for(BadblockTeam joinable : getTeams()){
+						GameTeam game = (GameTeam) joinable;
+						
+						if(joinable.getOnlinePlayers().size() > playersByTeam){
+							team.joinTeam(game.getRandomPlayer(), JoinReason.REBALANCING);
+						}
+					
+						if(team.getOnlinePlayers().size() == playersByTeam)
+							break;
+					}
+					
+				}
+				
+			}
+		}
+	}
 
 	@Override
 	public BadblockOfflinePlayer getOfflinePlayer(@NonNull UUID uniqueId) {
@@ -341,7 +412,7 @@ public class GamePlugin extends GameAPI {
 	}
 	
 	@Override
-	public CustomMerchantInventory getCustomMarchantInventory() {
+	public CustomMerchantInventory getCustomMerchantInventory() {
 		return new GameMerchantInventory();
 	}
 
@@ -440,4 +511,28 @@ public class GamePlugin extends GameAPI {
 		return null; //TODO
 	}
 
+	@Override
+	public CustomCreature spawnCustomEntity(Location location, EntityType type) {
+		CustomCreatures custom = CustomCreatures.getByType(type);
+		
+		if(custom != null){
+			Class<? extends EntityInsentient> entity = custom.getCustomClass();
+			
+			try {
+				World w = (World) ReflectionUtils.getHandle(location.getWorld());
+				
+				EntityInsentient e = entity.getConstructor(World.class).newInstance(w);
+				e.setLocation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+				
+				w.addEntity(e, SpawnReason.CUSTOM);
+				
+				return (CustomCreature) e;
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
 }

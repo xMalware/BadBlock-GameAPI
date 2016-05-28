@@ -57,6 +57,11 @@ public class NMSSheep extends EntitySheep implements CustomCreature {
 
 		regenerateAttributes();
 	}
+	
+	@Override
+	public org.bukkit.entity.Entity getBukkit() {
+		return getBukkitEntity();
+	}
 
 	@Override
 	public void explode(Location location, float power, boolean flaming, boolean smoking) {
@@ -65,7 +70,7 @@ public class NMSSheep extends EntitySheep implements CustomCreature {
 	
 	@Override
 	public CreatureType getEntityType() {
-		return CreatureType.PIG;
+		return CreatureType.SHEEP;
 	}
 
 	@Override
@@ -346,7 +351,7 @@ public class NMSSheep extends EntitySheep implements CustomCreature {
 
 	@Override
 	public boolean damageEntity(DamageSource damagesource, float f){
-		if(!agressive) return false;
+		if(invincible) return false;
 		
 		if(isInvulnerable(damagesource)) {
 			return false;

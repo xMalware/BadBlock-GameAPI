@@ -51,6 +51,11 @@ public class NMSSkeleton extends EntitySkeleton implements CustomCreature {
 	}
 
 	@Override
+	public org.bukkit.entity.Entity getBukkit() {
+		return getBukkitEntity();
+	}	
+	
+	@Override
 	public void explode(Location location, float power, boolean flaming, boolean smoking) {
 		world.createExplosion(this, location.getX(), location.getY(), location.getZ(), power, flaming, smoking);
 	}

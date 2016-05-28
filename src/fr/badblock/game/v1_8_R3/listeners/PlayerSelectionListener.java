@@ -29,6 +29,8 @@ public class PlayerSelectionListener extends BadListener {
 					player.sendTranslatedMessage("commands.selection-second", e.getClickedBlock().getX(), e.getClickedBlock().getY(), e.getClickedBlock().getZ());
 				}
 				
+				e.setCancelled(true);
+				
 			}
 			
 		}

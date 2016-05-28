@@ -11,7 +11,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.InGameData;
-import fr.badblock.gameapi.utils.CustomObjective;
+import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import lombok.Getter;
 
 @Getter

@@ -161,7 +161,7 @@ public class GameLanguage implements Language {
 		List<String> result = new ArrayList<>();
 		
 		if(message.useHeader()){
-			result.add(getHeader());
+			result.addAll(Arrays.asList(getHeader()));
 		} else if(message.useShortHeader()){
 			base[0] = getShortHeader() + base[0];
 		}
@@ -197,7 +197,7 @@ public class GameLanguage implements Language {
 	}
 
 	@Override
-	public String getHeader() {
+	public String[] getHeader() {
 		return config.header;
 	}
 

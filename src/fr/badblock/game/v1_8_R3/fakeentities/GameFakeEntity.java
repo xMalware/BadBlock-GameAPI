@@ -57,7 +57,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		this.viewingPlayers = Lists.newArrayList();
 		
 		this.location		= location;
-		this.headYaw		= 0;
+		this.headYaw		= location.getYaw();
 	}
 	
 	@Override
@@ -89,6 +89,11 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		viewingPlayers.add(player.getUniqueId());
 	}
 
+	@Override
+	public boolean see(BadblockPlayer player){
+		return viewingPlayers.contains(player.getUniqueId());
+	}
+	
 
 	public void move(Location location) {
 		Location oldLoc = this.location.clone();
@@ -116,6 +121,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		this.location = location;
 	}
 
+	@Override
 	public void setHeadYaw(float yaw) {
 		broadcastPacket(GameAPI.getAPI().createPacket(PlayEntityHeadRotation.class)
 										.setEntityId(id)
@@ -152,6 +158,14 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 	public void remove() {
 		broadcastPacket(GameAPI.getAPI().createPacket(PlayEntityDestroy.class)
 										.setEntities(new int[]{id}));
+		
+		viewingPlayers.clear();
+	}
+	
+	@Override
+	public void remove(BadblockPlayer player) {
+		player.sendPacket(GameAPI.getAPI().createPacket(PlayEntityDestroy.class)
+										  .setEntities(new int[]{id}));
 		
 		viewingPlayers.clear();
 	}

@@ -44,6 +44,11 @@ public class NMSGiant extends EntityGiantZombie implements CustomCreature {
 
 		regenerateAttributes();
 	}
+	
+	@Override
+	public org.bukkit.entity.Entity getBukkit() {
+		return getBukkitEntity();
+	}
 
 	@Override
 	public void explode(Location location, float power, boolean flaming, boolean smoking) {

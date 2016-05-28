@@ -61,22 +61,28 @@ public class PlayerTeleportFix extends BadListener {
 		if(!player.canSee(toShow)) return;
 		
 		GameAPI.getAPI().createPacket(PlayEntityDestroy.class)
-						.setEntities(new int[]{ toShow.getEntityId() })
+						.setEntities(new int[]{ player.getEntityId() })
 						.send(toShow);
 		
 		new BukkitRunnable(){
 			@Override
 			public void run(){
 				GameAPI.getAPI().createPacket(PlayNamedEntitySpawn.class)
-								.setPlayer(toShow)
-								.send(player);
+								.setPlayer(player)
+								.send(toShow);
 				
-				for(int i=0; i<toShow.getInventory().getArmorContents().length;i++){
+				GameAPI.getAPI().createPacket(PlayEntityEquipment.class)
+								.setEntityId(player.getEntityId())
+								.setItemStack(player.getInventory().getItemInHand())
+								.setSlot(0)
+								.send(toShow);
+				
+				for(int i=1; i<toShow.getInventory().getArmorContents().length;i++){
 					GameAPI.getAPI().createPacket(PlayEntityEquipment.class)
-									.setEntityId(toShow.getEntityId())
-									.setItemStack(toShow.getInventory().getArmorContents()[i])
+									.setEntityId(player.getEntityId())
+									.setItemStack(player.getInventory().getArmorContents()[i - 1])
 									.setSlot(i)
-									.send(player);
+									.send(toShow);
 				}
 			}
 		}.runTaskLater(GameAPI.getAPI(), 1L);

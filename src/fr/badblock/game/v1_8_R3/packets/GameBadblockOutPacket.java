@@ -156,6 +156,10 @@ public abstract class GameBadblockOutPacket extends GameBadblockPacket implement
 	
 	public abstract Packet<?> buildPacket() throws Exception;
 
+	public Packet<?> buildPacket(BadblockPlayer player) throws Exception {
+		return buildPacket();
+	}
+	
 	@Getter public enum GameBadblockOutPackets {
 		ABILITIES(PlayAbilities.class, PacketPlayOutAbilities.class),
 		ANIMATION(PlayAnimation.class, PacketPlayOutAnimation.class),

@@ -16,24 +16,29 @@ public class DisconnectListener extends BadListener {
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-		
-		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING) return;
-		boolean backup = GamePlugin.getInstance().getGameServer().getType() == WhileRunningConnectionTypes.BACKUP;
-		
-		if(backup){
-			PlayerReconnectionPropositionEvent event = new PlayerReconnectionPropositionEvent(player);
-			Bukkit.getPluginManager().callEvent(event);
-			backup = !event.isCancelled();
-		}
-		
-		if(!backup){
-			if(player.getTeam() != null){
+
+		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING) {
+			if(player.getTeam() != null)
 				player.getTeam().leaveTeam(player);
+		} else {
+			boolean backup = GamePlugin.getInstance().getGameServer().getType() == WhileRunningConnectionTypes.BACKUP;
+
+			if(backup){
+				PlayerReconnectionPropositionEvent event = new PlayerReconnectionPropositionEvent(player);
+				Bukkit.getPluginManager().callEvent(event);
+				backup = !event.isCancelled();
 			}
-			
-			return;
+
+			if(!backup){
+				if(player.getTeam() != null){
+					player.getTeam().leaveTeam(player);
+				}
+
+				return;
+			}
+
+			if(backup)
+				GamePlugin.getInstance().getGameServer().remember(player);
 		}
-		
-		GamePlugin.getInstance().getGameServer().remember(player);
 	}
 }

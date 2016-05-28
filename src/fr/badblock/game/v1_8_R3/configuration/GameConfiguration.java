@@ -1,16 +1,17 @@
 package fr.badblock.game.v1_8_R3.configuration;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.badblock.gameapi.configuration.BadConfiguration;
+import fr.badblock.gameapi.configuration.values.MapList;
 import fr.badblock.gameapi.configuration.values.MapValue;
 import fr.badblock.gameapi.configuration.values.MapValuePrimitive;
 import fr.badblock.gameapi.utils.general.JsonUtils;
@@ -53,8 +54,8 @@ public class GameConfiguration implements BadConfiguration {
 	}
 
 	@Override
-	public <T extends MapValue<?>> List<T> getValueList(String key, Class<T> clazzValue) {
-		List<T> result = new ArrayList<>();
+	public <T extends MapValue<K>, K> MapList<T, K> getValueList(String key, Class<T> clazzValue) {
+		MapList<T, K> result = new MapList<>();
 
 		if(handle.has(key)){
 			JsonArray array = handle.get(key).getAsJsonArray();
@@ -81,7 +82,7 @@ public class GameConfiguration implements BadConfiguration {
 	}
 
 	@Override
-	public <T extends MapValue<?>> List<T> getValueList(String key, Class<T> clazzValue, List<T> def) {
+	public <T extends MapValue<K>, K> MapList<T, K> getValueList(String key, Class<T> clazzValue, List<T> def) {
 		if(!handle.has(key)) setValueList(key, def);
 
 		return getValueList(key, clazzValue);
@@ -89,18 +90,36 @@ public class GameConfiguration implements BadConfiguration {
 
 	@Override
 	public <T extends MapValue<?>> void setValue(String key, T value) {
-		handle.add(key, new Gson().toJsonTree(value));
+		JsonElement val = null;
+		
+		if(value instanceof MapValuePrimitive<?>){
+			val = ((MapValuePrimitive<?>) value).to();
+		} else {
+			val = new Gson().toJsonTree(value);
+		}
+		
+		handle.add(key, val);
 	}
 
 	@Override
 	public <T extends MapValue<?>> void setValueList(String key, List<T> value) {
-		handle.add(key, new Gson().toJsonTree(value));
+		JsonArray array = new JsonArray();
+	
+		for(T single : value){
+			if(single instanceof MapValuePrimitive<?>){
+				array.add(((MapValuePrimitive<?>) single).to());
+			} else {
+				array.add(new Gson().toJsonTree(single));
+			}
+		}
+		
+		handle.add(key, array);
 	}
 
 	@Override
 	public BadConfiguration getSection(String key) {
 		if(!subConfigurations.containsKey(key)){
-			if(!handle.has(key)){
+			if(handle.has(key)){
 				subConfigurations.put(key, new GameConfiguration(handle.get(key).getAsJsonObject()));
 			} else {
 				subConfigurations.put(key, new GameConfiguration(new JsonObject()));

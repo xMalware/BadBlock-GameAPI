@@ -6,6 +6,7 @@ import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.v1_8_R3.watchers.GameWatcherEntity;
 import fr.badblock.gameapi.packets.out.play.PlayEntityMetadata;
 import fr.badblock.gameapi.packets.watchers.WatcherEntity;
+import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,6 +43,19 @@ public class GamePlayEntityMetadata extends GameBadblockOutPacket implements Pla
 		
 		if(watcher != null)
 			reflector.setFieldValue("b", ((GameWatcherEntity) watcher).convertToWatchables());
+		else reflector.setFieldValue("b", tempWatcher);
+		return packet;
+	}
+	
+	@Override
+	public Packet<?> buildPacket(BadblockPlayer player) throws Exception {
+		PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata();
+		Reflector reflector = new Reflector(packet);
+		
+		reflector.setFieldValue("a", entityId);
+		
+		if(watcher != null)
+			reflector.setFieldValue("b", ((GameWatcherEntity) watcher).convertToWatchables(player));
 		else reflector.setFieldValue("b", tempWatcher);
 		return packet;
 	}

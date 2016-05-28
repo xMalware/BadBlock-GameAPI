@@ -17,8 +17,10 @@ import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import lombok.AllArgsConstructor;
 import net.minecraft.server.v1_8_R3.Packet;
 
+@AllArgsConstructor
 public class BadblockInjector extends ChannelDuplexHandler {
 	private GameBadblockPlayer player;
 	

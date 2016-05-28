@@ -5,31 +5,35 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.packets.out.play.PlayScoreboardDisplayObjective;
-import fr.badblock.gameapi.packets.out.play.PlayScoreboardObjective;
-import fr.badblock.gameapi.packets.out.play.PlayScoreboardScore;
-import fr.badblock.gameapi.packets.out.play.PlayScoreboardTeam;
 import fr.badblock.gameapi.packets.out.play.PlayScoreboardDisplayObjective.ObjectivePosition;
+import fr.badblock.gameapi.packets.out.play.PlayScoreboardObjective;
 import fr.badblock.gameapi.packets.out.play.PlayScoreboardObjective.ObjectiveMode;
 import fr.badblock.gameapi.packets.out.play.PlayScoreboardObjective.ObjectiveType;
+import fr.badblock.gameapi.packets.out.play.PlayScoreboardScore;
 import fr.badblock.gameapi.packets.out.play.PlayScoreboardScore.ScoreMode;
+import fr.badblock.gameapi.packets.out.play.PlayScoreboardTeam;
 import fr.badblock.gameapi.packets.out.play.PlayScoreboardTeam.TeamMode;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.utils.CustomObjective;
+import fr.badblock.gameapi.players.scoreboard.BadblockScoreboardGenerator;
+import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import lombok.AllArgsConstructor;
-import net.md_5.bungee.api.ChatColor;
+import lombok.Setter;
 
 /**
  * @author LeLanN
  */
 public class GameCustomObjective implements CustomObjective {
-	private Map<Integer, CustomTeam> teams;
+	private Map<Integer, CustomTeam> 	teams;
 	
-	private UUID 		  			 player;
-	private String		  		     name;
-	private String					 displayName;
+	private UUID 		  			 	player;
+	private String		  		     	name;
+	private String					 	displayName;
+	@Setter
+	private BadblockScoreboardGenerator generator;
 	
 	public GameCustomObjective(String name){
 		this.teams 		 = new HashMap<>();
@@ -74,7 +78,7 @@ public class GameCustomObjective implements CustomObjective {
 
 	@Override
 	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+		this.displayName = GameAPI.i18n().replaceColors(displayName);
 		
 		if(player == null) return;
 		
@@ -89,13 +93,34 @@ public class GameCustomObjective implements CustomObjective {
 	public void changeLine(int line, String text) {
 		if(line < 1 || line > 15) return;
 		
-		CustomTeam custom = teams.get(line);
-		custom.prefix = text.substring(0, text.length() <= 16 ? text.length() : 16);
-		custom.suffix = text.length() > 16 ? text.substring(16) : "";
+		CustomTeam team = teams.get(line);
+		text = GameAPI.i18n().replaceColors(text);
 
+		String prefix = text.substring(0, text.length() <= 16 ? text.length() : 16);
+		String suffix = "";
+
+
+		if(prefix.endsWith("§")){
+			prefix.substring(0, prefix.length() - 1);
+
+			suffix += "§";
+		} else {
+			String lastColor = lastColor(prefix);
+			suffix = lastColor == null ? "" : lastColor.toString();
+		}
+
+		suffix += (text.length() > 16 ? text.substring(16) : "");
+
+		if(suffix.length() > 16){
+			suffix = suffix.substring(0,  16);
+		}
+		
+		team.prefix = prefix;
+		team.suffix = suffix;
+		
 		if(player != null){
-			changeTeam(getAssignedPlayer(), custom);
-			setScore(getAssignedPlayer(), custom.name, line);
+			changeTeam(getAssignedPlayer(), team);
+			setScore(getAssignedPlayer(), team.name, line);
 		}
 	}
 
@@ -117,6 +142,12 @@ public class GameCustomObjective implements CustomObjective {
 		for(int i=1;i<=15;i++){
 			removeLine(i);
 		}
+	}
+	
+	@Override
+	public void generate() {
+		if(generator != null)
+			generator.generate();
 	}
 	
 	protected void sendTeam(BadblockPlayer player, CustomTeam team){
@@ -167,6 +198,36 @@ public class GameCustomObjective implements CustomObjective {
 		String name;
 		String prefix;
 		String suffix;
+	}
+	
+	private static String lastColor(String str){
+		str = GameAPI.i18n().replaceColors(str);
+		ChatColor last = null;
+		ChatColor encod = null;
+
+		for(int i=0;i<str.length();i++){
+			if(str.charAt(i) == '§'){
+				ChatColor color = ChatColor.getByChar(str.charAt(i + 1));
+
+				last = color;
+
+				if(color.isColor() && str.length() > i + 2){
+					if(str.charAt(i + 2) == '§'){
+						encod = ChatColor.getByChar(str.charAt(i + 3));
+
+						i += 2;
+					} else encod = null;
+				} else encod = null;
+
+				i++;
+
+				if(color != null){
+					last = color;
+				}
+			}
+		}
+
+		return last == null ? "" : (last + "" + (encod == null ? "" : encod.toString()));
 	}
 	
 	enum Identifiers {

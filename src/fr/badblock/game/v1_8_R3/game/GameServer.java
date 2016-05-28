@@ -16,11 +16,12 @@ import fr.badblock.gameapi.databases.LadderSpeaker;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.players.BadblockTeam;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Overrided GameServer interface; for r1.8_3builds
+ * Overrided GameServer interface
  * @authors xMalware & LeLanN
  */
 @Getter@Setter public class GameServer extends BadListener implements fr.badblock.gameapi.game.GameServer {
@@ -36,7 +37,8 @@ import lombok.Setter;
 		this.gameState = gameState;
 		if (gameState == GameState.FINISHED) cancelReconnectionInvitations();
 		
-		GamePlugin.getInstance().getGameServerManager().getGameServerKeeperAliveTask().keepAlive(gameState);
+		if(!GameAPI.TEST_MODE)
+			GamePlugin.getInstance().getGameServerManager().getGameServerKeeperAliveTask().keepAlive(gameState);
 	}
 
 	public void remember(BadblockPlayer player){
@@ -60,5 +62,17 @@ import lombok.Setter;
 		
 		players.keySet().forEach(uuid -> ladderSpeaker.sendReconnectionInvitation(uuid, false));
 		players.clear();
+	}
+
+	@Override
+	public void cancelReconnectionInvitations(BadblockTeam team) {
+		LadderSpeaker ladderSpeaker = GameAPI.getAPI().getLadderDatabase();
+		
+		players.entrySet().forEach(entry -> {
+			if(team.equals(entry.getValue().getTeam())){
+				ladderSpeaker.sendReconnectionInvitation(entry.getKey(), false);
+				players.remove(entry.getKey());
+			}
+		});
 	}
 }

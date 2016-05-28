@@ -215,6 +215,13 @@ public enum CustomCreatures {
 		} catch (Exception unused){}
 	}
 
+	public static CustomCreatures getByType(EntityType type){
+		for(CustomCreatures creat : values())
+			if(creat.getEntityType() == type)
+				return creat;
+		return null;
+	}
+	
 	public static CustomCreature getCustomCreature(Entity entity){
 		Class<? extends EntityInsentient> clazz = null;
 		

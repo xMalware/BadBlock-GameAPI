@@ -1,7 +1,6 @@
 package fr.badblock.game.v1_8_R3.game;
 
 import java.io.File;
-import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.ConsoleCommandSender;

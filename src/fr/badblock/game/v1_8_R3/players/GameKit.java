@@ -9,6 +9,7 @@ import com.google.gson.JsonObject;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.players.PlayerAchievement;
 import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.kits.PlayerKit;
@@ -17,20 +18,30 @@ import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra.ItemPlaces;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+@Data@AllArgsConstructor
 public class GameKit implements PlayerKit {
 	private String 	   kitName;
 	private boolean    VIP;
 
-	private Material   kitItemType;
+	private String	   kitItemType;
 	private short	   kitItemData;
 
 	private KitLevel[] levels;
 
-	private String[] lore(BadblockPlayer player){
+	private String[] loreVIP(BadblockPlayer player){
 		List<String> result = new ArrayList<>();
+
+		if(player.hasPermission(GamePermission.VIP)){
+			for(String lore : GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.leftclick")){
+				result.add(lore);
+			}
+		}
+
+		result.add("");
 
 		for(String lore : GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits." + kitName + ".itemLore")){
 			result.add(lore);
@@ -38,28 +49,74 @@ public class GameKit implements PlayerKit {
 
 		result.add("");
 
+		PlayerKit kit 	  = player.inGameData(InGameKitData.class).getChoosedKit();
+		String    kitName = null;
+
+		if(kit != null)
+			kitName = kit.getKitName();
+
+		if(this.kitName.equals(kitName))
+			result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.alreadyChoosed")[0]);
+		else {
+			for(String lore : GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.loreVip")){
+				result.add(lore);
+			}
+		}
+
+		return result.toArray(new String[0]);
+	}
+
+	private String[] lore(BadblockPlayer player){
+		if(VIP) return loreVIP(player);
+
+		List<String> result = new ArrayList<>();
+
 		int 	level 	  = player.getPlayerData().getUnlockedKitLevel(this);
 		boolean canUnlock = player.getPlayerData().canUnlockNextLevel(this);
 
 
-		if(!canUnlock){
-			result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.toUnlock")[0]);
+		for(String lore : GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.leftclick")){
+			result.add(lore);
+		}
+
+		if(level != getMaxLevel() && level != 0){
+			for(String lore : GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.rightclick", level + 1)){
+				result.add(lore);
+			}
+		}
+
+		result.add("");
+
+		for(String lore : GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits." + kitName + ".itemLore")){
+			result.add(lore);
+		}
+
+		result.add("");
+
+		if(level != getMaxLevel()){
+			if(canUnlock){
+				result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.unlock")[0]);
+			} else result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.toUnlock")[0]);
 
 			for(PlayerAchievement achievement : getNeededAchievements(level + 1)){
 				if(!player.getPlayerData().getAchievementState(achievement).isSucceeds()){
 					result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.missingAchievement", achievement.getDisplayName())[0]);
 				}
 			}
-			
-			if(getBadcoinsCost(level + 1) < player.getPlayerData().getBadcoins()){
-				result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.missingBadcoins", getBadcoinsCost(level + 1))[0]);
-			}
-			
+
+			result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.missingBadcoins", getBadcoinsCost(level + 1))[0]);
+
 			if(level >= 1) result.add("");
 		}
-		
+
 		if(level >= 1){
-			if(!kitName.equals(player.getPlayerData().getLastUsedKit(GameAPI.getInternalGameName())))
+			PlayerKit kit 	  = player.inGameData(InGameKitData.class).getChoosedKit();
+			String    kitName = null;
+
+			if(kit != null)
+				kitName = kit.getKitName();
+
+			if(!this.kitName.equals(kitName))
 				result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.canChoose")[0]);
 			else result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.alreadyChoosed")[0]);
 		}
@@ -70,7 +127,7 @@ public class GameKit implements PlayerKit {
 	@Override
 	public ItemStackExtra getKitItem(BadblockPlayer player){
 		return GameAPI.getAPI().createItemStackFactory()
-				.type(kitItemType)
+				.type(Material.matchMaterial(kitItemType))
 				.durability(kitItemData)
 				.displayName(GameAPI.getAPI().getI18n().get(player.getPlayerData().getLocale(), "kits." + kitName + ".itemDisplayname")[0])
 				.lore(lore(player))
@@ -78,9 +135,18 @@ public class GameKit implements PlayerKit {
 				.listenAs(new ItemEvent(){
 					@Override
 					public boolean call(ItemAction action, BadblockPlayer player) {
-						if(player.getPlayerData().getUnlockedKitLevel(GameKit.this) == 0){
+						if(VIP){
+
+							if(player.hasPermission(GamePermission.VIP)){
+								player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".name"));	
+							} else {
+								player.sendTranslatedMessage("kits.canNotChooseVIP", new TranslatableString("kits." + kitName + ".name"));	
+								return true;
+							}
+
+						} else if(player.getPlayerData().getUnlockedKitLevel(GameKit.this) == 0){
 							if(player.getPlayerData().canUnlockNextLevel(GameKit.this)){
-								player.getPlayerData().removeBadcoins(levels[0].getBadcoinsCost());
+								player.getPlayerData().unlockNextLevel(GameKit.this);
 								player.sendTranslatedMessage("kits.unlockLevel", new TranslatableString("kits." + kitName + ".name"), 1);
 							} else {
 								player.sendTranslatedMessage("kits.canNotUnlockLevel", new TranslatableString("kits." + kitName + ".name"), 1);
@@ -102,8 +168,17 @@ public class GameKit implements PlayerKit {
 					public boolean call(ItemAction action, BadblockPlayer player) {
 						int next = player.getPlayerData().getUnlockedKitLevel(GameKit.this) + 1;
 
-						if(player.getPlayerData().canUnlockNextLevel(GameKit.this)){
-							player.getPlayerData().removeBadcoins(levels[0].getBadcoinsCost());
+						if(VIP){
+
+							if(player.hasPermission(GamePermission.VIP)){
+								player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".name"));	
+							} else {
+								player.sendTranslatedMessage("kits.canNotChooseVIP", new TranslatableString("kits." + kitName + ".name"));	
+								return true;
+							}
+
+						} else if(player.getPlayerData().canUnlockNextLevel(GameKit.this)){
+							player.getPlayerData().unlockNextLevel(GameKit.this);
 							player.sendTranslatedMessage("kits.unlockLevel", new TranslatableString("kits." + kitName + ".name"), next);
 						} else {
 							player.sendTranslatedMessage("kits.canNotUnlockLevel", new TranslatableString("kits." + kitName + ".name"), next);
@@ -156,19 +231,28 @@ public class GameKit implements PlayerKit {
 
 	@Override
 	public void giveKit(BadblockPlayer player) {
-		int level = player.getPlayerData().getUnlockedKitLevel(this);
+		int level = 1;
+		
+		if(VIP){
+			if(!player.hasPermission(GamePermission.VIP))
+				return;
+		} else {
+			level = player.getPlayerData().getUnlockedKitLevel(this);
 
-		if(level == 0) return; // le joueur n'a pas débloqué le kit :o
+			if(level == 0) return; // le joueur n'a pas débloqué le kit :o
 
-		if(level <= 0 || level > getMaxLevel()){
-			throw new IllegalArgumentException("Level must be between 1 and " + getMaxLevel() + ", not " + level);
+
+			if(level <= 0 || level > getMaxLevel()){
+				throw new IllegalArgumentException("Level must be between 1 and " + getMaxLevel() + ", not " + level);
+			}
 		}
-
+		
 		KitLevel kitLevel = levels[level - 1];
 		GameAPI.getAPI().getKitContentManager().give(kitLevel.getStuff(), player);
 	}
 
-	@Data public static class KitLevel {
+	@Data@AllArgsConstructor@NoArgsConstructor
+	public static class KitLevel {
 		private String[]   neededAchievements;
 		private int 	   badcoinsCost;
 

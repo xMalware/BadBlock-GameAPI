@@ -12,6 +12,9 @@ import org.bukkit.inventory.ItemStack;
 import com.google.common.collect.Lists;
 
 import fr.badblock.gameapi.packets.watchers.WatcherEntity;
+import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.utils.i18n.Locale;
+import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.DataWatcher;
@@ -21,6 +24,8 @@ public class GameWatcherEntity implements WatcherEntity {
 
 	private boolean onFire 	  = false;
 	private boolean invisible = false;
+	
+	private TranslatableString customName;
 	
 	public GameWatcherEntity(Class<? extends Entity> clazz){
 		map = new MetadataMap(clazz);
@@ -41,14 +46,22 @@ public class GameWatcherEntity implements WatcherEntity {
 	}
 
 	@Override
-	public WatcherEntity setCustomName(String customName) {
-		set(MetadataIndex.NAME_TAG, customName);
-		return this;
-	}
-
-	@Override
 	public WatcherEntity setCustomNameVisible(boolean customNameVisible) {
 		set(MetadataIndex.SHOW_NAME_TAG, customNameVisible ? 1 : 0);
+		return this;
+	}
+	
+	@Override
+	public WatcherEntity setCustomName(TranslatableString name) {
+		customName = name;
+		set(MetadataIndex.NAME_TAG, customName.getAsLine(Locale.FRENCH_FRANCE));
+		return this;
+	}
+	
+	@Override
+	public WatcherEntity setCustomName(String name) {
+		customName = null;
+		set(MetadataIndex.NAME_TAG, name);
 		return this;
 	}
 
@@ -99,6 +112,15 @@ public class GameWatcherEntity implements WatcherEntity {
 		return watcher;
 	}
 	
+	public DataWatcher convertToDatawatcher(BadblockPlayer player){
+		MetadataMap mapClone = map.clone();
+		
+		if(customName != null)
+			mapClone.set(MetadataIndex.NAME_TAG, customName.getAsLine(player));
+		
+		return mapClone.toDatawatcher();
+	}
+	
 	public DataWatcher convertToDatawatcher(){
 		return map.toDatawatcher();
 	}
@@ -107,6 +129,18 @@ public class GameWatcherEntity implements WatcherEntity {
 	public List convertToWatchables(){
 		ArrayList ret = Lists.newArrayList();
 		ret.addAll(map.getEntryList().stream().map(MetadataMap.Entry::toWatchable).collect(Collectors.toList()));
+		return ret;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public List convertToWatchables(BadblockPlayer player){
+		MetadataMap mapClone = map.clone();
+		
+		if(customName != null)
+			mapClone.set(MetadataIndex.NAME_TAG, customName.getAsLine(player));
+		
+		ArrayList ret = Lists.newArrayList();
+		ret.addAll(mapClone.getEntryList().stream().map(MetadataMap.Entry::toWatchable).collect(Collectors.toList()));
 		return ret;
 	}
 }

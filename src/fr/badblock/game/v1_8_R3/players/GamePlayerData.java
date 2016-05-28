@@ -95,7 +95,7 @@ public class GamePlayerData implements PlayerData {
 	public boolean canUnlockNextLevel(@NonNull PlayerKit kit) {
 		int nextLevel = getUnlockedKitLevel(kit) + 1;
 		
-		if(kit.getMaxLevel() < nextLevel || kit.getBadcoinsCost(nextLevel) < badcoins)
+		if(kit.getMaxLevel() < nextLevel || kit.getBadcoinsCost(nextLevel) > badcoins)
 			return false;
 		
 		for(PlayerAchievement achievement : kit.getNeededAchievements(nextLevel)){
@@ -104,6 +104,16 @@ public class GamePlayerData implements PlayerData {
 		}
 		
 		return true;
+	}
+	
+	@Override
+	public void unlockNextLevel(@NonNull PlayerKit kit){
+		if(!canUnlockNextLevel(kit)) return;
+		
+		int nextLevel = getUnlockedKitLevel(kit) + 1;
+		
+		removeBadcoins(kit.getBadcoinsCost(nextLevel));
+		kits.put(kit.getKitName().toLowerCase(), nextLevel);
 	}
 	
 	@Override
@@ -143,7 +153,7 @@ public class GamePlayerData implements PlayerData {
 	}
 	
 	@Override
-	public void incrementStastic(String gameName, String stat){
+	public void incrementStatistic(String gameName, String stat){
 		augmentStatistic(gameName, stat, 1.0d);
 	}
 	

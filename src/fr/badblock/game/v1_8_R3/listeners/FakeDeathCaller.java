@@ -1,5 +1,8 @@
 package fr.badblock.game.v1_8_R3.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -23,6 +26,7 @@ import fr.badblock.gameapi.events.fakedeaths.PlayerFakeRespawnEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.data.InGameData;
+import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import lombok.NoArgsConstructor;
 
@@ -101,9 +105,19 @@ public class FakeDeathCaller extends BadListener {
 		p.heal();
 		p.feed();
 		p.removePotionEffects();
+		p.clearInventory();
 		
 		if(e.getDeathMessage() != null){
-			e.getDeathMessage().broadcast();
+			System.out.println(e.getDeathMessage());
+			Object end = e.getDeathMessageEnd() == null ? "" : e.getDeathMessageEnd();
+			
+			List<Object> res = new ArrayList<>();
+			
+			for(Object obj : e.getDeathMessage().getObjects())
+				res.add(obj);
+			res.add(end);
+			System.out.println(res);
+			new TranslatableString(e.getDeathMessage().getKey(), res.toArray()).broadcast();
 		}
 		
 		if(e.isLightning()){
@@ -139,6 +153,9 @@ public class FakeDeathCaller extends BadListener {
 	}
 
 	private void respawn(BadblockPlayer player, Location location){
+		if(player.getBadblockMode()== BadblockMode.RESPAWNING)
+			player.setBadblockMode(BadblockMode.PLAYER);
+		
 		if(location != null)
 			player.teleport(location);
 		else location = player.getLocation();

@@ -14,7 +14,11 @@ import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 	
 	public GamePlayInUseEntity(PacketPlayInUseEntity packet){
 		super(packet);
-		this.targetPosition = new Vector3f(packet.b().a, packet.b().b, packet.b().c);
+		
+		if(packet.b() == null){
+			this.targetPosition = new Vector3f();
+		} else this.targetPosition = new Vector3f(packet.b().a, packet.b().b, packet.b().c);
+		
 		this.action			= UseEntityAction.valueOf(packet.a().name());
 		
 		Reflector reflector = new Reflector(packet);
