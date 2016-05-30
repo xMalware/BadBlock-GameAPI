@@ -1,6 +1,5 @@
 package fr.badblock.game.v1_8_R3.entities;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
@@ -9,10 +8,8 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
 
 import fr.badblock.gameapi.utils.entities.CreatureType;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
-import fr.badblock.gameapi.utils.reflection.Reflector;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.Blocks;
 import net.minecraft.server.v1_8_R3.ControllerMove;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EnchantmentManager;
@@ -22,16 +19,16 @@ import net.minecraft.server.v1_8_R3.EntityIronGolem;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntityRabbit;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.Items;
 import net.minecraft.server.v1_8_R3.Material;
 import net.minecraft.server.v1_8_R3.MathHelper;
-import net.minecraft.server.v1_8_R3.PathfinderGoal;
 import net.minecraft.server.v1_8_R3.PathfinderGoalBreed;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
 import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalPanic;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
 import net.minecraft.server.v1_8_R3.PathfinderGoalTempt;
@@ -333,20 +330,19 @@ public class NMSRabbit extends EntityRabbit implements CustomCreature {
 		this.goalSelector.a(0, new PathfinderGoalFloat(this));
 
 		if(!agressive){
-			this.goalSelector.a(1, getPrivateGoal("PathfinderGoalRabbitPanic", new Class<?>[]{EntityRabbit.class, Double.class}, this, 1.4D));
+			this.goalSelector.a(1, new PathfinderGoalPanic(this, 1.25D));
 		}
 
 		this.goalSelector.a(2, new PathfinderGoalTempt(this, 1.0D, Items.CARROT, false));
 		this.goalSelector.a(2, new PathfinderGoalTempt(this, 1.0D, Items.GOLDEN_CARROT, false));
-		this.goalSelector.a(2, new PathfinderGoalTempt(this, 1.0D, Item.getItemOf(Blocks.YELLOW_FLOWER), false));
 		this.goalSelector.a(3, new PathfinderGoalBreed(this, 0.8D));
 		
-		this.goalSelector.a(2, getPrivateGoal("PathfinderGoalEatCarrots", new Class<?>[]{EntityRabbit.class}, this));
 		this.goalSelector.a(5, new PathfinderGoalRandomStroll(this, 0.6D));
 		this.goalSelector.a(11, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 10.0F));
+		this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
 
 		try {
-			this.goalSelector.a(4, (PathfinderGoal) new Reflector(this).getFieldValue("bm"));
+			// this.goalSelector.a(4, (PathfinderGoal) new Reflector(this).getFieldValue("bm"));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -408,6 +404,7 @@ public class NMSRabbit extends EntityRabbit implements CustomCreature {
 		return flag;
 	}
 
+	/*
 	private PathfinderGoal getPrivateGoal(String name, Class<?>[] forConstructor, Object... objects){
 		try {
 			Class<?> theClass = null;
@@ -428,4 +425,5 @@ public class NMSRabbit extends EntityRabbit implements CustomCreature {
 
 		return null;
 	}
+	*/
 }

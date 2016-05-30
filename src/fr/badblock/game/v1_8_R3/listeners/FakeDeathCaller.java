@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -66,10 +67,11 @@ public class FakeDeathCaller extends BadListener {
 					event = new NormalDeathEvent(player, e.getCause());
 				}
 
+				event.getDrops().addAll(items(player.getInventory()));
 				Bukkit.getPluginManager().callEvent(event);
 				
 				if(!event.isCancelled()){
-					if(killer != null && doASKill(player, killer, event.isDrop())){
+					if(killer != null && doASKill(player, killer, !event.isKeepInventory())){
 						iWillSurvive(player);
 						return;
 					}
@@ -111,11 +113,12 @@ public class FakeDeathCaller extends BadListener {
 				e.setCancelled(true);
 
 				event = new FightingDeathEvent(player, killer, type, e.getCause());
-
+				event.getDrops().addAll(items(player.getInventory()));
+				
 				Bukkit.getPluginManager().callEvent(event);
 
 				if(!event.isCancelled()){
-					if(doASKill(player, killer, event.isDrop())){
+					if(doASKill(player, killer, !event.isKeepInventory())){
 						iWillSurvive(player);
 						return;
 					}
@@ -182,8 +185,9 @@ public class FakeDeathCaller extends BadListener {
 			if(fData.alert == 4 && changed){
 				cantReconnect.add(bKiller.getUniqueId());
 				bKiller.kickPlayer(new TranslatableString("antispawnkill.kick").getAsLine(bKiller));
+				
 				if(drop)
-					drop(bKiller.getInventory(), bKiller.getLocation());
+					drop(items(bKiller.getInventory()), bKiller.getLocation());
 			}
 
 		}
@@ -208,9 +212,22 @@ public class FakeDeathCaller extends BadListener {
 		p.feed();
 	}
 
-	private void drop(PlayerInventory inventory, Location place){
-		for(ItemStack item : inventory.getContents()){
-			if(item != null){
+	private List<ItemStack> items(PlayerInventory inventory){
+		List<ItemStack> result = new ArrayList<>();
+		
+		for(ItemStack is : inventory.getContents())
+			if(is != null && is.getType() != Material.AIR)
+				result.add(is);
+		for(ItemStack is : inventory.getArmorContents())
+			if(is != null && is.getType() != Material.AIR)
+				result.add(is);
+		
+		return result;
+	}
+	
+	private void drop(List<ItemStack> items, Location place){
+		for(ItemStack item : items){
+			if(item != null && item.getType() != Material.AIR){
 				place.getWorld().dropItemNaturally(place, item);
 			}
 		}
@@ -221,12 +238,11 @@ public class FakeDeathCaller extends BadListener {
 		p.feed();
 		p.removePotionEffects();
 		
-		if(e.isDrop()){
-			drop(p.getInventory(), p.getLocation());
+		if(!e.isKeepInventory()){
+			p.clearInventory();
+			drop(e.getDrops(), p.getLocation());
 		}
 		
-		p.clearInventory();
-
 		p.inGameData(FakeDeathData.class).lastDamage    = 0;
 		p.inGameData(FakeDeathData.class).lastPvPDamage = null;
 		p.inGameData(FakeDeathData.class).lastDamager   = -1;

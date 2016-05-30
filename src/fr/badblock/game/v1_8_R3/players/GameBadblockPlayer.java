@@ -60,6 +60,7 @@ import fr.badblock.gameapi.players.data.InGameData;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.MathsUtils;
+import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.i18n.I18n;
 import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
@@ -449,6 +450,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		footer = getI18n().replaceColors(footer);
 
 		getAPI().createPacket(PlayPlayerListHeaderFooter.class).setHeader(header).setFooter(footer).send(this);
+	}
+	
+	@Override
+	public void sendTranslatedTabHeader(TranslatableString header, TranslatableString footer) {
+		sendTabHeader(StringUtils.join(header.get(this), "\\n"), StringUtils.join(footer.get(this), "\\n"));
 	}
 
 	@Override
