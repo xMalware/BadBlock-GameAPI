@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -32,14 +33,15 @@ import fr.badblock.protocol.packets.PacketPlayerPlace;
 import fr.badblock.protocol.packets.PacketPlayerQuit;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingJoin;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive;
+import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive.ServerStatus;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingPing;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingPong;
-import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive.ServerStatus;
 import fr.badblock.protocol.socket.SocketHandler;
 
 public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	private final Map<String,  Callback<JsonObject>> requestedPlayers = new HashMap<>();
 	private final Map<String,  Callback<JsonObject>> requestedIps     = new HashMap<>();
+	private final Map<Integer,  Callback<Integer>> 	 requestedPing    = new HashMap<>();
 
 	private SocketHandler					  		 socketHandler;
 	private String 									 ip;
@@ -155,6 +157,13 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	}
 	
 	@Override
+	public void sendPing(String[] servers, Callback<Integer> count){
+		int id = new Random().nextInt();
+		requestedPing.put(id, count);
+		sendPacket(new PacketMatchmakingPing(id, servers));
+	}
+	
+	@Override
 	public void sendReconnectionInvitation(UUID uniqueId, boolean invited) {
 		// TODO
 	}
@@ -184,6 +193,13 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 		}
 	}
 
+	@Override
+	public void handle(PacketMatchmakingPong packet){
+		if(requestedPing.containsKey(packet.getId())){
+			requestedPing.get(packet.getId()).done(packet.getPlayerCount(), null);
+		}
+	}
+	
 	@Override public void handle(PacketPlayerChat packet){}
 	@Override public void handle(PacketPlayerJoin packet){}
 	@Override public void handle(PacketPlayerQuit packet){}
@@ -192,5 +208,4 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	@Override public void handle(PacketMatchmakingJoin packet){}
 	@Override public void handle(PacketMatchmakingKeepalive packet){}
 	@Override public void handle(PacketMatchmakingPing packet){}
-	@Override public void handle(PacketMatchmakingPong packet){}
 }

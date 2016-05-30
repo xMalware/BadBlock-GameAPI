@@ -47,11 +47,13 @@ public class GameTeam implements BadblockTeam {
 	private Map<Class<?>, TeamData> teamData = null;
 
 	private List<UUID> 				players  = null;
+	private Map<UUID, String>		playersAtStart  = null;
 
 	@SuppressWarnings("deprecation")
 	public GameTeam(ConfigurationSection section, int maxPlayers){
 		this.teamData 		= Maps.newConcurrentMap();
 		this.players		= new ArrayList<>();
+		this.playersAtStart	= Maps.newConcurrentMap();
 		this.maxPlayers 	= maxPlayers;
 
 		this.key			= section.getString("key");
@@ -73,6 +75,16 @@ public class GameTeam implements BadblockTeam {
 	@Override
 	public TranslatableString getChatPrefix() {
 		return new TranslatableString("teams." + key + ".chatprefix");
+	}
+	
+	@Override
+	public Collection<UUID> getPlayersAtStart() {
+		return playersAtStart.keySet();
+	}
+
+	@Override
+	public Collection<String> getPlayersNameAtStart() {
+		return playersAtStart.values();
 	}
 
 	@Override
@@ -139,7 +151,7 @@ public class GameTeam implements BadblockTeam {
 	}
 
 	@Override
-	public Collection<String> getAllPlayers() {
+	public Collection<String> getOnlinePlayersName() {
 		List<String> players = new ArrayList<>();
 
 		for(UUID uniqueId : this.players){
@@ -175,6 +187,7 @@ public class GameTeam implements BadblockTeam {
 
 		((GameBadblockPlayer) player).setTeam(this);
 		players.add(player.getUniqueId());
+		playersAtStart.put(player.getUniqueId(), player.getName());
 
 		if(reason == JoinReason.WHILE_WAITING)
 			player.sendTranslatedTitle("teams.joinTeam", getChatName());
@@ -188,6 +201,10 @@ public class GameTeam implements BadblockTeam {
 		if(players.contains(player.getUniqueId())){
 			((GameBadblockPlayer) player).setTeam(null);
 			players.remove(player.getUniqueId());
+
+			if(GameAPI.getAPI().getGameServer().getGameState() == GameState.WAITING){
+				playersAtStart.remove(player.getUniqueId());
+			}
 		}
 	}
 

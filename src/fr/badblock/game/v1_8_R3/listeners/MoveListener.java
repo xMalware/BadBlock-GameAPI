@@ -19,7 +19,7 @@ public class MoveListener extends BadListener {
 			loc.setY(player.getCenterJail().getY());
 			
 			if(loc.distance(player.getCenterJail()) >= player.getRadius()){
-				e.setTo(e.getFrom());
+				e.setCancelled(true);
 				
 				player.teleport(player.getCenterJail());
 				player.sendTranslatedMessage("game.move-toofar");

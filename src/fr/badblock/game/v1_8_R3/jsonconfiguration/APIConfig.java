@@ -10,8 +10,9 @@ import lombok.Setter;
 	public int	  	ladderPort;
 
 	// SQL Part
-	public String 	sqlIp = "";
-	public int    	sqlPort;
+	public String 	sqlIp 		= "";
+	public String   sqlUser		= "root";
+	public int    	sqlPort 	= 3306;
 	public String 	sqlDatabase = "";
 	public String 	sqlPassword = "";
 	

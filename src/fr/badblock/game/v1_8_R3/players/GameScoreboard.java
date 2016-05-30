@@ -16,7 +16,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
@@ -230,7 +229,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			JsonElement element = maps.get(i);
 
 			if(element.isJsonObject()){
-				VoteElement vote = new Gson().fromJson(element, VoteElement.class);
+				VoteElement vote = GameAPI.getGson().fromJson(element, VoteElement.class);
 				voteObjective.getScore(GameAPI.i18n().replaceColors(vote.getDisplayName())).setScore(0);
 				votes.put(vote, 0);
 			}

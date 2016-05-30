@@ -19,6 +19,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.servers.JoinItems;
@@ -66,7 +67,10 @@ public class GameJoinItems extends BadListener implements JoinItems {
 			String lastUsedKit = e.getPlayer().getPlayerData().getLastUsedKit(GameAPI.getInternalGameName());
 			
 			if(lastUsedKit != null && knowKits.containsKey(lastUsedKit)){
-				e.getPlayer().inGameData(InGameKitData.class).setChoosedKit(knowKits.get(lastUsedKit));
+				PlayerKit kit = knowKits.get(lastUsedKit);
+				if(!kit.isVIP() || e.getPlayer().hasPermission(GamePermission.VIP)){
+					e.getPlayer().inGameData(InGameKitData.class).setChoosedKit(knowKits.get(lastUsedKit));					
+				}
 			}
 			
 			ItemEvent event = new ItemEvent(){

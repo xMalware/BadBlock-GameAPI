@@ -1,8 +1,11 @@
 package fr.badblock.game.v1_8_R3.players;
 
-import java.lang.reflect.Modifier;
+import java.security.SecureRandom;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -23,9 +26,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+import fr.badblock.game.v1_8_R3.GamePlugin;
+import fr.badblock.game.v1_8_R3.internalutils.Base64Url;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.v1_8_R3.watchers.MetadataIndex;
 import fr.badblock.gameapi.GameAPI;
@@ -105,12 +109,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private boolean						 adminMode			  = false;
 	@Getter
 	private JsonObject					 object				  = null;
-	
+
 	@Getter@Setter
 	private Vector3f					 firstVector,
-										 secondVector;
-	
-	
+	secondVector;
+
+
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
 
@@ -121,13 +125,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		if(offlinePlayer != null) {
 			object = offlinePlayer.getObject();
-			
+
 			team 	   = offlinePlayer.getTeam();
 			inGameData = offlinePlayer.getInGameData();
-			
+
 			return;
 		} else object = new JsonObject();
-		
+
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
@@ -154,8 +158,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void updateData(JsonObject object) {
 		if (object.has("game")) {
 			this.object.add("game", object.get("game"));
-			playerData = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).create()
-					.fromJson(object.get("game"), GamePlayerData.class);
+			playerData = GameAPI.getGson().fromJson(object.get("game"), GamePlayerData.class);
 		}
 
 		if (object.has("permissions")) {
@@ -208,8 +211,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void setReducedDebugInfo(boolean reducedDebugInfo) {
 		getAPI().createPacket(PlayEntityStatus.class).setEntityId(getEntityId())
-				.setStatus(reducedDebugInfo ? EntityStatus.REDUCED_DEBUG_ENABLE : EntityStatus.REDUCED_DEBUG_DISABLE)
-				.send(this);
+		.setStatus(reducedDebugInfo ? EntityStatus.REDUCED_DEBUG_ENABLE : EntityStatus.REDUCED_DEBUG_DISABLE)
+		.send(this);
 	}
 
 	@Override
@@ -269,7 +272,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public int getPing() {
 		return getHandle().ping;
 	}
-	
+
 	@Override
 	public void playSound(Sound sound) {
 		playSound(getLocation(), sound);
@@ -290,10 +293,66 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void postResult(Result result) {
-		//TODO
+	public void saveGameData() {
+		getPlayerData().saveData();
+		JsonObject object = new JsonObject();
+		
+		object.add("game", GameAPI.getGson().toJsonTree(getPlayerData()));
+		GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, object);
 	}
 	
+	@Override
+	public void postResult(Result toPost) {
+		long   id	    = new SecureRandom().nextLong();
+		long   party    = GamePlugin.getInstance().getGameServer().getGameId();
+		String player   = getName().toLowerCase();
+		UUID   playerId = getUniqueId();
+		String gameType = "todo";
+		String server   = Bukkit.getServerName();
+		String result   = GameAPI.getGson().toJson(toPost);
+
+
+		PreparedStatement statement = null;
+
+		try {
+			statement = GameAPI.getAPI().getSqlDatabase().preparedStatement("INSERT INTO parties(id, party, player, playerId, gametype, servername, day, result)"
+					+ " VALUES(?, ?, ?, ?, ?, ?, NOW(), ?)");
+			statement.setLong(1, id);
+			statement.setLong(2, party);
+			statement.setString(3, player);
+			statement.setString(4, playerId.toString());
+			statement.setString(5, gameType);
+			statement.setString(6, server);
+			statement.setString(7, result);
+
+			statement.executeUpdate();
+
+			int percent = (int) Math.round(((double)getPlayerData().getXp() / (double)getPlayerData().getXpUntilNextLevel()) * 100);
+
+			String line = "&a";
+
+			for(int i=0;i<100;i++){
+				if(i == percent)
+					line += "&8";
+				line += "|";
+			}
+
+			sendTranslatedMessage("game.result", 
+					getPlayerData().getBadcoins(), getPlayerData().getLevel(), percent, getPlayerData().getXp(),
+					getPlayerData().getXpUntilNextLevel(), line, Base64Url.encode(id));
+
+			saveGameData();
+		} catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			if(statement != null)
+				try {
+					statement.close();
+				} catch (SQLException e){}
+		}
+
+	}
+
 	@Override
 	public void sendTranslatedMessage(String key, Object... args) {
 		sendMessage(getTranslatedMessage(key, args));
@@ -303,7 +362,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendActionBar(String message) {
 		message = getI18n().replaceColors(message);
 		getAPI().createPacket(PlayChat.class).setType(ChatType.ACTION)
-				.setContent(message).send(this);
+		.setContent(message).send(this);
 	}
 
 	@Override
@@ -330,10 +389,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			loc.add(loc.getDirection().multiply(50.0D));
 
 			enderdragon = GameAPI.getAPI().spawnFakeLivingEntity(loc, EntityType.WITHER, WatcherWither.class); // en
-																												// vré
-																												// cé
-																												// un
-																												// wither
+			// vré
+			// cé
+			// un
+			// wither
 			enderdragon.getWatchers().setCustomName(message).setCustomNameVisible(true).setInvisibile(true);
 
 			enderdragon.show(this);
@@ -381,7 +440,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void sendTimings(long fadeIn, long stay, long fadeOut) {
 		getAPI().createPacket(PlayTitle.class).setAction(Action.TIMES).setFadeIn(fadeIn).setStay(stay)
-				.setFadeOut(fadeOut).send(this);
+		.setFadeOut(fadeOut).send(this);
 	}
 
 	@Override
@@ -455,18 +514,18 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Getter private Location centerJail = null;
 	@Getter private double   radius 	= 0.0d;
-	
+
 	@Override
 	public void pseudoJail(Location location, double radius) {
 		this.centerJail = location;
 		this.radius		= radius;
 	}
-	
+
 	@Override
 	public boolean isJailed() {
 		return jail != null;
 	}
-	
+
 	@Override
 	public boolean isPseudoJailed(){
 		return centerJail != null;
@@ -475,7 +534,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void playChestAnimation(Block block, boolean open) {
 		getAPI().createPacket(PlayBlockAction.class).setBlockPosition(new Vector3f(block.getLocation()))
-				.setBlockType(Material.CHEST).setByte1((byte) 1).setByte2((byte) (open ? 1 : 0)).send(this);
+		.setBlockType(Material.CHEST).setByte1((byte) 1).setByte2((byte) (open ? 1 : 0)).send(this);
 	}
 
 	@Override
@@ -495,9 +554,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		if(world == getWorld().getEnvironment()) return;
 
 		customEnvironment = world;
-		
+
 		getAPI().createPacket(PlayRespawn.class).setDimension(world).setDifficulty(getWorld().getDifficulty())
-				.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
+		.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
 
 		reloadMap();
 		updateInventory(); // euh ... pk déprécié ? (pas déprécié pour Player)
@@ -538,7 +597,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void showCustomObjective(CustomObjective objective) {
 		if(objective == null) return;
-		
+
 		objective.showObjective(this);
 	}
 
@@ -665,12 +724,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		@Override
 		public void run() {
 			if (bossBarMessage == null || enderdragon == null || !isOnline()) { // message
-																				// supprimé
-																				// ou
-																				// joueur
-																				// déco,
-																				// on
-																				// arrête
 				cancel();
 				return;
 			}
@@ -682,41 +735,30 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				loc.add(loc.getDirection().multiply(50.0D));
 
 				if (enderdragon.getLocation().distance(loc) > 128.0d) { // trop
-																		// loin
-																		// (téléportation),
-																		// on
-																		// recrée
 					enderdragon.teleport(loc);
 					enderdragon.remove();
 					enderdragon.show(GameBadblockPlayer.this);
 				} else {
 					enderdragon.teleport(loc); // on téléporte l'entité pour
-												// qu'elle reste prêt du joueur
 				}
 
 				enderdragon.getWatchers().setCustomName(bossBarMessage); // si
-																			// le
-																			// nom
-																			// a
-																			// été
-																			// update
 				enderdragon.updateWatchers(); // on informe le joueur du
-												// changement
 
 				time = 10;
 			}
 		}
 	}
-	
+
 	@Override
 	public CuboidSelection getSelection() {
 		if(firstVector != null && secondVector != null){
 			return new CuboidSelection(getWorld().getName(), firstVector, secondVector);
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public boolean hasAdminMode(){
 		return adminMode;

@@ -5,6 +5,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
+import fr.badblock.game.v1_8_R3.game.GameServer;
+import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
+import fr.badblock.game.v1_8_R3.players.GameBadblockPlayerData;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.PlayerReconnectionPropositionEvent;
@@ -21,7 +24,13 @@ public class DisconnectListener extends BadListener {
 			if(player.getTeam() != null)
 				player.getTeam().leaveTeam(player);
 		} else {
-			boolean backup = GamePlugin.getInstance().getGameServer().getType() == WhileRunningConnectionTypes.BACKUP;
+			GameServer server = GamePlugin.getInstance().getGameServer();
+			
+			if(server.isSaving() && server.getPlay().contains(player.getUniqueId())){
+				server.getSavedPlayers().add(new GameBadblockPlayerData((GameBadblockPlayer) e.getPlayer()));
+			}
+			
+			boolean backup = server.getType() == WhileRunningConnectionTypes.BACKUP;
 
 			if(backup){
 				PlayerReconnectionPropositionEvent event = new PlayerReconnectionPropositionEvent(player);
@@ -38,7 +47,7 @@ public class DisconnectListener extends BadListener {
 			}
 
 			if(backup)
-				GamePlugin.getInstance().getGameServer().remember(player);
+				server.remember(player);
 		}
 	}
 }

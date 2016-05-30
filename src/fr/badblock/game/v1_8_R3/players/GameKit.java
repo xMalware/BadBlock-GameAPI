@@ -8,9 +8,10 @@ import org.bukkit.Material;
 import com.google.gson.JsonObject;
 
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.achievements.AchievementList;
+import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
-import fr.badblock.gameapi.players.PlayerAchievement;
 import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
@@ -158,6 +159,8 @@ public class GameKit implements PlayerKit {
 						}
 
 						player.inGameData(InGameKitData.class).setChoosedKit(GameKit.this);
+						player.getPlayerData().setLastUsedKit(GameAPI.getInternalGameName(), getKitName());
+						player.saveGameData();
 						player.closeInventory();
 
 						return true;
@@ -186,7 +189,10 @@ public class GameKit implements PlayerKit {
 							return true;
 						}
 
+						
 						player.inGameData(InGameKitData.class).setChoosedKit(GameKit.this);
+						player.getPlayerData().setLastUsedKit(GameAPI.getInternalGameName(), getKitName());
+						player.saveGameData();
 						player.closeInventory();
 
 						return true;
@@ -206,7 +212,7 @@ public class GameKit implements PlayerKit {
 
 		for(int i=0;i<kitLevel.getNeededAchievements().length;i++){
 			String 			  name 		  = kitLevel.getNeededAchievements()[i];
-			PlayerAchievement achievement = GameAPI.getAPI().getAchievement(name);
+			PlayerAchievement achievement = AchievementList.getGameAchievement(GameAPI.getInternalGameName(), name);
 			result[i]					  = achievement;
 		}
 

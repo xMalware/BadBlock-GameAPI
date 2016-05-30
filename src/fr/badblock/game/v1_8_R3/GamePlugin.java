@@ -22,7 +22,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import fr.badblock.game.v1_8_R3.achievements.GameAchievements;
 import fr.badblock.game.v1_8_R3.commands.AdminModeCommand;
 import fr.badblock.game.v1_8_R3.commands.FeedCommand;
 import fr.badblock.game.v1_8_R3.commands.FlyCommand;
@@ -69,6 +68,7 @@ import fr.badblock.game.v1_8_R3.players.GameJoinItems;
 import fr.badblock.game.v1_8_R3.players.GameKit;
 import fr.badblock.game.v1_8_R3.players.GameScoreboard;
 import fr.badblock.game.v1_8_R3.players.GameTeam;
+import fr.badblock.game.v1_8_R3.sql.GameSQLDatabase;
 import fr.badblock.game.v1_8_R3.technologies.RabbitSpeaker;
 import fr.badblock.game.v1_8_R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
@@ -87,7 +87,6 @@ import fr.badblock.gameapi.particles.ParticleEffectType;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
-import fr.badblock.gameapi.players.PlayerAchievement;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
@@ -96,7 +95,6 @@ import fr.badblock.gameapi.servers.MapProtector;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
-import fr.badblock.gameapi.utils.itemstack.DefaultItems;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
 import fr.badblock.gameapi.utils.merchants.CustomMerchantInventory;
@@ -123,13 +121,13 @@ public class GamePlugin extends GameAPI {
 	private GameI18n 				    i18n;
 	private Map<String, BadblockTeam>   teams				= Maps.newConcurrentMap();
 	
-	private GameAchievements			achievements;
-
 	@Getter
 	private GameServer					gameServer;
 
 	@Getter@Setter@NonNull
 	private MapProtector				mapProtector		= new DefaultMapProtector();
+	@Getter
+	private boolean						antiSpawnKill		= false;
 	@Getter@Setter@NonNull
 	private PlayerKitContentManager     kitContentManager	= new DefaultKitContentManager();
 	@Getter
@@ -138,6 +136,8 @@ public class GamePlugin extends GameAPI {
 	
 	@Getter
 	private GameScoreboard				badblockScoreboard;
+	@Getter
+	private GameSQLDatabase				sqlDatabase;
 	@Getter
 	private LadderSpeaker				ladderDatabase;
 	@Getter
@@ -170,9 +170,6 @@ public class GamePlugin extends GameAPI {
 			i18n.load(new File(getDataFolder(), FOLDER_I18N));
 			teams 		 	 = Maps.newConcurrentMap();
 			
-			GameAPI.logColor("&b[GameAPI] &aLoading achievements...");
-			achievements 	 = new GameAchievements(new File(getDataFolder(), FOLDER_ACHIEVEMENTS));
-			
 			GameAPI.logColor("&b[GameAPI] &aLoading databases configuration...");
 			File configFile  = new File(getDataFolder(), CONFIG_DATABASES);
 
@@ -191,6 +188,12 @@ public class GamePlugin extends GameAPI {
 			new PermissionManager(new JsonArray());
 			ladderDatabase   = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
 			ladderDatabase.askForPermissions();
+			
+			GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" +  config.sqlPort);
+			GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
+			
+			sqlDatabase   = new GameSQLDatabase(config.sqlIp, Integer.toString(config.sqlPort), config.sqlUser, config.sqlPassword, config.sqlDatabase);
+			sqlDatabase.openConnection();
 			
 			rabbitSpeaker = new RabbitSpeaker(config);
 
@@ -275,6 +278,12 @@ public class GamePlugin extends GameAPI {
 
 	@Override
 	public void onDisable(){
+		try {
+			sqlDatabase.closeConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		if(i18n != null)
 			i18n.save();
 		if(getGameServerManager() != null)
@@ -417,21 +426,6 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public Collection<String> getAchievementsGames() {
-		return achievements.getGames();
-	}
-
-	@Override
-	public Collection<PlayerAchievement> getAchievements(@NonNull String game) {
-		return achievements.getAchievements(game);
-	}
-
-	@Override
-	public PlayerAchievement getAchievement(@NonNull String key) {
-		return achievements.getAchievement(key);
-	}
-
-	@Override
 	public CustomObjective buildCustomObjective(@NonNull String name) {
 		return new GameCustomObjective(name);
 	}
@@ -477,6 +471,11 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
+	public void enableAntiSpawnKill() {
+		antiSpawnKill = true;
+	}
+	
+	@Override
 	public <T extends WatcherEntity> T createWatcher(@NonNull Class<T> clazz) {
 		return GameWatchers.buildWatch(clazz);
 	}
@@ -506,11 +505,6 @@ public class GamePlugin extends GameAPI {
 		return new GameConfiguration(object);
 	}
 	
-	@Override
-	public DefaultItems getDefaultItems() {
-		return null; //TODO
-	}
-
 	@Override
 	public CustomCreature spawnCustomEntity(Location location, EntityType type) {
 		CustomCreatures custom = CustomCreatures.getByType(type);

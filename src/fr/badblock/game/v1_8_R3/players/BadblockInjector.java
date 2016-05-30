@@ -87,7 +87,8 @@ public class BadblockInjector extends ChannelDuplexHandler {
 
 				if (outPacket.isCancelled()) cancel = true;
 			} catch(Exception error) {
-				error.printStackTrace();
+				System.out.println(packet.getClazz());
+				System.out.println(GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()));
 			}
 		}
 		

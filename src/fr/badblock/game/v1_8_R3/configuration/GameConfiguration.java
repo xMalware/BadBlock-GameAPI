@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.configuration.BadConfiguration;
 import fr.badblock.gameapi.configuration.values.MapList;
 import fr.badblock.gameapi.configuration.values.MapValue;
@@ -35,7 +35,7 @@ public class GameConfiguration implements BadConfiguration {
 					return clazzValue.cast(value);
 				}
 
-				return new Gson().fromJson(handle.get(key), clazzValue);
+				return GameAPI.getGson().fromJson(handle.get(key), clazzValue);
 			}
 
 			return clazzValue.getConstructor().newInstance();
@@ -71,7 +71,7 @@ public class GameConfiguration implements BadConfiguration {
 						result.add(clazzValue.cast(value));
 					}
 
-					result.add(new Gson().fromJson(element, clazzValue));
+					result.add(GameAPI.getGson().fromJson(element, clazzValue));
 				} catch(Exception e){
 					e.printStackTrace();
 				}
@@ -95,7 +95,7 @@ public class GameConfiguration implements BadConfiguration {
 		if(value instanceof MapValuePrimitive<?>){
 			val = ((MapValuePrimitive<?>) value).to();
 		} else {
-			val = new Gson().toJsonTree(value);
+			val = GameAPI.getGson().toJsonTree(value);
 		}
 		
 		handle.add(key, val);
@@ -109,7 +109,7 @@ public class GameConfiguration implements BadConfiguration {
 			if(single instanceof MapValuePrimitive<?>){
 				array.add(((MapValuePrimitive<?>) single).to());
 			} else {
-				array.add(new Gson().toJsonTree(single));
+				array.add(GameAPI.getGson().toJsonTree(single));
 			}
 		}
 		

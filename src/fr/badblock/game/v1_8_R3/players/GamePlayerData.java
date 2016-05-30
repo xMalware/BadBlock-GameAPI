@@ -1,15 +1,15 @@
 package fr.badblock.game.v1_8_R3.players;
 
-import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import fr.badblock.gameapi.players.PlayerAchievement;
+import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.data.PlayerData;
 import fr.badblock.gameapi.players.kits.PlayerKit;
@@ -20,19 +20,22 @@ import lombok.ToString;
 
 @Getter@ToString
 public class GamePlayerData implements PlayerData {
-	private int  				 				badcoins     = 0;
-	private int  				 				level	     = 1;
-	private long 								xp		     = 0L;
-	private int  				 				coinsBonus   = 0;
-	private int  				 				xpBonus  	 = 0;
-	private Map<String, Integer> 				kits 		 = Maps.newConcurrentMap();
-	private Map<String, String>					lastUsedKits = Maps.newConcurrentMap();
-	private Map<String, PlayerAchievementState> achievements = Maps.newConcurrentMap();
-	private Map<String, Map<String, Double>> 	stats   	 = Maps.newConcurrentMap();
+	private int  				 						  badcoins     	   = 0;
+	private int  				 						  level	     	   = 1;
+	private long 										  xp		       = 0L;
+	private int  				 						  coinsBonus   	   = 1;
+	private int  				 						  xpBonus  	 	   = 1;
+	private Map<String, Integer> 						  kits 		 	   = Maps.newConcurrentMap();
+	private Map<String, String>							  lastUsedKits 	   = Maps.newConcurrentMap();
+	private Map<String, PlayerAchievementState> 		  achievements 	   = Maps.newConcurrentMap();
 	
-	private transient Map<String, PlayerData> 	datas 		 = Maps.newConcurrentMap();
-	private transient JsonObject 				data		 = new JsonObject();
-	private transient JsonObject 				object		 = new JsonObject();
+	private Map<String, Map<String, Double>> 			  stats   	 	   = Maps.newConcurrentMap();
+	
+	private transient List<String>						  achloadeds	   = new ArrayList<>();
+	
+	private transient Map<String, PlayerData> 			  datas 		   = Maps.newConcurrentMap();
+	private transient JsonObject 						  data		 	   = new JsonObject();
+	private transient JsonObject 						  object		   = new JsonObject();
 
 	public void setData(JsonObject data){
 		if(data.has("other")){
@@ -58,25 +61,31 @@ public class GamePlayerData implements PlayerData {
 	@Override
 	public void addXp(long xp) {
 		xp = Math.abs(xp);
-		long delta = getXpUntilNextLevel() - xp;
+		long delta = getXpUntilNextLevel() - (xp + this.xp);
 		
 		if(delta > 0){
 			this.xp += xp;
 		} else {
 			level++;
-			xp = -delta;
+			this.xp = -delta;
 		}
 	}
 
 	@Override
 	public PlayerAchievementState getAchievementState(@NonNull PlayerAchievement achievement) {
-		String name = achievement.getAchievementName().toLowerCase();
+		String name = achievement.getName().toLowerCase();
 		
-		if(kits.containsKey(name))
-			return achievements.get(name);
-		else {
+		if(achievements.containsKey(name)){
+			PlayerAchievementState ach = achievements.get(name);
+			if(achievement.isTemp() && !achloadeds.contains(name) && !ach.isSucceeds()){
+				ach.setProgress(0.0d);
+			}
+			
+			return ach;
+		} else {
 			PlayerAchievementState state = new PlayerAchievementState();
 			achievements.put(name, state);
+			achloadeds.add(name);
 			
 			return state;
 		}
@@ -189,7 +198,7 @@ public class GamePlayerData implements PlayerData {
 		if(datas.containsKey(key)){
 			result = (T) datas.get(key);
 		} else if(data.has(key)){
-			result = new Gson().fromJson(data.get(key), clazz);
+			result = GameAPI.getGson().fromJson(data.get(key), clazz);
 			datas.put(key, result);
 		} else
 			try {
@@ -203,11 +212,11 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public void saveData() {
-		JsonObject object = new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).create().toJsonTree(this).getAsJsonObject();
+		JsonObject object = GameAPI.getGson().toJsonTree(this).getAsJsonObject();
 	
 		for(Entry<String, PlayerData> entries : datas.entrySet()){
 			if(!object.has(entries.getKey())){
-				object.add(entries.getKey(), new Gson().toJsonTree(entries.getValue()));
+				object.add(entries.getKey(), GameAPI.getGson().toJsonTree(entries.getValue()));
 			}
 		}
 	}

@@ -12,9 +12,11 @@ import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.InGameData;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
+@Getter@Setter
 public class GameOfflinePlayer implements BadblockOfflinePlayer {
 	private UUID						 uniqueId			  = null;
 	private String						 name				  = null;
@@ -24,6 +26,7 @@ public class GameOfflinePlayer implements BadblockOfflinePlayer {
 	private Map<Class<?>, InGameData> 	 inGameData  		  = null;
 	private GamePlayerData 				 playerData 		  = null;
 	private JsonObject					 object				  = null;
+	private TranslatableString			 groupPrefix		  = null;
 	
 	public GameOfflinePlayer(GameBadblockPlayer player){
 		this.uniqueId 		 = player.getUniqueId();
@@ -34,6 +37,7 @@ public class GameOfflinePlayer implements BadblockOfflinePlayer {
 		this.inGameData		 = player.getInGameData();
 		this.playerData		 = player.getPlayerData();
 		this.object			 = player.getObject();
+		this.groupPrefix     = player.getGroupPrefix();
 	}
 	
 	@Override

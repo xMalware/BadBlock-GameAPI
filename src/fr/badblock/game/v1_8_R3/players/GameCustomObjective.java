@@ -82,7 +82,7 @@ public class GameCustomObjective implements CustomObjective {
 		
 		if(player == null) return;
 		
-		GameAPI.getAPI().createPacket(PlayScoreboardObjective.class).setDisplayName(displayName)
+		GameAPI.getAPI().createPacket(PlayScoreboardObjective.class).setDisplayName(this.displayName)
 		   													    .setMode(ObjectiveMode.UPDATE)
 																.setObjectiveName(name)
 																.setObjectiveType(ObjectiveType.INTEGER)

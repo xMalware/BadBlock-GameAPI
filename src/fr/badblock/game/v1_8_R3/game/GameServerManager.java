@@ -23,7 +23,6 @@ import lombok.Setter;
  */
 @Getter@Setter
 public class GameServerManager {
-
 	private	Gson						gson;
 	private APIConfig					apiConfig;
 	private ConsoleCommandSender		console;
@@ -35,7 +34,7 @@ public class GameServerManager {
 
 	public GameServerManager(APIConfig config) {
 		this.setApiConfig(config);
-		this.setGson(JsonUtils.getGson());
+		this.setGson(GameAPI.getPrettyGson());
 		this.setConsole(Bukkit.getConsoleSender());
 	}
 	

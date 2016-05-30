@@ -51,6 +51,7 @@ public class LoginListener extends BadListener {
 			p.showCustomObjective(offlinePlayer.getCustomObjective());
 			
 			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getUniqueId());
+			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getUniqueId());
 		}
 	}
 }
