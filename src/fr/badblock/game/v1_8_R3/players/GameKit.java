@@ -63,6 +63,8 @@ public class GameKit implements PlayerKit {
 				result.add(lore);
 			}
 		}
+		
+		result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.gowebsite")[0]);
 
 		return result.toArray(new String[0]);
 	}
@@ -122,6 +124,8 @@ public class GameKit implements PlayerKit {
 			else result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.alreadyChoosed")[0]);
 		}
 
+		result.add(GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.gowebsite")[0]);
+		
 		return result.toArray(new String[0]);
 	}
 
@@ -139,23 +143,23 @@ public class GameKit implements PlayerKit {
 						if(VIP){
 
 							if(player.hasPermission(GamePermission.VIP)){
-								player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".name"));	
+								player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
 							} else {
-								player.sendTranslatedMessage("kits.canNotChooseVIP", new TranslatableString("kits." + kitName + ".name"));	
+								player.sendTranslatedMessage("kits.canNotChooseVIP", new TranslatableString("kits." + kitName + "itemDisplayname"));	
 								return true;
 							}
 
 						} else if(player.getPlayerData().getUnlockedKitLevel(GameKit.this) == 0){
 							if(player.getPlayerData().canUnlockNextLevel(GameKit.this)){
 								player.getPlayerData().unlockNextLevel(GameKit.this);
-								player.sendTranslatedMessage("kits.unlockLevel", new TranslatableString("kits." + kitName + ".name"), 1);
+								player.sendTranslatedMessage("kits.unlockLevel", new TranslatableString("kits." + kitName + ".itemDisplayname"), 1);
 							} else {
-								player.sendTranslatedMessage("kits.canNotUnlockLevel", new TranslatableString("kits." + kitName + ".name"), 1);
+								player.sendTranslatedMessage("kits.canNotUnlockLevel", new TranslatableString("kits." + kitName + ".itemDisplayname"), 1);
 								player.closeInventory();
 								return true;
 							}
 						} else {
-							player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".name"));	
+							player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
 						}
 
 						player.inGameData(InGameKitData.class).setChoosedKit(GameKit.this);
@@ -174,17 +178,17 @@ public class GameKit implements PlayerKit {
 						if(VIP){
 
 							if(player.hasPermission(GamePermission.VIP)){
-								player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".name"));	
+								player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
 							} else {
-								player.sendTranslatedMessage("kits.canNotChooseVIP", new TranslatableString("kits." + kitName + ".name"));	
+								player.sendTranslatedMessage("kits.canNotChooseVIP", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
 								return true;
 							}
 
 						} else if(player.getPlayerData().canUnlockNextLevel(GameKit.this)){
 							player.getPlayerData().unlockNextLevel(GameKit.this);
-							player.sendTranslatedMessage("kits.unlockLevel", new TranslatableString("kits." + kitName + ".name"), next);
+							player.sendTranslatedMessage("kits.unlockLevel", new TranslatableString("kits." + kitName + ".itemDisplayname"), next);
 						} else {
-							player.sendTranslatedMessage("kits.canNotUnlockLevel", new TranslatableString("kits." + kitName + ".name"), next);
+							player.sendTranslatedMessage("kits.canNotUnlockLevel", new TranslatableString("kits." + kitName + ".itemDisplayname"), next);
 							player.closeInventory();
 							return true;
 						}

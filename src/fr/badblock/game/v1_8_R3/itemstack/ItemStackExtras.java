@@ -8,6 +8,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,7 +18,6 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
-import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 import net.md_5.bungee.api.ChatColor;
 
 public class ItemStackExtras implements Listener {
@@ -31,7 +31,7 @@ public class ItemStackExtras implements Listener {
 	public ItemStackExtras(){
 		instance = this;
 		Bukkit.getPluginManager().registerEvents(this, GameAPI.getAPI());
-		
+
 		this.items = Maps.newConcurrentMap();
 	}
 
@@ -49,29 +49,42 @@ public class ItemStackExtras implements Listener {
 	public void onInteract(PlayerInteractEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
-		if(ItemStackUtils.hasDisplayname(e.getItem())){
-			int id = decodeId(e.getItem().getItemMeta().getDisplayName());
+		GameItemExtra extra = getExtra(e.getItem());
+		if(extra == null) return;
 
-			if(id == -1 || !items.containsKey(id)) return;
+		ItemAction action = ItemAction.get(e.getAction());
 
-			
-			GameItemExtra extra = items.get(id);
+		if(action != null){
+			ItemEvent event = extra.getItems().get(action);
 
-			ItemAction action = ItemAction.get(e.getAction());
-			
-			if(action != null){
-				ItemEvent event = extra.getItems().get(action);
-				
-				if(event != null){
-					boolean cancel = event.call(action, player);
-				
-					if(cancel){
-						e.setUseInteractedBlock(Result.DENY);
-						e.setUseItemInHand(Result.DENY);
-						
-						e.setCancelled(true);
-					}
+			if(event != null){
+				boolean cancel = event.call(action, player);
+
+				if(cancel){
+					e.setUseInteractedBlock(Result.DENY);
+					e.setUseItemInHand(Result.DENY);
+
+					e.setCancelled(true);
 				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onDrop(PlayerDropItemEvent e){
+		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+
+		GameItemExtra extra = getExtra(e.getItemDrop().getItemStack());
+		if(extra == null) return;
+
+		ItemAction action = ItemAction.DROP;
+		ItemEvent event = extra.getItems().get(action);
+
+		if(event != null){
+			boolean cancel = event.call(action, player);
+
+			if(cancel){
+				e.setCancelled(true);
 			}
 		}
 	}
@@ -82,30 +95,27 @@ public class ItemStackExtras implements Listener {
 		BadblockPlayer player = (BadblockPlayer) e.getWhoClicked();
 
 		test(e.getCurrentItem(), player, e);
-		
+
 		if(e.getClickedInventory() != null && e.getCurrentItem() == null) {
 			ItemStack is = e.getClickedInventory().getItem(e.getSlot());
 			test(is, player, e);
 		}
 	}
-	
-	private void test(ItemStack is, BadblockPlayer player, InventoryClickEvent e){
-		if(ItemStackUtils.hasDisplayname(is)){
-			int id = decodeId(is.getItemMeta().getDisplayName());
-			if(id == -1 || !items.containsKey(id)) return;
-			
-			GameItemExtra extra = items.get(id);
-			ItemAction action = ItemAction.get(e.getAction());
-			
-			if(action != null){
-				ItemEvent event = extra.getItems().get(action);
-			
-				if(event != null){
-					boolean cancel = event.call(action, player);
-				
-					if(cancel)
-						e.setCancelled(true);
-				}
+
+	public void test(ItemStack is, BadblockPlayer player, InventoryClickEvent e){
+		GameItemExtra extra = getExtra(is);
+		if(extra == null) return;
+
+		ItemAction action = ItemAction.get(e.getAction());
+
+		if(action != null){
+			ItemEvent event = extra.getItems().get(action);
+
+			if(event != null){
+				boolean cancel = event.call(action, player);
+
+				if(cancel)
+					e.setCancelled(true);
 			}
 		}
 	}
@@ -132,5 +142,23 @@ public class ItemStackExtras implements Listener {
 			}
 		}
 		return intId;
+	}
+
+	public static GameItemExtra getExtra(ItemStack item){
+		if(item == null || item.getItemMeta() == null) return null;
+		int id = -1;
+		
+		if(!item.getItemMeta().hasDisplayName()){
+			if(item.getItemMeta().getLore() != null && !item.getItemMeta().getLore().isEmpty()){
+				id = decodeId(item.getItemMeta().getLore().get(0));
+			}
+
+		} else id = decodeId(item.getItemMeta().getDisplayName());
+
+		if(id == -1 || !get().items.containsKey(id)) return null;
+
+
+		GameItemExtra extra = get().items.get(id);
+		return extra;
 	}
 }

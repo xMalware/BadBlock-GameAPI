@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -439,6 +440,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
+	public void clearTitle(){
+		getAPI().createPacket(PlayTitle.class).setAction(Action.RESET).send(this);
+	}
+	
+	@Override
 	public void sendTimings(long fadeIn, long stay, long fadeOut) {
 		getAPI().createPacket(PlayTitle.class).setAction(Action.TIMES).setFadeIn(fadeIn).setStay(stay)
 		.setFadeOut(fadeOut).send(this);
@@ -636,6 +642,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public TranslatableString getGroupPrefix() {
 		return new TranslatableString("permissions.chat." + permissions.getParent().getName());
 	}
+	
+	@Override
+	public TranslatableString getTabGroupPrefix() {
+		return new TranslatableString("permissions.tab." + permissions.getParent().getName());
+	}
 
 	@Override
 	public String getMainGroup() {
@@ -725,8 +736,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	class BossBarRunnable extends BukkitRunnable {
-		private int time = 10;
-
+		private int time = 2;
+		private String lastMessage = null;
+		
 		@Override
 		public void run() {
 			if (bossBarMessage == null || enderdragon == null || !isOnline()) { // message
@@ -738,20 +750,37 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			if (time == 0) {
 				Location loc = getLocation().clone();
-				loc.add(loc.getDirection().multiply(50.0D));
+				
+				int count = 0;
+				
+				for(Block block : getLineOfSight((HashSet<Material>) null, 10)){
+					if(block.getType().isSolid() && !block.getType().isTransparent()){
+						count++;
+					}
+				}
+				
+				if(count > 3 && count < 5){
+					loc.add(loc.getDirection().multiply(10.0D));
+				} else if(count > 5){
+					loc.add(loc.getDirection().multiply(5.0D));
+				}else loc.add(loc.getDirection().multiply(20.0D));
 
 				if (enderdragon.getLocation().distance(loc) > 128.0d) { // trop
 					enderdragon.teleport(loc);
-					enderdragon.remove();
+					enderdragon.remove(GameBadblockPlayer.this);
 					enderdragon.show(GameBadblockPlayer.this);
 				} else {
 					enderdragon.teleport(loc); // on téléporte l'entité pour
 				}
 
-				enderdragon.getWatchers().setCustomName(bossBarMessage); // si
-				enderdragon.updateWatchers(); // on informe le joueur du
-
-				time = 10;
+				if(!bossBarMessage.equals(lastMessage)){
+					enderdragon.getWatchers().setCustomName(bossBarMessage); // si
+					enderdragon.updateWatchers(); // on informe le joueur du
+					
+					lastMessage = bossBarMessage;
+				}
+				
+				time = 8;
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package fr.badblock.game.v1_8_R3.listeners.mapprotector;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.block.Action;
@@ -69,6 +70,11 @@ public class DefaultMapProtector implements MapProtector {
 		return true;
 	}
 
+	@Override
+	public boolean canInteractArmorStand(BadblockPlayer player, ArmorStand entity) {
+		return true;
+	}
+	
 	@Override
 	public boolean canInteractEntity(BadblockPlayer player, Entity entity) {
 		return true;

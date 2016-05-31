@@ -27,6 +27,7 @@ import fr.badblock.game.v1_8_R3.commands.FeedCommand;
 import fr.badblock.game.v1_8_R3.commands.FlyCommand;
 import fr.badblock.game.v1_8_R3.commands.GameModeCommand;
 import fr.badblock.game.v1_8_R3.commands.HealCommand;
+import fr.badblock.game.v1_8_R3.commands.I18RCommand;
 import fr.badblock.game.v1_8_R3.commands.KitsCommand;
 import fr.badblock.game.v1_8_R3.commands.LagCommand;
 import fr.badblock.game.v1_8_R3.configuration.GameConfiguration;
@@ -43,6 +44,7 @@ import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.DefaultKitContentManager;
 import fr.badblock.game.v1_8_R3.ladder.GameLadderSpeaker;
 import fr.badblock.game.v1_8_R3.listeners.ChangeWorldEvent;
+import fr.badblock.game.v1_8_R3.listeners.ChatListener;
 import fr.badblock.game.v1_8_R3.listeners.DisconnectListener;
 import fr.badblock.game.v1_8_R3.listeners.FakeDeathCaller;
 import fr.badblock.game.v1_8_R3.listeners.GameServerListener;
@@ -129,7 +131,7 @@ public class GamePlugin extends GameAPI {
 	@Getter
 	private boolean						antiSpawnKill		= false;
 	@Getter@Setter@NonNull
-	private PlayerKitContentManager     kitContentManager	= new DefaultKitContentManager();
+	private PlayerKitContentManager     kitContentManager	= new DefaultKitContentManager(true);
 	@Getter
 	private JoinItems					joinItems;
 	
@@ -167,7 +169,7 @@ public class GamePlugin extends GameAPI {
 			GameAPI.logColor("&b[GameAPI] &aLoading API...");
 			long nano = System.nanoTime();
 			
-			i18n.load(new File(getDataFolder(), FOLDER_I18N));
+			loadI18n();
 			teams 		 	 = Maps.newConcurrentMap();
 			
 			GameAPI.logColor("&b[GameAPI] &aLoading databases configuration...");
@@ -217,7 +219,8 @@ public class GamePlugin extends GameAPI {
 			new FakeDeathCaller();				// Permet de gérer les fausses morts et la détections du joueur
 			new ChangeWorldEvent();				// Permet de mieux gérer les fausses dimensions
 			new PlayerSelectionListener();	    // Permet aux administrateurs de définir une zone
-			new MoveListener();
+			new MoveListener();					// Permet d'empêcher les joueurs de sortir d'une zone
+			new ChatListener();					// Permet de formatter le chat
 			joinItems = new GameJoinItems();    // Items donné à l'arrivée du joueur
 			
 			/** Correction de bugs Bukkit */
@@ -255,6 +258,7 @@ public class GamePlugin extends GameAPI {
 			new GameModeCommand();
 			new LagCommand();
 			new KitsCommand();
+			new I18RCommand();
 
 			GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
 			// GameServer après tout
@@ -292,6 +296,10 @@ public class GamePlugin extends GameAPI {
 		CustomCreatures.unregisterEntities();
 	}
 
+	public void loadI18n(){
+		i18n.load(new File(getDataFolder(), FOLDER_I18N));
+	}
+	
 	@Override
 	public ItemStackFactory createItemStackFactory() {
 		return new GameItemStackFactory();
@@ -414,6 +422,18 @@ public class GamePlugin extends GameAPI {
 			}
 		}
 	}
+	
+	@Override
+	public void formatChat(boolean enabled, boolean team){
+		formatChat(enabled, team, null);
+	}
+	
+	@Override
+	public void formatChat(boolean enabled, boolean team, String custom){
+		ChatListener.enabled = enabled;
+		ChatListener.team    = team;
+		ChatListener.custom  = custom;
+	}
 
 	@Override
 	public BadblockOfflinePlayer getOfflinePlayer(@NonNull UUID uniqueId) {
@@ -503,6 +523,11 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public BadConfiguration loadConfiguration(JsonObject object) {
 		return new GameConfiguration(object);
+	}
+	
+	@Override
+	public void setDefaultKitContentManager(boolean allowDrop) {
+		this.kitContentManager = new DefaultKitContentManager(allowDrop);
 	}
 	
 	@Override

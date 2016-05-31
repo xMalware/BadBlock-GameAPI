@@ -1,5 +1,8 @@
 package fr.badblock.game.v1_8_R3.itemstack;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.inventory.ItemStack;
@@ -23,16 +26,20 @@ import lombok.experimental.Accessors;
 
 	private int     id				 = 0;
 	
+	private boolean allowDropOnDeath = true;
+	
 	public GameItemExtra(ItemStack handler){
-		if(!ItemStackUtils.hasDisplayname(handler)){
-			throw new IllegalArgumentException("Handler must have a display name!");
+		if(!ItemStackUtils.isValid(handler)){
+			throw new IllegalArgumentException("Handler must be valid!");
 		}
 		
 		this.handler = handler;
 		this.items   = Maps.newConcurrentMap();
 		this.id		 = ItemStackExtras.get().register(this);
 		
-		setDisplayName(handler.getItemMeta().getDisplayName());
+		if(!handler.getItemMeta().hasDisplayName()){
+			setLore(handler.getItemMeta().getLore());
+		} else setDisplayName(handler.getItemMeta().getDisplayName());
 	}
 	
 	@Override
@@ -48,7 +55,31 @@ import lombok.experimental.Accessors;
 		
 		return this;
 	}
+	
+	private void setLore(List<String> lore){
+		if(lore == null)
+			lore = new ArrayList<>();
+		
+		if(lore.isEmpty()){
+			lore.add(ItemStackExtras.encodeInName("", id));
+		} else {
+			String[] res = lore.toArray(new String[0]);
+			
+			res[0] = ItemStackExtras.encodeInName(res[0], id);
+			lore = Arrays.asList(res);
+		}
+		
+		ItemMeta meta = handler.getItemMeta();
+		meta.setLore(lore);
+		handler.setItemMeta(meta);
+	}
 
+	@Override
+	public ItemStackExtra allowDropOnDeath(boolean can) {
+		this.allowDropOnDeath = can;
+		return this;
+	}
+	
 	@Override
 	public ItemStackExtra allow(ItemAction... action) {
 		listen(new ItemEvent(){

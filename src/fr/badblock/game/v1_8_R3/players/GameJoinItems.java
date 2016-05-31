@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.achievements.AchievementList;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
@@ -35,7 +36,10 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	private int 			       teamItemSlot  = -1;
 	private int 			       voteItemSlot  = -1;
 	private int 			       leaveItemSlot = -1;
+	private int 			       achieItemSlot = -1;
 	
+	
+	private String				   game			  = GameAPI.getInternalGameName();
 	private String 			       fallbackServer = "lobby";
 	private List<PlayerKit>        kits;
 	private Map<String, PlayerKit> knowKits;
@@ -103,6 +107,26 @@ public class GameJoinItems extends BadListener implements JoinItems {
 													 .getHandler();
 			
 			e.getPlayer().getInventory().setItem(kitItemSlot, item);
+		}
+		
+		if(achieItemSlot != -1){
+			ItemEvent event = new ItemEvent(){
+				@Override
+				public boolean call(ItemAction action, BadblockPlayer player) {
+					AchievementList.openInventory(player, game);
+					return true;
+				}
+			};
+			
+			ItemStack item = GameAPI.getAPI().createItemStackFactory().type(Material.NETHER_STAR)
+													 .doWithI18n(locale)
+													 .displayName("joinitems.achievements.displayname")
+													 .lore("joinitems.achievements.lore")
+													 .asExtra(1)
+													 .listenAs(event, ItemPlaces.HOTBAR_CLICKABLE)
+													 .getHandler();
+			
+			e.getPlayer().getInventory().setItem(achieItemSlot, item);
 		}
 		
 		if(teamItemSlot != -1){
@@ -254,6 +278,12 @@ public class GameJoinItems extends BadListener implements JoinItems {
 		} catch (IOException e){}
 	}
 
+	@Override
+	public void registerAchievementsItem(int slot, String game) {
+		this.achieItemSlot = slot;
+		this.game 		   = game;
+	}
+	
 	@Override
 	public void registerVoteItem(int slot) {
 		this.voteItemSlot = slot;

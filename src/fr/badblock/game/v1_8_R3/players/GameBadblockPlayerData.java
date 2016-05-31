@@ -18,15 +18,17 @@ public class GameBadblockPlayerData implements BadblockPlayerData {
 	@Getter private PlayerData   		 playerData;
 	@Getter@Setter private BadblockTeam  team;
 	@Getter private TranslatableString   groupPrefix;
+	@Getter private TranslatableString   tabGroupPrefix;
 	private Map<Class<?>, InGameData> 	 inGameData;
 	
 	public GameBadblockPlayerData(GameBadblockPlayer player){
-		this.uniqueId    = player.getUniqueId();
-		this.name	     = player.getName();
-		this.playerData  = player.getPlayerData();
-		this.team        = player.getTeam();
-		this.groupPrefix = player.getGroupPrefix();
-		this.inGameData  = player.getInGameData();
+		this.uniqueId    	= player.getUniqueId();
+		this.name	     	= player.getName();
+		this.playerData  	= player.getPlayerData();
+		this.team        	= player.getTeam();
+		this.groupPrefix 	= player.getGroupPrefix();
+		this.tabGroupPrefix = player.getTabGroupPrefix();
+		this.inGameData  	= player.getInGameData();
 	}
 
 	@Override

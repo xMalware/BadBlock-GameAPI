@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -145,6 +146,12 @@ public class PlayerMapProtectorListener extends BadListener {
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		if(!GameAPI.getAPI().getMapProtector().canInteract((BadblockPlayer) e.getPlayer(), e.getAction(), e.getClickedBlock()))
+			e.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onInteractArmorStand(PlayerArmorStandManipulateEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canInteractArmorStand((BadblockPlayer) e.getPlayer(), e.getRightClicked()))
 			e.setCancelled(true);
 	}
 

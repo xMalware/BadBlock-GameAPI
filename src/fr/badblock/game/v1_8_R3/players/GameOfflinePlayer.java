@@ -27,7 +27,8 @@ public class GameOfflinePlayer implements BadblockOfflinePlayer {
 	private GamePlayerData 				 playerData 		  = null;
 	private JsonObject					 object				  = null;
 	private TranslatableString			 groupPrefix		  = null;
-	
+	private TranslatableString			 tabGroupPrefix		  = null;
+
 	public GameOfflinePlayer(GameBadblockPlayer player){
 		this.uniqueId 		 = player.getUniqueId();
 		this.name	  		 = player.getName();

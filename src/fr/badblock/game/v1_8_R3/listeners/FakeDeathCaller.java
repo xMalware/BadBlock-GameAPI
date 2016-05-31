@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -24,6 +25,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.collect.Maps;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
+import fr.badblock.game.v1_8_R3.itemstack.GameItemExtra;
+import fr.badblock.game.v1_8_R3.itemstack.ItemStackExtras;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.PlayerReconnectionPropositionEvent;
@@ -69,13 +72,13 @@ public class FakeDeathCaller extends BadListener {
 
 				event.getDrops().addAll(items(player.getInventory()));
 				Bukkit.getPluginManager().callEvent(event);
-				
+
 				if(!event.isCancelled()){
 					if(killer != null && doASKill(player, killer, !event.isKeepInventory())){
 						iWillSurvive(player);
 						return;
 					}
-					
+
 					death(player, event);
 				}
 			}
@@ -98,23 +101,23 @@ public class FakeDeathCaller extends BadListener {
 				type = FightingDeaths.POTION;
 
 			if(killer.getType() == EntityType.PLAYER){
-				
+
 				BadblockPlayer bkiller = (BadblockPlayer) killer;
 				if(bkiller.inGameData(FakeDeathData.class).lastDamager == -1){
-					
+
 					if(player.inGameData(FakeDeathData.class).lastKill.containsKey(bkiller.getUniqueId()))
 						player.inGameData(FakeDeathData.class).lastKill.remove(bkiller.getUniqueId());
-					
+
 				}
-				
+
 			}
-			
+
 			if(e.getDamage() >= player.getHealth()){
 				e.setCancelled(true);
 
 				event = new FightingDeathEvent(player, killer, type, e.getCause());
 				event.getDrops().addAll(items(player.getInventory()));
-				
+
 				Bukkit.getPluginManager().callEvent(event);
 
 				if(!event.isCancelled()){
@@ -122,7 +125,7 @@ public class FakeDeathCaller extends BadListener {
 						iWillSurvive(player);
 						return;
 					}
-					
+
 					death(player, event);
 				}
 			} else {
@@ -139,9 +142,9 @@ public class FakeDeathCaller extends BadListener {
 			FakeDeathData  fData   = bKiller.inGameData(FakeDeathData.class);
 
 			if(fData.alert < 0) fData.alert = 0;
-			
+
 			boolean changed = false;
-			
+
 			// Si un joueur a été tapé récemment
 			if(fData.lastKill.containsKey(player.getUniqueId())){
 				long delta = System.currentTimeMillis() - fData.lastKill.get(player.getUniqueId());
@@ -159,7 +162,7 @@ public class FakeDeathCaller extends BadListener {
 
 			if(System.currentTimeMillis() - fData.lastSpawnkill > 120 * 1000)
 				fData.alert = 0;
-			
+
 			fData.lastKill.put(player.getUniqueId(), System.currentTimeMillis());
 
 			// Si il n'a pas tapé un joueur depuis 60 secondes, on l'enlève de la liste
@@ -181,11 +184,11 @@ public class FakeDeathCaller extends BadListener {
 				bKiller.sendTranslatedTitle("antispawnkill.warning.second");
 				bKiller.setHealth(1.0d);
 			}
-			
+
 			if(fData.alert == 4 && changed){
 				cantReconnect.add(bKiller.getUniqueId());
 				bKiller.kickPlayer(new TranslatableString("antispawnkill.kick").getAsLine(bKiller));
-				
+
 				if(drop)
 					drop(items(bKiller.getInventory()), bKiller.getLocation());
 			}
@@ -194,9 +197,9 @@ public class FakeDeathCaller extends BadListener {
 
 		return false;
 	}
-	
+
 	private List<UUID> cantReconnect = new ArrayList<>();
-	
+
 	@EventHandler
 	public void onProposition(PlayerReconnectionPropositionEvent e){
 		if(cantReconnect.contains(e.getPlayer()))
@@ -214,39 +217,46 @@ public class FakeDeathCaller extends BadListener {
 
 	private List<ItemStack> items(PlayerInventory inventory){
 		List<ItemStack> result = new ArrayList<>();
-		
+
 		for(ItemStack is : inventory.getContents())
-			if(is != null && is.getType() != Material.AIR)
+			if(is != null && is.getType() != Material.AIR && can(is))
 				result.add(is);
 		for(ItemStack is : inventory.getArmorContents())
-			if(is != null && is.getType() != Material.AIR)
+			if(is != null && is.getType() != Material.AIR && can(is))
 				result.add(is);
-		
+
 		return result;
+	}
+
+	private boolean can(ItemStack item){
+		GameItemExtra extra = ItemStackExtras.getExtra(item);
+		return !(extra != null && !extra.isAllowDropOnDeath());
 	}
 	
 	private void drop(List<ItemStack> items, Location place){
 		for(ItemStack item : items){
-			if(item != null && item.getType() != Material.AIR){
+			if(item != null && item.getType() != Material.AIR && can(item)){
 				place.getWorld().dropItemNaturally(place, item);
 			}
 		}
 	}
-	
+
 	private void death(BadblockPlayer p, FakeDeathEvent e){
 		p.heal();
 		p.feed();
 		p.removePotionEffects();
-		
+
+		p.playEffect(EntityEffect.HURT);
+
 		if(!e.isKeepInventory()){
 			p.clearInventory();
 			drop(e.getDrops(), p.getLocation());
 		}
-		
+
 		p.inGameData(FakeDeathData.class).lastDamage    = 0;
 		p.inGameData(FakeDeathData.class).lastPvPDamage = null;
 		p.inGameData(FakeDeathData.class).lastDamager   = -1;
-		
+
 		if(e.getDeathMessage() != null){
 			System.out.println(e.getDeathMessage());
 			Object end = e.getDeathMessageEnd() == null ? "" : e.getDeathMessageEnd();
@@ -258,7 +268,7 @@ public class FakeDeathCaller extends BadListener {
 			res.add(end);
 			System.out.println(res);
 			new TranslatableString(e.getDeathMessage().getKey(), res.toArray()).broadcast();
-		
+
 			for(Player player : Bukkit.getOnlinePlayers()){
 				BadblockPlayer bplayer = (BadblockPlayer) player;
 				bplayer.sendTranslatedActionBar(e.getDeathMessage().getKey(), res.toArray());
@@ -270,28 +280,34 @@ public class FakeDeathCaller extends BadListener {
 		}
 
 		if(e.getTimeBeforeRespawn() > 0){
-			p.setBadblockMode(BadblockMode.RESPAWNING);
-
 			new BukkitRunnable(){
 				private int time = e.getTimeBeforeRespawn();
-
+				private boolean first = true;
+				
 				@Override
 				public void run(){
+					if(first){
+						p.setBadblockMode(BadblockMode.RESPAWNING);
+						
+						if(e.getWhileRespawnPlace() != null)
+							p.teleport(e.getWhileRespawnPlace());
+						
+						first = false; return;
+					}
+					
 					if(!p.isValid() || !p.isOnline()){
 						cancel(); return;
 					}
 
 					if(time == 0){
 						cancel();
-
 						respawn(p, e.getRespawnPlace());
+					} else {
+						p.sendTranslatedTitle(GameMessages.respawnTitleKey(), time);
+						time--;
 					}
-
-					p.sendTranslatedTitle(GameMessages.respawnTitleKey(), time);
-
-					time--;
 				}
-			}.runTaskTimer(GameAPI.getAPI(), 0, 20L);
+			}.runTaskTimer(GameAPI.getAPI(), 4L, 20L);
 		} else {
 			respawn(p, e.getRespawnPlace());
 		}
@@ -301,6 +317,8 @@ public class FakeDeathCaller extends BadListener {
 		if(player.getBadblockMode()== BadblockMode.RESPAWNING)
 			player.setBadblockMode(BadblockMode.PLAYER);
 
+		player.clearTitle();
+		
 		if(location != null)
 			player.teleport(location);
 		else location = player.getLocation();
@@ -333,7 +351,7 @@ public class FakeDeathCaller extends BadListener {
 		long      	    lastDamage  		 = 0;
 		FightingDeaths  lastPvPDamage  	 = null;
 		int			    lastDamager		 = -1;
-		
+
 		long			lastSpawnkill	 = 0;
 
 		int			    alert			 = 0;
