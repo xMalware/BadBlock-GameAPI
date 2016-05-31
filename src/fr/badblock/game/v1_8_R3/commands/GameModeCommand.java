@@ -6,6 +6,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import fr.badblock.gameapi.achievements.AchievementList;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
@@ -38,6 +39,11 @@ public class GameModeCommand extends AbstractCommand {
 			if(args[0].equalsIgnoreCase("yolo")){
 				BadblockPlayer player = (BadblockPlayer) concerned;
 				player.changePlayerDimension(Environment.THE_END);
+				
+				return true;
+			} else if(args[0].equalsIgnoreCase("yolo2")){
+				BadblockPlayer player = (BadblockPlayer) concerned;
+				AchievementList.openInventory(player, "rush");
 				
 				return true;
 			}

@@ -17,6 +17,7 @@ import org.bukkit.material.Wool;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.utils.i18n.I18n;
 import fr.badblock.gameapi.utils.i18n.Locale;
+import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
 
@@ -29,6 +30,8 @@ public class GameItemStackFactory implements ItemStackFactory {
 	private Map<Enchantment, Integer> enchants;
 	private String[]				  lore;
 	private String					  displayName;
+	private TranslatableString		  tLore;
+	private TranslatableString		  tDisplayName;
 	private short					  durability;
 	private Material				  type;
 	private Locale					  locale;
@@ -69,6 +72,18 @@ public class GameItemStackFactory implements ItemStackFactory {
 	@Override
 	public ItemStackFactory displayName(String displayName) {
 		this.displayName = displayName;
+		return this;
+	}
+	
+	@Override
+	public ItemStackFactory lore(TranslatableString lore) {
+		this.tLore = lore;
+		return this;
+	}
+
+	@Override
+	public ItemStackFactory displayName(TranslatableString displayName) {
+		this.tDisplayName = displayName;
 		return this;
 	}
 
@@ -134,13 +149,17 @@ public class GameItemStackFactory implements ItemStackFactory {
 		
 		I18n i18n = GameAPI.i18n();
 		
-		if(meta != null && displayName != null){
+		if(meta != null && tDisplayName != null && locale != null){
+			meta.setDisplayName(tDisplayName.getAsLine(locale));
+		} else if(meta != null && displayName != null){
 			if(locale != null){
 				meta.setDisplayName(i18n.get(locale, displayName)[0]);
 			} else meta.setDisplayName(i18n.replaceColors(displayName));
 		}
 		
-		if(meta != null && lore != null){
+		if(meta != null && tLore != null && locale != null){
+			meta.setLore(Arrays.asList(tLore.get(locale)));
+		} else if(meta != null && lore != null){
 			if(locale != null){
 				if(lore.length != 0)
 					meta.setLore(Arrays.asList(i18n.get(locale, lore[0])));
@@ -163,5 +182,4 @@ public class GameItemStackFactory implements ItemStackFactory {
 		
 		return this;
 	}
-
 }

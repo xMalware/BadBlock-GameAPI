@@ -40,7 +40,7 @@ import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import lombok.NoArgsConstructor;
 
 public class FakeDeathCaller extends BadListener {
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
 	public void onDamage(EntityDamageEvent e){
 		if(e.getCause() == DamageCause.ENTITY_ATTACK) return;
 
@@ -82,7 +82,7 @@ public class FakeDeathCaller extends BadListener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
 	public void onDamage(EntityDamageByEntityEvent e){
 		if(!e.isCancelled() && e.getEntityType() == EntityType.PLAYER){
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
