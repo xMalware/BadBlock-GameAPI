@@ -1,0 +1,30 @@
+package fr.badblock.game.v1_8_R3.commands;
+
+import org.bukkit.command.CommandSender;
+
+import fr.badblock.game.v1_8_R3.GamePlugin;
+import fr.badblock.gameapi.command.AbstractCommand;
+import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
+import fr.badblock.gameapi.utils.i18n.TranslatableString;
+
+public class I18RCommand extends AbstractCommand {
+	public I18RCommand() {
+		super("i18r", new TranslatableString("commands.i18r.usage"), GamePermission.ADMIN);
+	}
+
+	@Override
+	public boolean executeCommand(CommandSender sender, String[] args) {
+		if(args.length == 0)
+			return false;
+		
+		if(args[0].equalsIgnoreCase("reload")){
+			GamePlugin.getInstance().loadI18n();
+			new TranslatableString("commands.i18r.reload").send(sender);
+		} else if(args[0].equalsIgnoreCase("save")){
+			GamePlugin.getInstance().getI18n().save();
+			new TranslatableString("commands.i18r.save").send(sender);			
+		}
+		
+		return true;
+	}
+}

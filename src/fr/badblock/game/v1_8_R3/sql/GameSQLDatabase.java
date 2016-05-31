@@ -147,7 +147,7 @@ public class GameSQLDatabase implements SQLDatabase {
 
 	@Override
 	public void call(String request, SQLRequestType requestType) {
-		if (requestType.equals(requestType.QUERY)) throw new IllegalArgumentException("U can't done a query if you don't handle a callback!");
+		if (requestType.equals(SQLRequestType.QUERY)) throw new IllegalArgumentException("U can't done a query if you don't handle a callback!");
 		call(request, requestType, null);
 	}
 
