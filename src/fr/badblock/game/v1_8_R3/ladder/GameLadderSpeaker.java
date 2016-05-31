@@ -46,7 +46,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	private SocketHandler					  		 socketHandler;
 	private String 									 ip;
 	private int    									 port;
-
+	private int										 nextKey		  = 0;
+	
 	private boolean trying   = false;
 
 	private Queue<Packet>							 waitingPackets;
@@ -158,9 +159,9 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	
 	@Override
 	public void sendPing(String[] servers, Callback<Integer> count){
-		int id = new Random().nextInt();
-		requestedPing.put(id, count);
-		sendPacket(new PacketMatchmakingPing(id, servers));
+		requestedPing.put(nextKey, count);
+		sendPacket(new PacketMatchmakingPing(nextKey, servers));
+		nextKey++;
 	}
 	
 	@Override
