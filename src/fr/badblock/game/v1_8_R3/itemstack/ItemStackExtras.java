@@ -7,10 +7,12 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Maps;
 
@@ -64,6 +66,14 @@ public class ItemStackExtras implements Listener {
 					e.setUseInteractedBlock(Result.DENY);
 					e.setUseItemInHand(Result.DENY);
 
+					if(e.getAction() == Action.RIGHT_CLICK_BLOCK)
+						new BukkitRunnable(){
+							@Override
+							public void run(){
+								e.getPlayer().updateInventory();
+							}
+						}.runTaskLater(GameAPI.getAPI(), 1L);
+					
 					e.setCancelled(true);
 				}
 			}
