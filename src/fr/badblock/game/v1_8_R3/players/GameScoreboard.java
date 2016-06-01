@@ -34,6 +34,7 @@ import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.scoreboard.BadblockScoreboard;
 import fr.badblock.gameapi.utils.i18n.I18n;
 import fr.badblock.gameapi.utils.i18n.Locale;
+import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
@@ -77,7 +78,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	@EventHandler
 	public void onDataReceive(PlayerLoadedEvent e){
 		if(!doGroupsPrefix) return;
-		
+
 		getHandler().getTeam(e.getPlayer().getMainGroup()).addEntry(e.getPlayer().getName());
 	}
 	
@@ -149,7 +150,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	
 	protected void sendTeams(BadblockPlayer player){
 		for(PermissibleGroup group : PermissionManager.getInstance().getGroups()){
-			sendTeamData(group.getName(), player.getTabGroupPrefix().getAsLine(player), player);
+			sendTeamData(group.getName(), new TranslatableString("permissions.tab." + group.getName()).getAsLine(player), player);
 		}
 	}
 	
