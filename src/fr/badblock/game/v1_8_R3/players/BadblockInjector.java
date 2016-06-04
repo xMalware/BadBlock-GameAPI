@@ -32,12 +32,16 @@ public class BadblockInjector extends ChannelDuplexHandler {
 			try {
 				// Le packet recherché dans la boucle est pas celui qui est reçu
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
+				
 				// Aucun listener pour ce packet
-				if (!GamePlugin.getInstance().getPacketInListeners().containsKey(packet.getClazz())) break;
+				if (GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()) == null) {
+					break;
+				}
 				// Création de notre packet spécial
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
 				GameBadblockInPacket inPacket = (GameBadblockInPacket) constructor.newInstance(pack);
+
 				
 				Method method = InPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockInPacket.class);
 				
@@ -50,6 +54,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				});
 
 				if (inPacket.isCancelled()) cancel = true;
+				msg = inPacket.toNms();
 			} catch(Exception error) {
 				error.printStackTrace();
 			}
@@ -61,7 +66,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 	}
 	
 	@Override
-	public void write(ChannelHandlerContext channelHandlerContext, final Object msg, final ChannelPromise promise) throws Exception {
+	public void write(ChannelHandlerContext channelHandlerContext, Object msg, final ChannelPromise promise) throws Exception {
 		boolean cancel = false;
 		
 		for (GameBadblockOutPackets packet : GameBadblockOutPackets.values()) {
@@ -77,18 +82,18 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				
 				Method method = OutPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockOutPacket.class);
 				
-				GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()).forEach(listener -> {
+				GamePlugin.getInstance().getPacketOutListeners().get(packet.getClazz()).forEach(listener -> {
 					try {
-						method.invoke(listener, player, (BadblockInPacket) outPacket);
+						method.invoke(listener, player, (BadblockOutPacket) outPacket);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				});
 
 				if (outPacket.isCancelled()) cancel = true;
+				msg = outPacket.buildPacket();
 			} catch(Exception error) {
-				System.out.println(packet.getClazz());
-				System.out.println(GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()));
+				error.printStackTrace();
 			}
 		}
 		

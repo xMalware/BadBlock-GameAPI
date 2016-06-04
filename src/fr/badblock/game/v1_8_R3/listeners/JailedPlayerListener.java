@@ -15,7 +15,7 @@ public class JailedPlayerListener extends BadListener {
 	public void onTeleport(PlayerTeleportEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 		
-		if(player.isJailed()){ // si il est jail on ne veut pas qu'il se téléporte
+		if(player.isJailed()){
 			e.setCancelled(true);
 		}
 	}

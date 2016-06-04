@@ -1,5 +1,13 @@
 package fr.badblock.game.v1_8_R3.watchers;
 
+import static fr.badblock.game.v1_8_R3.watchers.MetadataType.BYTE;
+import static fr.badblock.game.v1_8_R3.watchers.MetadataType.FLOAT;
+import static fr.badblock.game.v1_8_R3.watchers.MetadataType.INT;
+import static fr.badblock.game.v1_8_R3.watchers.MetadataType.ITEM;
+import static fr.badblock.game.v1_8_R3.watchers.MetadataType.SHORT;
+import static fr.badblock.game.v1_8_R3.watchers.MetadataType.STRING;
+import static fr.badblock.game.v1_8_R3.watchers.MetadataType.VECTOR3F;
+
 import org.bukkit.entity.Ageable;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
@@ -33,14 +41,12 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.entity.Zombie;
 import org.bukkit.entity.minecart.PoweredMinecart;
 
-import static fr.badblock.game.v1_8_R3.watchers.MetadataType.*;
-
 public enum MetadataIndex {
 	STATUS(0, BYTE, Entity.class),
 	AIR_TIME(1, SHORT, Entity.class),
+	NAME_TAG(2, STRING, Entity.class),
+	SHOW_NAME_TAG(3, BYTE, Entity.class),
 
-	NAME_TAG(2, STRING, LivingEntity.class),
-	SHOW_NAME_TAG(3, BYTE, LivingEntity.class),
 	UNKNOWN_BYTE(4, BYTE, LivingEntity.class), // The player sends that sometimes oO
 	HEALTH(6, FLOAT, LivingEntity.class),
 	POTION_COLOR(7, INT, LivingEntity.class),

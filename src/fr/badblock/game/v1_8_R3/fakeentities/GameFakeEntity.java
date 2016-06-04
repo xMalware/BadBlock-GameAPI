@@ -21,6 +21,7 @@ import fr.badblock.gameapi.packets.BadblockOutPacket;
 import fr.badblock.gameapi.packets.out.play.PlayEntityDestroy;
 import fr.badblock.gameapi.packets.out.play.PlayEntityEquipment;
 import fr.badblock.gameapi.packets.out.play.PlayEntityHeadRotation;
+import fr.badblock.gameapi.packets.out.play.PlayEntityLook;
 import fr.badblock.gameapi.packets.out.play.PlayEntityMetadata;
 import fr.badblock.gameapi.packets.out.play.PlayEntityRelativeMove;
 import fr.badblock.gameapi.packets.out.play.PlayEntityStatus;
@@ -94,7 +95,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		return viewingPlayers.contains(player.getUniqueId());
 	}
 	
-
+	@Override
 	public void move(Location location) {
 		Location oldLoc = this.location.clone();
 		double dX = Math.abs(oldLoc.getX() - location.getX());
@@ -106,9 +107,18 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 											.setEntityId(id)
 											.setMove(new Vector(location.getX() - oldLoc.getX(), location.getY() - oldLoc.getY(), location.getZ() - oldLoc.getZ()))
 											.setOnGround(true));
+			yaw(location);
 		} else teleport(location);
 		
 		this.location = location;
+	}
+	
+	protected void yaw(Location location){
+		broadcastPacket(GameAPI.getAPI().createPacket(PlayEntityLook.class)
+										.setEntityId(id)
+										.setPitch(location.getPitch())
+										.setYaw(location.getYaw()));
+		setHeadYaw(0);
 	}
 
 	@Override
@@ -117,6 +127,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 										.setEntityId(id)
 										.setTo(location)
 										.setOnGround(true));
+		yaw(location);
 		
 		this.location = location;
 	}

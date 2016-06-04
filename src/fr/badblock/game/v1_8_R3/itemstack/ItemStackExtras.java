@@ -104,6 +104,12 @@ public class ItemStackExtras implements Listener {
 		if(e.getWhoClicked().getType() != EntityType.PLAYER) return;
 		BadblockPlayer player = (BadblockPlayer) e.getWhoClicked();
 
+		if(player.isJailed()) {
+			e.setCancelled(true);
+			player.closeInventory();
+			return;
+		}
+		
 		test(e.getCurrentItem(), player, e);
 
 		if(e.getClickedInventory() != null && e.getCurrentItem() == null) {

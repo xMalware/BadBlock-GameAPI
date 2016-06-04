@@ -3,6 +3,7 @@ package fr.badblock.game.v1_8_R3.fakeentities;
 import java.util.Map;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
 import com.google.common.collect.Maps;
@@ -21,6 +22,10 @@ public class FakeEntities {
 		return spawnNotify(new GameFakeLivingEntity<T>(type, lastId--, watcher, location));
 	}
 
+	public static FakeEntity<WatcherEntity> spawnFakeFallingBlock(Location location, Material type, byte data) {
+		return spawnNotify(new GameFakeFallingBlock(lastId--, location, type, data));
+	}
+	
 	public static FakeEntity<WatcherArmorStand> spawnFakeArmorStand(Location location) {
 		return spawnNotify(new GameFakeArmorStand(lastId--, location));
 	}

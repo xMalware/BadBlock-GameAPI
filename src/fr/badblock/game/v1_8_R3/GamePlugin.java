@@ -2,17 +2,20 @@ package fr.badblock.game.v1_8_R3;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -25,11 +28,14 @@ import com.google.gson.JsonObject;
 import fr.badblock.game.v1_8_R3.commands.AdminModeCommand;
 import fr.badblock.game.v1_8_R3.commands.FeedCommand;
 import fr.badblock.game.v1_8_R3.commands.FlyCommand;
+import fr.badblock.game.v1_8_R3.commands.FreezeCommand;
 import fr.badblock.game.v1_8_R3.commands.GameModeCommand;
 import fr.badblock.game.v1_8_R3.commands.HealCommand;
 import fr.badblock.game.v1_8_R3.commands.I18RCommand;
 import fr.badblock.game.v1_8_R3.commands.KitsCommand;
 import fr.badblock.game.v1_8_R3.commands.LagCommand;
+import fr.badblock.game.v1_8_R3.commands.PortalCommand;
+import fr.badblock.game.v1_8_R3.commands.WhitelistCommand;
 import fr.badblock.game.v1_8_R3.configuration.GameConfiguration;
 import fr.badblock.game.v1_8_R3.entities.CustomCreatures;
 import fr.badblock.game.v1_8_R3.fakeentities.FakeEntities;
@@ -52,6 +58,7 @@ import fr.badblock.game.v1_8_R3.listeners.JailedPlayerListener;
 import fr.badblock.game.v1_8_R3.listeners.LoginListener;
 import fr.badblock.game.v1_8_R3.listeners.MoveListener;
 import fr.badblock.game.v1_8_R3.listeners.PlayerSelectionListener;
+import fr.badblock.game.v1_8_R3.listeners.PortalListener;
 import fr.badblock.game.v1_8_R3.listeners.ProjectileHitBlockCaller;
 import fr.badblock.game.v1_8_R3.listeners.fixs.ArrowBugFixListener;
 import fr.badblock.game.v1_8_R3.listeners.fixs.UselessDamageFixListener;
@@ -60,6 +67,7 @@ import fr.badblock.game.v1_8_R3.listeners.mapprotector.DefaultMapProtector;
 import fr.badblock.game.v1_8_R3.listeners.mapprotector.EntityMapProtectorListener;
 import fr.badblock.game.v1_8_R3.listeners.mapprotector.PlayerMapProtectorListener;
 import fr.badblock.game.v1_8_R3.listeners.packets.CameraListener;
+import fr.badblock.game.v1_8_R3.listeners.packets.EquipmentListener;
 import fr.badblock.game.v1_8_R3.listeners.packets.InteractEntityListener;
 import fr.badblock.game.v1_8_R3.merchant.GameMerchantInventory;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket;
@@ -92,6 +100,7 @@ import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.gameapi.portal.Portal;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.servers.MapProtector;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
@@ -114,7 +123,8 @@ public class GamePlugin extends GameAPI {
 	public static final String FOLDER_I18N 		   = "i18n",
 							   FOLDER_ACHIEVEMENTS = "achievements",
 							   FOLDER_KITS		   = "kits",
-							   CONFIG_DATABASES	   = "databases.json";
+							   CONFIG_DATABASES	   = "databases.json",
+							   WHITELIST		   = "whitelist.yml";
 	public static Thread thread;
 	
 	@Getter private static GamePlugin   instance;
@@ -149,9 +159,19 @@ public class GamePlugin extends GameAPI {
 	
 	// Packet system
 	@Getter
-	private ConcurrentMap<Class<? extends BadblockInPacket>, ConcurrentSet<InPacketListener<?>>>		packetInListeners	= new ConcurrentHashMap<>();
+	private Map<Class<? extends BadblockInPacket>, Set<InPacketListener<?>>>		packetInListeners	= Maps.newConcurrentMap();
 	@Getter
-	private ConcurrentMap<Class<? extends BadblockOutPacket>, ConcurrentSet<OutPacketListener<?>>>		packetOutListeners	= new ConcurrentHashMap<>();
+	private Map<Class<? extends BadblockOutPacket>, Set<OutPacketListener<?>>>		packetOutListeners	= Maps.newConcurrentMap();
+	
+	@Getter
+	private List<String>				whitelist;
+	@Setter
+	private boolean						whitelistStatus = false;
+
+	private boolean						portal			= false;
+	@Getter
+	private Map<String, Portal>			portals			= Maps.newConcurrentMap();
+	private File						portalFolder	= null;
 	
 	@Override
 	public void onEnable() {
@@ -240,6 +260,7 @@ public class GamePlugin extends GameAPI {
 			
 			new CameraListener().register();	// Packet pour voir à la place du joueur en spec (aucun event sur Bukkit)
 			new InteractEntityListener().register();
+			new EquipmentListener().register();
 
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 			
@@ -259,7 +280,23 @@ public class GamePlugin extends GameAPI {
 			new LagCommand();
 			new KitsCommand();
 			new I18RCommand();
-
+			new FreezeCommand();
+			new WhitelistCommand();
+			
+			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
+			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
+			
+			if(!whitelist.contains("whitelist")){
+				whitelist.set("whitelist", Arrays.asList("lelann"));
+			}
+			
+			this.whitelist = new ArrayList<>();
+			
+			for(String player : whitelist.getStringList("whitelist"))
+				this.whitelist.add(player.toLowerCase());
+			
+			whitelist.save(whitelistFile);
+			
 			GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
 			// GameServer après tout
 			this.gameServer 	   = new GameServer();
@@ -468,26 +505,26 @@ public class GamePlugin extends GameAPI {
 	public <T extends BadblockInPacket> void listenAtPacket(@NonNull InPacketListener<T> listener) {
 		Class<? extends BadblockInPacket> packet = listener.getGenericPacketClass();
 		
-		ConcurrentSet<InPacketListener<?>> list = packetInListeners.get(packet);
+		Set<InPacketListener<?>> list = packetInListeners.get(packet);
 		if(list == null) {
 			list = new ConcurrentSet<>();
-			packetInListeners.put(packet, list);
 		}
 
 		list.add(listener);
+		packetInListeners.put(packet, list);
 	}
 
 	@Override
 	public <T extends BadblockOutPacket> void listenAtPacket(@NonNull OutPacketListener<T> listener) {
 		Class<? extends BadblockOutPacket> packet = listener.getGenericPacketClass();
 		
-		ConcurrentSet<OutPacketListener<?>> list = packetOutListeners.get(packet);
+		Set<OutPacketListener<?>> list = packetOutListeners.get(packet);
 		if(list == null) {
 			list = new ConcurrentSet<>();
-			packetOutListeners.put(packet, list);
 		}
 
 		list.add(listener);
+		packetOutListeners.put(packet, list);
 	}
 
 	@Override
@@ -505,6 +542,11 @@ public class GamePlugin extends GameAPI {
 		return FakeEntities.spawnFakeLivingEntity(location, type, clazz);
 	}
 
+	@Override
+	public FakeEntity<WatcherEntity> spawnFakeFallingBlock(Location location, Material type, byte data) {
+		return FakeEntities.spawnFakeFallingBlock(location, type, data);
+	}
+	
 	@Override
 	public FakeEntity<WatcherArmorStand> spawnFakeArmorStand(Location location) {
 		return FakeEntities.spawnFakeArmorStand(location);
@@ -553,5 +595,98 @@ public class GamePlugin extends GameAPI {
 		}
 		
 		return null;
+	}
+
+	@Override
+	public void managePortals(File folder) {
+		if(!folder.exists())
+			folder.mkdirs();
+		
+		if(portal)
+			throw new IllegalStateException("Portals are already loaded");
+
+		this.portalFolder = folder;
+		
+		// On charge commandes/listeners qu'on avait pas load pour économiser sur les serveurs ou inutiles
+		new PortalCommand();
+		new PortalListener();
+		
+		for(File file : folder.listFiles()){
+			Portal portal = JsonUtils.load(file, Portal.class);
+			String name   = file.getName().split("\\.")[0];
+			
+			portal.setFile(file);
+			
+			portals.put(name.toLowerCase(), portal);
+		}
+	}
+
+	public void addPortal(String name, Portal portal){
+		File file = new File(portalFolder, name + ".json");
+		portal.setFile(file);
+		
+		portals.put(name, portal);
+	}
+	
+	public void savePortal(Portal portal){
+		JsonUtils.save(portal.getFile(), portal, true);
+	}
+	
+	public void removePortal(String name){
+		Portal portal = portals.get(name);
+		
+		if(portal != null){
+			portal.getFile().delete();
+			portals.remove(name);
+		}
+	}
+	
+	@Override
+	public Portal getPortal(@NonNull String name) {
+		return portals.get(name.toLowerCase());
+	}
+
+	@Override
+	public Portal getPortal(@NonNull Location location) {
+		for(Portal portal : portals.values()){
+			if(portal.getPortal().isInSelection(location))
+				return portal;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public Collection<Portal> getLoadedPortals() {
+		return Collections.unmodifiableCollection(portals.values());
+	}
+
+	@Override
+	public Collection<String> getWhitelistedPlayers() {
+		return Collections.unmodifiableCollection(whitelist);
+	}
+
+	@Override
+	public void whitelistPlayer(String player) {
+		if(!whitelist.contains(player.toLowerCase())){
+			whitelist.add(player.toLowerCase());
+		}
+	}
+
+	@Override
+	public void unwhitelistPlayer(String player) {
+		if(whitelist.contains(player.toLowerCase())){
+			whitelist.remove(player.toLowerCase());
+		}
+	}
+	
+	@Override
+	public boolean isWhitelisted(String player){
+		return whitelist.contains(player.toLowerCase());
+	}
+
+	@Override
+	public boolean getWhitelistStatus() {
+		return whitelistStatus;
 	}
 }

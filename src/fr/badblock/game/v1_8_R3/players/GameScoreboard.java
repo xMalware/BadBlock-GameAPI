@@ -80,6 +80,13 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if(!doGroupsPrefix) return;
 
 		getHandler().getTeam(e.getPlayer().getMainGroup()).addEntry(e.getPlayer().getName());
+		
+		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
+		
+		if(player.isDisguised()){
+			player.getDisguiseEntity().getWatchers().setCustomName(getUsedName(player));
+			player.getDisguiseEntity().updateWatchers();
+		}
 	}
 	
 	@EventHandler
@@ -91,6 +98,13 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if(!team.getName().equals(e.getPlayer().getMainGroup())){
 			team.removeEntry(e.getPlayer().getName());
 			getHandler().getTeam(e.getPlayer().getMainGroup()).addEntry(e.getPlayer().getName());
+		}
+		
+		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
+		
+		if(player.isDisguised()){
+			player.getDisguiseEntity().getWatchers().setCustomName(getUsedName(player));
+			player.getDisguiseEntity().updateWatchers();
 		}
 	}
 
@@ -112,6 +126,20 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		}
 	}
 
+	@Override
+	public TranslatableString getUsedName(BadblockPlayer player) {
+		if(doGroupsPrefix){
+			return new TranslatableString("game.customname", player.getName(), player.getTabGroupPrefix());
+		} else if(doTeamsPrefix){
+			
+			if(player.getTeam() != null){
+				return new TranslatableString("game.customname", player.getName(), player.getTeam().getTabPrefix(ChatColor.GRAY));
+			}
+		}
+		
+		return new TranslatableString("game.customname", player.getName(), "");
+	}
+	
 	@Override
 	public void doBelowNameHealth(){
 		if(belowNameHealth == null){
@@ -146,6 +174,13 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				sendTeam(p, knowTeam, ChatColor.GRAY);
 			}
 		});
+		
+		GameBadblockPlayer player = (GameBadblockPlayer) p;
+		
+		if(player.isDisguised()){
+			player.getDisguiseEntity().getWatchers().setCustomName(getUsedName(player));
+			player.getDisguiseEntity().updateWatchers();
+		}
 	}
 	
 	protected void sendTeams(BadblockPlayer player){

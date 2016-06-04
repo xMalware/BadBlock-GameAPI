@@ -34,6 +34,7 @@ import fr.badblock.game.v1_8_R3.internalutils.Base64Url;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.v1_8_R3.watchers.MetadataIndex;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.disguise.Disguise;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.game.result.Result;
@@ -44,6 +45,7 @@ import fr.badblock.gameapi.packets.out.play.PlayChangeGameState;
 import fr.badblock.gameapi.packets.out.play.PlayChangeGameState.GameState;
 import fr.badblock.gameapi.packets.out.play.PlayChat;
 import fr.badblock.gameapi.packets.out.play.PlayChat.ChatType;
+import fr.badblock.gameapi.packets.out.play.PlayEntityEquipment;
 import fr.badblock.gameapi.packets.out.play.PlayEntityStatus;
 import fr.badblock.gameapi.packets.out.play.PlayEntityStatus.EntityStatus;
 import fr.badblock.gameapi.packets.out.play.PlayPlayerListHeaderFooter;
@@ -88,13 +90,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private GamePlayerData 				 playerData 		  = null;
 	private PermissiblePlayer 			 permissions 		  = null;
 
-	private Location 					 jail 				  = null;
 	@Getter
 	private Map<Class<?>, InGameData> 	 inGameData  		  = null;
 
 	private String 						 bossBarMessage 	  = null;
 	private FakeEntity<WatcherWither> 	 enderdragon 		  = null;
-
+	
 	private GameMode 					 gamemodeBefJail 	  = null;
 	private FakeEntity<?> 				 fakeJailer 		  = null;
 
@@ -114,7 +115,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Getter@Setter
 	private Vector3f					 firstVector,
-	secondVector;
+										 secondVector;
+	private Disguise 	  disguise;
+	@Getter
+	private FakeEntity<?> disguiseEntity;
 
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
@@ -535,7 +539,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public boolean isJailed() {
-		return jail != null;
+		return fakeJailer != null;
 	}
 
 	@Override
@@ -568,8 +572,15 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		customEnvironment = world;
 
 		getAPI().createPacket(PlayRespawn.class).setDimension(world).setDifficulty(getWorld().getDifficulty())
-		.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
+												.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
 
+		setMaxHealth(getMaxHealth());
+		
+		for(Player player : Bukkit.getOnlinePlayers()){
+			hidePlayer(player);
+			showPlayer(player);
+		}
+		
 		reloadMap();
 		updateInventory(); // euh ... pk déprécié ? (pas déprécié pour Player)
 	}
@@ -635,7 +646,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public boolean hasPermission(String permission) {
-		return permissions.hasPermission(permission);
+		return permission == null ? true : permissions.hasPermission(permission);
 	}
 
 	@Override
@@ -797,5 +808,49 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public boolean hasAdminMode(){
 		return adminMode;
+	}
+
+	@Override
+	public void disguise(Disguise disguise) {
+		if(isDisguised()){
+			disguiseEntity.destroy();
+		}
+		
+		this.disguise  = disguise;
+		disguiseEntity = disguise.createEntity(this);
+		
+		getHandle().setInvisible(true);
+		
+		// update equipment for other players :o
+		for(Player player : Bukkit.getOnlinePlayers()){
+			BadblockPlayer bp = (BadblockPlayer) player;
+			disguiseEntity.show(bp);
+			
+			if(bp.getUniqueId().equals(getUniqueId())) continue;
+			
+			for(int i=0;i<5;i++){
+				GameAPI.getAPI().createPacket(PlayEntityEquipment.class)
+								.setEntityId(getEntityId())
+								.setItemStack(null)
+								.send(bp);
+			}
+		}
+		
+	}
+	
+	@Override
+	public boolean isDisguised(){
+		return disguise != null && disguiseEntity != null;
+	}
+
+	@Override
+	public void undisguise() {
+		if(isDisguised()){
+			this.disguise 		= null;
+			this.disguiseEntity.destroy();
+			this.disguiseEntity = null;
+			
+			getHandle().setInvisible(true);
+		}
 	}
 }

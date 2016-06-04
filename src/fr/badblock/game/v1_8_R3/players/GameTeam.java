@@ -32,6 +32,7 @@ import fr.badblock.gameapi.utils.itemstack.ItemEvent;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra.ItemPlaces;
 import lombok.Getter;
+import lombok.Setter;
 
 public class GameTeam implements BadblockTeam {
 	@Getter
@@ -41,7 +42,7 @@ public class GameTeam implements BadblockTeam {
 	@Getter
 	private DyeColor  dyeColor;
 	private String 	  hexColor;
-	@Getter
+	@Getter@Setter
 	private int	   maxPlayers;
 
 	private Map<Class<?>, TeamData> teamData = null;
