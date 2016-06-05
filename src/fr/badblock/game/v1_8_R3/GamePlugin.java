@@ -27,6 +27,7 @@ import com.google.gson.JsonObject;
 
 import fr.badblock.game.v1_8_R3.commands.AdminModeCommand;
 import fr.badblock.game.v1_8_R3.commands.BroadcastCommand;
+import fr.badblock.game.v1_8_R3.commands.ClearChatCommand;
 import fr.badblock.game.v1_8_R3.commands.FeedCommand;
 import fr.badblock.game.v1_8_R3.commands.FlyCommand;
 import fr.badblock.game.v1_8_R3.commands.FreezeCommand;
@@ -294,6 +295,7 @@ public class GamePlugin extends GameAPI {
 			new FeedCommand();
 			new GameModeCommand();
 			
+			new ClearChatCommand();
 			new BroadcastCommand();
 			new GodmodeCommand();
 			new InvseeCommand();

@@ -49,12 +49,12 @@ public enum CustomCreatures {
 	CHICKEN(EntityType.CHICKEN, EntityChicken.class, NMSChicken.class),
 	COW(EntityType.COW, EntityCow.class, NMSCow.class),
 	CREEPER(EntityType.CREEPER, EntityCreeper.class, NMSCreeper.class),
-	ENDER_DRAGON(EntityType.ENDER_DRAGON, EntityEnderDragon.class, NMSZombie.class),//TODO
+	ENDER_DRAGON(EntityType.ENDER_DRAGON, EntityEnderDragon.class, NMSEnderDragon.class),
 	ENDERMAN(EntityType.ENDERMAN, EntityEnderman.class, NMSEnderman.class),
 	ENDERMITE(EntityType.ENDERMITE, EntityEndermite.class, NMSEndermite.class),
-	GHAST(EntityType.GHAST, EntityGhast.class, NMSZombie.class),//TODO
+	GHAST(EntityType.GHAST, EntityGhast.class, NMSGhast.class),
 	GIANT(EntityType.GIANT, EntityGiantZombie.class, NMSGiant.class),
-	GUARDIAN(EntityType.GUARDIAN, EntityGuardian.class, NMSZombie.class),//TODO
+	GUARDIAN(EntityType.GUARDIAN, EntityGuardian.class, NMSGuardian.class),
 	HORSE(EntityType.HORSE, EntityHorse.class, NMSHorse.class),
 	IRON_GOLEM(EntityType.IRON_GOLEM, EntityIronGolem.class, NMSIronGolem.class),
 	MAGMA_CUBE(EntityType.MAGMA_CUBE, EntityMagmaCube.class, NMSMagmaCube.class),
@@ -70,7 +70,7 @@ public enum CustomCreatures {
 	SPIDER(EntityType.SPIDER, EntitySpider.class, NMSSpider.class),
 	SQUID(EntityType.SQUID, EntitySquid.class, NMSSquid.class),
 	WITCH(EntityType.WITCH, EntityWitch.class, NMSWitch.class),
-	WITHER(EntityType.WITHER, EntityWither.class, NMSZombie.class),//TODO
+	WITHER(EntityType.WITHER, EntityWither.class, NMSWither.class),
 	WOLF(EntityType.WOLF, EntityWolf.class, NMSWolf.class),
 	ZOMBIE(EntityType.ZOMBIE, EntityZombie.class, NMSZombie.class);
 	
