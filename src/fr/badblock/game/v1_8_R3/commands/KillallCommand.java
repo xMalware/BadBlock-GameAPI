@@ -28,6 +28,8 @@ public class KillallCommand extends AbstractCommand {
 		no.add(EntityType.LEASH_HITCH);
 		no.add(EntityType.LIGHTNING);
 		no.add(EntityType.THROWN_EXP_BOTTLE);
+		no.add(EntityType.WEATHER);
+		no.add(EntityType.UNKNOWN);
 	}
 
 	public KillallCommand() {

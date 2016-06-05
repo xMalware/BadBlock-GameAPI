@@ -41,7 +41,6 @@ public class WhitelistCommand extends AbstractCommand {
 				new TranslatableString("commands.whitelist.remove", args[1]).send(sender);
 			break;
 			case "list":
-				GameAPI.getAPI().unwhitelistPlayer(args[1]);
 				new TranslatableString("commands.whitelist.list", StringUtils.join(GameAPI.getAPI().getWhitelistedPlayers(), "&7, &b")).send(sender);
 			break;
 			default:
