@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -16,8 +17,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Maps;
 
+import fr.badblock.game.v1_8_R3.players.CommandInGameData;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
 import net.md_5.bungee.api.ChatColor;
@@ -102,8 +105,15 @@ public class ItemStackExtras implements Listener {
 	@EventHandler
 	public void onClick(InventoryClickEvent e){
 		if(e.getWhoClicked().getType() != EntityType.PLAYER) return;
+		
 		BadblockPlayer player = (BadblockPlayer) e.getWhoClicked();
 
+		if(player.inGameData(CommandInGameData.class).invsee){
+			if(!player.hasPermission(GamePermission.ADMIN))
+				e.setCancelled(true);
+			return;
+		}
+		
 		if(player.isJailed()) {
 			e.setCancelled(true);
 			player.closeInventory();
@@ -116,6 +126,14 @@ public class ItemStackExtras implements Listener {
 			ItemStack is = e.getClickedInventory().getItem(e.getSlot());
 			test(is, player, e);
 		}
+	}
+	
+	@EventHandler
+	public void onClose(InventoryCloseEvent e){
+		if(e.getPlayer().getType() != EntityType.PLAYER) return;
+		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+
+		player.inGameData(CommandInGameData.class).invsee = false;
 	}
 
 	public void test(ItemStack is, BadblockPlayer player, InventoryClickEvent e){

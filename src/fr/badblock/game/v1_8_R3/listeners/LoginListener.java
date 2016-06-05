@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
+import fr.badblock.game.v1_8_R3.players.CommandInGameData;
 import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
 import fr.badblock.game.v1_8_R3.players.GameOfflinePlayer;
 import fr.badblock.gameapi.BadListener;
@@ -19,6 +20,7 @@ import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
+import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
@@ -75,6 +77,8 @@ public class LoginListener extends BadListener {
 					GameBadblockPlayer bp = (GameBadblockPlayer) player;
 					if(bp.isDisguised()){
 						bp.getDisguiseEntity().show(p);
+					} else if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
+						p.hidePlayer(bp);
 					}
 				}
 				

@@ -1,6 +1,7 @@
 package fr.badblock.game.v1_8_R3.configuration;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public class GameConfiguration implements BadConfiguration {
 	}
 
 	@Override
-	public <T extends MapValue<?>> void setValueList(String key, List<T> value) {
+	public <T extends MapValue<?>> void setValueList(String key, Collection<T> value) {
 		JsonArray array = new JsonArray();
 	
 		for(T single : value){

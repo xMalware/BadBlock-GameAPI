@@ -26,15 +26,24 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import fr.badblock.game.v1_8_R3.commands.AdminModeCommand;
+import fr.badblock.game.v1_8_R3.commands.BroadcastCommand;
 import fr.badblock.game.v1_8_R3.commands.FeedCommand;
 import fr.badblock.game.v1_8_R3.commands.FlyCommand;
 import fr.badblock.game.v1_8_R3.commands.FreezeCommand;
 import fr.badblock.game.v1_8_R3.commands.GameModeCommand;
+import fr.badblock.game.v1_8_R3.commands.GodmodeCommand;
 import fr.badblock.game.v1_8_R3.commands.HealCommand;
 import fr.badblock.game.v1_8_R3.commands.I18RCommand;
+import fr.badblock.game.v1_8_R3.commands.InvseeCommand;
+import fr.badblock.game.v1_8_R3.commands.KickallCommand;
+import fr.badblock.game.v1_8_R3.commands.KillallCommand;
 import fr.badblock.game.v1_8_R3.commands.KitsCommand;
 import fr.badblock.game.v1_8_R3.commands.LagCommand;
 import fr.badblock.game.v1_8_R3.commands.PortalCommand;
+import fr.badblock.game.v1_8_R3.commands.ShopCommand;
+import fr.badblock.game.v1_8_R3.commands.SkullCommand;
+import fr.badblock.game.v1_8_R3.commands.TeleportCommand;
+import fr.badblock.game.v1_8_R3.commands.VanishCommand;
 import fr.badblock.game.v1_8_R3.commands.WhitelistCommand;
 import fr.badblock.game.v1_8_R3.configuration.GameConfiguration;
 import fr.badblock.game.v1_8_R3.entities.CustomCreatures;
@@ -60,6 +69,7 @@ import fr.badblock.game.v1_8_R3.listeners.MoveListener;
 import fr.badblock.game.v1_8_R3.listeners.PlayerSelectionListener;
 import fr.badblock.game.v1_8_R3.listeners.PortalListener;
 import fr.badblock.game.v1_8_R3.listeners.ProjectileHitBlockCaller;
+import fr.badblock.game.v1_8_R3.listeners.ShopListener;
 import fr.badblock.game.v1_8_R3.listeners.fixs.ArrowBugFixListener;
 import fr.badblock.game.v1_8_R3.listeners.fixs.UselessDamageFixListener;
 import fr.badblock.game.v1_8_R3.listeners.mapprotector.BlockMapProtectorListener;
@@ -70,6 +80,7 @@ import fr.badblock.game.v1_8_R3.listeners.packets.CameraListener;
 import fr.badblock.game.v1_8_R3.listeners.packets.EquipmentListener;
 import fr.badblock.game.v1_8_R3.listeners.packets.InteractEntityListener;
 import fr.badblock.game.v1_8_R3.merchant.GameMerchantInventory;
+import fr.badblock.game.v1_8_R3.merchant.shops.Merchant;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket.GameBadblockOutPackets;
 import fr.badblock.game.v1_8_R3.packets.out.GameParticleEffect;
@@ -168,7 +179,12 @@ public class GamePlugin extends GameAPI {
 	@Setter
 	private boolean						whitelistStatus = false;
 
-	private boolean						portal			= false;
+	@Getter
+	private Map<String, Merchant>		merchants		= Maps.newConcurrentMap();
+	@Getter
+	private File						shopFolder		= null;
+
+	
 	@Getter
 	private Map<String, Portal>			portals			= Maps.newConcurrentMap();
 	private File						portalFolder	= null;
@@ -277,11 +293,22 @@ public class GamePlugin extends GameAPI {
 			new HealCommand();
 			new FeedCommand();
 			new GameModeCommand();
+			
+			new BroadcastCommand();
+			new GodmodeCommand();
+			new InvseeCommand();
+			new KickallCommand();
+			new KillallCommand();
+			new SkullCommand();
+			new TeleportCommand();
+			new VanishCommand();
+			
 			new LagCommand();
 			new KitsCommand();
 			new I18RCommand();
 			new FreezeCommand();
 			new WhitelistCommand();
+			
 			
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
@@ -598,13 +625,32 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
+	public void manageShops(File folder) {
+		if(shopFolder != null)
+			throw new IllegalStateException("Merchants are already loaded");
+		
+		if(!folder.exists()) 
+			folder.mkdirs();
+		
+		this.shopFolder = folder;
+		
+		for(File file : folder.listFiles()){
+			String name = file.getName().toLowerCase().replace(".json", "");
+			merchants.put(name, new Merchant(name, loadConfiguration(file)));
+		}
+		
+		new ShopCommand();
+		new ShopListener();
+	}
+	
+	@Override
 	public void managePortals(File folder) {
+		if(portalFolder != null)
+			throw new IllegalStateException("Portals are already loaded");
+
 		if(!folder.exists())
 			folder.mkdirs();
 		
-		if(portal)
-			throw new IllegalStateException("Portals are already loaded");
-
 		this.portalFolder = folder;
 		
 		// On charge commandes/listeners qu'on avait pas load pour économiser sur les serveurs ou inutiles

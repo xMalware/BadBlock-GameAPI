@@ -27,6 +27,7 @@ import com.google.common.collect.Maps;
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.itemstack.GameItemExtra;
 import fr.badblock.game.v1_8_R3.itemstack.ItemStackExtras;
+import fr.badblock.game.v1_8_R3.players.CommandInGameData;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.PlayerReconnectionPropositionEvent;
@@ -54,6 +55,9 @@ public class FakeDeathCaller extends BadListener {
 			FightingDeaths type   = data.lastPvPDamage;
 			FakeDeathEvent event  = null;
 
+			if(player.inGameData(CommandInGameData.class).godmode){
+				e.setCancelled(true); return;
+			}
 
 			if(e.getDamage() >= player.getHealth()){
 				e.setCancelled(true);
@@ -95,6 +99,10 @@ public class FakeDeathCaller extends BadListener {
 
 			FightingDeaths type   = FightingDeaths.INFIGHTING;
 
+			if(player.inGameData(CommandInGameData.class).godmode){
+				e.setCancelled(true); return;
+			}
+			
 			if(e.getEntityType() == EntityType.ARROW)
 				type = FightingDeaths.BOW;
 			else if(e.getEntityType() == EntityType.SPLASH_POTION)
