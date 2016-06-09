@@ -139,6 +139,13 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 										.setRotation(yaw));
 		this.headYaw = yaw;
 	}
+	
+	@Override
+	public void playStatus(EntityStatus status){
+		broadcastPacket(GameAPI.getAPI().createPacket(PlayEntityStatus.class)
+										.setEntityId(id)
+										.setStatus(status));
+	}
 
 	@Override
 	public void updateWatchers() {
