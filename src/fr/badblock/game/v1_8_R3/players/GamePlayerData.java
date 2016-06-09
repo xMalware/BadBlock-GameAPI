@@ -213,13 +213,19 @@ public class GamePlayerData implements PlayerData {
 	}
 	
 	@Override
-	public void saveData() {
+	public JsonObject saveData() {
 		JsonObject object = GameAPI.getGson().toJsonTree(this).getAsJsonObject();
 	
 		for(Entry<String, GameData> entries : datas.entrySet()){
-			if(!object.has(entries.getKey())){
-				object.add(entries.getKey(), GameAPI.getGson().toJsonTree(entries.getValue()));
+			if(data.has(entries.getKey())){
+				data.remove(entries.getKey());
 			}
+			
+			data.add(entries.getKey(), GameAPI.getGson().toJsonTree(entries.getValue()));
 		}
+		
+		object.add("other", object);
+		
+		return object;
 	}
 }

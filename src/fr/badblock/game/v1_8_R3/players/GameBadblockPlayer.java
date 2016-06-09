@@ -300,11 +300,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void saveGameData() {
-		getPlayerData().saveData();
-		JsonObject object = new JsonObject();
-		
-		object.add("game", GameAPI.getGson().toJsonTree(getPlayerData()));
-		GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, object);
+		GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, getPlayerData().saveData());
 	}
 	
 	@Override
