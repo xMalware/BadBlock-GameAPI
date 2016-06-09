@@ -1,5 +1,7 @@
 package fr.badblock.game.v1_8_R3.players;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -202,13 +204,42 @@ public class GamePlayerData implements PlayerData {
 			datas.put(key, result);
 		} else
 			try {
-				result = clazz.getConstructor().newInstance();
+				result = createObjectInstance(clazz);
 				datas.put(key, result);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		
 		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T createObjectInstance(Class<T> c){
+		if(c.isEnum() || c.isArray()){ // Could not load an Enum or an Array from an JObject
+			return null;
+		} else if(c.isInterface()){
+
+		} else {
+			try{
+				return getConstructor(c).newInstance();
+			} catch(Exception e){}
+			try {
+				Class<?> unsafe = Class.forName("sun.misc.Unsafe");
+				Field f = unsafe.getDeclaredField("theUnsafe"); f.setAccessible(true);
+				return (T) unsafe.getMethod("allocateInstance", Class.class).invoke(f.get(null), c);
+			} catch (Exception e){}
+		}
+		return null;
+	}
+	
+	private static <T> Constructor<T> getConstructor(Class<T> c){
+		try {
+			return c.getDeclaredConstructor();
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException("Can not get the default constructor of " + c.getSimpleName() + ".", e);
+		} catch(SecurityException e){
+			throw new RuntimeException("Can not get the default constructor of " + c.getSimpleName() + ".", e);
+		}
 	}
 
 	@Override
