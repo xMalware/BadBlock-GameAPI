@@ -40,7 +40,7 @@ public class GameCustomObjective implements CustomObjective {
 		this.name  		 = name;
 		this.displayName = name;
 		
-		for(int i=1;i<=15;i++){ // on prépare toutes les teams, inutile de les unregisters elles ne gènent pas :3
+		for(int i=1;i<=15;i++){ // on prÃ©pare toutes les teams, inutile de les unregisters elles ne gÃ¨nent pas :3
 			CustomTeam custom = new CustomTeam(Identifiers.getLineIdentifier(i), "", "");
 			teams.put(i, custom);
 		}
@@ -54,7 +54,7 @@ public class GameCustomObjective implements CustomObjective {
 	@Override
 	public void showObjective(BadblockPlayer player) {
 		this.player = player.getUniqueId();
-		((GameBadblockPlayer) player).setCustomObjective(this); // on donne à la classe l'info
+		((GameBadblockPlayer) player).setCustomObjective(this); // on donne Ã  la classe l'info
 		
 		GameAPI.getAPI().createPacket(PlayScoreboardObjective.class).setDisplayName(displayName)
 															    .setMode(ObjectiveMode.CREATE)
@@ -100,10 +100,10 @@ public class GameCustomObjective implements CustomObjective {
 		String suffix = "";
 
 
-		if(prefix.endsWith("§")){
-			prefix.substring(0, prefix.length() - 1);
+		if(prefix.endsWith("Â§")){
+			prefix = prefix.substring(0, prefix.length() - 1);
 
-			suffix += "§";
+			suffix += "Â§";
 		} else {
 			String lastColor = lastColor(prefix);
 			suffix = lastColor == null ? "" : lastColor.toString();
@@ -151,7 +151,7 @@ public class GameCustomObjective implements CustomObjective {
 	}
 	
 	protected void sendTeam(BadblockPlayer player, CustomTeam team){
-		if(Bukkit.getScoreboardManager().getMainScoreboard().getTeam(team.name) == null) { // la team existe déjà on ajoute juste le 'joueur'
+		if(Bukkit.getScoreboardManager().getMainScoreboard().getTeam(team.name) == null) { // la team existe dÃ©jÃ  on ajoute juste le 'joueur'
 			GameAPI.getAPI().createPacket(PlayScoreboardTeam.class)
 							.setTeamName(team.name)
 							.setPlayers(new String[]{team.name})
@@ -201,18 +201,18 @@ public class GameCustomObjective implements CustomObjective {
 	}
 	
 	private static String lastColor(String str){
-		str = GameAPI.i18n().replaceColors(str);
+		str = ChatColor.translateAlternateColorCodes('&', str);
 		ChatColor last = null;
 		ChatColor encod = null;
 
 		for(int i=0;i<str.length();i++){
-			if(str.charAt(i) == '§'){
+			if(str.charAt(i) == 'Â§'){
 				ChatColor color = ChatColor.getByChar(str.charAt(i + 1));
 
 				last = color;
 
 				if(color.isColor() && str.length() > i + 2){
-					if(str.charAt(i + 2) == '§'){
+					if(str.charAt(i + 2) == 'Â§'){
 						encod = ChatColor.getByChar(str.charAt(i + 3));
 
 						i += 2;
