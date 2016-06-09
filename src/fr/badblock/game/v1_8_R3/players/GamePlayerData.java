@@ -39,6 +39,8 @@ public class GamePlayerData implements PlayerData {
 	private transient JsonObject 						  object		   = new JsonObject();
 
 	public void setData(JsonObject data){
+		System.out.println(data.get("other"));
+		
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
 		}
@@ -199,6 +201,7 @@ public class GamePlayerData implements PlayerData {
 		if(datas.containsKey(key)){
 			result = (T) datas.get(key);
 		} else if(data.has(key)){
+			System.out.println(data.get(key));
 			result = GameAPI.getGson().fromJson(data.get(key), clazz);
 			datas.put(key, result);
 		} else
