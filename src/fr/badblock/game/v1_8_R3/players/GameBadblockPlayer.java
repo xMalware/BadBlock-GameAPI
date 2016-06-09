@@ -167,7 +167,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.object.add("game", game);
 
 			playerData = GameAPI.getGson().fromJson(game, GamePlayerData.class);
-			System.out.println(game);
 			playerData.setData(game);
 		}
 

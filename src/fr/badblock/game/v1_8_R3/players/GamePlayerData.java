@@ -39,8 +39,6 @@ public class GamePlayerData implements PlayerData {
 	private transient JsonObject 						  object		   = new JsonObject();
 
 	public void setData(JsonObject data){
-		System.out.println(data.get("other") + " - l");
-		
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
 		}
@@ -227,8 +225,11 @@ public class GamePlayerData implements PlayerData {
 			data.add(entries.getKey(), GameAPI.getGson().toJsonTree(entries.getValue()));
 		}
 		
-		object.add("other", data);
+		JsonObject result = new JsonObject();
 		
-		return object;
+		object.add("other", data);
+		result.add("game", object);
+		
+		return result;
 	}
 }
