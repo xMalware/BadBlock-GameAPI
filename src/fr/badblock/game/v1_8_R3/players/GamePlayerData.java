@@ -203,6 +203,7 @@ public class GamePlayerData implements PlayerData {
 		} else
 			try {
 				result = clazz.getConstructor().newInstance();
+				datas.put(key, result);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

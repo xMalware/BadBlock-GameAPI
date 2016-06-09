@@ -1,6 +1,5 @@
 package fr.badblock.game.v1_8_R3.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -59,7 +58,7 @@ public class ChatListener extends BadListener {
 				team = player.getTeam().getChatPrefix();
 
 			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), team, e.getMessage(), player.getPlayerData().getLevel());
-			for (Player pl : e.getRecipients())
+			for(Player pl : e.getRecipients())
 				s.send(pl);
 		}
 
