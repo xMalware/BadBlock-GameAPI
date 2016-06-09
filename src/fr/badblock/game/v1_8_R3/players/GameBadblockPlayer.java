@@ -163,8 +163,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	public void updateData(JsonObject object) {
 		if (object.has("game")) {
-			this.object.add("game", object.get("game"));
+			JsonObject game = object.get("game").getAsJsonObject();
+			this.object.add("game", game);
+
 			playerData = GameAPI.getGson().fromJson(object.get("game"), GamePlayerData.class);
+		
+			playerData.setData(game);
 		}
 
 		if (object.has("permissions")) {
