@@ -224,7 +224,7 @@ public class GamePlayerData implements PlayerData {
 			data.add(entries.getKey(), GameAPI.getGson().toJsonTree(entries.getValue()));
 		}
 		
-		object.add("other", object);
+		object.add("other", data);
 		
 		return object;
 	}
