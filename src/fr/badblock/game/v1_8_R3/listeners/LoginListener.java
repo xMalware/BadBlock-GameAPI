@@ -56,6 +56,8 @@ public class LoginListener extends BadListener {
 		p.loadInjector();
 		p.setHasJoined(true);
 
+		if(GamePlugin.EMPTY_VERSION) return;
+		
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getUniqueId());
 
 		if(offlinePlayer != null){

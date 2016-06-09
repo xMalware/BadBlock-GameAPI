@@ -127,7 +127,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		this.inGameData  = Maps.newConcurrentMap();
 
 		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recréé à la récéptions des données
-		this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
+		
+		if(!GamePlugin.EMPTY_VERSION)
+			this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
 
 		if(offlinePlayer != null) {
 			object = offlinePlayer.getObject();
@@ -138,6 +140,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			return;
 		} else object = new JsonObject();
 
+		if(GamePlugin.EMPTY_VERSION) return;
+		
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
@@ -645,6 +649,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public boolean hasPermission(String permission) {
+		if(GamePlugin.EMPTY_VERSION)
+			return OtherPermissions.has(this, permission);
+		
 		return permission == null ? true : permissions.hasPermission(permission);
 	}
 

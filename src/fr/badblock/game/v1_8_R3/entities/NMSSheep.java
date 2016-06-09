@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
 
 import fr.badblock.gameapi.utils.entities.CreatureType;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
+import fr.badblock.gameapi.utils.reflection.Reflector;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.ControllerMove;
@@ -15,6 +16,7 @@ import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EnchantmentManager;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityIronGolem;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntitySheep;
@@ -326,6 +328,12 @@ public class NMSSheep extends EntitySheep implements CustomCreature {
 		this.goalSelector   = new PathfinderGoalSelector((world != null) && (world.methodProfiler != null) ? world.methodProfiler : null);
 		this.targetSelector = new PathfinderGoalSelector((world != null) && (world.methodProfiler != null) ? world.methodProfiler : null);
 
+		try {
+			new Reflector(this).setFieldValue("bq", new CustomPathfinderGoalEatTile(this));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 		if(allowedToFly || !movable)
 			return;
 
@@ -395,5 +403,26 @@ public class NMSSheep extends EntitySheep implements CustomCreature {
 		}
 		
 		return flag;
+	}
+	
+	public static class CustomPathfinderGoalEatTile extends PathfinderGoalEatTile {
+
+		public CustomPathfinderGoalEatTile(EntityInsentient entityinsentient) {
+			super(entityinsentient);
+			set();
+		}
+		
+		private void set(){
+			try {
+				new Reflector(this).setFieldValue("a", 40);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		@Override
+		public void d(){
+			set();
+		}
 	}
 }
