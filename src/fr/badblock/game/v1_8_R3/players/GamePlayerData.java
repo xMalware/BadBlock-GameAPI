@@ -1,7 +1,5 @@
 package fr.badblock.game.v1_8_R3.players;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +10,7 @@ import com.google.gson.JsonObject;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
+import fr.badblock.gameapi.players.data.GameData;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.data.PlayerData;
 import fr.badblock.gameapi.players.kits.PlayerKit;
@@ -35,7 +34,7 @@ public class GamePlayerData implements PlayerData {
 	
 	private transient List<String>						  achloadeds	   = new ArrayList<>();
 	
-	private transient Map<String, PlayerData> 			  datas 		   = Maps.newConcurrentMap();
+	private transient Map<String, GameData> 			  datas 		   = Maps.newConcurrentMap();
 	private transient JsonObject 						  data		 	   = new JsonObject();
 	private transient JsonObject 						  object		   = new JsonObject();
 
@@ -192,7 +191,7 @@ public class GamePlayerData implements PlayerData {
 	}
 
 	@SuppressWarnings("unchecked") @Override
-	public <T extends PlayerData> T gameData(String key, Class<T> clazz) {
+	public <T extends GameData> T gameData(String key, Class<T> clazz) {
 		key = key.toLowerCase();
 		
 		T result = null;
@@ -204,7 +203,7 @@ public class GamePlayerData implements PlayerData {
 			datas.put(key, result);
 		} else
 			try {
-				result = createObjectInstance(clazz);
+				result = clazz.getConstructor().newInstance();
 				datas.put(key, result);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -213,40 +212,11 @@ public class GamePlayerData implements PlayerData {
 		return result;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static <T> T createObjectInstance(Class<T> c){
-		if(c.isEnum() || c.isArray()){ // Could not load an Enum or an Array from an JObject
-			return null;
-		} else if(c.isInterface()){
-
-		} else {
-			try{
-				return getConstructor(c).newInstance();
-			} catch(Exception e){}
-			try {
-				Class<?> unsafe = Class.forName("sun.misc.Unsafe");
-				Field f = unsafe.getDeclaredField("theUnsafe"); f.setAccessible(true);
-				return (T) unsafe.getMethod("allocateInstance", Class.class).invoke(f.get(null), c);
-			} catch (Exception e){}
-		}
-		return null;
-	}
-	
-	private static <T> Constructor<T> getConstructor(Class<T> c){
-		try {
-			return c.getDeclaredConstructor();
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException("Can not get the default constructor of " + c.getSimpleName() + ".", e);
-		} catch(SecurityException e){
-			throw new RuntimeException("Can not get the default constructor of " + c.getSimpleName() + ".", e);
-		}
-	}
-
 	@Override
 	public void saveData() {
 		JsonObject object = GameAPI.getGson().toJsonTree(this).getAsJsonObject();
 	
-		for(Entry<String, PlayerData> entries : datas.entrySet()){
+		for(Entry<String, GameData> entries : datas.entrySet()){
 			if(!object.has(entries.getKey())){
 				object.add(entries.getKey(), GameAPI.getGson().toJsonTree(entries.getValue()));
 			}
