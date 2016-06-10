@@ -25,6 +25,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import fr.badblock.game.v1_8_R3.anticheat.AntiCheat;
 import fr.badblock.game.v1_8_R3.commands.AdminModeCommand;
 import fr.badblock.game.v1_8_R3.commands.BroadcastCommand;
 import fr.badblock.game.v1_8_R3.commands.ClearChatCommand;
@@ -288,6 +289,8 @@ public class GamePlugin extends GameAPI {
 				new InteractEntityListener().register();
 				new EquipmentListener().register();
 
+				AntiCheat.load();
+				
 				getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 				GameAPI.logColor("&b[GameAPI] &aCreating scoreboard...");

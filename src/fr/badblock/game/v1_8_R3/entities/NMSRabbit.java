@@ -40,7 +40,7 @@ public class NMSRabbit extends EntityRabbit implements CustomCreature {
 					allowedToFly 	     = false,
 					movable		 	     = true,
 					rideable			 = false,
-					agressive			 = true;
+					agressive			 = false;
 
 	private ControllerMove noMoveCache,
 	normalCache;

@@ -16,7 +16,6 @@ import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityGuardian;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntitySquid;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.Material;
 import net.minecraft.server.v1_8_R3.MathHelper;
@@ -333,7 +332,7 @@ public class NMSGuardian extends EntityGuardian implements CustomCreature {
 		try {
 			Class<?> theClass = null;
 
-			for(Class<?> clazz : EntitySquid.class.getDeclaredClasses()){
+			for(Class<?> clazz : EntityGuardian.class.getDeclaredClasses()){
 				if(clazz.getName().contains(name)){
 					theClass = clazz;
 				}
