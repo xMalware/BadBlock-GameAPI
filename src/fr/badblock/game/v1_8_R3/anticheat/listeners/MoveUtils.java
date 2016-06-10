@@ -16,10 +16,7 @@ public class MoveUtils {
 		} else {
 			Block block = player.getWorld().getBlockAt((int) position.getX(), (int) position.getY(), (int) position.getZ());
 
-			if(block.isLiquid() && !ac.wasWater){
-				ac.wasWater = !ac.wasWater;
-				ac.lastCount += 2;
-			} else if(!block.isLiquid() && ac.wasWater){
+			if((block.isLiquid() && !ac.wasWater) || (!block.isLiquid() && ac.wasWater)){
 				ac.wasWater = !ac.wasWater;
 				ac.lastCount += 2;
 			} else if(block.getType() == Material.AIR && ac.lastCount > 0){

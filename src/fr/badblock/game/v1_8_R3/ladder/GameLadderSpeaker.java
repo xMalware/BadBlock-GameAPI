@@ -23,6 +23,7 @@ import fr.badblock.protocol.PacketHandler;
 import fr.badblock.protocol.Protocol;
 import fr.badblock.protocol.packets.Packet;
 import fr.badblock.protocol.packets.PacketHelloworld;
+import fr.badblock.protocol.packets.PacketLadderStop;
 import fr.badblock.protocol.packets.PacketPlayerChat;
 import fr.badblock.protocol.packets.PacketPlayerData;
 import fr.badblock.protocol.packets.PacketPlayerData.DataAction;
@@ -208,4 +209,14 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	@Override public void handle(PacketMatchmakingJoin packet){}
 	@Override public void handle(PacketMatchmakingKeepalive packet){}
 	@Override public void handle(PacketMatchmakingPing packet){}
+
+	@Override
+	public void handle(PacketLadderStop packet) {
+		try {
+			Thread.sleep(10000L);
+			Bukkit.shutdown();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}		
+	}
 }
