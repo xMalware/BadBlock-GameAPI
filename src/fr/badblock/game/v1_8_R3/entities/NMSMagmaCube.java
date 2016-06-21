@@ -46,6 +46,11 @@ public class NMSMagmaCube extends EntityMagmaCube implements CustomCreature {
 	}
 	
 	@Override
+	public void setInvisible(boolean invisible) {
+		super.setInvisible(invisible);
+	}
+	
+	@Override
 	public org.bukkit.entity.Entity getBukkit() {
 		return getBukkitEntity();
 	}

@@ -45,6 +45,11 @@ public class NMSGhast extends EntityGhast implements CustomCreature {
 		
 		this.fireProof = true;
 	}
+	
+	@Override
+	public void setInvisible(boolean invisible) {
+		super.setInvisible(invisible);
+	}
 
 	@Override
 	public void explode(Location location, float power, boolean flaming, boolean smoking) {

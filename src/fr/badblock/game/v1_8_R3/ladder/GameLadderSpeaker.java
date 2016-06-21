@@ -29,6 +29,7 @@ import fr.badblock.protocol.packets.PacketPlayerData;
 import fr.badblock.protocol.packets.PacketPlayerData.DataAction;
 import fr.badblock.protocol.packets.PacketPlayerData.DataType;
 import fr.badblock.protocol.packets.PacketPlayerJoin;
+import fr.badblock.protocol.packets.PacketPlayerLogin;
 import fr.badblock.protocol.packets.PacketPlayerPlace;
 import fr.badblock.protocol.packets.PacketPlayerQuit;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingJoin;
@@ -209,7 +210,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	@Override public void handle(PacketMatchmakingJoin packet){}
 	@Override public void handle(PacketMatchmakingKeepalive packet){}
 	@Override public void handle(PacketMatchmakingPing packet){}
-
+	@Override public void handle(PacketPlayerLogin packet){}
+	
 	@Override
 	public void handle(PacketLadderStop packet) {
 		try {

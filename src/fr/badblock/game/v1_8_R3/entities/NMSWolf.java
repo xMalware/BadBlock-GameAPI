@@ -61,6 +61,11 @@ public class NMSWolf extends EntityWolf implements CustomCreature {
 	}
 
 	@Override
+	public void setInvisible(boolean invisible) {
+		super.setInvisible(invisible);
+	}
+	
+	@Override
 	public org.bukkit.entity.Entity getBukkit() {
 		return getBukkitEntity();
 	}

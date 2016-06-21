@@ -11,6 +11,7 @@ import org.bukkit.entity.EntityType;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
 import net.minecraft.server.v1_8_R3.BiomeBase;
 import net.minecraft.server.v1_8_R3.BiomeBase.BiomeMeta;
+import net.minecraft.server.v1_8_R3.EntityBat;
 import net.minecraft.server.v1_8_R3.EntityBlaze;
 import net.minecraft.server.v1_8_R3.EntityCaveSpider;
 import net.minecraft.server.v1_8_R3.EntityChicken;
@@ -44,6 +45,7 @@ import net.minecraft.server.v1_8_R3.EntityWolf;
 import net.minecraft.server.v1_8_R3.EntityZombie;
 
 public enum CustomCreatures {
+	BAT(EntityType.BAT, EntityBat.class, NMSBat.class),
 	BLAZE(EntityType.BLAZE, EntityBlaze.class, NMSBlaze.class),
 	CAVE_SPIDER(EntityType.CAVE_SPIDER, EntityCaveSpider.class, NMSCaveSpider.class),
 	CHICKEN(EntityType.CHICKEN, EntityChicken.class, NMSChicken.class),

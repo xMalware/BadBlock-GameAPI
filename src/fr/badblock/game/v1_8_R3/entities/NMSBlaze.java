@@ -51,6 +51,11 @@ public class NMSBlaze extends EntityBlaze implements CustomCreature {
 	}
 
 	@Override
+	public void setInvisible(boolean invisible) {
+		super.setInvisible(invisible);
+	}
+	
+	@Override
 	public void explode(Location location, float power, boolean flaming, boolean smoking) {
 		world.createExplosion(this, location.getX(), location.getY(), location.getZ(), power, flaming, smoking);
 	}
