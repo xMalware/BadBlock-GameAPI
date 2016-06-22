@@ -161,7 +161,8 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	}
 	
 	protected void joinTeam(BadblockPlayer p, BadblockTeam previous, BadblockTeam team){
-		getHandler().getTeam(team.getKey()).addEntry(p.getName());
+		if(!getHandler().getTeam(team.getKey()).hasEntry(p.getName()))
+			getHandler().getTeam(team.getKey()).addEntry(p.getName());
 		
 		if(previous != null){
 			getHandler().getTeam(previous.getKey()).removeEntry(p.getName());

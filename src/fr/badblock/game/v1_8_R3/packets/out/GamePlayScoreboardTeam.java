@@ -29,28 +29,28 @@ public class GamePlayScoreboardTeam extends GameBadblockOutPacket implements Pla
 
 	public GamePlayScoreboardTeam(PacketPlayOutScoreboardTeam packet){
 		Reflector reflector = new Reflector(packet);
-		
+
 		try {
 			teamName 		  = (String) reflector.getFieldValue("a");
 			mode     		  = TeamMode.getByValue((byte) reflector.getFieldValue("h"));
-			
+
 			if(mode == TeamMode.CREATE || mode == TeamMode.UPDATE) {
 				displayName  	  = (String) reflector.getFieldValue("b");
 				prefix       	  = (String) reflector.getFieldValue("c");
 				suffix       	  = (String) reflector.getFieldValue("d");
-				
+
 				friendlyFire      = TeamFriendlyFire.getByValue((byte) reflector.getFieldValue("i"));
 				nametagVisibility = TeamNameTag.valueOf((String) reflector.getFieldValue("e"));
-				
+
 				color			  = (byte) reflector.getFieldValue("f");
 			}
-			
+
 			if(mode == TeamMode.CREATE || mode == TeamMode.ADD_PLAYERS || mode == TeamMode.REMOVE_PLAYERS){
 				players = ((List<?>) reflector.getFieldValue("g")).toArray(new String[0]);
 			}
 		} catch(Exception e){}
 	}
-	
+
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		PacketPlayOutScoreboardTeam objective = new PacketPlayOutScoreboardTeam();
@@ -68,7 +68,7 @@ public class GamePlayScoreboardTeam extends GameBadblockOutPacket implements Pla
 			reflector.setFieldValue("e", nametagVisibility.name());
 			reflector.setFieldValue("f", (int) color);
 		}
-		
+
 		if(mode == TeamMode.CREATE || mode == TeamMode.ADD_PLAYERS || mode == TeamMode.REMOVE_PLAYERS){
 			reflector.setFieldValue("g", Arrays.asList(players));
 		}

@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
@@ -32,6 +31,7 @@ import fr.badblock.protocol.packets.PacketPlayerJoin;
 import fr.badblock.protocol.packets.PacketPlayerLogin;
 import fr.badblock.protocol.packets.PacketPlayerPlace;
 import fr.badblock.protocol.packets.PacketPlayerQuit;
+import fr.badblock.protocol.packets.PacketReconnectionInvitation;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingJoin;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive.ServerStatus;
@@ -166,8 +166,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	}
 	
 	@Override
-	public void sendReconnectionInvitation(UUID uniqueId, boolean invited) {
-		// TODO
+	public void sendReconnectionInvitation(String name, boolean invited) {
+		sendPacket(new PacketReconnectionInvitation(name, invited));
 	}
 	
 	@Override
@@ -211,7 +211,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	@Override public void handle(PacketMatchmakingKeepalive packet){}
 	@Override public void handle(PacketMatchmakingPing packet){}
 	@Override public void handle(PacketPlayerLogin packet){}
-	
+	@Override public void handle(PacketReconnectionInvitation packet){}
+
 	@Override
 	public void handle(PacketLadderStop packet) {
 		try {

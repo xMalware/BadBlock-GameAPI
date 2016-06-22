@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -25,7 +24,6 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import fr.badblock.game.v1_8_R3.anticheat.AntiCheat;
 import fr.badblock.game.v1_8_R3.commands.AdminModeCommand;
 import fr.badblock.game.v1_8_R3.commands.BroadcastCommand;
 import fr.badblock.game.v1_8_R3.commands.ClearChatCommand;
@@ -289,7 +287,7 @@ public class GamePlugin extends GameAPI {
 				new InteractEntityListener().register();
 				new EquipmentListener().register();
 
-				AntiCheat.load();
+				//AntiCheat.load();
 				
 				getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -377,6 +375,9 @@ public class GamePlugin extends GameAPI {
 
 		if(i18n != null)
 			i18n.save();
+		
+		gameServer.cancelReconnectionInvitations();
+		
 		if(getGameServerManager() != null)
 			this.getGameServerManager().stop();
 
@@ -523,10 +524,10 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public BadblockOfflinePlayer getOfflinePlayer(@NonNull UUID uniqueId) {
+	public BadblockOfflinePlayer getOfflinePlayer(@NonNull String name) {
 		if(EMPTY_VERSION) return null;
 
-		return EMPTY_VERSION ? null : gameServer.getPlayers().get(uniqueId);
+		return EMPTY_VERSION ? null : gameServer.getPlayers().get(name.toLowerCase());
 	}
 
 	@Override

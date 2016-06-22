@@ -780,7 +780,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					loc.add(loc.getDirection().multiply(10.0D));
 				} else if(count > 5){
 					loc.add(loc.getDirection().multiply(5.0D));
-				}else loc.add(loc.getDirection().multiply(20.0D));
+				} else loc.add(loc.getDirection().multiply(20.0D));
 
 				if (enderdragon.getLocation().distance(loc) > 128.0d) { // trop
 					enderdragon.teleport(loc);

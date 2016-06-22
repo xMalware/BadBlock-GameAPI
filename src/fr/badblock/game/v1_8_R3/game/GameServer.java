@@ -34,20 +34,20 @@ import lombok.Setter;
  * @authors xMalware & LeLanN
  */
 @Getter@Setter public class GameServer extends BadListener implements fr.badblock.gameapi.game.GameServer {
-	private GameState 						 gameState  	= GameState.WAITING;
-	private int 	  				    	 maxPlayers 	= Bukkit.getMaxPlayers();
+	private GameState 						   gameState  	= GameState.WAITING;
+	private int 	  				    	   maxPlayers 	= Bukkit.getMaxPlayers();
 	
-	private WhileRunningConnectionTypes 	 type 	    	= WhileRunningConnectionTypes.SPECTATOR;
-	private Map<UUID, BadblockOfflinePlayer> players		= Maps.newConcurrentMap();
+	private WhileRunningConnectionTypes 	   type 	    = WhileRunningConnectionTypes.SPECTATOR;
+	private Map<String, BadblockOfflinePlayer> players		= Maps.newConcurrentMap();
 
-	private List<BadblockTeam>				 savedTeams		= Lists.newArrayList();
-	private Map<UUID, BadblockPlayerData>	 savedPlayers	= Maps.newConcurrentMap();
-	private boolean							 saving			= false;
+	private List<BadblockTeam>				   savedTeams	= Lists.newArrayList();
+	private Map<String, BadblockPlayerData>	   savedPlayers	= Maps.newConcurrentMap();
+	private boolean							   saving		= false;
 	
-	private List<UUID>						 play		    = new ArrayList<>();
-	private String							 gameBegin		= "";
+	private List<UUID>						   play		    = new ArrayList<>();
+	private String							   gameBegin	= "";
 	
-	private long							 gameId			= new SecureRandom().nextLong();
+	private long							   gameId		= new SecureRandom().nextLong();
 	
 	@Override
 	public void setGameState(GameState gameState) {
@@ -65,7 +65,9 @@ import lombok.Setter;
 	
 	public void remember(BadblockPlayer player){
 		GameOfflinePlayer offline = new GameOfflinePlayer((GameBadblockPlayer) player);
-		players.put(player.getUniqueId(), offline);
+		players.put(player.getName().toLowerCase(), offline);
+		
+		GameAPI.getAPI().getLadderDatabase().sendReconnectionInvitation(player.getName().toLowerCase(), true);
 	}
 	
 	@Override
@@ -82,7 +84,7 @@ import lombok.Setter;
 		
 		LadderSpeaker ladderSpeaker = GameAPI.getAPI().getLadderDatabase();
 		
-		players.keySet().forEach(uuid -> ladderSpeaker.sendReconnectionInvitation(uuid, false));
+		players.keySet().forEach(name -> ladderSpeaker.sendReconnectionInvitation(name, false));
 		players.clear();
 	}
 

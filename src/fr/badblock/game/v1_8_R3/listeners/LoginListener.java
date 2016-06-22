@@ -37,7 +37,7 @@ public class LoginListener extends BadListener {
 		}
 		
 		Reflector 			  reflector 	= new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
-		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getUniqueId());
+		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 		GameBadblockPlayer    player;
 
 		try {
@@ -58,14 +58,14 @@ public class LoginListener extends BadListener {
 
 		if(GamePlugin.EMPTY_VERSION) return;
 		
-		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getUniqueId());
+		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 
 		if(offlinePlayer != null){
 			p.changePlayerDimension(offlinePlayer.getFalseDimension());
 			p.showCustomObjective(offlinePlayer.getCustomObjective());
 			
-			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getUniqueId());
-			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getUniqueId());
+			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
+			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getName().toLowerCase());
 		} else if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
