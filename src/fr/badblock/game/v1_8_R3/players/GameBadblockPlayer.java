@@ -784,7 +784,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				
 				if(barrier != null && getGameMode() != GameMode.SPECTATOR){
 					loc = barrier.getLocation();
-				} else if(getGameMode() != GameMode.SPECTATOR) {
+				} else if(getGameMode() == GameMode.SPECTATOR) {
 					loc.add(loc.getDirection().multiply(100.0D));
 				} else {
 					loc.add(loc.getDirection().multiply(50.0D));
