@@ -4,7 +4,6 @@ import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -768,23 +767,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			if (time == 0) {
 				Location loc = getLocation().clone();
 				
-				Block barrier   = null;
-				boolean thisone = false;;
-				
-				for(Block block : getLineOfSight((HashSet<Material>) null, 50)){
-					if(thisone){
-						barrier = block;
-						break;
-					}
-					
-					if(block.getType().isSolid() && !block.getType().isTransparent()){
-						thisone = true;
-					}
-				}
-				
-				if(barrier != null && getGameMode() != GameMode.SPECTATOR){
-					loc = barrier.getLocation();
-				} else if(getGameMode() == GameMode.SPECTATOR) {
+				if(getGameMode() == GameMode.SPECTATOR) {
 					loc.add(loc.getDirection().multiply(100.0D));
 				} else {
 					loc.add(loc.getDirection().multiply(50.0D));
