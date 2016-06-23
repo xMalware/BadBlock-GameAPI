@@ -20,6 +20,8 @@ public class DisconnectListener extends BadListener {
 	public void onQuit(PlayerQuitEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
+		player.undisguise();
+		
 		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING) {
 			if(player.getTeam() != null)
 				player.getTeam().leaveTeam(player);

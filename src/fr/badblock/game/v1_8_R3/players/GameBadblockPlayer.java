@@ -768,20 +768,28 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			if (time == 0) {
 				Location loc = getLocation().clone();
 				
-				int count = 0;
+				Block barrier   = null;
+				boolean thisone = false;;
 				
-				for(Block block : getLineOfSight((HashSet<Material>) null, 10)){
+				for(Block block : getLineOfSight((HashSet<Material>) null, 50)){
+					if(thisone){
+						barrier = block;
+						break;
+					}
+					
 					if(block.getType().isSolid() && !block.getType().isTransparent()){
-						count++;
+						thisone = true;
 					}
 				}
 				
-				if(count > 3 && count < 5){
-					loc.add(loc.getDirection().multiply(10.0D));
-				} else if(count > 5){
-					loc.add(loc.getDirection().multiply(5.0D));
-				} else loc.add(loc.getDirection().multiply(20.0D));
-
+				if(barrier != null && getGameMode() != GameMode.SPECTATOR){
+					loc = barrier.getLocation();
+				} else if(getGameMode() != GameMode.SPECTATOR) {
+					loc.add(loc.getDirection().multiply(100.0D));
+				} else {
+					loc.add(loc.getDirection().multiply(50.0D));
+				}
+				
 				if (enderdragon.getLocation().distance(loc) > 128.0d) { // trop
 					enderdragon.teleport(loc);
 					enderdragon.remove(GameBadblockPlayer.this);
