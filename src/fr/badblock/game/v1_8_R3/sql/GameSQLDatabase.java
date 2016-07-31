@@ -19,13 +19,12 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class GameSQLDatabase implements SQLDatabase {
-	
+	private static final int THREADS = 16;
 	private final String hostname, port, username, password, database;
-	private final int    threads = 16;
 	
-	protected Connection connection;
-	protected Queue<String> toSave = Queues.newLinkedBlockingDeque();
-	protected List<SQLThread> sqlThread = new ArrayList<>();
+	protected Connection 	  connection = null;
+	protected Queue<String>   toSave 	 = Queues.newLinkedBlockingDeque();
+	protected List<SQLThread> sqlThread  = new ArrayList<>();
 	
 	protected Thread saving = new Thread() {
 		@Override
@@ -52,7 +51,7 @@ public class GameSQLDatabase implements SQLDatabase {
 
 	{
 		saving.start();
-		for (int i = 0; i < threads; i++) 
+		for (int i = 0; i < THREADS; i++) 
 			sqlThread.add(new SQLThread(i));
 			
 	}
@@ -163,5 +162,4 @@ public class GameSQLDatabase implements SQLDatabase {
 		if (availableThread != null) availableThread.call(new SQLRequest(requestType, request, callback));
 		else if (firstThread != null) firstThread.call(new SQLRequest(requestType, request, callback));
 	}
-
 }

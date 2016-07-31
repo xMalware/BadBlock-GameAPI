@@ -22,12 +22,14 @@ public class NMSCaveSpider extends NMSSpider {
 		return CreatureType.CAVE_SPIDER;
 	}
 	
+	@Override
 	protected void initAttributes() {
 		super.initAttributes();
 
 		getAttributeInstance(GenericAttributes.maxHealth).setValue(12.0D);
 	}
 
+	@Override
 	public boolean r(Entity e) {
 		if (super.r(e)) {
 			if ((e instanceof EntityLiving)) {
@@ -47,10 +49,12 @@ public class NMSCaveSpider extends NMSSpider {
 		return false;
 	}
 
+	@Override
 	public GroupDataEntity prepare(DifficultyDamageScaler a, GroupDataEntity b) {
 		return b;
 	}
 
+	@Override
 	public float getHeadHeight() {
 		return 0.45F;
 	}

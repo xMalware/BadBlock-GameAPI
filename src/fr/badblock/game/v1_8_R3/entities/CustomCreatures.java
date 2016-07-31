@@ -17,7 +17,6 @@ import net.minecraft.server.v1_8_R3.EntityCaveSpider;
 import net.minecraft.server.v1_8_R3.EntityChicken;
 import net.minecraft.server.v1_8_R3.EntityCow;
 import net.minecraft.server.v1_8_R3.EntityCreeper;
-import net.minecraft.server.v1_8_R3.EntityEnderDragon;
 import net.minecraft.server.v1_8_R3.EntityEnderman;
 import net.minecraft.server.v1_8_R3.EntityEndermite;
 import net.minecraft.server.v1_8_R3.EntityGhast;
@@ -26,7 +25,6 @@ import net.minecraft.server.v1_8_R3.EntityGuardian;
 import net.minecraft.server.v1_8_R3.EntityHorse;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityIronGolem;
-import net.minecraft.server.v1_8_R3.EntityMagmaCube;
 import net.minecraft.server.v1_8_R3.EntityOcelot;
 import net.minecraft.server.v1_8_R3.EntityPig;
 import net.minecraft.server.v1_8_R3.EntityPigZombie;
@@ -34,13 +32,11 @@ import net.minecraft.server.v1_8_R3.EntityRabbit;
 import net.minecraft.server.v1_8_R3.EntitySheep;
 import net.minecraft.server.v1_8_R3.EntitySilverfish;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.EntitySlime;
 import net.minecraft.server.v1_8_R3.EntitySnowman;
 import net.minecraft.server.v1_8_R3.EntitySpider;
 import net.minecraft.server.v1_8_R3.EntitySquid;
 import net.minecraft.server.v1_8_R3.EntityTypes;
 import net.minecraft.server.v1_8_R3.EntityWitch;
-import net.minecraft.server.v1_8_R3.EntityWither;
 import net.minecraft.server.v1_8_R3.EntityWolf;
 import net.minecraft.server.v1_8_R3.EntityZombie;
 
@@ -51,7 +47,6 @@ public enum CustomCreatures {
 	CHICKEN(EntityType.CHICKEN, EntityChicken.class, NMSChicken.class),
 	COW(EntityType.COW, EntityCow.class, NMSCow.class),
 	CREEPER(EntityType.CREEPER, EntityCreeper.class, NMSCreeper.class),
-	ENDER_DRAGON(EntityType.ENDER_DRAGON, EntityEnderDragon.class, NMSEnderDragon.class),
 	ENDERMAN(EntityType.ENDERMAN, EntityEnderman.class, NMSEnderman.class),
 	ENDERMITE(EntityType.ENDERMITE, EntityEndermite.class, NMSEndermite.class),
 	GHAST(EntityType.GHAST, EntityGhast.class, NMSGhast.class),
@@ -59,7 +54,6 @@ public enum CustomCreatures {
 	GUARDIAN(EntityType.GUARDIAN, EntityGuardian.class, NMSGuardian.class),
 	HORSE(EntityType.HORSE, EntityHorse.class, NMSHorse.class),
 	IRON_GOLEM(EntityType.IRON_GOLEM, EntityIronGolem.class, NMSIronGolem.class),
-	MAGMA_CUBE(EntityType.MAGMA_CUBE, EntityMagmaCube.class, NMSMagmaCube.class),
 	OCELOT(EntityType.OCELOT, EntityOcelot.class, NMSOcelot.class),
 	PIG(EntityType.PIG, EntityPig.class, NMSPig.class),
 	PIG_ZOMBIE(EntityType.PIG_ZOMBIE, EntityPigZombie.class, NMSPigZombie.class),
@@ -67,12 +61,10 @@ public enum CustomCreatures {
 	SHEEP(EntityType.SHEEP, EntitySheep.class, NMSSheep.class),
 	SILVERFISH(EntityType.SILVERFISH, EntitySilverfish.class, NMSSilverfish.class),
 	SKELETON(EntityType.SKELETON, EntitySkeleton.class, NMSSkeleton.class),
-	SLIME(EntityType.SLIME, EntitySlime.class, NMSSlime.class),
 	SNOWMAN(EntityType.SNOWMAN, EntitySnowman.class, NMSSnowman.class),
 	SPIDER(EntityType.SPIDER, EntitySpider.class, NMSSpider.class),
 	SQUID(EntityType.SQUID, EntitySquid.class, NMSSquid.class),
 	WITCH(EntityType.WITCH, EntityWitch.class, NMSWitch.class),
-	WITHER(EntityType.WITHER, EntityWither.class, NMSWither.class),
 	WOLF(EntityType.WOLF, EntityWolf.class, NMSWolf.class),
 	ZOMBIE(EntityType.ZOMBIE, EntityZombie.class, NMSZombie.class);
 	
@@ -112,6 +104,15 @@ public enum CustomCreatures {
 		return customClass;
 	}
 
+	public static EntityType getTypeFromEntity(EntityInsentient entity){
+		for(CustomCreatures creature : values()){
+			if(creature.nmsClass.isInstance(entity))
+				return creature.entityType;
+		}
+		
+		return EntityType.UNKNOWN;
+	}
+	
 	public static void registerEntities() {
 		for (CustomCreatures entity : values()) /*Get our entities*/
 			a(entity.getCustomClass(), entity.getName(), entity.getID());
