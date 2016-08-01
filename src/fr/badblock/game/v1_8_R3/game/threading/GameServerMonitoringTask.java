@@ -66,7 +66,6 @@ public class GameServerMonitoringTask extends GameServerTask {
 				if (line.contains("(")) openServers++;
 			}
 		}catch(Exception e) {
-			e.printStackTrace();
 			return 0;
 		}
 		return openServers;

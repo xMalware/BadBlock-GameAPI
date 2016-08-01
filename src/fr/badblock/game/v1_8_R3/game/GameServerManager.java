@@ -30,7 +30,7 @@ public class GameServerManager {
 	private GameServerKeeperAliveTask	gameServerKeeperAliveTask;
 	private GameServerMonitoringTask	gameServerMonitoringTask;
 	private boolean						loaded;
-	private ServerConfigurationFactory	serverConfigurationFactory;
+	//private ServerConfigurationFactory	serverConfigurationFactory;
 
 	public GameServerManager(APIConfig config) {
 		this.setApiConfig(config);
@@ -42,7 +42,7 @@ public class GameServerManager {
 		// Activation du timing
 		forceCommand("timings on");
 
-		if(!GameAPI.TEST_MODE) {
+		if (!GameAPI.TEST_MODE) {
 			File gameServerFile  = new File(GameServerUtils.getFileName());
 			if(!gameServerFile.exists()) {
 				GameServerMessages.GAMESERVER_FILE_NOT_FOUND.log();
@@ -50,14 +50,13 @@ public class GameServerManager {
 				Bukkit.shutdown();
 				return;
 			}
-			this.setServerConfigurationFactory(JsonUtils.load(gameServerFile, ServerConfigurationFactory.class));
+		/*	this.setServerConfigurationFactory(JsonUtils.load(gameServerFile, ServerConfigurationFactory.class));
 			if(this.getServerConfigurationFactory() == null) {
 				GameServerMessages.GAMESERVER_FILE_INVALID.log();
 				GameServerMessages.SENDING_SHUTDOWN_SIGNAL.log();
 				Bukkit.shutdown();
 				return;
-			}
-
+			}*/
 			this.setGameServerKeeperAliveTask(new GameServerKeeperAliveTask(this.getApiConfig()));
 			this.setGameServerMonitoringTask(new GameServerMonitoringTask(this.getApiConfig()));
 			this.setGameServerSendLogsTask(new GameServerSendLogsTask(this.getApiConfig()));

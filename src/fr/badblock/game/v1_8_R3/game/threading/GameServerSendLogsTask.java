@@ -4,9 +4,14 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Timer;
 
 import org.apache.commons.net.ftp.FTP;
@@ -15,14 +20,28 @@ import org.apache.commons.net.ftp.FTPSClient;
 import fr.badblock.common.docker.factories.ServerConfigurationFactory;
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
+import fr.badblock.gameapi.GameAPI;
 
 public class GameServerSendLogsTask extends GameServerTask {
 	
 	private APIConfig	config;
+	private String		logFile;
 	
 	public GameServerSendLogsTask(APIConfig config) {
 		this.config = config;
 		new Timer().schedule(this, 0, config.timeBetweenLogs);
+		// Temporary
+		List<String> lines = null;
+		try {
+			lines = Files.readAllLines(Paths.get("server.properties"), Charset.defaultCharset());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		for (String line : lines) {
+			if (line.startsWith("docker-logs=")) {
+				logFile = line.replace("docker-logs=", "");
+			}
+		}
 	}
 	
 	@Override
@@ -40,8 +59,11 @@ public class GameServerSendLogsTask extends GameServerTask {
 				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 				ftpClient.execPBSZ(0); 
 				ftpClient.execPROT("P");
-				ServerConfigurationFactory serverConfigurationFactory = GamePlugin.getInstance().getGameServerManager().getServerConfigurationFactory();
-				String logFile = "/logs/" + serverConfigurationFactory.getLogFolder() + serverConfigurationFactory.getLogFile();
+				//ServerConfigurationFactory serverConfigurationFactory = GamePlugin.getInstance().getGameServerManager().getServerConfigurationFactory();
+				String af = GameAPI.getAPI().getServer().getServerName().split("_")[1];
+				String prefix = GameAPI.getAPI().getServer().getServerName().split("_")[0];
+				long serverId = Integer.parseInt(af);
+				String logFile = "/logs/" + this.logFile;
 				String[] splitter = logFile.split("/");
 				String old = "";
 				int nb = splitter.length;

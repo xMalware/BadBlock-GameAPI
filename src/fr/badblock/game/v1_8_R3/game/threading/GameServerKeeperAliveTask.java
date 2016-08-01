@@ -55,17 +55,17 @@ import lombok.Setter;
 	private void sendKeepAlivePacket(GameState gameState) {
 		GameAPI gameApi = GameAPI.getAPI();
 		GameServerManager gameServerManager = this.getGameServerManager();
-		ServerConfigurationFactory serverConfigurationFactory = gameServerManager.getServerConfigurationFactory();
+		//ServerConfigurationFactory serverConfigurationFactory = gameServerManager.getServerConfigurationFactory();
 		GameServer gameServer = gameApi.getGameServer();
-		GameAliveFactory gameAliveFactory = new GameAliveFactory(serverConfigurationFactory.getBungeeName(), isJoinable(), gameServer.getMaxPlayers(), Bukkit.getOnlinePlayers().size());
+		GameAliveFactory gameAliveFactory = new GameAliveFactory(gameApi.getServer().getServerName(), isJoinable(), Bukkit.getOnlinePlayers().size(), gameServer.getMaxPlayers());
 		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.keepalive", gameServerManager.getGson().toJson(gameAliveFactory), 5000, false);
 	}
 	
 	public void sendStopPacket() {
 		GameAPI gameApi = GameAPI.getAPI();
 		GameServerManager gameServerManager = this.getGameServerManager();
-		ServerConfigurationFactory serverConfigurationFactory = gameServerManager.getServerConfigurationFactory();
-		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.stop", serverConfigurationFactory.getBungeeName(), 5000, false);
+		//ServerConfigurationFactory serverConfigurationFactory = gameServerManager.getServerConfigurationFactory();
+		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.stop", gameApi.getServer().getServerName(), 5000, false);
 	}
 	
 	private boolean isJoinable() {
@@ -74,9 +74,9 @@ import lombok.Setter;
 	}
 	
 	public void setFirstServer() {
-		ServerConfigurationFactory serverConfigurationFactory = this.getGameServerManager().getServerConfigurationFactory();
-
-		long serverId = serverConfigurationFactory.getId();
+		//ServerConfigurationFactory serverConfigurationFactory = this.getGameServerManager().getServerConfigurationFactory();
+		String af = GameAPI.getAPI().getServer().getServerName().split("_")[1];
+		long serverId = Integer.parseInt(af);
 		OptionalInt optionalInt = Arrays.stream(new File("..").listFiles()).mapToInt((file) -> {
 			if(file.isDirectory())
 				try {
