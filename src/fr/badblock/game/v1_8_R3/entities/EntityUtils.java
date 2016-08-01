@@ -1,10 +1,6 @@
 package fr.badblock.game.v1_8_R3.entities;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -73,7 +69,7 @@ public class EntityUtils {
 		} 
 
 		if(creature.getCreatureBehaviour() != CreatureBehaviour.FLYING){
-			moveSuper(creature, sideMot, forMot);
+			creature.callSuperMove(sideMot, forMot);
 			//creature.superMove(sideMot, forMot);
 			return;
 		}
@@ -156,7 +152,7 @@ public class EntityUtils {
 			entity.S = 1.0F;
 
 			entity.k(0.35F);
-			moveSuper(creature, sideMot, forMot);
+			creature.callSuperMove(sideMot, forMot);
 
 			if (jump != null && entity.onGround) {
 				try {
@@ -190,11 +186,11 @@ public class EntityUtils {
 			return;
 		}
 
-		if(entity.passenger == null){
-			callSuper(creature, MethodType.methodType(Void.class), "E");
-		} else {
+		if(entity.passenger != null){
 			return;	
 		}
+		
+		creature.callSuperMoveFlying();
 
 		if(creature.getCreatureBehaviour() != CreatureBehaviour.FLYING)
 			return;
@@ -228,10 +224,10 @@ public class EntityUtils {
 		EntityInsentient entity = creature.getNMSEntity();
 
 		if(!creature.hasCreatureFlag(CreatureFlag.RIDEABLE)){
-			return rightClickSuper(creature, entityhuman);
+			return creature.callSuperRightClick(entityhuman);
 		}
 		
-		if(rightClickSuper(creature, entityhuman))
+		if(creature.callSuperRightClick(entityhuman))
 			return true;
 		
 		if(!entity.world.isClientSide && (entity.passenger == null || entity.passenger == entityhuman)) {
@@ -243,10 +239,14 @@ public class EntityUtils {
 	}
 	
 	public static boolean damageEntity(NMSCustomCreature creature, DamageSource damagesource, float f){
+		if(creature.getEntityType().isHostile()){
+			return creature.callSuperDamageEntity(damagesource, f);
+		}
+		
 		if(!creature.hasCreatureFlag(CreatureFlag.AGRESSIVE) || creature.getNMSEntity().isInvulnerable(damagesource))
 			return false;
 		
-		if(damageSuper(creature, damagesource, f)){
+		if(creature.callSuperDamageEntity(damagesource, f)){
 			Entity entity = damagesource.getEntity();
 			return (entity.passenger != entity) && (entity.vehicle != entity);
 		}
@@ -289,34 +289,6 @@ public class EntityUtils {
 		}
 		
 		return flag;
-	}
-	
-	private static Object callSuper(NMSCustomCreature creature, MethodType type, String method, Object... args){
-	    try {
-			MethodHandle handle = MethodHandles.lookup().findSpecial(EntityInsentient.class, method, type, creature.getClass());
-			return handle.invoke(creature, args);
-	    } catch (Throwable e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-	
-	private static void moveSuper(NMSCustomCreature creature, float f1, float f2){
-		MethodType type = MethodType.methodType(Void.class, Arrays.asList(Float.class, Float.class));
-	
-		callSuper(creature, type, "g", f1, f2);
-	}
-	
-	private static boolean damageSuper(NMSCustomCreature creature, DamageSource damagesource, float f){
-		MethodType type = MethodType.methodType(Boolean.class, Arrays.asList(DamageSource.class, Float.class));
-	
-		return (boolean) callSuper(creature, type, "damageEntity", damagesource, f);
-	}
-	
-	private static boolean rightClickSuper(NMSCustomCreature creature, EntityHuman entityhuman){
-		MethodType type = MethodType.methodType(Boolean.class, Arrays.asList(EntityHuman.class));
-	
-		return (boolean) callSuper(creature, type, "a", entityhuman);
 	}
 	
 	private static boolean isInLava(Entity entity){

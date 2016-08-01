@@ -95,6 +95,26 @@ public class NMSSpider extends EntitySpider implements NMSCustomCreature {
 		return this;
 	}
 
+	@Override
+	public void callSuperMove(float f1, float f2) {
+		super.g(f1, f2);
+	}
+
+	@Override
+	public void callSuperMoveFlying() {
+		super.E();
+	}
+
+	@Override
+	public boolean callSuperRightClick(EntityHuman entityhuman) {
+		return super.a(entityhuman);
+	}
+
+	@Override
+	public boolean callSuperDamageEntity(DamageSource damagesource, float f) {
+		return super.damageEntity(damagesource, f);
+	}
+	
 	@SuppressWarnings("rawtypes")
 	public static class PathfinderGoalSpiderNearestAttackableTarget<T extends EntityLiving> extends PathfinderGoalNearestAttackableTarget {
 		@SuppressWarnings("unchecked")

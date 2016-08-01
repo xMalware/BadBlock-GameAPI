@@ -108,5 +108,25 @@ public class NMSGuardian extends EntityGuardian implements NMSCustomCreature {
 
 		return null;
 	}
+	
+	@Override
+	public void callSuperMove(float f1, float f2) {
+		super.g(f1, f2);
+	}
+
+	@Override
+	public void callSuperMoveFlying() {
+		super.E();
+	}
+
+	@Override
+	public boolean callSuperRightClick(EntityHuman entityhuman) {
+		return super.a(entityhuman);
+	}
+
+	@Override
+	public boolean callSuperDamageEntity(DamageSource damagesource, float f) {
+		return super.damageEntity(damagesource, f);
+	}
 }
 

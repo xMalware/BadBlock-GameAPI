@@ -10,7 +10,9 @@ import fr.badblock.gameapi.utils.entities.CreatureType;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.ControllerMove;
+import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.PathfinderGoal;
@@ -154,6 +156,14 @@ public interface NMSCustomCreature extends CustomCreature {
 		}
 	}
 
+	public void callSuperMove(float f1, float f2);
+
+	public void callSuperMoveFlying();
+	
+	public boolean callSuperRightClick(EntityHuman entityhuman);
+	
+	public boolean callSuperDamageEntity(DamageSource damagesource, float f);
+	
 	public ControllerMove getNormalController();
 
 	public void setNormalController(ControllerMove controllerMove);
