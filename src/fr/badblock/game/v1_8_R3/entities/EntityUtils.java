@@ -68,9 +68,8 @@ public class EntityUtils {
 			movePassenger(creature); return;
 		} 
 
-		if(creature.getCreatureBehaviour() != CreatureBehaviour.FLYING){
+		if(creature.getCreatureBehaviour() != CreatureBehaviour.FLYING || entity.getGoalTarget() != null){
 			creature.callSuperMove(sideMot, forMot);
-			//creature.superMove(sideMot, forMot);
 			return;
 		}
 
@@ -186,7 +185,7 @@ public class EntityUtils {
 			return;
 		}
 
-		if(entity.passenger != null){
+		if(entity.passenger != null || entity.getGoalTarget() != null){
 			return;	
 		}
 		
