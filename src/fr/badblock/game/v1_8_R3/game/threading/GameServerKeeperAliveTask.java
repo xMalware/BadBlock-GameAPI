@@ -74,8 +74,9 @@ import lombok.Setter;
 	}
 	
 	public void setFirstServer() {
-		//ServerConfigurationFactory serverConfigurationFactory = this.getGameServerManager().getServerConfigurationFactory();
-		String af = GameAPI.getAPI().getServer().getServerName().split("_")[1];
+		String[] split = GameAPI.getAPI().getServer().getServerName().split("_");
+		if (split.length < 2) return;
+		String af = split[1];
 		long serverId = Integer.parseInt(af);
 		OptionalInt optionalInt = Arrays.stream(new File("..").listFiles()).mapToInt((file) -> {
 			if(file.isDirectory())
