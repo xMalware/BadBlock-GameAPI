@@ -7,7 +7,6 @@ import java.util.OptionalInt;
 import org.bukkit.Bukkit;
 
 import fr.badblock.common.docker.factories.GameAliveFactory;
-import fr.badblock.common.docker.factories.ServerConfigurationFactory;
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.game.GameServerManager;
 import fr.badblock.game.v1_8_R3.jsonconfiguration.APIConfig;
@@ -63,7 +62,6 @@ import lombok.Setter;
 	
 	public void sendStopPacket() {
 		GameAPI gameApi = GameAPI.getAPI();
-		GameServerManager gameServerManager = this.getGameServerManager();
 		//ServerConfigurationFactory serverConfigurationFactory = gameServerManager.getServerConfigurationFactory();
 		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.stop", gameApi.getServer().getServerName(), 5000, false);
 	}
