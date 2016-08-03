@@ -233,14 +233,14 @@ public class GamePlugin extends GameAPI {
 				new PermissionManager(new JsonArray());
 				ladderDatabase   = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
 				ladderDatabase.askForPermissions();
-
+/*
 				GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" +  config.sqlPort);
 				GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
 
 				sqlDatabase   = new GameSQLDatabase(config.sqlIp, Integer.toString(config.sqlPort), config.sqlUser, config.sqlPassword, config.sqlDatabase);
 				sqlDatabase.openConnection();
 
-				rabbitSpeaker = new RabbitSpeaker(config);
+				rabbitSpeaker = new RabbitSpeaker(config);*/
 			}
 
 			GameAPI.logColor("&b[GameAPI] &aLoading NMS classes...");

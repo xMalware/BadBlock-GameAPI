@@ -22,16 +22,19 @@ import fr.badblock.protocol.PacketHandler;
 import fr.badblock.protocol.Protocol;
 import fr.badblock.protocol.packets.Packet;
 import fr.badblock.protocol.packets.PacketHelloworld;
+import fr.badblock.protocol.packets.PacketLadderStop;
 //import fr.badblock.protocol.packets.PacketLadderStop;
 import fr.badblock.protocol.packets.PacketPlayerChat;
 import fr.badblock.protocol.packets.PacketPlayerData;
 import fr.badblock.protocol.packets.PacketPlayerData.DataAction;
 import fr.badblock.protocol.packets.PacketPlayerData.DataType;
 import fr.badblock.protocol.packets.PacketPlayerJoin;
+import fr.badblock.protocol.packets.PacketPlayerLogin;
 //import fr.badblock.protocol.packets.PacketPlayerLogin;
 import fr.badblock.protocol.packets.PacketPlayerPlace;
 import fr.badblock.protocol.packets.PacketPlayerQuit;
-//import fr.badblock.protocol.packets.PacketReconnectionInvitation;
+import fr.badblock.protocol.packets.PacketReconnectionInvitation;
+import fr.badblock.protocol.packets.PacketSimpleCommand;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingJoin;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive.ServerStatus;
@@ -48,7 +51,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	private String 									 ip;
 	private int    									 port;
 	private int										 nextKey		  = 0;
-	
+
 	private boolean trying   = false;
 
 	private Queue<Packet>							 waitingPackets;
@@ -152,24 +155,34 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	public void askForPermissions() {
 		sendPacket(new PacketPlayerData(DataType.PERMISSION, DataAction.REQUEST, "*", ""));
 	}
-	
+
 	@Override
 	public void keepAlive(GameState state, int current, int max){
 		sendPacket(new PacketMatchmakingKeepalive(ServerStatus.getStatus(state.getId()), current, max));
 	}
-	
+
 	@Override
 	public void sendPing(String[] servers, Callback<Integer> count){
 		requestedPing.put(nextKey, count);
 		sendPacket(new PacketMatchmakingPing(nextKey, servers));
 		nextKey++;
 	}
-	
+
 	@Override
 	public void sendReconnectionInvitation(String name, boolean invited) {
 		//sendPacket(new PacketReconnectionInvitation(name, invited));
 	}
+
+	@Override
+	public void executeCommand(String command) {
+		sendPacket(new PacketSimpleCommand(command));
+	}
 	
+	@Override
+	public void executeCommand(BadblockPlayer player, String command) {
+		sendPacket(new PacketSimpleCommand(player.getName(), command));
+	}
+
 	@Override
 	public void handle(PacketPlayerData packet) {
 		if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.SEND){
@@ -201,7 +214,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 			requestedPing.get(packet.getId()).done(packet.getPlayerCount(), null);
 		}
 	}
-	
+
 	@Override public void handle(PacketPlayerChat packet){}
 	@Override public void handle(PacketPlayerJoin packet){}
 	@Override public void handle(PacketPlayerQuit packet){}
@@ -210,16 +223,19 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	@Override public void handle(PacketMatchmakingJoin packet){}
 	@Override public void handle(PacketMatchmakingKeepalive packet){}
 	@Override public void handle(PacketMatchmakingPing packet){}
-	//@Override public void handle(PacketPlayerLogin packet){}
-	//@Override public void handle(PacketReconnectionInvitation packet){}
+	@Override public void handle(PacketPlayerLogin packet){}
+	@Override public void handle(PacketReconnectionInvitation packet){}
 
-	/*@Override
+	@Override
 	public void handle(PacketLadderStop packet) {
 		try {
 			Thread.sleep(10000L);
 			Bukkit.shutdown();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		}		
-	}*/
+		}	
+	}
+
+	@Override public void handle(PacketSimpleCommand packet) {
+	}
 }

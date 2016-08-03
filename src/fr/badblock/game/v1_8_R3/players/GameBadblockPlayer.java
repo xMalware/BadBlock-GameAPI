@@ -821,6 +821,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		// update equipment for other players :o
 		for(Player player : Bukkit.getOnlinePlayers()){
 			BadblockPlayer bp = (BadblockPlayer) player;
+			
+			if(bp.getUniqueId().equals(getUniqueId()) && !disguise.isCanSeeHimself()){
+				continue;
+			}
+			
 			disguiseEntity.show(bp);
 			
 			if(bp.getUniqueId().equals(getUniqueId())) continue;
