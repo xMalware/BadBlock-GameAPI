@@ -32,6 +32,7 @@ import fr.badblock.protocol.packets.PacketPlayerLogin;
 import fr.badblock.protocol.packets.PacketPlayerPlace;
 import fr.badblock.protocol.packets.PacketPlayerQuit;
 import fr.badblock.protocol.packets.PacketReconnectionInvitation;
+import fr.badblock.protocol.packets.PacketSimpleCommand;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingJoin;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive.ServerStatus;
@@ -171,6 +172,11 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	}
 	
 	@Override
+	public void executeCommand(String command) {
+		sendPacket(new PacketSimpleCommand(command));
+	}
+	
+	@Override
 	public void handle(PacketPlayerData packet) {
 		if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.SEND){
 			Callback<JsonObject> callback = requestedPlayers.get(packet.getKey().toLowerCase());
@@ -222,4 +228,6 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 			e.printStackTrace();
 		}		
 	}
+
+	@Override public void handle(PacketSimpleCommand packet){}
 }
