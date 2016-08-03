@@ -197,7 +197,7 @@ public class GamePlugin extends GameAPI {
 		instance 	= this;
 		GameAPI.API = this;
 
-		i18n  		= new GameI18n(); // Création de l'I18N pour permettre la couleur
+		i18n  		= new GameI18n(); // Crï¿½ation de l'I18N pour permettre la couleur
 
 		if(!getDataFolder().exists()) getDataFolder().mkdirs();
 
@@ -233,14 +233,14 @@ public class GamePlugin extends GameAPI {
 				new PermissionManager(new JsonArray());
 				ladderDatabase   = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
 				ladderDatabase.askForPermissions();
-/*
-				GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" +  config.sqlPort);
+
+				/*GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" +  config.sqlPort);
 				GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
 
 				sqlDatabase   = new GameSQLDatabase(config.sqlIp, Integer.toString(config.sqlPort), config.sqlUser, config.sqlPassword, config.sqlDatabase);
-				sqlDatabase.openConnection();
-
-				rabbitSpeaker = new RabbitSpeaker(config);*/
+				sqlDatabase.openConnection();*/
+				
+				rabbitSpeaker = new RabbitSpeaker(config);
 			}
 
 			GameAPI.logColor("&b[GameAPI] &aLoading NMS classes...");
@@ -253,37 +253,37 @@ public class GamePlugin extends GameAPI {
 			/**
 			 * Chargement des Listeners
 			 */
-			new LoginListener(); 				// Met le BadblockPlayer à la connection
+			new LoginListener(); 				// Met le BadblockPlayer ï¿½ la connection
 
 			if(!EMPTY_VERSION){
-				new DisconnectListener(); 			// Gère la déconnection
+				new DisconnectListener(); 			// Gï¿½re la dï¿½connection
 				new JailedPlayerListener(); 		// Permet de bien jail les joueurs
-				new ItemStackExtras(); 		 	    // Permet de bien gérer les items spéciaux
+				new ItemStackExtras(); 		 	    // Permet de bien gï¿½rer les items spï¿½ciaux
 				new ProjectileHitBlockCaller();		// Permet d'appeler un event lorsque un projectile rencontre un block
 				new GameServerListener();			// Permet la gestion des joueurs vers Docker
-				new FakeDeathCaller();				// Permet de gérer les fausses morts et la détections du joueur
-				new ChangeWorldEvent();				// Permet de mieux gérer les fausses dimensions
-				new PlayerSelectionListener();	    // Permet aux administrateurs de définir une zone
-				new MoveListener();					// Permet d'empêcher les joueurs de sortir d'une zone
+				new FakeDeathCaller();				// Permet de gï¿½rer les fausses morts et la dï¿½tections du joueur
+				new ChangeWorldEvent();				// Permet de mieux gï¿½rer les fausses dimensions
+				new PlayerSelectionListener();	    // Permet aux administrateurs de dï¿½finir une zone
+				new MoveListener();					// Permet d'empï¿½cher les joueurs de sortir d'une zone
 				new ChatListener();					// Permet de formatter le chat
-				joinItems = new GameJoinItems();    // Items donné à l'arrivée du joueur
+				joinItems = new GameJoinItems();    // Items donnï¿½ ï¿½ l'arrivï¿½e du joueur
 
 				/** Correction de bugs Bukkit */
 
-				new ArrowBugFixListener();			// Permet de corriger un bug avec les flèches se lançant mal
-				new UselessDamageFixListener();		// Enlève les dégats inutiles lors d'une chute
+				new ArrowBugFixListener();			// Permet de corriger un bug avec les flï¿½ches se lanï¿½ant mal
+				new UselessDamageFixListener();		// Enlï¿½ve les dï¿½gats inutiles lors d'une chute
 				//new PlayerTeleportFix();			// Permet de bien voir le joueur lorsqu'il respawn (bug Bukkit)
 
-				/** Protection et optimisations par défaut */
+				/** Protection et optimisations par dï¿½faut */
 
-				new PlayerMapProtectorListener();	// Permet de protéger la map
-				new BlockMapProtectorListener();	// Permet de protéger la map
-				new EntityMapProtectorListener();	// Permet de protéger la map
+				new PlayerMapProtectorListener();	// Permet de protï¿½ger la map
+				new BlockMapProtectorListener();	// Permet de protï¿½ger la map
+				new EntityMapProtectorListener();	// Permet de protï¿½ger la map
 
-				/** Packets écoutés par l'API */
+				/** Packets ï¿½coutï¿½s par l'API */
 				GameAPI.logColor("&b[GameAPI] &aRegistering packets listeners ...");
 
-				new CameraListener().register();	// Packet pour voir à la place du joueur en spec (aucun event sur Bukkit)
+				new CameraListener().register();	// Packet pour voir ï¿½ la place du joueur en spec (aucun event sur Bukkit)
 				new InteractEntityListener().register();
 				new EquipmentListener().register();
 
@@ -293,10 +293,10 @@ public class GamePlugin extends GameAPI {
 
 				GameAPI.logColor("&b[GameAPI] &aCreating scoreboard...");
 
-				badblockScoreboard = new GameScoreboard(); // Permet de gérer le scoreboard
+				badblockScoreboard = new GameScoreboard(); // Permet de gï¿½rer le scoreboard
 			}
 			/**
-			 * Chargement des commandes par défaut
+			 * Chargement des commandes par dï¿½faut
 			 */
 			GameAPI.logColor("&b[GameAPI] &aRegistering commands...");
 
@@ -342,7 +342,7 @@ public class GamePlugin extends GameAPI {
 
 			if(!EMPTY_VERSION){
 				GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
-				// GameServer après tout
+				// GameServer aprï¿½s tout
 				this.gameServer 	   = new GameServer();
 				this.gameServerManager = new GameServerManager(config);
 				this.getGameServerManager().start();
@@ -679,7 +679,7 @@ public class GamePlugin extends GameAPI {
 
 		this.portalFolder = folder;
 
-		// On charge commandes/listeners qu'on avait pas load pour économiser sur les serveurs ou inutiles
+		// On charge commandes/listeners qu'on avait pas load pour ï¿½conomiser sur les serveurs ou inutiles
 		new PortalCommand();
 		new PortalListener();
 
