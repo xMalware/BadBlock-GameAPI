@@ -119,4 +119,9 @@ public class NMSHorse extends EntityHorse implements NMSCustomCreature {
 	public boolean callSuperDamageEntity(DamageSource damagesource, float f) {
 		return super.damageEntity(damagesource, f);
 	}
+	
+	@Override
+	public void setBe(float be){
+		
+	}
 }
