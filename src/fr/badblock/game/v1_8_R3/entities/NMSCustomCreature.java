@@ -8,6 +8,7 @@ import java.util.Random;
 
 import fr.badblock.gameapi.utils.entities.CreatureType;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
+import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.ControllerMove;
 import net.minecraft.server.v1_8_R3.DamageSource;
@@ -63,10 +64,7 @@ public interface NMSCustomCreature extends CustomCreature {
 
 	default void setBe(float be) {
 		try {
-			Field field = Entity.class.getDeclaredField("be");
-
-			field.setAccessible(true);
-			field.set(getNMSEntity(), be);
+			new Reflector(getNMSEntity()).setFieldValue("be", be);
 		} catch(Exception e){
 			e.printStackTrace();
 		}

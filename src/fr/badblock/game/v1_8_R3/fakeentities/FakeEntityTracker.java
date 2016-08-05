@@ -67,7 +67,7 @@ public class FakeEntityTracker {
 		void updatePlayer(BadblockPlayer player){
 			if(player == null || fakeEntity.isRemoved()) return;
 
-			if(player.isOnline()){
+			if(!player.isOnline()){
 				if(players.contains(player)){
 					players.remove(player);
 				}
