@@ -20,7 +20,7 @@ public class FakeEntities {
 	private static int lastId = -10;
 	private static final Map<Integer, GameFakeEntity<?>> entities = Maps.newConcurrentMap();
 	
-	private static Map<String, FakeEntityTracker> trackers = new HashMap<>();
+	private static Map<String, FakeEntityTracker> trackers = Maps.newConcurrentMap();
 	
 	private static FakeEntityTracker getTracker(World world){
 		if(!trackers.containsKey(world.getName())){
