@@ -1,5 +1,6 @@
 package fr.badblock.game.v1_8_R3.fakeentities;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -19,7 +20,7 @@ public class FakeEntities {
 	private static int lastId = -10;
 	private static final Map<Integer, GameFakeEntity<?>> entities = Maps.newConcurrentMap();
 	
-	private static Map<String, FakeEntityTracker> trackers;
+	private static Map<String, FakeEntityTracker> trackers = new HashMap<>();
 	
 	private static FakeEntityTracker getTracker(World world){
 		if(!trackers.containsKey(world.getName())){
