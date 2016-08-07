@@ -1,6 +1,5 @@
 package fr.badblock.game.v1_8_R3.fakeentities;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
