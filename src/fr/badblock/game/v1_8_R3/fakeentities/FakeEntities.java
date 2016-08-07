@@ -26,7 +26,7 @@ public class FakeEntities {
 			FakeEntityTracker tracker = new FakeEntityTracker(world);
 			
 			Bukkit.getScheduler().runTaskTimer(GameAPI.getAPI(), tracker::doTick, 1L, 1L);
-			trackers.put(world.getName(), new FakeEntityTracker(world));
+			trackers.put(world.getName(), tracker);
 		}
 		
 		return trackers.get(world.getName());
@@ -60,5 +60,4 @@ public class FakeEntities {
 	public static FakeEntity<?> retrieveFakeEntity(int id){
 		return entities.get(id);
 	}
-
 }
