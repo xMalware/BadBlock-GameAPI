@@ -1,7 +1,6 @@
 package fr.badblock.game.v1_8_R3.entities;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Random;
@@ -41,10 +40,7 @@ public interface NMSCustomCreature extends CustomCreature {
 
 	default BlockPosition getBlockPosition() {
 		try {
-			Field field = Entity.class.getDeclaredField("an");
-
-			field.setAccessible(true);
-			return (BlockPosition) field.get(getNMSEntity());
+			return (BlockPosition) new Reflector(getNMSEntity()).getFieldValue("an");
 		} catch(Exception e){
 			e.printStackTrace();
 			return null;
@@ -53,10 +49,7 @@ public interface NMSCustomCreature extends CustomCreature {
 
 	default void setBlockPosition(BlockPosition blockPosition) {
 		try {
-			Field field = Entity.class.getDeclaredField("an");
-
-			field.setAccessible(true);
-			field.set(getNMSEntity(), blockPosition);
+			new Reflector(getNMSEntity()).setFieldValue("an", blockPosition);
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -72,10 +65,7 @@ public interface NMSCustomCreature extends CustomCreature {
 
 	default Random getRandom() {
 		try {
-			Field field = Entity.class.getDeclaredField("random");
-
-			field.setAccessible(true);
-			return (Random) field.get(getNMSEntity());
+			return (Random) new Reflector(getNMSEntity()).getFieldValue("random");
 		} catch(Exception e){
 			e.printStackTrace();
 			return null;
@@ -84,7 +74,7 @@ public interface NMSCustomCreature extends CustomCreature {
 
 	default void setYawPitch0(float yaw, float pitch){
 		try {
-			Method m = Entity.class.getDeclaredMethod("setYawPitch", Float.class, Float.class);
+			Method m = EntityInsentient.class.getDeclaredMethod("setYawPitch", Float.class, Float.class);
 			m.setAccessible(true);
 			m.invoke(getNMSEntity(), yaw, pitch);
 		} catch (Exception e) {
