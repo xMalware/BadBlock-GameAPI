@@ -89,12 +89,14 @@ import fr.badblock.game.v1_8_R3.players.GameJoinItems;
 import fr.badblock.game.v1_8_R3.players.GameKit;
 import fr.badblock.game.v1_8_R3.players.GameScoreboard;
 import fr.badblock.game.v1_8_R3.players.GameTeam;
+import fr.badblock.game.v1_8_R3.sql.FakeSQLDatabase;
 import fr.badblock.game.v1_8_R3.sql.GameSQLDatabase;
 import fr.badblock.game.v1_8_R3.technologies.RabbitSpeaker;
 import fr.badblock.game.v1_8_R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.configuration.BadConfiguration;
 import fr.badblock.gameapi.databases.LadderSpeaker;
+import fr.badblock.gameapi.databases.SQLDatabase;
 import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent.JoinReason;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.packets.BadblockInPacket;
@@ -162,7 +164,7 @@ public class GamePlugin extends GameAPI {
 	@Getter
 	private GameScoreboard				badblockScoreboard;
 	@Getter
-	private GameSQLDatabase				sqlDatabase;
+	private SQLDatabase					sqlDatabase;
 	@Getter
 	private LadderSpeaker				ladderDatabase;
 	@Getter
@@ -234,13 +236,17 @@ public class GamePlugin extends GameAPI {
 				ladderDatabase   = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
 				ladderDatabase.askForPermissions();
 
-				/*GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" +  config.sqlPort);
-				GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
+				if(!GameAPI.TEST_MODE){
+					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" +  config.sqlPort);
+					GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
 
-				sqlDatabase   = new GameSQLDatabase(config.sqlIp, Integer.toString(config.sqlPort), config.sqlUser, config.sqlPassword, config.sqlDatabase);
-				sqlDatabase.openConnection();*/
-				
-				rabbitSpeaker = new RabbitSpeaker(config);
+					sqlDatabase   = new GameSQLDatabase(config.sqlIp, Integer.toString(config.sqlPort), config.sqlUser, config.sqlPassword, config.sqlDatabase);
+					((GameSQLDatabase) sqlDatabase).openConnection();
+					
+					rabbitSpeaker = new RabbitSpeaker(config);
+				} else {
+					sqlDatabase = new FakeSQLDatabase();
+				}
 			}
 
 			GameAPI.logColor("&b[GameAPI] &aLoading NMS classes...");
@@ -367,8 +373,8 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public void onDisable(){
 		try {
-			if(!EMPTY_VERSION)
-				sqlDatabase.closeConnection();
+			if(!EMPTY_VERSION && !TEST_MODE)
+				((GameSQLDatabase) sqlDatabase).closeConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
