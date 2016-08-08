@@ -11,9 +11,9 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
-import fr.badblock.game.v1_8_R3.players.CommandInGameData;
 import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
-import fr.badblock.game.v1_8_R3.players.GameOfflinePlayer;
+import fr.badblock.game.v1_8_R3.players.ingamedata.CommandInGameData;
+import fr.badblock.game.v1_8_R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
@@ -26,7 +26,7 @@ import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 
 /**
- * Listener servant à remplacé la classe CraftPlayer par GameBadblockPlayer et à demander à Ladder les informations joueur.
+ * Listener servant ï¿½ remplacï¿½ la classe CraftPlayer par GameBadblockPlayer et ï¿½ demander ï¿½ Ladder les informations joueur.
  * @author LeLanN
  */
 public class LoginListener extends BadListener {

@@ -16,8 +16,8 @@ import com.google.common.collect.Maps;
 
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
-import fr.badblock.game.v1_8_R3.players.GameBadblockPlayerData;
-import fr.badblock.game.v1_8_R3.players.GameOfflinePlayer;
+import fr.badblock.game.v1_8_R3.players.ingamedata.GameBadblockPlayerData;
+import fr.badblock.game.v1_8_R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.LadderSpeaker;

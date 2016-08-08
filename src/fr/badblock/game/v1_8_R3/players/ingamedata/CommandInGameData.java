@@ -1,4 +1,4 @@
-package fr.badblock.game.v1_8_R3.players;
+package fr.badblock.game.v1_8_R3.players.ingamedata;
 
 import fr.badblock.gameapi.players.data.InGameData;
 

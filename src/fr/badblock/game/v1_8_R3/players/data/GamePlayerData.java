@@ -1,4 +1,4 @@
-package fr.badblock.game.v1_8_R3.players;
+package fr.badblock.game.v1_8_R3.players.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +147,7 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public Locale getLocale() {
-		return Locale.FRENCH_FRANCE; //TODO changer ça
+		return Locale.FRENCH_FRANCE; //TODO changer ï¿½a
 	}
 
 	@Override

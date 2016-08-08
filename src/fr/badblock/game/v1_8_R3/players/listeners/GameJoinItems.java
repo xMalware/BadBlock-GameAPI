@@ -1,4 +1,4 @@
-package fr.badblock.game.v1_8_R3.players;
+package fr.badblock.game.v1_8_R3.players.listeners;
 
 import java.io.File;
 import java.io.IOException;

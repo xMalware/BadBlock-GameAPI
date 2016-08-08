@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.badblock.game.v1_8_R3.players.CommandInGameData;
+import fr.badblock.game.v1_8_R3.players.ingamedata.CommandInGameData;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;

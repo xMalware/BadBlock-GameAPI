@@ -1,4 +1,4 @@
-package fr.badblock.game.v1_8_R3.players;
+package fr.badblock.game.v1_8_R3.players.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -249,7 +249,7 @@ public class GameKit implements PlayerKit {
 		} else {
 			level = player.getPlayerData().getUnlockedKitLevel(this);
 
-			if(level == 0) return; // le joueur n'a pas débloqué le kit :o
+			if(level == 0) return; // le joueur n'a pas dï¿½bloquï¿½ le kit :o
 
 
 			if(level <= 0 || level > getMaxLevel()){

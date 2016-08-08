@@ -11,8 +11,8 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 
-import fr.badblock.game.v1_8_R3.players.GameKit;
-import fr.badblock.game.v1_8_R3.players.GameKit.KitLevel;
+import fr.badblock.game.v1_8_R3.players.data.GameKit;
+import fr.badblock.game.v1_8_R3.players.data.GameKit.KitLevel;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;

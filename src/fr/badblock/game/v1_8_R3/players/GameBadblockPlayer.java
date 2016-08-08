@@ -31,6 +31,10 @@ import com.google.gson.JsonObject;
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.internalutils.Base64Url;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket;
+import fr.badblock.game.v1_8_R3.players.data.GamePlayerData;
+import fr.badblock.game.v1_8_R3.players.ingamedata.GameOfflinePlayer;
+import fr.badblock.game.v1_8_R3.players.utils.BadblockInjector;
+import fr.badblock.game.v1_8_R3.players.utils.OtherPermissions;
 import fr.badblock.game.v1_8_R3.watchers.MetadataIndex;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.disguise.Disguise;
@@ -125,7 +129,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		this.inGameData  = Maps.newConcurrentMap();
 
-		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recréé à la récéptions des données
+		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recrï¿½ï¿½ ï¿½ la rï¿½cï¿½ptions des donnï¿½es
 		
 		if(!GamePlugin.EMPTY_VERSION)
 			this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
@@ -397,8 +401,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			loc.add(loc.getDirection().multiply(50.0D));
 
 			enderdragon = GameAPI.getAPI().spawnFakeLivingEntity(loc, EntityType.WITHER, WatcherWither.class); // en
-			// vré
-			// cé
+			// vrï¿½
+			// cï¿½
 			// un
 			// wither
 			enderdragon.getWatchers().setCustomName(message).setCustomNameVisible(true).setInvisibile(true);
@@ -477,7 +481,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			location = getEyeLocation().add(getEyeLocation().getDirection().multiply(2.0d));
 		}
 
-		location.subtract(0, 1.975, 0); // On enlève la hauteur de l'armor stand
+		location.subtract(0, 1.975, 0); // On enlï¿½ve la hauteur de l'armor stand
 
 		if (offset != 0)
 			location.add(MathsUtils.doubleRandomInclusive(-offset, offset),
@@ -584,7 +588,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 		
 		reloadMap();
-		updateInventory(); // euh ... pk déprécié ? (pas déprécié pour Player)
+		updateInventory(); // euh ... pk dï¿½prï¿½ciï¿½ ? (pas dï¿½prï¿½ciï¿½ pour Player)
 	}
 
 	@Override
@@ -778,7 +782,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					enderdragon.remove(GameBadblockPlayer.this);
 					enderdragon.show(GameBadblockPlayer.this);
 				} else {
-					enderdragon.teleport(loc); // on téléporte l'entité pour
+					enderdragon.teleport(loc); // on tï¿½lï¿½porte l'entitï¿½ pour
 				}
 
 				if(!bossBarMessage.equals(lastMessage)){

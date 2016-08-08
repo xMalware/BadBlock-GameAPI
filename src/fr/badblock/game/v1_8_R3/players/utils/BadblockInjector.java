@@ -1,4 +1,4 @@
-package fr.badblock.game.v1_8_R3.players;
+package fr.badblock.game.v1_8_R3.players.utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -8,6 +8,7 @@ import fr.badblock.game.v1_8_R3.packets.GameBadblockInPacket;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockInPackets;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.v1_8_R3.packets.GameBadblockOutPacket.GameBadblockOutPackets;
+import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.packets.BadblockInPacket;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
 import fr.badblock.gameapi.packets.InPacketListener;
@@ -30,14 +31,14 @@ public class BadblockInjector extends ChannelDuplexHandler {
 		
 		for (GameBadblockInPackets packet : GameBadblockInPackets.values()) {
 			try {
-				// Le packet recherché dans la boucle est pas celui qui est reçu
+				// Le packet recherchï¿½ dans la boucle est pas celui qui est reï¿½u
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
 				
 				// Aucun listener pour ce packet
 				if (GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()) == null) {
 					break;
 				}
-				// Création de notre packet spécial
+				// Crï¿½ation de notre packet spï¿½cial
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
 				GameBadblockInPacket inPacket = (GameBadblockInPacket) constructor.newInstance(pack);
@@ -71,11 +72,11 @@ public class BadblockInjector extends ChannelDuplexHandler {
 		
 		for (GameBadblockOutPackets packet : GameBadblockOutPackets.values()) {
 			try {
-				// Le packet recherché dans la boucle est pas celui qui est reçu
+				// Le packet recherchï¿½ dans la boucle est pas celui qui est reï¿½u
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
 				// Aucun listener pour ce packet
 				if (!GamePlugin.getInstance().getPacketOutListeners().containsKey(packet.getClazz())) break;
-				// Création de notre packet spécial
+				// Crï¿½ation de notre packet spï¿½cial
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
 				GameBadblockOutPacket outPacket = (GameBadblockOutPacket) constructor.newInstance(pack);

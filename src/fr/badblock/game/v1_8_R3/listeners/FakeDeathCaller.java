@@ -27,7 +27,7 @@ import com.google.common.collect.Maps;
 import fr.badblock.game.v1_8_R3.GamePlugin;
 import fr.badblock.game.v1_8_R3.itemstack.GameItemExtra;
 import fr.badblock.game.v1_8_R3.itemstack.ItemStackExtras;
-import fr.badblock.game.v1_8_R3.players.CommandInGameData;
+import fr.badblock.game.v1_8_R3.players.ingamedata.CommandInGameData;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.PlayerReconnectionPropositionEvent;
@@ -153,13 +153,13 @@ public class FakeDeathCaller extends BadListener {
 
 			boolean changed = false;
 
-			// Si un joueur a été tapé récemment
+			// Si un joueur a ï¿½tï¿½ tapï¿½ rï¿½cemment
 			if(fData.lastKill.containsKey(player.getUniqueId())){
 				long delta = System.currentTimeMillis() - fData.lastKill.get(player.getUniqueId());
 
 				// Il y a moins de 20 secondes
 				if(delta < 20 * 1000){
-					// On incrémente
+					// On incrï¿½mente
 					fData.alert++;
 					fData.lastSpawnkill = System.currentTimeMillis();
 					changed = true;
@@ -173,7 +173,7 @@ public class FakeDeathCaller extends BadListener {
 
 			fData.lastKill.put(player.getUniqueId(), System.currentTimeMillis());
 
-			// Si il n'a pas tapé un joueur depuis 60 secondes, on l'enlève de la liste
+			// Si il n'a pas tapï¿½ un joueur depuis 60 secondes, on l'enlï¿½ve de la liste
 			fData.lastKill.forEach((p, last) -> {
 				long delta = System.currentTimeMillis() - fData.lastKill.get(player.getUniqueId());
 

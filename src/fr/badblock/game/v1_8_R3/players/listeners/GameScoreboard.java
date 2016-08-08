@@ -1,4 +1,4 @@
-package fr.badblock.game.v1_8_R3.players;
+package fr.badblock.game.v1_8_R3.players.listeners;
 
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,6 +19,8 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
+import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
+import fr.badblock.game.v1_8_R3.players.ingamedata.VoteInGameData;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent;
@@ -191,7 +193,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	}
 	
 	/*
-	 * Envoit le nouveau préfixe via packet, pour l'avoir custom sans le déclarer dans un scoreboard personnel (opti)
+	 * Envoit le nouveau prï¿½fixe via packet, pour l'avoir custom sans le dï¿½clarer dans un scoreboard personnel (opti)
 	 */
 	protected void sendTeam(BadblockPlayer p, BadblockTeam team, ChatColor color){
 		String displayName = team.getTabPrefix(color).getAsLine(p);
@@ -227,7 +229,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			
 			Team teamHandler = getHandler().getTeam(group.getName());
 			
-			// On ne définit pas le préfixe car il faut le faire pour chaque joueur (préfixe allié / ennemi)
+			// On ne dï¿½finit pas le prï¿½fixe car il faut le faire pour chaque joueur (prï¿½fixe alliï¿½ / ennemi)
 			teamHandler.setAllowFriendlyFire(false);
 		});
 	}
@@ -248,7 +250,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			
 			Team teamHandler = getHandler().getTeam(team.getKey());
 			
-			// On ne définit pas le préfixe car il faut le faire pour chaque joueur (préfixe allié / ennemi)
+			// On ne dï¿½finit pas le prï¿½fixe car il faut le faire pour chaque joueur (prï¿½fixe alliï¿½ / ennemi)
 			teamHandler.setAllowFriendlyFire(false);
 		});
 	}

@@ -1,4 +1,4 @@
-package fr.badblock.game.v1_8_R3.players;
+package fr.badblock.game.v1_8_R3.players.ingamedata;
 
 import java.util.Map;
 import java.util.UUID;
@@ -7,6 +7,8 @@ import org.bukkit.World.Environment;
 
 import com.google.gson.JsonObject;
 
+import fr.badblock.game.v1_8_R3.players.GameBadblockPlayer;
+import fr.badblock.game.v1_8_R3.players.data.GamePlayerData;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
