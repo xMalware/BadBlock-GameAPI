@@ -71,14 +71,6 @@ public interface NMSCustomCreature extends CustomCreature {
 		}
 	}
 
-	default void setYawPitch0(float yaw, float pitch){
-		try {
-			new Reflector(getNMSEntity()).getDeclaredMethod("setYawPitch", Float.class, Float.class).invoke(getNMSEntity(), yaw, pitch);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
     default void callA(double... args){
 		try {
 			new Reflector(getNMSEntity()).getDeclaredMethod("a", Double[].class).invoke(getNMSEntity(), args);
