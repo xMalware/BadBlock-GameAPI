@@ -114,6 +114,7 @@ import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.portal.Portal;
+import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.servers.MapProtector;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
@@ -193,6 +194,9 @@ public class GamePlugin extends GameAPI {
 	private Map<String, Portal>			portals			= Maps.newConcurrentMap();
 	private File						portalFolder	= null;
 
+	@Getter
+	private RunType						runType;
+	
 	@Override
 	public void onEnable() {
 		thread		= Thread.currentThread();
@@ -229,6 +233,8 @@ public class GamePlugin extends GameAPI {
 					JsonUtils.save(configFile, config, true);
 				}
 
+				runType = config.runType;
+				
 				GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + config.ladderIp + ":" +  config.ladderPort);
 				GameAPI.logColor("&b[GameAPI] &aConnecting to Ladder...");
 

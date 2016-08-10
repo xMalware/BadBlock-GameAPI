@@ -1,5 +1,6 @@
 package fr.badblock.game.v1_8_R3.jsonconfiguration;
 
+import fr.badblock.gameapi.run.RunType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,5 +36,7 @@ import lombok.Setter;
 	public int		ticksBetweenMonitoreLogs;
 	public int		ticksBetweenKeepAlives;
 	public long		uselessUntilTime;
+	
+	public RunType  runType = RunType.LOBBY;
 	
 }
