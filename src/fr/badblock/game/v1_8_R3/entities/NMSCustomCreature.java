@@ -1,7 +1,6 @@
 package fr.badblock.game.v1_8_R3.entities;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Random;
 
@@ -74,29 +73,23 @@ public interface NMSCustomCreature extends CustomCreature {
 
 	default void setYawPitch0(float yaw, float pitch){
 		try {
-			Method m = Entity.class.getDeclaredMethod("setYawPitch", Float.class, Float.class);
-			m.setAccessible(true);
-			m.invoke(getNMSEntity(), yaw, pitch);
+			new Reflector(getNMSEntity()).getDeclaredMethod("setYawPitch", Float.class, Float.class).invoke(getNMSEntity(), yaw, pitch);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-    /*default void callA(double... args){
+    default void callA(double... args){
 		try {
-			Method m = Entity.class.getDeclaredMethod("a", Double[].class);
-			m.setAccessible(true);
-			m.invoke(getNMSEntity(), args);
+			new Reflector(getNMSEntity()).getDeclaredMethod("a", Double[].class).invoke(getNMSEntity(), args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}*/
+	}
 
 	default void callAEntity(EntityLiving e1, Entity e2){
 		try {
-			Method m = Entity.class.getDeclaredMethod("a", EntityLiving.class, Entity.class);
-			m.setAccessible(true);
-			m.invoke(getNMSEntity(), e1, e2);
+			new Reflector(getNMSEntity()).getDeclaredMethod("a", EntityLiving.class, Entity.class).invoke(getNMSEntity(), e1, e2);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
