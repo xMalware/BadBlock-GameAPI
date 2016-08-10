@@ -39,7 +39,7 @@ public class GameKit implements PlayerKit {
 		if(player.hasPermission(GamePermission.VIP)){
 			for(String lore : GameAPI.i18n().get(player.getPlayerData().getLocale(), "kits.leftclick")){
 				result.add(lore);
-			}
+			} 
 		}
 
 		result.add("");
