@@ -8,12 +8,12 @@ import org.bukkit.Material;
 import com.google.gson.JsonObject;
 
 import fr.badblock.gameapi.GameAPI;
-import fr.badblock.gameapi.achievements.AchievementList;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.kits.PlayerKit;
+import fr.badblock.gameapi.run.BadblockGame;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
@@ -216,7 +216,7 @@ public class GameKit implements PlayerKit {
 
 		for(int i=0;i<kitLevel.getNeededAchievements().length;i++){
 			String 			  name 		  = kitLevel.getNeededAchievements()[i];
-			PlayerAchievement achievement = AchievementList.getGameAchievement(GameAPI.getInternalGameName(), name);
+			PlayerAchievement achievement = BadblockGame.current.getGameData().getAchievements().getGameAchievement(name);
 			result[i]					  = achievement;
 		}
 
