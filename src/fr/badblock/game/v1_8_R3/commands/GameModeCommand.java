@@ -6,10 +6,10 @@ import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.badblock.gameapi.achievements.AchievementList;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
+import fr.badblock.gameapi.run.BadblockGame;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 /**
@@ -43,7 +43,9 @@ public class GameModeCommand extends AbstractCommand {
 				return true;
 			} else if(args[0].equalsIgnoreCase("yolo2")){
 				BadblockPlayer player = (BadblockPlayer) concerned;
-				AchievementList.openInventory(player, "rush");
+				
+				if(BadblockGame.RUSH.getGameData() != null)
+					BadblockGame.RUSH.getGameData().getAchievements().openInventory(player);
 				
 				return true;
 			}
