@@ -16,13 +16,13 @@ import org.bukkit.inventory.ItemStack;
 
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
-import fr.badblock.gameapi.achievements.AchievementList;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
+import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.InGameKitData;
 import fr.badblock.gameapi.players.kits.PlayerKit;
+import fr.badblock.gameapi.run.BadblockGame;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
@@ -39,11 +39,12 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	private int 			       achieItemSlot = -1;
 	
 	
-	private String				   game			  = GameAPI.getInternalGameName();
 	private String 			       fallbackServer = "lobby";
 	private List<PlayerKit>        kits;
 	private Map<String, PlayerKit> knowKits;
 	private List<BadblockTeam>     teams;
+	
+	private BadblockGame		   game;
 	
 	private boolean				   clear = true,
 								   ended = false;
@@ -113,7 +114,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 			ItemEvent event = new ItemEvent(){
 				@Override
 				public boolean call(ItemAction action, BadblockPlayer player) {
-					AchievementList.openInventory(player, game);
+					game.getGameData().getAchievements().openInventory(player);
 					return true;
 				}
 			};
@@ -279,7 +280,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	}
 
 	@Override
-	public void registerAchievementsItem(int slot, String game) {
+	public void registerAchievementsItem(int slot, BadblockGame game) {
 		this.achieItemSlot = slot;
 		this.game 		   = game;
 	}
