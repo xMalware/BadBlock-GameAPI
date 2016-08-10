@@ -45,8 +45,19 @@ public class GamePlayerData implements PlayerData {
 	}
 	
 	@Override
-	public void addBadcoins(int badcoins) {
-		this.badcoins += Math.abs(badcoins);
+	public int addBadcoins(int badcoins) {
+		badcoins = Math.abs(badcoins);
+		
+		int bonus = GameAPI.getAPI().getServerBadcoinsBonus();
+		
+		if(bonus <= 0)
+			bonus = 1;
+		
+		badcoins *= bonus;
+		
+		this.badcoins += badcoins;
+		
+		return badcoins;
 	}
 
 	@Override
@@ -60,8 +71,16 @@ public class GamePlayerData implements PlayerData {
 	}
 	
 	@Override
-	public void addXp(long xp) {
+	public long addXp(long xp) {
 		xp = Math.abs(xp);
+		
+		int bonus = GameAPI.getAPI().getServerXpBonus();
+		
+		if(bonus <= 0)
+			bonus = 1;
+		
+		xp *= bonus;
+		
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
 		
 		if(delta > 0){
@@ -70,6 +89,8 @@ public class GamePlayerData implements PlayerData {
 			level++;
 			this.xp = -delta;
 		}
+		
+		return xp;
 	}
 
 	@Override
