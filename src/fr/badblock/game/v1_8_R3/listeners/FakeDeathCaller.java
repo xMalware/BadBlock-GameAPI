@@ -266,7 +266,7 @@ public class FakeDeathCaller extends BadListener {
 		p.inGameData(FakeDeathData.class).lastDamager   = -1;
 
 		if(e.getDeathMessage() != null){
-			System.out.println(e.getDeathMessage());
+			//System.out.println(e.getDeathMessage());
 			Object end = e.getDeathMessageEnd() == null ? "" : e.getDeathMessageEnd();
 
 			List<Object> res = new ArrayList<>();
@@ -274,7 +274,7 @@ public class FakeDeathCaller extends BadListener {
 			for(Object obj : e.getDeathMessage().getObjects())
 				res.add(obj);
 			res.add(end);
-			System.out.println(res);
+			//System.out.println(res);
 			new TranslatableString(e.getDeathMessage().getKey(), res.toArray()).broadcast();
 
 			for(Player player : Bukkit.getOnlinePlayers()){

@@ -80,11 +80,11 @@ public class FakeEntityTracker {
 		}
 
 		void updatePlayer(BadblockPlayer player){
-			System.out.println(player.getName());
+			//System.out.println(player.getName());
 			
 			if(player == null || fakeEntity.isRemoved()) return;
 
-			System.out.println("a");
+			//System.out.println("a");
 			
 			if(!player.isOnline()){
 				if(players.contains(player)){
@@ -94,7 +94,7 @@ public class FakeEntityTracker {
 				return;
 			}
 
-			System.out.println("b");
+			//System.out.println("b");
 			
 			if(!fakeEntity.see(player)){
 				if(players.contains(player)){
@@ -104,16 +104,16 @@ public class FakeEntityTracker {
 				return;
 			}
 			
-			System.out.println("c");
+			//System.out.println("c");
 
 			if(isVisibleFrom(player.getLocation())) {
-				System.out.println("d");
+				//System.out.println("d");
 				if(!players.contains(player)){
-					System.out.println("e");
+				//	System.out.println("e");
 					spawn(player);
 				}
 			} else if(players.contains(player)) {
-				System.out.println("e");
+				//System.out.println("e");
 				remove(player);
 			}
 		}

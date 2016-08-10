@@ -234,7 +234,7 @@ public class GamePlayerData implements PlayerData {
 		if(datas.containsKey(key)){
 			result = (T) datas.get(key);
 		} else if(data.has(key)){
-			System.out.println(data.get(key));
+			//System.out.println(data.get(key));
 			result = GameAPI.getGson().fromJson(data.get(key), clazz);
 			datas.put(key, result);
 		} else
