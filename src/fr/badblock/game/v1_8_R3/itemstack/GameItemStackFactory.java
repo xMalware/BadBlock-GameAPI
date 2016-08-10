@@ -25,7 +25,7 @@ import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
  * A simple {@link fr.badblock.gameapi.ItemStackFactory} implementation.
  * @author LeLanN
  */
-public class GameItemStackFactory implements ItemStackFactory {
+public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	private boolean 				  unbreakable;
 	private Map<Enchantment, Integer> enchants;
 	private String[]				  lore;
@@ -181,5 +181,16 @@ public class GameItemStackFactory implements ItemStackFactory {
 		this.locale = locale;
 		
 		return this;
+	}
+	
+	@Override
+	public ItemStackFactory clone(){
+		try {
+			return (ItemStackFactory) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }
