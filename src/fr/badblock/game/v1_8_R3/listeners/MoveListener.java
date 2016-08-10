@@ -29,7 +29,7 @@ public class MoveListener extends BadListener {
 			}
 
 		} else if(player.isDisguised()){
-			player.getDisguiseEntity().move(e.getTo());
+			player.getDisguiseEntity().teleport(e.getTo());
 		}
 
 		if(e.getFrom().getBlock().equals(e.getTo().getBlock())) return;
