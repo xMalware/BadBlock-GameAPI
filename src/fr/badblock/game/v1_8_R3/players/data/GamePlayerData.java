@@ -57,6 +57,8 @@ public class GamePlayerData implements PlayerData {
 			bonus *= coinsBonus;
 		}
 		
+		//TODO bonus = bonusServer * bonusPlayer or the highest ?
+		
 		if(applyBonus)
 			badcoins *= bonus;
 		
@@ -87,6 +89,8 @@ public class GamePlayerData implements PlayerData {
 		if(xpBonus > 1){
 			bonus *= xpBonus;
 		}
+		
+		//TODO bonus = bonusServer * bonusPlayer or the highest ?
 		
 		if(applyBonus)
 			xp *= bonus;
