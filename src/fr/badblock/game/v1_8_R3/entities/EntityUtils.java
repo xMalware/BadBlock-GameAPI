@@ -125,8 +125,6 @@ public class EntityUtils {
 		entity.lastYaw = entity.yaw = entity.passenger.yaw;
 		entity.pitch = entity.passenger.pitch * 0.5F;
 		
-		creature.setYawPitch0(entity.yaw, entity.pitch);
-		
 		entity.aI = entity.aG = entity.yaw;
 
 		float sideMot = ((EntityLiving) entity.passenger).aZ * 0.5F;
