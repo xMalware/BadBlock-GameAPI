@@ -74,7 +74,7 @@ public interface NMSCustomCreature extends CustomCreature {
 
 	default void setYawPitch0(float yaw, float pitch){
 		try {
-			Method m = EntityInsentient.class.getDeclaredMethod("setYawPitch", Float.class, Float.class);
+			Method m = Entity.class.getDeclaredMethod("setYawPitch", Float.class, Float.class);
 			m.setAccessible(true);
 			m.invoke(getNMSEntity(), yaw, pitch);
 		} catch (Exception e) {
@@ -82,7 +82,7 @@ public interface NMSCustomCreature extends CustomCreature {
 		}
 	}
 
-	default void callA(double... args){
+    /*default void callA(double... args){
 		try {
 			Method m = Entity.class.getDeclaredMethod("a", Double[].class);
 			m.setAccessible(true);
@@ -90,7 +90,7 @@ public interface NMSCustomCreature extends CustomCreature {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	default void callAEntity(EntityLiving e1, Entity e2){
 		try {
