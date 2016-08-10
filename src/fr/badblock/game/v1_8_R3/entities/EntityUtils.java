@@ -167,8 +167,7 @@ public class EntityUtils {
 		} else entity.motY = -entity.pitch/45;
 
 
-		// just create an unused NBTTag list => remvove
-		// creature.callA(sideMot, forMot, creature.getCreatureGenericAttribute(CreatureGenericAttribute.SPEED));
+		creature.callA(sideMot, forMot, creature.getCreatureGenericAttribute(CreatureGenericAttribute.SPEED));
 
 		if(sideMot != 0 || forMot != 0) {
 			entity.move(entity.motX, entity.motY, entity.motZ);
