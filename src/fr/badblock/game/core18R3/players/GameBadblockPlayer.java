@@ -856,7 +856,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.disguiseEntity.destroy();
 			this.disguiseEntity = null;
 			
-			getHandle().setInvisible(true);
+			getHandle().setInvisible(false);
 		}
 	}
 }
