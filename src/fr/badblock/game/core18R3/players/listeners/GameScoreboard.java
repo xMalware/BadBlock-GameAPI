@@ -380,6 +380,6 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				max = value;
 		}
 
-		return max == null ? null : max.getValue();
+		return max == null ? 0 : max.getValue();
 	}
 }
