@@ -19,5 +19,5 @@ public class ACPlayer implements InGameData {
 				player.kickPlayer(msg);
 			}
 		}.runTaskLater(GameAPI.getAPI(), 1L);
-	} 
+	}
 }
