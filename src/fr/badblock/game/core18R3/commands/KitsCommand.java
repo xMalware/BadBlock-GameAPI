@@ -1,8 +1,6 @@
 package fr.badblock.game.core18R3.commands;
 
 import static fr.badblock.game.core18R3.GamePlugin.FOLDER_KITS;
-import static fr.badblock.game.core18R3.GamePlugin.getInstance;
-import static fr.badblock.gameapi.GameAPI.getInternalGameName;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,6 +9,7 @@ import java.util.List;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 
+import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.data.GameKit;
 import fr.badblock.game.core18R3.players.data.GameKit.KitLevel;
 import fr.badblock.gameapi.GameAPI;
@@ -36,7 +35,7 @@ public class KitsCommand extends AbstractCommand {
 
 		args[0] = args[0].toLowerCase();
 		
-		File folder = new File(getInstance().getDataFolder() + File.separator + FOLDER_KITS, getInternalGameName());
+		File folder = new File(GamePlugin.getInstance().getDataFolder() + File.separator + FOLDER_KITS, GameAPI.getInternalGameName());
 		
 		if(!folder.exists()){
 			player.sendTranslatedMessage("commands.kits.no-game", args[0]); return false;
