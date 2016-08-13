@@ -14,8 +14,8 @@ import net.minecraft.server.v1_8_R3.PacketHandshakingInSetProtocol;
 	public GameHandshake(PacketHandshakingInSetProtocol packet){
 		super(packet);
 		protocolVersion = packet.b();
-		serverAddress   = packet.b;
-		serverPort		= packet.c;
+		serverAddress   = packet.hostname;
+		serverPort		= packet.port;
 		nextState		= NextState.getById(packet.a().a());
 	}
 }
