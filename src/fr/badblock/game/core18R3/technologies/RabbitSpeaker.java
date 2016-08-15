@@ -3,10 +3,10 @@ package fr.badblock.game.core18R3.technologies;
 import java.io.IOException;
 
 import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
-import fr.xmalware.badblock.rabbitconnector.Encodage;
-import fr.xmalware.badblock.rabbitconnector.RabbitConnector;
-import fr.xmalware.badblock.rabbitconnector.RabbitPacketType;
-import fr.xmalware.badblock.rabbitconnector.RabbitService;
+import fr.badblock.rabbitconnector.RabbitConnector;
+import fr.badblock.rabbitconnector.types.RabbitPacketType;
+import fr.badblock.rabbitconnector.workers.RabbitService;
+import fr.badblock.utils.Encodage;
 import lombok.Getter;
 import lombok.Setter;
 
