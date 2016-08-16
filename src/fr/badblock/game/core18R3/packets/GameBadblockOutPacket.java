@@ -248,7 +248,7 @@ public abstract class GameBadblockOutPacket extends GameBadblockPacket implement
 			this.nmsClazz  = nmsClass;
 			
 			try {
-				this.gameClazz = (Class<? extends GameBadblockOutPacket>) Class.forName("fr.badblock.game.v1_8_R3.packets.out.Game" + clazz.getSimpleName());
+				this.gameClazz = (Class<? extends GameBadblockOutPacket>) Class.forName("fr.badblock.game.core18R3.packets.out.Game" + clazz.getSimpleName());
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}

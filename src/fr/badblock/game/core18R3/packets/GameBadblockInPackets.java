@@ -101,7 +101,7 @@ import net.minecraft.server.v1_8_R3.PacketStatusInStart;
 		this.clazz     = clazz;
 		this.nmsClazz  = nmsClazz;
 		try {
-			this.gameClazz = Class.forName("fr.badblock.game.v1_8_R3.packets.in.Game" + clazz.getSimpleName());
+			this.gameClazz = Class.forName("fr.badblock.game.core18R3.packets.in.Game" + clazz.getSimpleName());
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
