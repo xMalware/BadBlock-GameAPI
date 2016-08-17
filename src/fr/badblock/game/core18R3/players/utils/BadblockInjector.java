@@ -92,7 +92,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				});
 
 				if (outPacket.isCancelled()) cancel = true;
-				msg = outPacket.buildPacket();
+				msg = outPacket.buildPacket(player);
 			} catch(Exception error) {
 				error.printStackTrace();
 			}
