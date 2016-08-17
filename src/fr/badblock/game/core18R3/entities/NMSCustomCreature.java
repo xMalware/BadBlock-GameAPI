@@ -71,14 +71,6 @@ public interface NMSCustomCreature extends CustomCreature {
 		}
 	}
 
-    default void callA(double... args){
-		try {
-			new Reflector(getNMSEntity()).getDeclaredMethod("a", Double[].class).invoke(getNMSEntity(), args);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	default void callAEntity(EntityLiving e1, Entity e2){
 		try {
 			new Reflector(getNMSEntity()).getDeclaredMethod("a", EntityLiving.class, Entity.class).invoke(getNMSEntity(), e1, e2);

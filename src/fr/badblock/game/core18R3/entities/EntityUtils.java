@@ -164,9 +164,8 @@ public class EntityUtils {
 			return;
 		} else entity.motY = -entity.pitch/45;
 
-
-		creature.callA(sideMot, forMot, creature.getCreatureGenericAttribute(CreatureGenericAttribute.SPEED));
-
+		entity.a(sideMot, forMot, (float) creature.getCreatureGenericAttribute(CreatureGenericAttribute.SPEED));
+		
 		if(sideMot != 0 || forMot != 0) {
 			entity.move(entity.motX, entity.motY, entity.motZ);
 
