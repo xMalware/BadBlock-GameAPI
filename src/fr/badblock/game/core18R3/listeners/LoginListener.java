@@ -71,15 +71,17 @@ public class LoginListener extends BadListener {
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
 		
+		
 		new BukkitRunnable(){
 			@Override
 			public void run(){
 				
 				for(Player player : Bukkit.getOnlinePlayers()){
 					GameBadblockPlayer bp = (GameBadblockPlayer) player;
-					if(bp.isDisguised()){
+					/*if(bp.isDisguised()){
 						bp.getDisguiseEntity().show(p);
-					} else if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
+					} else */
+					if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
 						p.hidePlayer(bp);
 					}
 				}
