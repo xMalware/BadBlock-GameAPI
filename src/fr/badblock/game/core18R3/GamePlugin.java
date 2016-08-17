@@ -89,6 +89,8 @@ import fr.badblock.game.core18R3.players.GameTeam;
 import fr.badblock.game.core18R3.players.data.GameKit;
 import fr.badblock.game.core18R3.players.listeners.GameJoinItems;
 import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
+import fr.badblock.game.core18R3.signs.GameSignManager;
+import fr.badblock.game.core18R3.signs.UpdateSignListener;
 import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
 import fr.badblock.game.core18R3.sql.GameSQLDatabase;
 import fr.badblock.game.core18R3.technologies.RabbitSpeaker;
@@ -117,6 +119,7 @@ import fr.badblock.gameapi.portal.Portal;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.servers.MapProtector;
+import fr.badblock.gameapi.signs.SignManager;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.general.MathsUtils;
@@ -194,6 +197,9 @@ public class GamePlugin extends GameAPI {
 	private Map<String, Portal>			portals			= Maps.newConcurrentMap();
 	private File						portalFolder	= null;
 
+	@Getter
+	private SignManager					signManager		= new GameSignManager();
+	
 	@Getter
 	private RunType						runType;
 	
@@ -298,7 +304,7 @@ public class GamePlugin extends GameAPI {
 				new CameraListener().register();	// Packet pour voir � la place du joueur en spec (aucun event sur Bukkit)
 				new InteractEntityListener().register();
 				new EquipmentListener().register();
-
+				new UpdateSignListener().register();
 				//AntiCheat.load();
 				
 				getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
