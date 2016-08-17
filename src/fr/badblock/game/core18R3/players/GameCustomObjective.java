@@ -208,13 +208,13 @@ public class GameCustomObjective implements CustomObjective {
 		char code = ChatColor.COLOR_CHAR;
 		
 		for(int i=0;i<str.length();i++){
-			if(str.charAt(i) == code){
+			if(str.charAt(i) == code && str.length() > i + 1){
 				ChatColor color = ChatColor.getByChar(str.charAt(i + 1));
 
 				last = color;
 
 				if(color.isColor() && str.length() > i + 2){
-					if(str.charAt(i + 2) == code){
+					if(str.charAt(i + 2) == code && str.length() > i + 3){
 						encod = ChatColor.getByChar(str.charAt(i + 3));
 
 						i += 2;
