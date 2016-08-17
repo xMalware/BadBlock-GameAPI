@@ -1,5 +1,6 @@
 package fr.badblock.game.core18R3.signs;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Location;
@@ -10,7 +11,7 @@ import fr.badblock.gameapi.signs.SignManager;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class GameSignManager implements SignManager {
-	private Map<Location, TranslatableString> translatedSigns;
+	private Map<Location, TranslatableString> translatedSigns = new HashMap<>();
 
 	@Override
 	public TranslatableString getTraduction(Block block) {
