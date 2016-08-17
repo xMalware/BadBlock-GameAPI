@@ -28,6 +28,7 @@ import fr.badblock.gameapi.packets.out.play.PlayEntityTeleport;
 import fr.badblock.gameapi.packets.watchers.WatcherEntity;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import lombok.Getter;
+import lombok.Setter;
 
 public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEntity<T> {
 	@Getter private final int 		 id;
@@ -42,6 +43,9 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 	@Getter private boolean    removed;
 	
 	@Getter private FakeEntityTrackerEntry entry;
+	
+	@Getter@Setter
+	private Visibility visibility;
 	
 	private final Map<EquipmentSlot, ItemStack> equipment;
 	

@@ -13,6 +13,7 @@ import org.bukkit.World;
 import com.google.common.collect.Queues;
 
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
 import fr.badblock.gameapi.packets.out.play.PlayEntityDestroy;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
@@ -84,6 +85,8 @@ public class FakeEntityTracker {
 			
 			if(player == null || fakeEntity.isRemoved()) return;
 
+			boolean canSee = fakeEntity.getVisibility() == Visibility.SERVER || fakeEntity.see(player);
+			
 			//System.out.println("a");
 			
 			if(!player.isOnline()){
@@ -96,7 +99,7 @@ public class FakeEntityTracker {
 
 			//System.out.println("b");
 			
-			if(!fakeEntity.see(player)){
+			if(!canSee){
 				if(players.contains(player)){
 					remove(player);
 				}
