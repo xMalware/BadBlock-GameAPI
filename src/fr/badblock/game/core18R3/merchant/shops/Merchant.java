@@ -3,11 +3,9 @@ package fr.badblock.game.core18R3.merchant.shops;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 
 import com.google.common.collect.Maps;
@@ -22,6 +20,7 @@ import fr.badblock.gameapi.configuration.values.MapNumber;
 import fr.badblock.gameapi.configuration.values.MapRecipe;
 import fr.badblock.gameapi.configuration.values.MapString;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
+import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
 import fr.badblock.gameapi.packets.watchers.WatcherEntity;
 import fr.badblock.gameapi.packets.watchers.WatcherSheep;
 import fr.badblock.gameapi.packets.watchers.WatcherSkeleton;
@@ -108,9 +107,11 @@ public class Merchant {
 		
 		entities.put(name, result);
 		
-		for(Player player : Bukkit.getOnlinePlayers()){
+		/*for(Player player : Bukkit.getOnlinePlayers()){
 			move((BadblockPlayer) player, player.getLocation().clone().add(0, 64, 0), player.getLocation());
-		}
+		}*/
+		
+		result.setVisibility(Visibility.SERVER);
 	}
 	
 	protected void createEntities(){
@@ -137,7 +138,7 @@ public class Merchant {
 		return config;
 	}
 	
-	public void move(BadblockPlayer player, Location from, Location to){
+	/*public void move(BadblockPlayer player, Location from, Location to){
 		for(MapNamedLocation handler : handlers){
 			FakeEntity<?> entity = entities.get(handler.getName());
 
@@ -150,7 +151,7 @@ public class Merchant {
 				entity.remove(player);
 		}
 		
-	}
+	}*/
 	
 	public void openInventory(BadblockPlayer player){
 		List<CustomMerchantRecipe> content   = recipes.getHandle();

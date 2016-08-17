@@ -6,9 +6,6 @@ import java.util.UUID;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.collect.Maps;
@@ -20,7 +17,6 @@ import fr.badblock.gameapi.configuration.values.MapList;
 import fr.badblock.gameapi.configuration.values.MapRecipe;
 import fr.badblock.gameapi.events.PlayerFakeEntityInteractEvent;
 import fr.badblock.gameapi.packets.in.play.PlayInUseEntity.UseEntityAction;
-import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.merchants.CustomMerchantRecipe;
 
 public class ShopListener extends BadListener {
@@ -42,28 +38,29 @@ public class ShopListener extends BadListener {
 
 	}
 
+	/*
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		for(Merchant merchant : GamePlugin.getInstance().getMerchants().values()){
 			merchant.move((BadblockPlayer) e.getPlayer(), e.getPlayer().getLocation().clone().add(0, 64, 0), e.getPlayer().getLocation());
 		}
-	}
+	}*/
 	
-	@EventHandler
+	/*@EventHandler
 	public void onMove(PlayerMoveEvent e){
 		if(e.getTo().getBlock().equals(e.getFrom().getBlock())) return;
 		
 		for(Merchant merchant : GamePlugin.getInstance().getMerchants().values()){
 			merchant.move((BadblockPlayer) e.getPlayer(), e.getFrom(), e.getTo());
 		}
-	}
+	}*/
 	
-	@EventHandler
+	/*@EventHandler
 	public void onMove(PlayerTeleportEvent e){
 		for(Merchant merchant : GamePlugin.getInstance().getMerchants().values()){
 			merchant.move((BadblockPlayer) e.getPlayer(), e.getFrom(), e.getTo());
 		}
-	}
+	}*/
 	
 	@EventHandler
 	public void onCloseInventory(InventoryCloseEvent e){
