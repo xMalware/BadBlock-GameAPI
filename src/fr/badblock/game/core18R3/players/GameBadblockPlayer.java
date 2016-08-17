@@ -40,6 +40,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.disguise.Disguise;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
+import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
 import fr.badblock.gameapi.game.result.Result;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
 import fr.badblock.gameapi.packets.out.play.PlayBlockAction;
@@ -822,6 +823,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		
 		getHandle().setInvisible(true);
 		
+		disguiseEntity.setVisibility(Visibility.SERVER);
+		
 		// update equipment for other players :o
 		for(Player player : Bukkit.getOnlinePlayers()){
 			BadblockPlayer bp = (BadblockPlayer) player;
@@ -829,8 +832,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			if(bp.getUniqueId().equals(getUniqueId()) && !disguise.isCanSeeHimself()){
 				continue;
 			}
-			
-			disguiseEntity.show(bp);
 			
 			if(bp.getUniqueId().equals(getUniqueId())) continue;
 			
