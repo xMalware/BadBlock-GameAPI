@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import fr.badblock.game.core18R3.commands.ChestGeneratorCommand;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.configuration.values.MapItemStack;
 import fr.badblock.gameapi.servers.ChestGenerator;
@@ -37,6 +38,11 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	
 	@Override
 	public void setConfigurationFile(File file) {
+		if(isConfigurated())
+			throw new IllegalStateException("ChestGenerator is already configurated!");
+		
+		new ChestGeneratorCommand(this);
+		
 		this.configFile = file;
 		this.config 	= JsonUtils.load(file, ChestConfiguration.class);
 		
