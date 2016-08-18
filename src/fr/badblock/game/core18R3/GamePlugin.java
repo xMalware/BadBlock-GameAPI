@@ -24,6 +24,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import fr.badblock.game.core18R3.chest.GameChestGenerator;
 import fr.badblock.game.core18R3.commands.AdminModeCommand;
 import fr.badblock.game.core18R3.commands.BroadcastCommand;
 import fr.badblock.game.core18R3.commands.ClearChatCommand;
@@ -201,6 +202,9 @@ public class GamePlugin extends GameAPI {
 	private SignManager					signManager		= new GameSignManager();
 	
 	@Getter
+	private GameChestGenerator			chestGenerator;
+	
+	@Getter
 	private RunType						runType;
 	
 	@Override
@@ -285,7 +289,8 @@ public class GamePlugin extends GameAPI {
 				new MoveListener();					// Permet d'emp�cher les joueurs de sortir d'une zone
 				new ChatListener();					// Permet de formatter le chat
 				joinItems = new GameJoinItems();    // Items donn� � l'arriv�e du joueur
-
+				chestGenerator = new GameChestGenerator();
+				
 				/** Correction de bugs Bukkit */
 
 				new ArrowBugFixListener();			// Permet de corriger un bug avec les fl�ches se lan�ant mal

@@ -1,6 +1,7 @@
 package fr.badblock.game.core18R3.packets.out;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 
@@ -63,7 +64,7 @@ public class GamePlayUpdateSign extends GameBadblockOutPacket implements PlayUpd
 			String text = "";
 			
 			if(lines.length > i){
-				text = lines[i];
+				text = ChatColor.BLACK + lines[i];
 			}
 			
 			nmsLines[i] = getChat(text);
