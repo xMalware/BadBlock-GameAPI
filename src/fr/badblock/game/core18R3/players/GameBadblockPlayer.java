@@ -137,14 +137,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		if(offlinePlayer != null) {
 			object = offlinePlayer.getObject();
-
 			team 	   = offlinePlayer.getTeam();
 			inGameData = offlinePlayer.getInGameData();
-
 			return;
-		} else object = new JsonObject();
+		}else object = new JsonObject();
 
-		if(GamePlugin.EMPTY_VERSION) return;
+		if (GamePlugin.EMPTY_VERSION) return;
 		
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
