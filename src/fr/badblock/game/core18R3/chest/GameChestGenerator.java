@@ -23,11 +23,13 @@ import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class GameChestGenerator extends BadListener implements ChestGenerator {
 	private List<Location> 	   filledChests = new ArrayList<>();
-	private boolean 		   work 		= false;
+	@Getter
+	private boolean 		   working 		= false;
 	
 	private File 			   configFile;
 	private ChestConfiguration config;
@@ -81,10 +83,15 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		
 		return result;
 	}
+	
+	@Override
+	public boolean isConfigurated(){
+		return config != null && configFile != null;
+	}
 
 	@Override
 	public void beginJob() {
-		work = true;
+		working = true;
 	}
 
 	@Override
@@ -94,7 +101,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
-		if(!work || e.getAction() != Action.RIGHT_CLICK_BLOCK)
+		if(!working || e.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
 		
 		Block block = e.getClickedBlock();
@@ -112,6 +119,9 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 	@Override
 	public void addItemInConfiguration(ItemStack item, int probability) {
+		if(!isConfigurated())
+			throw new IllegalStateException("ChestGenerator is not configurated!");
+		
 		config.itemStacks.add(new ChestMapItemStack(item, probability));
 		saveConfig();
 	}
