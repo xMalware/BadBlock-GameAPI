@@ -1,9 +1,6 @@
 package fr.badblock.game.core18R3.players.data;
 
-import com.google.gson.JsonObject;
-
 import fr.badblock.gameapi.players.data.BoosterData;
-import fr.badblock.gameapi.players.data.GameData;
 import lombok.Getter;
 import lombok.ToString;
 
