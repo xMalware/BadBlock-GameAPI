@@ -2,19 +2,26 @@ package fr.badblock.game.core18R3.chest;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.DirectionalContainer;
+import org.bukkit.util.Vector;
 
 import fr.badblock.game.core18R3.commands.ChestGeneratorCommand;
 import fr.badblock.gameapi.BadListener;
@@ -22,19 +29,26 @@ import fr.badblock.gameapi.configuration.values.MapItemStack;
 import fr.badblock.gameapi.servers.ChestGenerator;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.general.MathsUtils;
+import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 public class GameChestGenerator extends BadListener implements ChestGenerator {
 	private List<Location> 	   filledChests = new ArrayList<>();
+	private List<RemovedChest> removedChest = new ArrayList<>();
+	
 	@Getter
 	private boolean 		   working 		= false;
 	
 	private File 			   configFile;
 	private ChestConfiguration config;
 	private Random 			   random 	    = new Random();
+	@Getter@Setter
+	private boolean			   removeOnOpen = false;
 	
 	@Override
 	public void setConfigurationFile(File file) {
@@ -103,6 +117,14 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	@Override
 	public void resetChests() {
 		filledChests.clear();
+		
+		for(RemovedChest chest : removedChest){
+			Block block = chest.location.getBlock();
+			block.setType(Material.CHEST);
+			
+			DirectionalContainer container = (DirectionalContainer) block.getState().getData();
+			container.setFacingDirection(chest.blockFace);
+		}
 	}
 	
 	@EventHandler
@@ -121,6 +143,27 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		
 		if(relative != null)
 			generate0( (Chest) block.getState() );
+	}
+	
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent e){
+		if(e.getInventory().getHolder() instanceof Chest){
+			Chest c = (Chest) e.getInventory().getHolder();
+			
+			DirectionalContainer container = (DirectionalContainer) c.getData();
+			removedChest.add( new RemovedChest(c.getBlock().getLocation(), container.getFacing()) );
+			
+			Set<ItemStack> toDrop = Arrays.stream(e.getInventory().getContents()).filter(item -> { return ItemStackUtils.isValid(item); }).collect(Collectors.toSet());
+			
+			c.getBlock().setType(Material.AIR);
+			Location spawn = c.getBlock().getLocation().add(0d, 0.3d, 0d);
+		
+			toDrop.forEach(item -> {
+				Item spawned = spawn.getWorld().dropItemNaturally(spawn, item);
+				spawned.setVelocity(new Vector(0, 0, 0));
+				spawned.setPickupDelay(30);
+			});
+		}
 	}
 
 	@Override
@@ -149,6 +192,12 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		}
 		
 		return null;
+	}
+	
+	@AllArgsConstructor
+	public static class RemovedChest {
+		public Location  location;
+		public BlockFace blockFace;
 	}
 	
 	@NoArgsConstructor
