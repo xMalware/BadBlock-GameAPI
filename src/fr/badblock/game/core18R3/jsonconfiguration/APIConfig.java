@@ -37,6 +37,11 @@ import lombok.Setter;
 	public int		ticksBetweenKeepAlives;
 	public long		uselessUntilTime;
 	
+	// Run type
 	public RunType  runType = RunType.LOBBY;
+	
+	// Server bonus
+	public double  bonusXp;
+	public double  bonusCoins;
 	
 }

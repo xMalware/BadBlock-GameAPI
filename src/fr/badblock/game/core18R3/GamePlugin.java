@@ -207,6 +207,11 @@ public class GamePlugin extends GameAPI {
 	@Getter
 	private RunType						runType;
 	
+	@Getter
+	private double						serverBadcoinsBonus;
+	@Getter
+	private double						serverXpBonus;
+	
 	@Override
 	public void onEnable() {
 		thread		= Thread.currentThread();
@@ -363,6 +368,11 @@ public class GamePlugin extends GameAPI {
 
 			whitelist.save(whitelistFile);
 
+			// Set server bonus
+			serverXpBonus 		= config.getBonusXp();
+			serverBadcoinsBonus = config.getBonusCoins();
+			
+			// Loading GameServer
 			if(!EMPTY_VERSION){
 				GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
 				// GameServer apr�s tout
@@ -785,15 +795,4 @@ public class GamePlugin extends GameAPI {
 		return whitelistStatus;
 	}
 
-	@Override
-	public int getServerBadcoinsBonus() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public int getServerXpBonus() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

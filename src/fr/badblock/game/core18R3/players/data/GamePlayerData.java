@@ -1,20 +1,24 @@
 package fr.badblock.game.core18R3.players.data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
-import fr.badblock.gameapi.players.data.BoosterData;
 import fr.badblock.gameapi.players.data.GameData;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.data.PlayerData;
+import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.players.kits.PlayerKit;
+import fr.badblock.gameapi.utils.boosters.BoostedValue;
+import fr.badblock.gameapi.utils.boosters.BoosterUtil;
 import fr.badblock.gameapi.utils.i18n.Locale;
 import lombok.Getter;
 import lombok.NonNull;
@@ -26,7 +30,7 @@ public class GamePlayerData implements PlayerData {
 	private int  				 						  badcoins     	   = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
-	private BoosterData									  boosterData	   = new GameBoosterData();
+	private Set<PlayerBooster>							  boosters		   = new HashSet<>();
 	private Map<String, Integer> 						  kits 		 	   = Maps.newConcurrentMap();
 	private Map<String, String>							  lastUsedKits 	   = Maps.newConcurrentMap();
 	private Map<String, PlayerAchievementState> 		  achievements 	   = Maps.newConcurrentMap();
@@ -50,10 +54,9 @@ public class GamePlayerData implements PlayerData {
 		badcoins = Math.abs(badcoins);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
-			int bonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
-			if (this.getBoosterData() != null && this.getBoosterData().isValid())
-				bonus += this.getBoosterData().getCoinsMultiplier();
-			badcoins *= bonus;
+			badcoins 		   = BoosterUtil.getBoosted(this, BoostedValue.COINS, badcoins);
+			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
+			badcoins *= serverBonus;
 		}
 		return this.badcoins += badcoins;
 	}
@@ -74,10 +77,9 @@ public class GamePlayerData implements PlayerData {
 		xp = Math.abs(xp);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
-			int bonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
-			if (this.getBoosterData() != null && this.getBoosterData().isValid())
-				bonus += this.getBoosterData().getXPMultiplier();
-			xp *= bonus;
+			xp   	  	  	   = BoosterUtil.getBoosted(this, BoostedValue.XP, badcoins);
+			double serverBonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
+			xp *= serverBonus;
 		}
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
 		if (delta > 0)
