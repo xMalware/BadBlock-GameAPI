@@ -206,6 +206,8 @@ public class GamePlugin extends GameAPI {
 	
 	@Getter
 	private RunType						runType;
+	@Getter@Setter
+	private boolean						compassSelectNearestTarget;
 	
 	@Getter
 	private double						serverBadcoinsBonus;

@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
+import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.data.GameData;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.data.PlayerData;
@@ -26,7 +27,6 @@ import lombok.ToString;
 
 @Getter@ToString
 public class GamePlayerData implements PlayerData {
-
 	private int  				 						  badcoins     	   = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
@@ -106,6 +106,15 @@ public class GamePlayerData implements PlayerData {
 
 			return state;
 		}
+	}
+	
+	@Override
+	public void incrementAchievements(BadblockPlayer player, PlayerAchievement... achievements) {
+		for(PlayerAchievement achievement : achievements){
+			PlayerAchievementState state = getAchievementState(achievement);
+			state.progress(1.0d);
+			state.trySucceed(player, achievement);
+		}		
 	}
 
 	@Override
