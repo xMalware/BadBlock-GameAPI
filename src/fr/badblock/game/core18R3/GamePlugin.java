@@ -796,16 +796,4 @@ public class GamePlugin extends GameAPI {
 	public boolean getWhitelistStatus() {
 		return whitelistStatus;
 	}
-
-	@Override
-	public double getServerBadcoinsBonus() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public double getServerXpBonus() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }
