@@ -797,4 +797,18 @@ public class GamePlugin extends GameAPI {
 		return whitelistStatus;
 	}
 
+<<<<<<< Upstream, based on branch 'master' of http://gitlab.badblock-network.fr/API/BadblockAPICore.git
+=======
+	@Override
+	public double getServerBadcoinsBonus() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public double getServerXpBonus() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+>>>>>>> 3ffc7b4 Le commit repairant
 }
