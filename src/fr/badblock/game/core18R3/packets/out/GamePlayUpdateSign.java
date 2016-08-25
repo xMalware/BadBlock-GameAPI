@@ -1,7 +1,6 @@
 package fr.badblock.game.core18R3.packets.out;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 
@@ -16,6 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.BlockPosition;
+import net.minecraft.server.v1_8_R3.EnumChatFormat;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutUpdateSign;
@@ -61,13 +61,18 @@ public class GamePlayUpdateSign extends GameBadblockOutPacket implements PlayUpd
 		} else lines = linesI18n.get(player);
 		
 		for(int i=0;i<4;i++){
-			String text = "";
+			String text = " ";
 			
 			if(lines.length > i){
-				text = ChatColor.BLACK + lines[i];
+				text = lines[i];
+			}
+			
+			while(text.startsWith("§f")){
+				text = text.substring(2);
 			}
 			
 			nmsLines[i] = getChat(text);
+			nmsLines[i].getChatModifier().setColor(EnumChatFormat.BLACK);
 		}
 		
 		return new PacketPlayOutUpdateSign(world, position, nmsLines);
