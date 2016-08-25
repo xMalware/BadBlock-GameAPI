@@ -142,7 +142,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		Block relative = getNearbyChest(block);
 		
 		if(relative != null)
-			generate0( (Chest) block.getState() );
+			generate0( (Chest) relative.getState() );
 	}
 	
 	@EventHandler
@@ -150,20 +150,29 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		if(isWorking() && isRemoveOnOpen() && e.getInventory().getHolder() instanceof Chest){
 			Chest c = (Chest) e.getInventory().getHolder();
 			
-			DirectionalContainer container = (DirectionalContainer) c.getData();
-			removedChest.add( new RemovedChest(c.getBlock().getLocation(), container.getFacing()) );
+			remove0(c);
 			
-			Set<ItemStack> toDrop = Arrays.stream(e.getInventory().getContents()).filter(item -> { return ItemStackUtils.isValid(item); }).collect(Collectors.toSet());
+			Block relative = getNearbyChest(c.getBlock());
 			
-			c.getBlock().setType(Material.AIR);
-			Location spawn = c.getBlock().getLocation().add(0d, 0.3d, 0d);
-		
-			toDrop.forEach(item -> {
-				Item spawned = spawn.getWorld().dropItemNaturally(spawn, item);
-				spawned.setVelocity(new Vector(0, 0, 0));
-				spawned.setPickupDelay(30);
-			});
+			if(relative != null)
+				remove0( (Chest) relative.getState() );
 		}
+	}
+	
+	private void remove0(Chest c){
+		DirectionalContainer container = (DirectionalContainer) c.getData();
+		removedChest.add( new RemovedChest(c.getBlock().getLocation(), container.getFacing()) );
+
+		Set<ItemStack> toDrop = Arrays.stream(c.getInventory().getContents()).filter(item -> { return ItemStackUtils.isValid(item); }).collect(Collectors.toSet());
+		
+		c.getBlock().setType(Material.AIR);
+		Location spawn = c.getBlock().getLocation().add(0d, 0.3d, 0d);
+	
+		toDrop.forEach(item -> {
+			Item spawned = spawn.getWorld().dropItemNaturally(spawn, item);
+			spawned.setVelocity(new Vector(0, 0, 0));
+			spawned.setPickupDelay(30);
+		});
 	}
 
 	@Override
