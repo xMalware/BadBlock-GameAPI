@@ -1,6 +1,5 @@
 package fr.badblock.game.core18R3.fakeentities;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Queue;
@@ -58,11 +57,10 @@ public class FakeEntityTracker {
 	
 	static class FakeEntityTrackerEntry {
 		GameFakeEntity<?>    fakeEntity;
-		List<BadblockPlayer> players;
+		List<BadblockPlayer> players	 = Lists.newCopyOnWriteArrayList();
 
 		public FakeEntityTrackerEntry(GameFakeEntity<?> entity){
 			this.fakeEntity = entity;
-			this.players	= new ArrayList<>();
 		}
 		
 		/**
