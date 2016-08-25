@@ -33,13 +33,13 @@ public class GameConfiguration implements BadConfiguration {
 					MapValuePrimitive<?> value = (MapValuePrimitive<?>) clazzValue.getConstructor().newInstance();
 					value.from(handle.get(key));
 
-					return clazzValue.cast(value);
+					return _c(clazzValue.cast(value));
 				}
 
-				return GameAPI.getGson().fromJson(handle.get(key), clazzValue);
+				return _c(GameAPI.getGson().fromJson(handle.get(key), clazzValue));
 			}
 
-			return clazzValue.getConstructor().newInstance();
+			return _c(clazzValue.getConstructor().newInstance());
 		} catch(Exception e){
 			e.printStackTrace();
 		}
@@ -69,10 +69,10 @@ public class GameConfiguration implements BadConfiguration {
 						MapValuePrimitive<?> value = (MapValuePrimitive<?>) clazzValue.getConstructor().newInstance();
 						value.from(element);
 
-						result.add(clazzValue.cast(value));
+						result.add(_c(clazzValue.cast(value)));
 					}
 
-					result.add(GameAPI.getGson().fromJson(element, clazzValue));
+					result.add(_c(GameAPI.getGson().fromJson(element, clazzValue)));
 				} catch(Exception e){
 					e.printStackTrace();
 				}
@@ -143,5 +143,9 @@ public class GameConfiguration implements BadConfiguration {
 		
 		return handle;
 	}
-
+	
+	private <T extends MapValue<?>> T _c(T value){
+		value.postLoad();
+		return value;
+	}
 }
