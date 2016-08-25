@@ -50,7 +50,7 @@ public class ChestGeneratorCommand extends AbstractCommand {
 						return true;
 					}
 					
-					generator.addItemInConfiguration(player.getItemInHand(), prob);
+					generator.addItemInConfiguration(player.getItemInHand(), prob, true);
 					player.sendTranslatedMessage("commands.chestg.added", prob);
 				}
 			break;
