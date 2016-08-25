@@ -529,7 +529,22 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			fakeJailer.getWatchers().setInvisibile(true);
 			fakeJailer.show(this);
 
-			getAPI().createPacket(PlayCamera.class).setEntityId(fakeJailer.getId()).send(this);
+			BadblockPlayer player = this;
+			
+			new BukkitRunnable() {
+				int time = 20;
+				
+				@Override
+				public void run() {
+					time--;
+					
+					getAPI().createPacket(PlayCamera.class).setEntityId(fakeJailer.getId()).send(player);
+					
+					if(time == 0)
+						cancel();
+				}
+			}.runTaskTimer(GameAPI.getAPI(), 0, 1L);
+			
 		}
 	}
 
