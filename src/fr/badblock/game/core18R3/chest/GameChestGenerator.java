@@ -147,7 +147,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e){
-		if(e.getInventory().getHolder() instanceof Chest){
+		if(isWorking() && isRemoveOnOpen() && e.getInventory().getHolder() instanceof Chest){
 			Chest c = (Chest) e.getInventory().getHolder();
 			
 			DirectionalContainer container = (DirectionalContainer) c.getData();
