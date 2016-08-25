@@ -101,6 +101,9 @@ public class TeleportCommand extends AbstractCommand {
 		if(arg.startsWith("~")){
 			rel = true;
 			arg = arg.substring(1);
+			
+			if(arg.length() == 0)
+				arg = "0";
 		}
 		
 		Double parsed = null;
