@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 
 import fr.badblock.gameapi.GameAPI;
@@ -27,7 +28,7 @@ public class FakeEntityTracker {
 	
 	public FakeEntityTracker(World world){
 		this.trackedWorld	 = world;
-		this.trackedEntities = new ArrayList<>();
+		this.trackedEntities = Lists.newCopyOnWriteArrayList();
 		this.toAdd  	     = Queues.newLinkedBlockingDeque();
 		this.toRemove	     = Queues.newLinkedBlockingDeque();
 	}
