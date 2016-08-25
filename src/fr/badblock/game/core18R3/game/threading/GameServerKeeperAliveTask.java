@@ -6,7 +6,7 @@ import java.util.OptionalInt;
 
 import org.bukkit.Bukkit;
 
-import fr.badblock.common.docker.factories.GameAliveFactory;
+import fr.badblock.docker.factories.GameAliveFactory;
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.game.GameServerManager;
 import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
