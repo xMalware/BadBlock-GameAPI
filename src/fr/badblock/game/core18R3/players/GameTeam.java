@@ -45,9 +45,9 @@ public class GameTeam implements BadblockTeam {
 	@Getter@Setter
 	private int	   maxPlayers;
 
-	private Map<Class<?>, TeamData> teamData = null;
+	private Map<Class<?>, TeamData> teamData 		= null;
 
-	private List<UUID> 				players  = null;
+	private List<UUID> 				players  		= null;
 	private Map<UUID, String>		playersAtStart  = null;
 
 	@SuppressWarnings("deprecation")
