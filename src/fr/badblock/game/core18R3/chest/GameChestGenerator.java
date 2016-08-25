@@ -196,7 +196,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		if(!isConfigurated())
 			throw new IllegalStateException("ChestGenerator is not configurated!");
 
-		config.itemStacks.add(new ChestMapItemStack(item, probability, !save));
+		config.itemStacks.add(new ChestMapItemStack(item, probability, save));
 		saveConfig();
 	}
 	
@@ -233,11 +233,11 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 	@Data@EqualsAndHashCode(callSuper=false)
 	public static class ChestMapItemStack extends MapItemStack {
-		private int 	probability;
-		private boolean keep;
+		private 		  int 	  probability;
+		private transient boolean keep;
 		
 		public ChestMapItemStack(){
-			this.keep = false;
+			this.keep = true;
 		}
 		
 		public ChestMapItemStack(ItemStack is, int prob){
@@ -251,7 +251,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 			super(is);
 
 			this.probability = prob;
-			this.keep		 = false;
+			this.keep		 = keep;
 		}
 	}
 }
