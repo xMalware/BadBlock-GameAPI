@@ -22,7 +22,7 @@ import fr.badblock.gameapi.utils.merchants.CustomMerchantRecipe;
 public class ShopListener extends BadListener {
 	public static Map<UUID, Merchant> inEdit = Maps.newConcurrentMap();
 	
-	@EventHandler
+	@EventHandler(ignoreCancelled=true)
 	public void onFakeInteract(PlayerFakeEntityInteractEvent e){
 		if(e.getAction() == UseEntityAction.INTERACT){
 
