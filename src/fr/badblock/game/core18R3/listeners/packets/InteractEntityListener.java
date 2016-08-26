@@ -18,7 +18,7 @@ public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 		if(entity != null){
 			packet.setCancelled(true);
 			
-			Bukkit.getPluginManager().callEvent(new PlayerFakeEntityInteractEvent(player, entity, packet.getAction()));
+			Bukkit.getPluginManager().callEvent(new PlayerFakeEntityInteractEvent(player, entity, packet.getAction(), false));
 		}
 	}
 
