@@ -89,9 +89,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 						socketHandler.start();
 
-						String ip = System.getProperty("badblock.displayedip", Bukkit.getIp());
-						
-						socketHandler.getOut().writeUTF(ip);
+						socketHandler.getOut().writeUTF(Bukkit.getIp());
 						socketHandler.getOut().writeInt(Bukkit.getPort());
 
 						socketHandler.sendPacket(packet);
