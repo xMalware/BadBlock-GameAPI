@@ -99,7 +99,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	private String 						 bossBarMessage 	  = null;
 	private FakeEntity<WatcherWither> 	 enderdragon 		  = null;
-	
+
 	private GameMode 					 gamemodeBefJail 	  = null;
 	private FakeEntity<?> 				 fakeJailer 		  = null;
 
@@ -119,7 +119,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Getter@Setter
 	private Vector3f					 firstVector,
-										 secondVector;
+	secondVector;
 	private Disguise 	  disguise;
 	@Getter
 	private FakeEntity<?> disguiseEntity;
@@ -131,7 +131,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		this.inGameData  = Maps.newConcurrentMap();
 
 		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recr�� � la r�c�ptions des donn�es
-		
+
 		if(!GamePlugin.EMPTY_VERSION)
 			this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
 
@@ -143,7 +143,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}else object = new JsonObject();
 
 		if (GamePlugin.EMPTY_VERSION) return;
-		
+
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
@@ -311,7 +311,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void saveGameData() {
 		GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, getPlayerData().saveData());
 	}
-	
+
 	@Override
 	public void postResult(Result toPost) {
 		long   id	    = new SecureRandom().nextLong();
@@ -452,7 +452,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void clearTitle(){
 		getAPI().createPacket(PlayTitle.class).setAction(Action.RESET).send(this);
 	}
-	
+
 	@Override
 	public void sendTimings(long fadeIn, long stay, long fadeOut) {
 		getAPI().createPacket(PlayTitle.class).setAction(Action.TIMES).setFadeIn(fadeIn).setStay(stay)
@@ -466,7 +466,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		getAPI().createPacket(PlayPlayerListHeaderFooter.class).setHeader(header).setFooter(footer).send(this);
 	}
-	
+
 	@Override
 	public void sendTranslatedTabHeader(TranslatableString header, TranslatableString footer) {
 		sendTabHeader(StringUtils.join(header.get(this), "\\n"), StringUtils.join(footer.get(this), "\\n"));
@@ -530,21 +530,21 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			fakeJailer.show(this);
 
 			BadblockPlayer player = this;
-			
+
 			new BukkitRunnable() {
 				int time = 20;
-				
+
 				@Override
 				public void run() {
 					time--;
-					
+
 					getAPI().createPacket(PlayCamera.class).setEntityId(fakeJailer.getId()).send(player);
-					
+
 					if(time == 0)
 						cancel();
 				}
 			}.runTaskTimer(GameAPI.getAPI(), 0, 1L);
-			
+
 		}
 	}
 
@@ -592,15 +592,15 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		customEnvironment = world;
 
 		getAPI().createPacket(PlayRespawn.class).setDimension(world).setDifficulty(getWorld().getDifficulty())
-												.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
+		.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
 
 		setMaxHealth(getMaxHealth());
-		
+
 		for(Player player : Bukkit.getOnlinePlayers()){
 			hidePlayer(player);
 			showPlayer(player);
 		}
-		
+
 		reloadMap();
 		updateInventory(); // euh ... pk d�pr�ci� ? (pas d�pr�ci� pour Player)
 	}
@@ -668,7 +668,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public boolean hasPermission(String permission) {
 		if(GamePlugin.EMPTY_VERSION)
 			return OtherPermissions.has(this, permission);
-		
+
 		return permission == null ? true : permissions.hasPermission(permission);
 	}
 
@@ -676,7 +676,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public TranslatableString getGroupPrefix() {
 		return new TranslatableString("permissions.chat." + permissions.getParent().getName());
 	}
-	
+
 	@Override
 	public TranslatableString getTabGroupPrefix() {
 		return new TranslatableString("permissions.tab." + permissions.getParent().getName());
@@ -753,10 +753,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				if (tp == null)
 					tp = getRandomNonSpecPlayer();
 
-				if (tp != null)
+				if (tp != null){
 					teleport(tp);
-
-				GameMessages.doNotGoTooFarWhenSpectator().send(GameBadblockPlayer.this);
+					GameMessages.doNotGoTooFarWhenSpectator().send(GameBadblockPlayer.this);
+				}
 			}
 		}
 
@@ -772,7 +772,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	class BossBarRunnable extends BukkitRunnable {
 		private int time = 2;
 		private String lastMessage = null;
-		
+
 		@Override
 		public void run() {
 			if (bossBarMessage == null || enderdragon == null || !isOnline()) { // message
@@ -784,13 +784,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			if (time == 0) {
 				Location loc = getLocation().clone();
-				
+
 				if(getGameMode() == GameMode.SPECTATOR) {
 					loc.add(loc.getDirection().multiply(100.0D));
 				} else {
 					loc.add(loc.getDirection().multiply(50.0D));
 				}
-				
+
 				if (enderdragon.getLocation().distance(loc) > 128.0d) { // trop
 					enderdragon.teleport(loc);
 					enderdragon.remove(GameBadblockPlayer.this);
@@ -802,10 +802,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				if(!bossBarMessage.equals(lastMessage)){
 					enderdragon.getWatchers().setCustomName(bossBarMessage); // si
 					enderdragon.updateWatchers(); // on informe le joueur du
-					
+
 					lastMessage = bossBarMessage;
 				}
-				
+
 				time = 8;
 			}
 		}
@@ -830,34 +830,34 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		if(isDisguised()){
 			disguiseEntity.destroy();
 		}
-		
+
 		this.disguise  = disguise;
 		disguiseEntity = disguise.createEntity(this);
-		
+
 		getHandle().setInvisible(true);
-		
+
 		disguiseEntity.setVisibility(Visibility.SERVER);
-		
+
 		// update equipment for other players :o
 		for(Player player : Bukkit.getOnlinePlayers()){
 			BadblockPlayer bp = (BadblockPlayer) player;
-			
+
 			if(bp.getUniqueId().equals(getUniqueId()) && !disguise.isCanSeeHimself()){
 				continue;
 			}
-			
+
 			if(bp.getUniqueId().equals(getUniqueId())) continue;
-			
+
 			for(int i=0;i<5;i++){
 				GameAPI.getAPI().createPacket(PlayEntityEquipment.class)
-								.setEntityId(getEntityId())
-								.setItemStack(null)
-								.send(bp);
+				.setEntityId(getEntityId())
+				.setItemStack(null)
+				.send(bp);
 			}
 		}
-		
+
 	}
-	
+
 	@Override
 	public boolean isDisguised(){
 		return disguise != null && disguiseEntity != null;
@@ -869,7 +869,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.disguise 		= null;
 			this.disguiseEntity.destroy();
 			this.disguiseEntity = null;
-			
+
 			getHandle().setInvisible(false);
 		}
 	}
