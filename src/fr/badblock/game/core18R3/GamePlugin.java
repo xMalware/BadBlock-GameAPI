@@ -391,6 +391,10 @@ public class GamePlugin extends GameAPI {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
 
 			GameAPI.logColor("&b[GameAPI] &aAPI loaded! (" + ms + "ms)");
+			
+			File plugins = new File("plugins" + File.separator + "apiPlugins");
+			plugins.mkdirs();
+			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins)).forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
 		} catch (Throwable t){
 			t.printStackTrace();
 
