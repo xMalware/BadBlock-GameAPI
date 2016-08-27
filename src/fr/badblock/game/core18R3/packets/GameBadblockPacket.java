@@ -13,7 +13,7 @@ public class GameBadblockPacket {
 	@Getter@Setter private boolean 		  cancelled;
 
 	public IChatBaseComponent getChat(String base){
-		//return ChatSerializer.a(ComponentSerializer.toString(TextComponent.fromLegacyText(base)[0]));
+		base = base.replace("\"", "\\\"");
 		return ChatSerializer.a("{\"text\": \"" + base + "\"}");
 	}
 	
