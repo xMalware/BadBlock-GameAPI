@@ -53,6 +53,7 @@ import fr.badblock.game.core18R3.fakeentities.FakeEntities;
 import fr.badblock.game.core18R3.game.GameServer;
 import fr.badblock.game.core18R3.game.GameServerManager;
 import fr.badblock.game.core18R3.i18n.GameI18n;
+import fr.badblock.game.core18R3.internalutils.TeleportUtils;
 import fr.badblock.game.core18R3.itemstack.GameCustomInventory;
 import fr.badblock.game.core18R3.itemstack.GameItemExtra;
 import fr.badblock.game.core18R3.itemstack.GameItemStackFactory;
@@ -68,7 +69,7 @@ import fr.badblock.game.core18R3.listeners.GameServerListener;
 import fr.badblock.game.core18R3.listeners.JailedPlayerListener;
 import fr.badblock.game.core18R3.listeners.LoginListener;
 import fr.badblock.game.core18R3.listeners.MoveListener;
-import fr.badblock.game.core18R3.listeners.PlayerSelectionListener;
+import fr.badblock.game.core18R3.listeners.PlayerInteractListener;
 import fr.badblock.game.core18R3.listeners.PortalListener;
 import fr.badblock.game.core18R3.listeners.ProjectileHitBlockCaller;
 import fr.badblock.game.core18R3.listeners.ShopListener;
@@ -142,7 +143,6 @@ public class GamePlugin extends GameAPI {
 	public static final boolean EMPTY_VERSION = false;
 
 	public static final String FOLDER_I18N 		   = "i18n",
-			FOLDER_ACHIEVEMENTS 				   = "achievements",
 			FOLDER_KITS		    				   = "kits",
 			CONFIG_DATABASES    				   = "databases.json",
 			WHITELIST		    				   = "whitelist.yml";
@@ -293,7 +293,7 @@ public class GamePlugin extends GameAPI {
 				new GameServerListener();			// Permet la gestion des joueurs vers Docker
 				new FakeDeathCaller();				// Permet de g�rer les fausses morts et la d�tections du joueur
 				new ChangeWorldEvent();				// Permet de mieux g�rer les fausses dimensions
-				new PlayerSelectionListener();	    // Permet aux administrateurs de d�finir une zone
+				new PlayerInteractListener();	    // Permet aux administrateurs de d�finir une zone
 				new MoveListener();					// Permet d'emp�cher les joueurs de sortir d'une zone
 				new ChatListener();					// Permet de formatter le chat
 				joinItems = new GameJoinItems();    // Items donn� � l'arriv�e du joueur
@@ -801,5 +801,10 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public boolean getWhitelistStatus() {
 		return whitelistStatus;
+	}
+
+	@Override
+	public Location getSafeLocation(Location location) {
+		return TeleportUtils.getSafeDestination(location);
 	}
 }
