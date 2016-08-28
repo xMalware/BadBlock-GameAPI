@@ -1,6 +1,7 @@
 package fr.badblock.game.core18R3.i18n;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Maps;
+import com.google.common.io.Files;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -29,15 +31,30 @@ public class GameI18n implements I18n {
 
 	}
 
+	private void copy(File folderFrom, File folderTo) throws IOException {
+		if(!folderTo.exists())
+			folderTo.mkdirs();
+		
+		System.out.println(folderFrom);
+		
+		for(File file : folderFrom.listFiles()){
+			File to = new File(folderTo, file.getName());
+			
+			if(file.isDirectory())
+				copy(file, to);
+			else Files.copy(file, to);
+		}
+	}
+	
 	public void load(File folder){
-		File i18nFile = new File("/home/i18n");
+		File i18nFile = new File("/home/dev01/i18n");
 
 		if(!i18nFile.exists())
 			i18nFile.mkdirs();
 
 		try {
 			Runtime.getRuntime().exec("rm -rf " + folder.getAbsolutePath()).waitFor();
-			Runtime.getRuntime().exec("cp -R " + i18nFile.getAbsolutePath() + " " + folder.getAbsolutePath()).waitFor();
+			copy(i18nFile, folder);
 		} catch(Exception e){
 			e.printStackTrace();
 		}
