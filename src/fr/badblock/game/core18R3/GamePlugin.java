@@ -46,6 +46,7 @@ import fr.badblock.game.core18R3.commands.SkullCommand;
 import fr.badblock.game.core18R3.commands.TeleportCommand;
 import fr.badblock.game.core18R3.commands.UpCommand;
 import fr.badblock.game.core18R3.commands.VanishCommand;
+import fr.badblock.game.core18R3.commands.WandCommand;
 import fr.badblock.game.core18R3.commands.WhitelistCommand;
 import fr.badblock.game.core18R3.configuration.GameConfiguration;
 import fr.badblock.game.core18R3.entities.CustomCreatures;
@@ -357,6 +358,7 @@ public class GamePlugin extends GameAPI {
 			new ClearChatCommand();
 			new KillallCommand();
 			new UpCommand();
+			new WandCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
