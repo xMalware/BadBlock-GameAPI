@@ -131,20 +131,13 @@ public class GameI18n implements I18n {
 	}
 
 	@Override
+	public String[] get(CommandSender sender, String key, Object... args) {
+		return get(getLanguage(sender), key, args);	
+	}
+
+	@Override
 	public void sendMessage(CommandSender sender, String key, Object... args) {
-		Locale locale = null;
-
-		if(sender instanceof BadblockPlayer){
-			BadblockPlayer player = (BadblockPlayer) sender;
-			locale = player.getPlayerData().getLocale();
-		} else {
-			locale = Locale.ENGLISH_US;
-		}
-
-		if(locale == null)
-			locale = def;
-
-		String[] messages = get(locale, key, args);
+		String[] messages = get(sender, key, args);
 		for(String message : messages)
 			sender.sendMessage(message);
 	}
@@ -184,4 +177,20 @@ public class GameI18n implements I18n {
 			language.save();
 		}
 	}
+	
+	protected Locale getLanguage(CommandSender sender) {
+		Locale locale = null;
+
+		if(sender instanceof BadblockPlayer){
+			BadblockPlayer player = (BadblockPlayer) sender;
+			locale = player.getPlayerData().getLocale();
+		} else {
+			locale = Locale.ENGLISH_US;
+		}
+
+		if(locale == null)
+			locale = def;
+		return locale;
+	}
+	
 }
