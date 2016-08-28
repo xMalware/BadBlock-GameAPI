@@ -379,6 +379,7 @@ public class GamePlugin extends GameAPI {
 			new ClearInventoryCommand();
 			new EnderchestCommand();
 			new ListCommand();
+			new PingCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
