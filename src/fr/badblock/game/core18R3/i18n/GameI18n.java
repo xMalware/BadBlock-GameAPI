@@ -39,6 +39,42 @@ public class GameI18n implements I18n {
 	 * if(file.isDirectory()) copy(file, to); else Files.copy(file, to); } }
 	 */
 
+	public void load(File folder) {
+		/*
+		 * File i18nFile = new File("/home/dev01/i18n");
+		 * 
+		 * if(!i18nFile.exists()) i18nFile.mkdirs();
+		 * 
+		 * try { Runtime.getRuntime().exec("rm -rf " +
+		 * folder.getAbsolutePath()).waitFor(); copy(i18nFile, folder); }
+		 * catch(Exception e){ e.printStackTrace(); }
+		 */
+		if (!folder.exists())
+			folder.mkdirs();
+
+		languages = Maps.newConcurrentMap();
+
+		for (File languageFolder : folder.listFiles()) {
+			if (languageFolder.isDirectory()) {
+				Locale locale = Locale.getLocale(languageFolder.getName());
+
+				if (locale == null) {
+					GameAPI.logWarning("Invalid language folder (" + languageFolder.getName() + ") : unknow language");
+				} else {
+					GameAPI.logColor("&b[GameAPI] &aLecture i18n ... (" + locale + ")");
+
+					languages.put(locale, new GameLanguage(locale, languageFolder));
+				}
+			}
+		}
+
+		Locale def = Locale.FRENCH_FRANCE;
+
+		if (!languages.containsKey(def)) {
+			languages.put(def, new GameLanguage(def, new File(folder, def.getLocaleId())));
+		}
+	}
+	
 	@Override
 	public void broadcast(String key, Object... args) {
 		for (Player player : Bukkit.getOnlinePlayers())
@@ -111,41 +147,6 @@ public class GameI18n implements I18n {
 		return getWord(def, key, plural, determinant);
 	}
 
-	public void load(File folder) {
-		/*
-		 * File i18nFile = new File("/home/dev01/i18n");
-		 * 
-		 * if(!i18nFile.exists()) i18nFile.mkdirs();
-		 * 
-		 * try { Runtime.getRuntime().exec("rm -rf " +
-		 * folder.getAbsolutePath()).waitFor(); copy(i18nFile, folder); }
-		 * catch(Exception e){ e.printStackTrace(); }
-		 */
-		if (!folder.exists())
-			folder.mkdirs();
-
-		languages = Maps.newConcurrentMap();
-
-		for (File languageFolder : folder.listFiles()) {
-			if (languageFolder.isDirectory()) {
-				Locale locale = Locale.getLocale(languageFolder.getName());
-
-				if (locale == null) {
-					GameAPI.logWarning("Invalid language folder (" + languageFolder.getName() + ") : unknow language");
-				} else {
-					GameAPI.logColor("&b[GameAPI] &aLecture i18n ... (" + locale + ")");
-
-					languages.put(locale, new GameLanguage(locale, languageFolder));
-				}
-			}
-		}
-
-		Locale def = Locale.FRENCH_FRANCE;
-
-		if (!languages.containsKey(def)) {
-			languages.put(def, new GameLanguage(def, new File(folder, def.getLocaleId())));
-		}
-	}
 
 	@Override
 	public List<String> replaceColors(List<String> base) {
