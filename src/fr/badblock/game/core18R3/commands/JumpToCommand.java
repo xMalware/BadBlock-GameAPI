@@ -1,19 +1,14 @@
 package fr.badblock.game.core18R3.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
-import fr.badblock.gameapi.run.BadblockGame;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 /**
