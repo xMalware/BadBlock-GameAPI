@@ -145,9 +145,9 @@ public class GamePlugin extends GameAPI {
 	public static final boolean EMPTY_VERSION = false;
 
 	public static final String FOLDER_I18N 		   = "i18n",
-			FOLDER_KITS		    				   = "kits",
-			CONFIG_DATABASES    				   = "databases.json",
-			WHITELIST		    				   = "whitelist.yml";
+							   FOLDER_KITS		   = "kits",
+							   CONFIG_DATABASES    = "databases.json",
+							   WHITELIST		   = "whitelist.yml";
 	public static Thread thread;
 
 	@Getter private static GamePlugin   instance;
