@@ -365,6 +365,7 @@ public class GamePlugin extends GameAPI {
 			new JumpToCommand();
 			new SuicideCommand();
 			new SudoCommand();
+			new TeleportAllCommand();
 			new SkullCommand();
 			new WhitelistCommand();
 			new ClearChatCommand();
