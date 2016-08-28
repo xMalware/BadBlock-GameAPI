@@ -62,6 +62,7 @@ import fr.badblock.game.core18R3.commands.SuicideCommand;
 import fr.badblock.game.core18R3.commands.TeleportAllCommand;
 import fr.badblock.game.core18R3.commands.TeleportCommand;
 import fr.badblock.game.core18R3.commands.ThunderCommand;
+import fr.badblock.game.core18R3.commands.TimeCommand;
 import fr.badblock.game.core18R3.commands.UpCommand;
 import fr.badblock.game.core18R3.commands.VanishCommand;
 import fr.badblock.game.core18R3.commands.WandCommand;
@@ -242,6 +243,258 @@ public class GamePlugin extends GameAPI {
 	@Getter
 	private double serverXpBonus;
 
+	@Override
+	public void onDisable() {
+		try {
+			if (!EMPTY_VERSION && !TEST_MODE)
+				((GameSQLDatabase) sqlDatabase).closeConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		if (i18n != null)
+			i18n.save();
+
+		gameServer.cancelReconnectionInvitations();
+
+		if (getGameServerManager() != null)
+			this.getGameServerManager().stop();
+
+		CustomCreatures.unregisterEntities();
+	}
+
+	@Override
+	public void onEnable() {
+		thread = Thread.currentThread();
+		instance = this;
+		GameAPI.API = this;
+
+		i18n = new GameI18n(); // Cr�ation de l'I18N pour permettre la couleur
+
+		if (!getDataFolder().exists())
+			getDataFolder().mkdirs();
+
+		try {
+			/**
+			 * Chargement de la configuration
+			 */
+
+			GameAPI.logColor("&b[GameAPI] &aLoading API...");
+			long nano = System.nanoTime();
+
+			File configFile = new File(getDataFolder(), CONFIG_DATABASES);
+
+			if (!configFile.exists())
+				configFile.createNewFile();
+			APIConfig config = JsonUtils.load(configFile, APIConfig.class);
+
+			loadI18n();
+
+			if (!EMPTY_VERSION) {
+				teams = Maps.newConcurrentMap();
+
+				GameAPI.logColor("&b[GameAPI] &aLoading databases configuration...");
+
+				if (config == null) {
+					config = new APIConfig();
+					JsonUtils.save(configFile, config, true);
+				}
+
+				runType = config.runType;
+
+				GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + config.ladderIp + ":" + config.ladderPort);
+				GameAPI.logColor("&b[GameAPI] &aConnecting to Ladder...");
+
+				new PermissionManager(new JsonArray());
+				ladderDatabase = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
+				ladderDatabase.askForPermissions();
+
+				if (!GameAPI.TEST_MODE) {
+					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" + config.sqlPort);
+					GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
+
+					sqlDatabase = new GameSQLDatabase(config.sqlIp, Integer.toString(config.sqlPort), config.sqlUser,
+							config.sqlPassword, config.sqlDatabase);
+					((GameSQLDatabase) sqlDatabase).openConnection();
+
+					rabbitSpeaker = new RabbitSpeaker(config);
+				} else {
+					sqlDatabase = new FakeSQLDatabase();
+				}
+			}
+
+			GameAPI.logColor("&b[GameAPI] &aLoading NMS classes...");
+			/**
+			 * Chargement des classes NMS
+			 */
+			CustomCreatures.registerEntities();
+
+			GameAPI.logColor("&b[GameAPI] &aRegistering listeners...");
+			/**
+			 * Chargement des Listeners
+			 */
+			new LoginListener(); // Met le BadblockPlayer � la connection
+
+			if (!EMPTY_VERSION) {
+				new DisconnectListener(); // G�re la d�connection
+				new JailedPlayerListener(); // Permet de bien jail les joueurs
+				new ItemStackExtras(); // Permet de bien g�rer les items
+										// sp�ciaux
+				new ProjectileHitBlockCaller(); // Permet d'appeler un event
+												// lorsque un projectile
+												// rencontre un block
+				new GameServerListener(); // Permet la gestion des joueurs vers
+											// Docker
+				new FakeDeathCaller(); // Permet de g�rer les fausses morts et
+										// la d�tections du joueur
+				new ChangeWorldEvent(); // Permet de mieux g�rer les fausses
+										// dimensions
+				new PlayerInteractListener(); // Permet aux administrateurs de
+												// d�finir une zone
+				new MoveListener(); // Permet d'emp�cher les joueurs de sortir
+									// d'une zone
+				new ChatListener(); // Permet de formatter le chat
+				joinItems = new GameJoinItems(); // Items donn� � l'arriv�e du
+													// joueur
+				chestGenerator = new GameChestGenerator();
+
+				/** Correction de bugs Bukkit */
+
+				new ArrowBugFixListener(); // Permet de corriger un bug avec les
+											// fl�ches se lan�ant mal
+				new UselessDamageFixListener(); // Enl�ve les d�gats inutiles
+												// lors d'une chute
+				// new PlayerTeleportFix(); // Permet de bien voir le joueur
+				// lorsqu'il respawn (bug Bukkit)
+
+				/** Protection et optimisations par d�faut */
+
+				new PlayerMapProtectorListener(); // Permet de prot�ger la map
+				new BlockMapProtectorListener(); // Permet de prot�ger la map
+				new EntityMapProtectorListener(); // Permet de prot�ger la map
+
+				/** Packets �cout�s par l'API */
+				GameAPI.logColor("&b[GameAPI] &aRegistering packets listeners ...");
+
+				new CameraListener().register(); // Packet pour voir � la place
+													// du joueur en spec (aucun
+													// event sur Bukkit)
+				new InteractEntityListener().register();
+				new EquipmentListener().register();
+				new UpdateSignListener().register();
+				// AntiCheat.load();
+
+				getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
+				GameAPI.logColor("&b[GameAPI] &aCreating scoreboard...");
+
+				badblockScoreboard = new GameScoreboard(); // Permet de g�rer le
+															// scoreboard
+			}
+			/**
+			 * Chargement des commandes par d�faut
+			 */
+			GameAPI.logColor("&b[GameAPI] &aRegistering commands...");
+
+			if (!EMPTY_VERSION) {
+				new AdminModeCommand();
+				new I18RCommand();
+
+				new FlyCommand();
+				new HealCommand();
+				new FeedCommand();
+				new GameModeCommand();
+
+				new BroadcastCommand();
+				new GodmodeCommand();
+				new InvseeCommand();
+				new KickallCommand();
+				new TeleportCommand();
+				new VanishCommand();
+
+				new LagCommand();
+				new KitsCommand();
+			}
+
+			new FreezeCommand();
+			new JumpToCommand();
+			new SuicideCommand();
+			new SudoCommand();
+			new TeleportAllCommand();
+			new SkullCommand();
+			new WhitelistCommand();
+			new ClearChatCommand();
+			new KillallCommand();
+			new UpCommand();
+			new WandCommand();
+			new CompassCommand();
+			new RepairCommand();
+			new SpawnMobCommand();
+			new ClearInventoryCommand();
+			new EnderchestCommand();
+			new ListCommand();
+			new PingCommand();
+			new BackCommand();
+			new MoreCommand();
+			new WorkbrenchCommand();
+			new SpeedCommand();
+			new WeatherCommand();
+			new GiveCommand();
+			new FireballCommand();
+			new ThunderCommand();
+			new WorldCommand();
+			new WorldsCommand();
+			new KillCommand();
+			new TimeCommand();
+
+			File whitelistFile = new File(getDataFolder(), WHITELIST);
+			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
+
+			if (!whitelist.contains("whitelist")) {
+				whitelist.set("whitelist", Arrays.asList("lelann"));
+			}
+
+			this.whitelist = new ArrayList<>();
+
+			for (String player : whitelist.getStringList("whitelist"))
+				this.whitelist.add(player.toLowerCase());
+
+			whitelist.save(whitelistFile);
+
+			// Set server bonus
+			serverXpBonus = config.getBonusXp();
+			serverBadcoinsBonus = config.getBonusCoins();
+
+			// Loading GameServer
+			if (!EMPTY_VERSION) {
+				GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
+				// GameServer apr�s tout
+				this.gameServer = new GameServer();
+				this.gameServerManager = new GameServerManager(config);
+				this.getGameServerManager().start();
+			}
+
+			nano = System.nanoTime() - nano;
+
+			double ms = nano / 1_000_000d;
+			ms = MathsUtils.round(ms, 3);
+
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
+
+			GameAPI.logColor("&b[GameAPI] &aAPI loaded! (" + ms + "ms)");
+
+			File plugins = new File("plugins" + File.separator + "apiPlugins");
+			plugins.mkdirs();
+			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins))
+					.forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
+		} catch (Throwable t) {
+			t.printStackTrace();
+
+			GameAPI.logColor("&c[GameAPI] Error occurred while loading API. See the stack trace. Restarting...");
+			Bukkit.shutdown();
+		}
+	}
+	
 	public void addPortal(String name, Portal portal) {
 		File file = new File(portalFolder, name + ".json");
 		portal.setFile(file);
@@ -476,7 +729,7 @@ public class GamePlugin extends GameAPI {
 	}
 
 	public void loadI18n() {
-		i18n.load(new File(getDataFolder(), FOLDER_I18N));
+		i18n.load(new File(/*getDataFolder(),*/ FOLDER_I18N));
 	}
 
 	@Override
@@ -541,257 +794,6 @@ public class GamePlugin extends GameAPI {
 
 		new ShopCommand();
 		new ShopListener();
-	}
-
-	@Override
-	public void onDisable() {
-		try {
-			if (!EMPTY_VERSION && !TEST_MODE)
-				((GameSQLDatabase) sqlDatabase).closeConnection();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		if (i18n != null)
-			i18n.save();
-
-		gameServer.cancelReconnectionInvitations();
-
-		if (getGameServerManager() != null)
-			this.getGameServerManager().stop();
-
-		CustomCreatures.unregisterEntities();
-	}
-
-	@Override
-	public void onEnable() {
-		thread = Thread.currentThread();
-		instance = this;
-		GameAPI.API = this;
-
-		i18n = new GameI18n(); // Cr�ation de l'I18N pour permettre la couleur
-
-		if (!getDataFolder().exists())
-			getDataFolder().mkdirs();
-
-		try {
-			/**
-			 * Chargement de la configuration
-			 */
-
-			GameAPI.logColor("&b[GameAPI] &aLoading API...");
-			long nano = System.nanoTime();
-
-			File configFile = new File(getDataFolder(), CONFIG_DATABASES);
-
-			if (!configFile.exists())
-				configFile.createNewFile();
-			APIConfig config = JsonUtils.load(configFile, APIConfig.class);
-
-			loadI18n();
-
-			if (!EMPTY_VERSION) {
-				teams = Maps.newConcurrentMap();
-
-				GameAPI.logColor("&b[GameAPI] &aLoading databases configuration...");
-
-				if (config == null) {
-					config = new APIConfig();
-					JsonUtils.save(configFile, config, true);
-				}
-
-				runType = config.runType;
-
-				GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + config.ladderIp + ":" + config.ladderPort);
-				GameAPI.logColor("&b[GameAPI] &aConnecting to Ladder...");
-
-				new PermissionManager(new JsonArray());
-				ladderDatabase = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
-				ladderDatabase.askForPermissions();
-
-				if (!GameAPI.TEST_MODE) {
-					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" + config.sqlPort);
-					GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
-
-					sqlDatabase = new GameSQLDatabase(config.sqlIp, Integer.toString(config.sqlPort), config.sqlUser,
-							config.sqlPassword, config.sqlDatabase);
-					((GameSQLDatabase) sqlDatabase).openConnection();
-
-					rabbitSpeaker = new RabbitSpeaker(config);
-				} else {
-					sqlDatabase = new FakeSQLDatabase();
-				}
-			}
-
-			GameAPI.logColor("&b[GameAPI] &aLoading NMS classes...");
-			/**
-			 * Chargement des classes NMS
-			 */
-			CustomCreatures.registerEntities();
-
-			GameAPI.logColor("&b[GameAPI] &aRegistering listeners...");
-			/**
-			 * Chargement des Listeners
-			 */
-			new LoginListener(); // Met le BadblockPlayer � la connection
-
-			if (!EMPTY_VERSION) {
-				new DisconnectListener(); // G�re la d�connection
-				new JailedPlayerListener(); // Permet de bien jail les joueurs
-				new ItemStackExtras(); // Permet de bien g�rer les items
-										// sp�ciaux
-				new ProjectileHitBlockCaller(); // Permet d'appeler un event
-												// lorsque un projectile
-												// rencontre un block
-				new GameServerListener(); // Permet la gestion des joueurs vers
-											// Docker
-				new FakeDeathCaller(); // Permet de g�rer les fausses morts et
-										// la d�tections du joueur
-				new ChangeWorldEvent(); // Permet de mieux g�rer les fausses
-										// dimensions
-				new PlayerInteractListener(); // Permet aux administrateurs de
-												// d�finir une zone
-				new MoveListener(); // Permet d'emp�cher les joueurs de sortir
-									// d'une zone
-				new ChatListener(); // Permet de formatter le chat
-				joinItems = new GameJoinItems(); // Items donn� � l'arriv�e du
-													// joueur
-				chestGenerator = new GameChestGenerator();
-
-				/** Correction de bugs Bukkit */
-
-				new ArrowBugFixListener(); // Permet de corriger un bug avec les
-											// fl�ches se lan�ant mal
-				new UselessDamageFixListener(); // Enl�ve les d�gats inutiles
-												// lors d'une chute
-				// new PlayerTeleportFix(); // Permet de bien voir le joueur
-				// lorsqu'il respawn (bug Bukkit)
-
-				/** Protection et optimisations par d�faut */
-
-				new PlayerMapProtectorListener(); // Permet de prot�ger la map
-				new BlockMapProtectorListener(); // Permet de prot�ger la map
-				new EntityMapProtectorListener(); // Permet de prot�ger la map
-
-				/** Packets �cout�s par l'API */
-				GameAPI.logColor("&b[GameAPI] &aRegistering packets listeners ...");
-
-				new CameraListener().register(); // Packet pour voir � la place
-													// du joueur en spec (aucun
-													// event sur Bukkit)
-				new InteractEntityListener().register();
-				new EquipmentListener().register();
-				new UpdateSignListener().register();
-				// AntiCheat.load();
-
-				getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-
-				GameAPI.logColor("&b[GameAPI] &aCreating scoreboard...");
-
-				badblockScoreboard = new GameScoreboard(); // Permet de g�rer le
-															// scoreboard
-			}
-			/**
-			 * Chargement des commandes par d�faut
-			 */
-			GameAPI.logColor("&b[GameAPI] &aRegistering commands...");
-
-			if (!EMPTY_VERSION) {
-				new AdminModeCommand();
-				new I18RCommand();
-
-				new FlyCommand();
-				new HealCommand();
-				new FeedCommand();
-				new GameModeCommand();
-
-				new BroadcastCommand();
-				new GodmodeCommand();
-				new InvseeCommand();
-				new KickallCommand();
-				new TeleportCommand();
-				new VanishCommand();
-
-				new LagCommand();
-				new KitsCommand();
-			}
-
-			new FreezeCommand();
-			new JumpToCommand();
-			new SuicideCommand();
-			new SudoCommand();
-			new TeleportAllCommand();
-			new SkullCommand();
-			new WhitelistCommand();
-			new ClearChatCommand();
-			new KillallCommand();
-			new UpCommand();
-			new WandCommand();
-			new CompassCommand();
-			new RepairCommand();
-			new SpawnMobCommand();
-			new ClearInventoryCommand();
-			new EnderchestCommand();
-			new ListCommand();
-			new PingCommand();
-			new BackCommand();
-			new MoreCommand();
-			new WorkbrenchCommand();
-			new SpeedCommand();
-			new WeatherCommand();
-			new GiveCommand();
-			new FireballCommand();
-			new ThunderCommand();
-			new WorldCommand();
-			new WorldsCommand();
-			new KillCommand();
-
-			File whitelistFile = new File(getDataFolder(), WHITELIST);
-			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
-
-			if (!whitelist.contains("whitelist")) {
-				whitelist.set("whitelist", Arrays.asList("lelann"));
-			}
-
-			this.whitelist = new ArrayList<>();
-
-			for (String player : whitelist.getStringList("whitelist"))
-				this.whitelist.add(player.toLowerCase());
-
-			whitelist.save(whitelistFile);
-
-			// Set server bonus
-			serverXpBonus = config.getBonusXp();
-			serverBadcoinsBonus = config.getBonusCoins();
-
-			// Loading GameServer
-			if (!EMPTY_VERSION) {
-				GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
-				// GameServer apr�s tout
-				this.gameServer = new GameServer();
-				this.gameServerManager = new GameServerManager(config);
-				this.getGameServerManager().start();
-			}
-
-			nano = System.nanoTime() - nano;
-
-			double ms = nano / 1_000_000d;
-			ms = MathsUtils.round(ms, 3);
-
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
-
-			GameAPI.logColor("&b[GameAPI] &aAPI loaded! (" + ms + "ms)");
-
-			File plugins = new File("plugins" + File.separator + "apiPlugins");
-			plugins.mkdirs();
-			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins))
-					.forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
-		} catch (Throwable t) {
-			t.printStackTrace();
-
-			GameAPI.logColor("&c[GameAPI] Error occurred while loading API. See the stack trace. Restarting...");
-			Bukkit.shutdown();
-		}
 	}
 
 	@Override
