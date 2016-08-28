@@ -28,6 +28,7 @@ import fr.badblock.game.core18R3.chest.GameChestGenerator;
 import fr.badblock.game.core18R3.commands.AdminModeCommand;
 import fr.badblock.game.core18R3.commands.BroadcastCommand;
 import fr.badblock.game.core18R3.commands.ClearChatCommand;
+import fr.badblock.game.core18R3.commands.CompassCommand;
 import fr.badblock.game.core18R3.commands.FeedCommand;
 import fr.badblock.game.core18R3.commands.FlyCommand;
 import fr.badblock.game.core18R3.commands.FreezeCommand;
@@ -359,6 +360,7 @@ public class GamePlugin extends GameAPI {
 			new KillallCommand();
 			new UpCommand();
 			new WandCommand();
+			new CompassCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
