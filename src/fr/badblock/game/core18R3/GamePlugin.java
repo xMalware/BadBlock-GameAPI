@@ -26,6 +26,7 @@ import com.google.gson.JsonObject;
 
 import fr.badblock.game.core18R3.chest.GameChestGenerator;
 import fr.badblock.game.core18R3.commands.AdminModeCommand;
+import fr.badblock.game.core18R3.commands.BackCommand;
 import fr.badblock.game.core18R3.commands.BroadcastCommand;
 import fr.badblock.game.core18R3.commands.ClearChatCommand;
 import fr.badblock.game.core18R3.commands.ClearInventoryCommand;
@@ -45,6 +46,7 @@ import fr.badblock.game.core18R3.commands.KillallCommand;
 import fr.badblock.game.core18R3.commands.KitsCommand;
 import fr.badblock.game.core18R3.commands.LagCommand;
 import fr.badblock.game.core18R3.commands.ListCommand;
+import fr.badblock.game.core18R3.commands.PingCommand;
 import fr.badblock.game.core18R3.commands.PortalCommand;
 import fr.badblock.game.core18R3.commands.RepairCommand;
 import fr.badblock.game.core18R3.commands.ShopCommand;
@@ -380,6 +382,7 @@ public class GamePlugin extends GameAPI {
 			new EnderchestCommand();
 			new ListCommand();
 			new PingCommand();
+			new BackCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
