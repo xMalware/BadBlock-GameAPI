@@ -2,7 +2,6 @@ package fr.badblock.game.core18R3.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -18,12 +17,10 @@ public class KillCommand extends AbstractCommand {
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer concerned = null;
 		
-		if(args.length == 0 && !(sender instanceof Player)){
+		if(args.length == 0){
 			return false;
 		} else if(args.length > 0){
 			concerned = (BadblockPlayer) Bukkit.getPlayer(args[0]);
-		} else {
-			concerned = (BadblockPlayer) sender;
 		}
 
 		if(concerned == null){
