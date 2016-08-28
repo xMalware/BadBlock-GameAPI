@@ -25,6 +25,7 @@ public class BackCommand extends AbstractCommand {
 			badblockPlayer.sendTranslatedMessage("commands.back.nolastlocation");
 			return true;
 		}
+		badblockPlayer.teleport(data.lastLocation);
 		badblockPlayer.sendTranslatedMessage("commands.back.teleportedtolastlocation");
 		return true;
 	}
