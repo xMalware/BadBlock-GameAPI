@@ -1,7 +1,6 @@
 package fr.badblock.game.core18R3.i18n;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,7 +13,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Maps;
-import com.google.common.io.Files;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -31,6 +29,7 @@ public class GameI18n implements I18n {
 
 	}
 
+	/*
 	private void copy(File folderFrom, File folderTo) throws IOException {
 		if(!folderTo.exists())
 			folderTo.mkdirs();
@@ -43,8 +42,10 @@ public class GameI18n implements I18n {
 			else Files.copy(file, to);
 		}
 	}
+	*/
 	
 	public void load(File folder){
+		/*
 		File i18nFile = new File("/home/dev01/i18n");
 
 		if(!i18nFile.exists())
@@ -56,10 +57,10 @@ public class GameI18n implements I18n {
 		} catch(Exception e){
 			e.printStackTrace();
 		}
-
+		*/
 		if(!folder.exists())
 			folder.mkdirs();
-
+		
 		languages = Maps.newConcurrentMap();
 
 		for(File languageFolder : folder.listFiles()){

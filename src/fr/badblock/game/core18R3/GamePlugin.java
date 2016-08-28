@@ -146,7 +146,7 @@ import net.minecraft.server.v1_8_R3.World;
 public class GamePlugin extends GameAPI {
 	public static final boolean EMPTY_VERSION = false;
 
-	public static final String FOLDER_I18N 		   = "i18n",
+	public static final String FOLDER_I18N 		   = "/home/dev01/i18n",
 							   FOLDER_KITS		   = "kits",
 							   CONFIG_DATABASES    = "databases.json",
 							   WHITELIST		   = "whitelist.yml";
