@@ -389,6 +389,7 @@ public class GamePlugin extends GameAPI {
 			new MoreCommand();
 			new WorkbrenchCommand();
 			new SpeedCommand();
+			new WeatherCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
