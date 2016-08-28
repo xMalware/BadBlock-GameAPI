@@ -61,6 +61,7 @@ import fr.badblock.game.core18R3.commands.TeleportCommand;
 import fr.badblock.game.core18R3.commands.UpCommand;
 import fr.badblock.game.core18R3.commands.VanishCommand;
 import fr.badblock.game.core18R3.commands.WandCommand;
+import fr.badblock.game.core18R3.commands.WeatherCommand;
 import fr.badblock.game.core18R3.commands.WhitelistCommand;
 import fr.badblock.game.core18R3.commands.WorkbrenchCommand;
 import fr.badblock.game.core18R3.configuration.GameConfiguration;
