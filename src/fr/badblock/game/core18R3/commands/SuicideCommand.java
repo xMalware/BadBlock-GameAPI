@@ -17,7 +17,6 @@ public class SuicideCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0) return false;
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 		concerned.damage(concerned.getHealth());
 		return true;
