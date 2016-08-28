@@ -242,306 +242,6 @@ public class GamePlugin extends GameAPI {
 	@Getter
 	private double serverXpBonus;
 
-	public void addPortal(String name, Portal portal) {
-		File file = new File(portalFolder, name + ".json");
-		portal.setFile(file);
-
-		portals.put(name, portal);
-	}
-
-	@Override
-	public void balanceTeams(boolean sameSize) {
-		List<BadblockTeam> unfilled = new ArrayList<>();
-
-		for (BadblockTeam team : getTeams()) {
-			if (team.getOnlinePlayers().size() < team.getMaxPlayers()) {
-				unfilled.add(team);
-			}
-		}
-
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			BadblockPlayer p = (BadblockPlayer) player;
-
-			if (p.getTeam() == null) {
-				if (unfilled.isEmpty()) {
-					p.sendPlayer("lobby"); // kick
-					continue;
-				}
-
-				BadblockTeam team = unfilled.get(0);
-
-				team.joinTeam(p, JoinReason.REBALANCING);
-
-				if (team.getOnlinePlayers().size() == team.getMaxPlayers()) {
-					unfilled.remove(0);
-				}
-			}
-		}
-
-		if (!unfilled.isEmpty() && sameSize) {
-			int playersByTeam = Bukkit.getOnlinePlayers().size() / getTeams().size();
-
-			for (BadblockTeam team : getTeams()) {
-
-				if (team.getOnlinePlayers().size() < playersByTeam) {
-
-					for (BadblockTeam joinable : getTeams()) {
-						GameTeam game = (GameTeam) joinable;
-
-						if (joinable.getOnlinePlayers().size() > playersByTeam) {
-							team.joinTeam(game.getRandomPlayer(), JoinReason.REBALANCING);
-						}
-
-						if (team.getOnlinePlayers().size() == playersByTeam)
-							break;
-					}
-
-				}
-
-			}
-		}
-	}
-
-	@Override
-	public CustomObjective buildCustomObjective(@NonNull String name) {
-		return new GameCustomObjective(name);
-	}
-
-	@Override
-	public CustomInventory createCustomInventory(int lines, String displayName) {
-		return new GameCustomInventory(displayName, lines);
-	}
-
-	@Override
-	public ItemStackExtra createItemStackExtra(ItemStack itemStack) {
-		return new GameItemExtra(itemStack);
-	}
-
-	@Override
-	public ItemStackFactory createItemStackFactory() {
-		return new GameItemStackFactory();
-	}
-
-	@Override
-	public ItemStackFactory createItemStackFactory(ItemStack item) {
-		return new GameItemStackFactory(item);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T extends BadblockOutPacket> T createPacket(@NonNull Class<T> clazz) {
-		Class<? extends GameBadblockOutPacket> gameClass = GameBadblockOutPackets.getPacketClass(clazz);
-
-		if (gameClass == null)
-			return null;
-
-		try {
-			return (T) ReflectionUtils.getConstructor(gameClass).newInstance();
-		} catch (Exception e) {
-			logError("The packet " + gameClass + " don't have a no-arg-constructor ! Can not use it");
-		}
-		return null;
-	}
-
-	@Override
-	public ParticleEffect createParticleEffect(ParticleEffectType type) {
-		return new GameParticleEffect(type);
-	}
-
-	@Override
-	public <T extends WatcherEntity> T createWatcher(@NonNull Class<T> clazz) {
-		return GameWatchers.buildWatch(clazz);
-	}
-
-	@Override
-	public void enableAntiSpawnKill() {
-		antiSpawnKill = true;
-	}
-
-	@Override
-	public void formatChat(boolean enabled, boolean team) {
-		formatChat(enabled, team, null);
-	}
-
-	@Override
-	public void formatChat(boolean enabled, boolean team, String custom) {
-		ChatListener.enabled = enabled;
-		ChatListener.team = team;
-		ChatListener.custom = custom;
-	}
-
-	@Override
-	public CustomMerchantInventory getCustomMerchantInventory() {
-		return new GameMerchantInventory();
-	}
-
-	@Override
-	public Collection<Portal> getLoadedPortals() {
-		return Collections.unmodifiableCollection(portals.values());
-	}
-
-	@Override
-	public BadblockOfflinePlayer getOfflinePlayer(@NonNull String name) {
-		if (EMPTY_VERSION)
-			return null;
-
-		return EMPTY_VERSION ? null : gameServer.getPlayers().get(name.toLowerCase());
-	}
-
-	@Override
-	public Portal getPortal(@NonNull Location location) {
-		for (Portal portal : portals.values()) {
-			if (portal.getPortal().isInSelection(location))
-				return portal;
-		}
-
-		return null;
-	}
-
-	@Override
-	public Portal getPortal(@NonNull String name) {
-		return portals.get(name.toLowerCase());
-	}
-
-	@Override
-	public Location getSafeLocation(Location location) {
-		return TeleportUtils.getSafeDestination(location);
-	}
-
-	@Override
-	public BadblockTeam getTeam(@NonNull String key) {
-		return teams.get(key.toLowerCase());
-	}
-
-	@Override
-	public Collection<BadblockTeam> getTeams() {
-		return Collections.unmodifiableCollection(teams.values());
-	}
-
-	@Override
-	public Collection<String> getTeamsKey() {
-		return Collections.unmodifiableCollection(teams.keySet());
-	}
-
-	@Override
-	public Collection<String> getWhitelistedPlayers() {
-		return Collections.unmodifiableCollection(whitelist);
-	}
-
-	@Override
-	public boolean getWhitelistStatus() {
-		return whitelistStatus;
-	}
-
-	@Override
-	public boolean isWhitelisted(String player) {
-		return whitelist.contains(player.toLowerCase());
-	}
-
-	@Override
-	public <T extends BadblockInPacket> void listenAtPacket(@NonNull InPacketListener<T> listener) {
-		Class<? extends BadblockInPacket> packet = listener.getGenericPacketClass();
-
-		Set<InPacketListener<?>> list = packetInListeners.get(packet);
-		if (list == null) {
-			list = new ConcurrentSet<>();
-		}
-
-		list.add(listener);
-		packetInListeners.put(packet, list);
-	}
-
-	@Override
-	public <T extends BadblockOutPacket> void listenAtPacket(@NonNull OutPacketListener<T> listener) {
-		Class<? extends BadblockOutPacket> packet = listener.getGenericPacketClass();
-
-		Set<OutPacketListener<?>> list = packetOutListeners.get(packet);
-		if (list == null) {
-			list = new ConcurrentSet<>();
-		}
-
-		list.add(listener);
-		packetOutListeners.put(packet, list);
-	}
-
-	@Override
-	public BadConfiguration loadConfiguration(File file) {
-		return loadConfiguration(JsonUtils.loadObject(file));
-	}
-
-	@Override
-	public BadConfiguration loadConfiguration(JsonObject object) {
-		return new GameConfiguration(object);
-	}
-
-	public void loadI18n() {
-		i18n.load(new File(getDataFolder(), FOLDER_I18N));
-	}
-
-	@Override
-	public Map<String, PlayerKit> loadKits(String game) {
-		File kitFolder = new File(new File(getDataFolder(), FOLDER_KITS), game.toLowerCase());
-
-		Map<String, PlayerKit> kits = Maps.newConcurrentMap();
-
-		if (!kitFolder.exists())
-			kitFolder.mkdirs();
-		if (!kitFolder.isDirectory())
-			return kits;
-
-		for (File file : kitFolder.listFiles()) {
-			PlayerKit kit = JsonUtils.load(file, GameKit.class);
-
-			kits.put(kit.getKitName().toLowerCase(), kit);
-		}
-
-		return kits;
-	}
-
-	@Override
-	public void managePortals(File folder) {
-		if (portalFolder != null)
-			throw new IllegalStateException("Portals are already loaded");
-
-		if (!folder.exists())
-			folder.mkdirs();
-
-		this.portalFolder = folder;
-
-		// On charge commandes/listeners qu'on avait pas load pour �conomiser
-		// sur les serveurs ou inutiles
-		new PortalCommand();
-		new PortalListener();
-
-		for (File file : folder.listFiles()) {
-			Portal portal = JsonUtils.load(file, Portal.class);
-			String name = file.getName().split("\\.")[0];
-
-			portal.setFile(file);
-
-			portals.put(name.toLowerCase(), portal);
-		}
-	}
-
-	@Override
-	public void manageShops(File folder) {
-		if (shopFolder != null)
-			throw new IllegalStateException("Merchants are already loaded");
-
-		if (!folder.exists())
-			folder.mkdirs();
-
-		this.shopFolder = folder;
-
-		for (File file : folder.listFiles()) {
-			String name = file.getName().toLowerCase().replace(".json", "");
-			merchants.put(name, new Merchant(name, loadConfiguration(file)));
-		}
-
-		new ShopCommand();
-		new ShopListener();
-	}
-
 	@Override
 	public void onDisable() {
 		try {
@@ -791,6 +491,306 @@ public class GamePlugin extends GameAPI {
 			GameAPI.logColor("&c[GameAPI] Error occurred while loading API. See the stack trace. Restarting...");
 			Bukkit.shutdown();
 		}
+	}
+	
+	public void addPortal(String name, Portal portal) {
+		File file = new File(portalFolder, name + ".json");
+		portal.setFile(file);
+
+		portals.put(name, portal);
+	}
+
+	@Override
+	public void balanceTeams(boolean sameSize) {
+		List<BadblockTeam> unfilled = new ArrayList<>();
+
+		for (BadblockTeam team : getTeams()) {
+			if (team.getOnlinePlayers().size() < team.getMaxPlayers()) {
+				unfilled.add(team);
+			}
+		}
+
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			BadblockPlayer p = (BadblockPlayer) player;
+
+			if (p.getTeam() == null) {
+				if (unfilled.isEmpty()) {
+					p.sendPlayer("lobby"); // kick
+					continue;
+				}
+
+				BadblockTeam team = unfilled.get(0);
+
+				team.joinTeam(p, JoinReason.REBALANCING);
+
+				if (team.getOnlinePlayers().size() == team.getMaxPlayers()) {
+					unfilled.remove(0);
+				}
+			}
+		}
+
+		if (!unfilled.isEmpty() && sameSize) {
+			int playersByTeam = Bukkit.getOnlinePlayers().size() / getTeams().size();
+
+			for (BadblockTeam team : getTeams()) {
+
+				if (team.getOnlinePlayers().size() < playersByTeam) {
+
+					for (BadblockTeam joinable : getTeams()) {
+						GameTeam game = (GameTeam) joinable;
+
+						if (joinable.getOnlinePlayers().size() > playersByTeam) {
+							team.joinTeam(game.getRandomPlayer(), JoinReason.REBALANCING);
+						}
+
+						if (team.getOnlinePlayers().size() == playersByTeam)
+							break;
+					}
+
+				}
+
+			}
+		}
+	}
+
+	@Override
+	public CustomObjective buildCustomObjective(@NonNull String name) {
+		return new GameCustomObjective(name);
+	}
+
+	@Override
+	public CustomInventory createCustomInventory(int lines, String displayName) {
+		return new GameCustomInventory(displayName, lines);
+	}
+
+	@Override
+	public ItemStackExtra createItemStackExtra(ItemStack itemStack) {
+		return new GameItemExtra(itemStack);
+	}
+
+	@Override
+	public ItemStackFactory createItemStackFactory() {
+		return new GameItemStackFactory();
+	}
+
+	@Override
+	public ItemStackFactory createItemStackFactory(ItemStack item) {
+		return new GameItemStackFactory(item);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends BadblockOutPacket> T createPacket(@NonNull Class<T> clazz) {
+		Class<? extends GameBadblockOutPacket> gameClass = GameBadblockOutPackets.getPacketClass(clazz);
+
+		if (gameClass == null)
+			return null;
+
+		try {
+			return (T) ReflectionUtils.getConstructor(gameClass).newInstance();
+		} catch (Exception e) {
+			logError("The packet " + gameClass + " don't have a no-arg-constructor ! Can not use it");
+		}
+		return null;
+	}
+
+	@Override
+	public ParticleEffect createParticleEffect(ParticleEffectType type) {
+		return new GameParticleEffect(type);
+	}
+
+	@Override
+	public <T extends WatcherEntity> T createWatcher(@NonNull Class<T> clazz) {
+		return GameWatchers.buildWatch(clazz);
+	}
+
+	@Override
+	public void enableAntiSpawnKill() {
+		antiSpawnKill = true;
+	}
+
+	@Override
+	public void formatChat(boolean enabled, boolean team) {
+		formatChat(enabled, team, null);
+	}
+
+	@Override
+	public void formatChat(boolean enabled, boolean team, String custom) {
+		ChatListener.enabled = enabled;
+		ChatListener.team = team;
+		ChatListener.custom = custom;
+	}
+
+	@Override
+	public CustomMerchantInventory getCustomMerchantInventory() {
+		return new GameMerchantInventory();
+	}
+
+	@Override
+	public Collection<Portal> getLoadedPortals() {
+		return Collections.unmodifiableCollection(portals.values());
+	}
+
+	@Override
+	public BadblockOfflinePlayer getOfflinePlayer(@NonNull String name) {
+		if (EMPTY_VERSION)
+			return null;
+
+		return EMPTY_VERSION ? null : gameServer.getPlayers().get(name.toLowerCase());
+	}
+
+	@Override
+	public Portal getPortal(@NonNull Location location) {
+		for (Portal portal : portals.values()) {
+			if (portal.getPortal().isInSelection(location))
+				return portal;
+		}
+
+		return null;
+	}
+
+	@Override
+	public Portal getPortal(@NonNull String name) {
+		return portals.get(name.toLowerCase());
+	}
+
+	@Override
+	public Location getSafeLocation(Location location) {
+		return TeleportUtils.getSafeDestination(location);
+	}
+
+	@Override
+	public BadblockTeam getTeam(@NonNull String key) {
+		return teams.get(key.toLowerCase());
+	}
+
+	@Override
+	public Collection<BadblockTeam> getTeams() {
+		return Collections.unmodifiableCollection(teams.values());
+	}
+
+	@Override
+	public Collection<String> getTeamsKey() {
+		return Collections.unmodifiableCollection(teams.keySet());
+	}
+
+	@Override
+	public Collection<String> getWhitelistedPlayers() {
+		return Collections.unmodifiableCollection(whitelist);
+	}
+
+	@Override
+	public boolean getWhitelistStatus() {
+		return whitelistStatus;
+	}
+
+	@Override
+	public boolean isWhitelisted(String player) {
+		return whitelist.contains(player.toLowerCase());
+	}
+
+	@Override
+	public <T extends BadblockInPacket> void listenAtPacket(@NonNull InPacketListener<T> listener) {
+		Class<? extends BadblockInPacket> packet = listener.getGenericPacketClass();
+
+		Set<InPacketListener<?>> list = packetInListeners.get(packet);
+		if (list == null) {
+			list = new ConcurrentSet<>();
+		}
+
+		list.add(listener);
+		packetInListeners.put(packet, list);
+	}
+
+	@Override
+	public <T extends BadblockOutPacket> void listenAtPacket(@NonNull OutPacketListener<T> listener) {
+		Class<? extends BadblockOutPacket> packet = listener.getGenericPacketClass();
+
+		Set<OutPacketListener<?>> list = packetOutListeners.get(packet);
+		if (list == null) {
+			list = new ConcurrentSet<>();
+		}
+
+		list.add(listener);
+		packetOutListeners.put(packet, list);
+	}
+
+	@Override
+	public BadConfiguration loadConfiguration(File file) {
+		return loadConfiguration(JsonUtils.loadObject(file));
+	}
+
+	@Override
+	public BadConfiguration loadConfiguration(JsonObject object) {
+		return new GameConfiguration(object);
+	}
+
+	public void loadI18n() {
+		i18n.load(new File(/*getDataFolder(),*/ FOLDER_I18N));
+	}
+
+	@Override
+	public Map<String, PlayerKit> loadKits(String game) {
+		File kitFolder = new File(new File(getDataFolder(), FOLDER_KITS), game.toLowerCase());
+
+		Map<String, PlayerKit> kits = Maps.newConcurrentMap();
+
+		if (!kitFolder.exists())
+			kitFolder.mkdirs();
+		if (!kitFolder.isDirectory())
+			return kits;
+
+		for (File file : kitFolder.listFiles()) {
+			PlayerKit kit = JsonUtils.load(file, GameKit.class);
+
+			kits.put(kit.getKitName().toLowerCase(), kit);
+		}
+
+		return kits;
+	}
+
+	@Override
+	public void managePortals(File folder) {
+		if (portalFolder != null)
+			throw new IllegalStateException("Portals are already loaded");
+
+		if (!folder.exists())
+			folder.mkdirs();
+
+		this.portalFolder = folder;
+
+		// On charge commandes/listeners qu'on avait pas load pour �conomiser
+		// sur les serveurs ou inutiles
+		new PortalCommand();
+		new PortalListener();
+
+		for (File file : folder.listFiles()) {
+			Portal portal = JsonUtils.load(file, Portal.class);
+			String name = file.getName().split("\\.")[0];
+
+			portal.setFile(file);
+
+			portals.put(name.toLowerCase(), portal);
+		}
+	}
+
+	@Override
+	public void manageShops(File folder) {
+		if (shopFolder != null)
+			throw new IllegalStateException("Merchants are already loaded");
+
+		if (!folder.exists())
+			folder.mkdirs();
+
+		this.shopFolder = folder;
+
+		for (File file : folder.listFiles()) {
+			String name = file.getName().toLowerCase().replace(".json", "");
+			merchants.put(name, new Merchant(name, loadConfiguration(file)));
+		}
+
+		new ShopCommand();
+		new ShopListener();
 	}
 
 	@Override
