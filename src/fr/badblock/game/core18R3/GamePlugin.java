@@ -61,6 +61,7 @@ import fr.badblock.game.core18R3.commands.UpCommand;
 import fr.badblock.game.core18R3.commands.VanishCommand;
 import fr.badblock.game.core18R3.commands.WandCommand;
 import fr.badblock.game.core18R3.commands.WhitelistCommand;
+import fr.badblock.game.core18R3.commands.WorkbrenchCommand;
 import fr.badblock.game.core18R3.configuration.GameConfiguration;
 import fr.badblock.game.core18R3.entities.CustomCreatures;
 import fr.badblock.game.core18R3.fakeentities.FakeEntities;
@@ -385,6 +386,7 @@ public class GamePlugin extends GameAPI {
 			new PingCommand();
 			new BackCommand();
 			new MoreCommand();
+			new WorkbrenchCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
