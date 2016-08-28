@@ -29,11 +29,18 @@ public class ClearInventoryCommand extends AbstractCommand {
 		if(concerned == null){
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
-			sendTranslatedMessage(concerned, "commands.clearinventory.cleared");
-		
 			if(!concerned.equals(sender)){
+				if(!sender.hasPermission(GamePermission.ADMIN.getPermission())){
+					sendTranslatedMessage(sender, "commands.nopermission");
+					return true;
+				}
+				
 				sendTranslatedMessage(concerned, "commands.clearinventory.cleared-other", concerned.getName());
 			}
+			
+			sendTranslatedMessage(concerned, "commands.clearinventory.cleared");
+		
+			concerned.clearInventory();
 		}
 		
 		return true;
