@@ -46,6 +46,7 @@ import fr.badblock.game.core18R3.commands.KillallCommand;
 import fr.badblock.game.core18R3.commands.KitsCommand;
 import fr.badblock.game.core18R3.commands.LagCommand;
 import fr.badblock.game.core18R3.commands.ListCommand;
+import fr.badblock.game.core18R3.commands.MoreCommand;
 import fr.badblock.game.core18R3.commands.PingCommand;
 import fr.badblock.game.core18R3.commands.PortalCommand;
 import fr.badblock.game.core18R3.commands.RepairCommand;
@@ -383,6 +384,7 @@ public class GamePlugin extends GameAPI {
 			new ListCommand();
 			new PingCommand();
 			new BackCommand();
+			new MoreCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
