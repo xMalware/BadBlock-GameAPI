@@ -45,6 +45,7 @@ import fr.badblock.game.core18R3.commands.KillallCommand;
 import fr.badblock.game.core18R3.commands.KitsCommand;
 import fr.badblock.game.core18R3.commands.LagCommand;
 import fr.badblock.game.core18R3.commands.ListCommand;
+import fr.badblock.game.core18R3.commands.PingCommand;
 import fr.badblock.game.core18R3.commands.PortalCommand;
 import fr.badblock.game.core18R3.commands.RepairCommand;
 import fr.badblock.game.core18R3.commands.ShopCommand;
