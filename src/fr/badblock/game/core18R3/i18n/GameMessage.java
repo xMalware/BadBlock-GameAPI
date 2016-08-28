@@ -1,11 +1,14 @@
 package fr.badblock.game.core18R3.i18n;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Random;
 
 import fr.badblock.gameapi.utils.i18n.Message;
 
 public class GameMessage implements Message {
+	public transient File file;
+	
 	private boolean useHeader,
 					useShortHeader,
 					useFooter;

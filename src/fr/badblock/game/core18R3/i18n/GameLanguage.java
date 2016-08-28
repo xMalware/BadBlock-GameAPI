@@ -33,7 +33,7 @@ public class GameLanguage implements Language {
 	private final		  File	 							textFolder;
 	private final		  File	 							wordFolder;
 	
-	private final		  Map<String, GameLanguageFile> 	files;
+	private final		  Map<String, GameMessage>		 	messages;
 	private final		  Map<String, GameLanguageWordFile> wordFiles;
 	private 		  	  GameLanguageConfig				config;
 	
@@ -41,7 +41,7 @@ public class GameLanguage implements Language {
 		if(!folder.exists()) folder.mkdirs();
 		
 		this.locale    = locale;
-		this.files     = Maps.newConcurrentMap();
+		this.messages  = Maps.newConcurrentMap();
 		this.wordFiles = Maps.newConcurrentMap();
 		
 		configFile	   = new File(folder, "config.json");
@@ -57,12 +57,6 @@ public class GameLanguage implements Language {
 		if(!wordFolder.exists())
 			wordFolder.mkdirs();
 		
-		for(File file : textFolder.listFiles()){
-			if(!file.isDirectory()){
-				GameLanguageFile language = new GameLanguageFile(file, getMessageWhenUnknow());
-				files.put(language.getName(), language);
-			}
-		}
 		for(File file : wordFolder.listFiles()){
 			if(!file.isDirectory()){
 				GameLanguageWordFile language = new GameLanguageWordFile(file);
@@ -107,17 +101,50 @@ public class GameLanguage implements Language {
 	
 	@Override
 	public Message getMessage(String key) {
+		if(key.isEmpty())
+			throw new IllegalArgumentException("Empty key gived");
+		
+		key = key.toLowerCase();
+		
+		if(messages.containsKey(key))
+			return messages.get(key);
+		
 		String[] splitted     = key.split("\\.");
-		GameLanguageFile file = getLanguageFile(splitted[0].toLowerCase());
+		
+		File file = textFolder;
+		
+		for(int i=0;i<splitted.length-1;i++){
+			file = new File(file, splitted[i]);
+			
+			if(!file.exists())
+				file.mkdirs();
+		}
+		
+		file = new File(file, splitted[splitted.length - 1] + ".json");
+		
+		GameMessage message = null;
+		
+		if(!file.exists()){
+			message = new GameMessage(getMessageWhenUnknow());
+			JsonUtils.save(file, message, true);
+		} else {
+			message = JsonUtils.load(file, GameMessage.class);
+			message.verify(getMessageWhenUnknow());
+		}
+		
+		message.file = file;
+		messages.put(key, message);
+		
+		/*GameLanguageFile file = getLanguageFile(splitted[0].toLowerCase());
 
 		if(file == null){
 			file = new GameLanguageFile(new File(textFolder, splitted[0].toLowerCase() + ".json"), getMessageWhenUnknow());
 			files.put(splitted[0].toLowerCase(), file);
-		}
+		}*/
 		
-		key = StringUtils.join(splitted, ".", 1);
+		// key = StringUtils.join(splitted, ".", 1);
 		
-		return file.getMessage(key, getMessageWhenUnknow());
+		return message;
 	}
 	
 	@Override
@@ -135,7 +162,7 @@ public class GameLanguage implements Language {
 		return file.getWord(key);
 	}
 	
-	protected GameLanguageFile getLanguageFile(String file){
+	/*protected GameLanguageFile getLanguageFile(String file){
 		file = file.toLowerCase();
 		
 		if(!files.containsKey(file)){
@@ -143,7 +170,7 @@ public class GameLanguage implements Language {
 		} else {
 			return files.get(file);
 		}
-	}
+	}*/
 	
 	protected GameLanguageWordFile getLanguageWordFile(String file){
 		file = file.toLowerCase();
@@ -214,8 +241,8 @@ public class GameLanguage implements Language {
 	public void save(){
 		JsonUtils.save(configFile, config, true);
 		
-		for(GameLanguageFile file : files.values()){
-			file.save();
+		for(GameMessage message : messages.values()){
+			JsonUtils.save(message.file, message, true);
 		}
 		
 		for(GameLanguageWordFile file : wordFiles.values()){
