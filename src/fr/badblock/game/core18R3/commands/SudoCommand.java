@@ -21,7 +21,8 @@ public class SudoCommand extends AbstractCommand {
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 		String playerName = args[0];
 		Player to = Bukkit.getPlayer(playerName);
-		if (to == null) {
+		
+		if(to == null) {
 			concerned.sendTranslatedMessage("commands.sudo.offline", playerName);
 			return true;
 		}
