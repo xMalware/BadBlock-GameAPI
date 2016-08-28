@@ -20,10 +20,10 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
  * Commande de j
  * @author LeLanN
  */
-public class JCommand extends AbstractCommand {
+public class JumpToCommand extends AbstractCommand {
 	
-	public JCommand() {
-		super("j", new TranslatableString("commands.j.usage"), GamePermission.ADMIN);
+	public JumpToCommand() {
+		super("jumpto", new TranslatableString("commands.jumpto.usage"), GamePermission.ADMIN, "j");
 		allowConsole(false);
 	}
 
