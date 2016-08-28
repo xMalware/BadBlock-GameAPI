@@ -60,6 +60,7 @@ import fr.badblock.game.core18R3.commands.SudoCommand;
 import fr.badblock.game.core18R3.commands.SuicideCommand;
 import fr.badblock.game.core18R3.commands.TeleportAllCommand;
 import fr.badblock.game.core18R3.commands.TeleportCommand;
+import fr.badblock.game.core18R3.commands.ThunderCommand;
 import fr.badblock.game.core18R3.commands.UpCommand;
 import fr.badblock.game.core18R3.commands.VanishCommand;
 import fr.badblock.game.core18R3.commands.WandCommand;
@@ -395,6 +396,7 @@ public class GamePlugin extends GameAPI {
 			new WeatherCommand();
 			new GiveCommand();
 			new FireballCommand();
+			new ThunderCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
