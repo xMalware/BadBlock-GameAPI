@@ -36,6 +36,7 @@ import fr.badblock.game.core18R3.commands.FeedCommand;
 import fr.badblock.game.core18R3.commands.FlyCommand;
 import fr.badblock.game.core18R3.commands.FreezeCommand;
 import fr.badblock.game.core18R3.commands.GameModeCommand;
+import fr.badblock.game.core18R3.commands.GiveCommand;
 import fr.badblock.game.core18R3.commands.GodmodeCommand;
 import fr.badblock.game.core18R3.commands.HealCommand;
 import fr.badblock.game.core18R3.commands.I18RCommand;
@@ -391,6 +392,7 @@ public class GamePlugin extends GameAPI {
 			new WorkbrenchCommand();
 			new SpeedCommand();
 			new WeatherCommand();
+			new GiveCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
