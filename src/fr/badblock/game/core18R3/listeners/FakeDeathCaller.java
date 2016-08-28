@@ -250,6 +250,7 @@ public class FakeDeathCaller extends BadListener {
 	}
 
 	private void death(BadblockPlayer p, FakeDeathEvent e){
+		p.inGameData(CommandInGameData.class).lastLocation = p.getLocation();
 		p.heal();
 		p.feed();
 		p.removePotionEffects();
