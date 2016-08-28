@@ -45,6 +45,7 @@ import fr.badblock.game.core18R3.commands.PortalCommand;
 import fr.badblock.game.core18R3.commands.RepairCommand;
 import fr.badblock.game.core18R3.commands.ShopCommand;
 import fr.badblock.game.core18R3.commands.SkullCommand;
+import fr.badblock.game.core18R3.commands.SpawnMobCommand;
 import fr.badblock.game.core18R3.commands.TeleportCommand;
 import fr.badblock.game.core18R3.commands.UpCommand;
 import fr.badblock.game.core18R3.commands.VanishCommand;
@@ -363,6 +364,7 @@ public class GamePlugin extends GameAPI {
 			new WandCommand();
 			new CompassCommand();
 			new RepairCommand();
+			new SpawnMobCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
