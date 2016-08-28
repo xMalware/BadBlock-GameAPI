@@ -55,6 +55,7 @@ public class LoginListener extends BadListener {
 
 		p.loadInjector();
 		p.setHasJoined(true);
+		p.inGameData(CommandInGameData.class).lastLocation = p.getLocation();
 
 		if(GamePlugin.EMPTY_VERSION) return;
 		

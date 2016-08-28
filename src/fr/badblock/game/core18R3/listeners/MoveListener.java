@@ -2,10 +2,12 @@ package fr.badblock.game.core18R3.listeners;
 
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
+import fr.badblock.game.core18R3.players.ingamedata.CommandInGameData;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.portal.Portal;
@@ -41,12 +43,14 @@ public class MoveListener extends BadListener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onTeleport(PlayerTeleportEvent e){
+		if (e.isCancelled()) return;
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
 		if(player.isDisguised()){
 			player.getDisguiseEntity().teleport(e.getTo());
 		}
+		player.inGameData(CommandInGameData.class).lastLocation = e.getFrom();
 	}
 }
