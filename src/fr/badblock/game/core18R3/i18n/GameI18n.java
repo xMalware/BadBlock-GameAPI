@@ -35,8 +35,6 @@ public class GameI18n implements I18n {
 		if(!folderTo.exists())
 			folderTo.mkdirs();
 		
-		System.out.println(folderFrom);
-		
 		for(File file : folderFrom.listFiles()){
 			File to = new File(folderTo, file.getName());
 			
