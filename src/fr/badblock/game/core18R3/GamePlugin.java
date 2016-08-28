@@ -48,6 +48,7 @@ import fr.badblock.game.core18R3.commands.RepairCommand;
 import fr.badblock.game.core18R3.commands.ShopCommand;
 import fr.badblock.game.core18R3.commands.SkullCommand;
 import fr.badblock.game.core18R3.commands.SpawnMobCommand;
+import fr.badblock.game.core18R3.commands.SuicideCommand;
 import fr.badblock.game.core18R3.commands.TeleportCommand;
 import fr.badblock.game.core18R3.commands.UpCommand;
 import fr.badblock.game.core18R3.commands.VanishCommand;
@@ -359,6 +360,7 @@ public class GamePlugin extends GameAPI {
 
 			new FreezeCommand();
 			new JumpToCommand();
+			new SuicideCommand();
 			new SkullCommand();
 			new WhitelistCommand();
 			new ClearChatCommand();
