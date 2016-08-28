@@ -38,6 +38,7 @@ import fr.badblock.game.core18R3.commands.GodmodeCommand;
 import fr.badblock.game.core18R3.commands.HealCommand;
 import fr.badblock.game.core18R3.commands.I18RCommand;
 import fr.badblock.game.core18R3.commands.InvseeCommand;
+import fr.badblock.game.core18R3.commands.JCommand;
 import fr.badblock.game.core18R3.commands.KickallCommand;
 import fr.badblock.game.core18R3.commands.KillallCommand;
 import fr.badblock.game.core18R3.commands.KitsCommand;
@@ -357,6 +358,7 @@ public class GamePlugin extends GameAPI {
 			}
 
 			new FreezeCommand();
+			new JCommand();
 			new SkullCommand();
 			new WhitelistCommand();
 			new ClearChatCommand();
