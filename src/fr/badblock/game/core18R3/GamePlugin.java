@@ -67,6 +67,7 @@ import fr.badblock.game.core18R3.commands.WandCommand;
 import fr.badblock.game.core18R3.commands.WeatherCommand;
 import fr.badblock.game.core18R3.commands.WhitelistCommand;
 import fr.badblock.game.core18R3.commands.WorkbrenchCommand;
+import fr.badblock.game.core18R3.commands.WorldCommand;
 import fr.badblock.game.core18R3.configuration.GameConfiguration;
 import fr.badblock.game.core18R3.entities.CustomCreatures;
 import fr.badblock.game.core18R3.fakeentities.FakeEntities;
@@ -397,6 +398,7 @@ public class GamePlugin extends GameAPI {
 			new GiveCommand();
 			new FireballCommand();
 			new ThunderCommand();
+			new WorldCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
