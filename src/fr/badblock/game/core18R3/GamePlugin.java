@@ -380,6 +380,7 @@ public class GamePlugin extends GameAPI {
 		return Collections.unmodifiableCollection(portals.values());
 	}
 
+	
 	@Override
 	public BadblockOfflinePlayer getOfflinePlayer(@NonNull String name) {
 		if (EMPTY_VERSION)
