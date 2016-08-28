@@ -21,7 +21,7 @@ public class SpeedCommand extends AbstractCommand {
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 		float speed = -1F;
 		try {
-			speed = Float.parseFloat(args[1]);
+			speed = Float.parseFloat(args[0]);
 		}catch(Exception error) {
 			concerned.sendTranslatedMessage("commands.speed.notavalue");
 			return true;
