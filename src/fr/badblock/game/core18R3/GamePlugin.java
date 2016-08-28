@@ -53,6 +53,7 @@ import fr.badblock.game.core18R3.commands.RepairCommand;
 import fr.badblock.game.core18R3.commands.ShopCommand;
 import fr.badblock.game.core18R3.commands.SkullCommand;
 import fr.badblock.game.core18R3.commands.SpawnMobCommand;
+import fr.badblock.game.core18R3.commands.SpeedCommand;
 import fr.badblock.game.core18R3.commands.SudoCommand;
 import fr.badblock.game.core18R3.commands.SuicideCommand;
 import fr.badblock.game.core18R3.commands.TeleportAllCommand;
@@ -387,6 +388,7 @@ public class GamePlugin extends GameAPI {
 			new BackCommand();
 			new MoreCommand();
 			new WorkbrenchCommand();
+			new SpeedCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
