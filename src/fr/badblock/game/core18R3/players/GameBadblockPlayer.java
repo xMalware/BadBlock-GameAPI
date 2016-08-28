@@ -88,61 +88,174 @@ import net.minecraft.server.v1_8_R3.PlayerChunkMap;
 import net.minecraft.server.v1_8_R3.WorldServer;
 
 public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
-	@Getter@Setter
-	private CustomObjective 			 customObjective 	  = null;
+	class BossBarRunnable extends BukkitRunnable {
+		private int time = 2;
+		private String lastMessage = null;
+
+		@Override
+		public void run() {
+			if (bossBarMessage == null || enderdragon == null || !isOnline()) { // message
+				cancel();
+				return;
+			}
+
+			time--;
+
+			if (time == 0) {
+				Location loc = getLocation().clone();
+
+				if (getGameMode() == GameMode.SPECTATOR) {
+					loc.add(loc.getDirection().multiply(100.0D));
+				} else {
+					loc.add(loc.getDirection().multiply(50.0D));
+				}
+
+				if (enderdragon.getLocation().distance(loc) > 128.0d) { // trop
+					enderdragon.teleport(loc);
+					enderdragon.remove(GameBadblockPlayer.this);
+					enderdragon.show(GameBadblockPlayer.this);
+				} else {
+					enderdragon.teleport(loc); // on t�l�porte l'entit� pour
+				}
+
+				if (!bossBarMessage.equals(lastMessage)) {
+					enderdragon.getWatchers().setCustomName(bossBarMessage); // si
+					enderdragon.updateWatchers(); // on informe le joueur du
+
+					lastMessage = bossBarMessage;
+				}
+
+				time = 8;
+			}
+		}
+	}
+	class TooFarRunnable extends BukkitRunnable {
+		public Player getRandomNonSpecPlayer() {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				if (player.getGameMode() != GameMode.SPECTATOR)
+					return player;
+			}
+			return null;
+		}
+
+		@Override
+		public void run() {
+			if (!isOnline()) {
+				cancel();
+				return;
+			}
+
+			Player closestPlayer = null;
+			double minDistance = Integer.MAX_VALUE;
+
+			for (Player online : Bukkit.getOnlinePlayers()) {
+				if (online.equals(this) || online.getGameMode() == GameMode.SPECTATOR
+						|| !online.getLocation().getWorld().equals(getLocation().getWorld()))
+					continue;
+
+				double distance = getLocation().distance(online.getLocation());
+
+				if (distance < minDistance) {
+					minDistance = distance;
+					closestPlayer = online;
+				}
+			}
+
+			if (minDistance > 32.0D) {
+				Player tp = closestPlayer;
+				if (tp == null)
+					tp = getRandomNonSpecPlayer();
+
+				if (tp != null) {
+					teleport(tp);
+					GameMessages.doNotGoTooFarWhenSpectator().send(GameBadblockPlayer.this);
+				}
+			}
+		}
+	}
 	@Getter
-	private GamePlayerData 				 playerData 		  = null;
-	private PermissiblePlayer 			 permissions 		  = null;
-
-	@Getter
-	private Map<Class<?>, InGameData> 	 inGameData  		  = null;
-
-	private String 						 bossBarMessage 	  = null;
-	private FakeEntity<WatcherWither> 	 enderdragon 		  = null;
-
-	private GameMode 					 gamemodeBefJail 	  = null;
-	private FakeEntity<?> 				 fakeJailer 		  = null;
-
-	private BukkitRunnable 				 spectatorRunnable 	  = null;
-	@Getter
-	private BadblockMode 				 badblockMode 		  = BadblockMode.PLAYER;
 	@Setter
-	private boolean 					 hasJoined 			  = false;
-	@Getter@Setter
-	private Environment 				 customEnvironment 	  = null;
-	@Getter@Setter
-	private BadblockTeam				 team				  = null;
-	@Setter
-	private boolean						 adminMode			  = false;
-	@Getter
-	private JsonObject					 object				  = null;
+	private CustomObjective customObjective = null;
 
-	@Getter@Setter
-	private Vector3f					 firstVector,
-	secondVector;
-	private Disguise 	  disguise;
+	@Getter
+	private GamePlayerData playerData = null;
+
+	private PermissiblePlayer permissions = null;
+	@Getter
+	private Map<Class<?>, InGameData> inGameData = null;
+
+	private String bossBarMessage = null;
+	private FakeEntity<WatcherWither> enderdragon = null;
+
+	private GameMode gamemodeBefJail = null;
+	private FakeEntity<?> fakeJailer = null;
+	private BukkitRunnable spectatorRunnable = null;
+	@Getter
+	private BadblockMode badblockMode = BadblockMode.PLAYER;
+	@Setter
+	private boolean hasJoined = false;
+	@Getter
+	@Setter
+	private Environment customEnvironment = null;
+	@Getter
+	@Setter
+	private BadblockTeam team = null;
+
+	@Setter
+	private boolean adminMode = false;
+	@Getter
+	private JsonObject object = null;
+	@Getter
+	@Setter
+	private Vector3f firstVector, secondVector;
+
+	private Disguise disguise;
+
 	@Getter
 	private FakeEntity<?> disguiseEntity;
 
+	@Getter
+	private Location centerJail = null;
+
+	@Getter
+	private double radius = 0.0d;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
 
-		this.inGameData  = Maps.newConcurrentMap();
+		this.inGameData = Maps.newConcurrentMap();
 
-		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recr�� � la r�c�ptions des donn�es
+		this.playerData = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On
+																										// initialise
+																										// pour
+																										// ne
+																										// pas
+																										// provoquer
+																										// de
+																										// NullPointerException,
+																										// mais
+																										// sera
+																										// recr��
+																										// �
+																										// la
+																										// r�c�ptions
+																										// des
+																										// donn�es
 
-		if(!GamePlugin.EMPTY_VERSION)
-			this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
+		if (!GamePlugin.EMPTY_VERSION)
+			this.permissions = PermissionManager.getInstance().createPlayer(getName(),
+					offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
 
-		if(offlinePlayer != null) {
+		if (offlinePlayer != null) {
 			object = offlinePlayer.getObject();
-			team 	   = offlinePlayer.getTeam();
+			team = offlinePlayer.getTeam();
 			inGameData = offlinePlayer.getInGameData();
 			return;
-		}else object = new JsonObject();
+		} else
+			object = new JsonObject();
 
-		if (GamePlugin.EMPTY_VERSION) return;
+		if (GamePlugin.EMPTY_VERSION)
+			return;
 
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
@@ -153,7 +266,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				while (!hasJoined)
 					try {
 						Thread.sleep(10L);
-					} catch (InterruptedException unused) {}
+					} catch (InterruptedException unused) {
+					}
 
 				synchronized (Bukkit.getServer()) {
 					Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
@@ -162,43 +276,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		});
 	}
 
-	public void loadInjector() {
-		Channel channel = getHandle().playerConnection.networkManager.channel;
-		channel.pipeline().addBefore("packet_handler", "api", new BadblockInjector(this));
-	}
-
-	public void updateData(JsonObject object) {
-		if (object.has("game")) {
-			JsonObject game = object.get("game").getAsJsonObject();
-			this.object.add("game", game);
-
-			playerData = GameAPI.getGson().fromJson(game, GamePlayerData.class);
-			playerData.setData(game);
-		}
-
-		if (object.has("permissions")) {
-			this.object.add("permissions", object.get("permissions"));
-			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
-		}
-	}
-
-	private GameAPI getAPI() {
-		return GameAPI.getAPI();
-	}
-
-	private I18n getI18n() {
-		return getAPI().getI18n();
-	}
-
 	@Override
-	public boolean isInvulnerable() {
-		return getHandle().abilities.isInvulnerable;
-	}
-
-	@Override
-	public void setInvulnerable(boolean invulnerable) {
-		getHandle().abilities.isInvulnerable = invulnerable;
-		getHandle().updateAbilities();
+	public boolean canBuild() {
+		return getHandle().abilities.mayBuild;
 	}
 
 	@Override
@@ -206,38 +286,146 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		return getHandle().abilities.canInstantlyBuild;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
-	public void setCanInstantlyBuild(boolean instantlyBuild) {
-		getHandle().abilities.canInstantlyBuild = instantlyBuild;
-		getHandle().updateAbilities();
+	public void changePlayerDimension(Environment world) {
+		if (customEnvironment != null && customEnvironment == world)
+			return;
+		if (world == getWorld().getEnvironment())
+			return;
+
+		customEnvironment = world;
+
+		getAPI().createPacket(PlayRespawn.class).setDimension(world).setDifficulty(getWorld().getDifficulty())
+				.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
+
+		setMaxHealth(getMaxHealth());
+
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			hidePlayer(player);
+			showPlayer(player);
+		}
+
+		reloadMap();
+		updateInventory(); // euh ... pk d�pr�ci� ? (pas d�pr�ci� pour Player)
 	}
 
 	@Override
-	public boolean canBuild() {
-		return getHandle().abilities.mayBuild;
+	public void clearInventory() {
+		getInventory().clear();
+		getInventory().setArmorContents(new ItemStack[getInventory().getArmorContents().length]);
 	}
 
 	@Override
-	public void setCanBuild(boolean canBuild) {
-		getHandle().abilities.mayBuild = canBuild;
-		getHandle().updateAbilities();
+	public void clearTitle() {
+		getAPI().createPacket(PlayTitle.class).setAction(Action.RESET).send(this);
 	}
 
 	@Override
-	public void setReducedDebugInfo(boolean reducedDebugInfo) {
-		getAPI().createPacket(PlayEntityStatus.class).setEntityId(getEntityId())
-		.setStatus(reducedDebugInfo ? EntityStatus.REDUCED_DEBUG_ENABLE : EntityStatus.REDUCED_DEBUG_DISABLE)
-		.send(this);
+	public void disguise(Disguise disguise) {
+		if (isDisguised()) {
+			disguiseEntity.destroy();
+		}
+
+		this.disguise = disguise;
+		disguiseEntity = disguise.createEntity(this);
+
+		getHandle().setInvisible(true);
+
+		disguiseEntity.setVisibility(Visibility.SERVER);
+
+		// update equipment for other players :o
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			BadblockPlayer bp = (BadblockPlayer) player;
+
+			if (bp.getUniqueId().equals(getUniqueId()) && !disguise.isCanSeeHimself()) {
+				continue;
+			}
+
+			if (bp.getUniqueId().equals(getUniqueId()))
+				continue;
+
+			for (int i = 0; i < 5; i++) {
+				GameAPI.getAPI().createPacket(PlayEntityEquipment.class).setEntityId(getEntityId()).setItemStack(null)
+						.send(bp);
+			}
+		}
+
 	}
 
 	@Override
-	public void playRain(boolean rain) {
-		getAPI().createPacket(PlayChangeGameState.class).setState(GameState.RAINING_START).send(this);
+	public void feed() {
+		setFoodLevel(20);
+		setSaturation(20);
 	}
 
 	@Override
-	public void showDemoScreen() {
-		getAPI().createPacket(PlayChangeGameState.class).setState(GameState.DEMO_MESSAGE).setValue(0).send(this);
+	public Collection<String> getAlternateGroups() {
+		return permissions.getAlternateGroups().keySet();
+	}
+
+	private GameAPI getAPI() {
+		return GameAPI.getAPI();
+	}
+
+	@Override
+	public TranslatableString getGroupPrefix() {
+		return new TranslatableString("permissions.chat." + permissions.getParent().getName());
+	}
+
+	private I18n getI18n() {
+		return getAPI().getI18n();
+	}
+
+	protected Locale getLocale() {
+		return playerData.getLocale() == null ? Locale.FRENCH_FRANCE : playerData.getLocale();
+	}
+
+	@Override
+	public String getMainGroup() {
+		return permissions.getSuperGroup();
+	}
+
+	@Override
+	public int getPing() {
+		return getHandle().ping;
+	}
+
+	@Override
+	public CuboidSelection getSelection() {
+		if (firstVector != null && secondVector != null) {
+			return new CuboidSelection(getWorld().getName(), firstVector, secondVector);
+		}
+
+		return null;
+	}
+
+	@Override
+	public TranslatableString getTabGroupPrefix() {
+		return new TranslatableString("permissions.tab." + permissions.getParent().getName());
+	}
+
+	@Override
+	public String[] getTranslatedMessage(String key, Object... args) {
+		return getI18n().get(getLocale(), key, args);
+	}
+
+	@Override
+	public boolean hasAdminMode() {
+		return adminMode;
+	}
+
+	@Override
+	public boolean hasPermission(GamePermission permission) {
+		return permission.getPermission() == null ? true : hasPermission(permission.getPermission());
+	}
+
+	@Override
+	public boolean hasPermission(String permission) {
+		if (GamePlugin.EMPTY_VERSION)
+			return OtherPermissions.has(this, permission);
+
+		return permission == null ? true : permissions.hasPermission(permission);
 	}
 
 	@Override
@@ -251,22 +439,172 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void feed() {
-		setFoodLevel(20);
-		setSaturation(20);
+	public <T extends InGameData> T inGameData(Class<T> clazz) {
+		try {
+			if (!inGameData.containsKey(clazz)) {
+				inGameData.put(clazz, clazz.getConstructor().newInstance());
+			}
+
+			return clazz.cast(inGameData.get(clazz));
+		} catch (Exception e) {
+			e.printStackTrace();
+			GameAPI.logError("Invalid InGameData class (" + clazz + ") ! Return null.");
+			return null;
+		}
 	}
 
 	@Override
-	public void clearInventory() {
-		getInventory().clear();
-		getInventory().setArmorContents(new ItemStack[getInventory().getArmorContents().length]);
+	public boolean isDisguised() {
+		return disguise != null && disguiseEntity != null;
 	}
 
 	@Override
-	public void removePotionEffects() {
-		for (PotionEffectType type : PotionEffectType.values()) {
-			if (type != null)
-				removePotionEffect(type);
+	public boolean isInvulnerable() {
+		return getHandle().abilities.isInvulnerable;
+	}
+
+	@Override
+	public boolean isJailed() {
+		return fakeJailer != null;
+	}
+
+	@Override
+	public boolean isPseudoJailed() {
+		return centerJail != null;
+	}
+
+	@Override
+	public void jailPlayerAt(Location location) {
+		if (location == null) {
+			fakeJailer.remove();
+			setGameMode(gamemodeBefJail);
+
+			getAPI().createPacket(PlayCamera.class).setEntityId(getEntityId()).send(this);
+
+			fakeJailer = null;
+		} else {
+			gamemodeBefJail = getGameMode();
+			setGameMode(GameMode.SPECTATOR);
+
+			teleport(location);
+
+			fakeJailer = getAPI().spawnFakeLivingEntity(location, EntityType.BAT, WatcherPig.class);
+			fakeJailer.getWatchers().setInvisibile(true);
+			fakeJailer.show(this);
+
+			BadblockPlayer player = this;
+
+			new BukkitRunnable() {
+				int time = 20;
+
+				@Override
+				public void run() {
+					time--;
+
+					getAPI().createPacket(PlayCamera.class).setEntityId(fakeJailer.getId()).send(player);
+
+					if (time == 0)
+						cancel();
+				}
+			}.runTaskTimer(GameAPI.getAPI(), 0, 1L);
+
+		}
+	}
+
+	public void loadInjector() {
+		Channel channel = getHandle().playerConnection.networkManager.channel;
+		channel.pipeline().addBefore("packet_handler", "api", new BadblockInjector(this));
+	}
+
+	@Override
+	public void playChestAnimation(Block block, boolean open) {
+		getAPI().createPacket(PlayBlockAction.class).setBlockPosition(new Vector3f(block.getLocation()))
+				.setBlockType(Material.CHEST).setByte1((byte) 1).setByte2((byte) (open ? 1 : 0)).send(this);
+	}
+
+	@Override
+	public void playRain(boolean rain) {
+		getAPI().createPacket(PlayChangeGameState.class).setState(GameState.RAINING_START).send(this);
+	}
+
+	@Override
+	public void playSound(Location location, Sound sound) {
+		playSound(location, sound, 3.0f, 1.0f);
+	}
+
+	@Override
+	public void playSound(Sound sound) {
+		playSound(getLocation(), sound);
+	}
+
+	@Override
+	public void postResult(Result toPost) {
+		long id = new SecureRandom().nextLong();
+		long party = GamePlugin.getInstance().getGameServer().getGameId();
+		String player = getName().toLowerCase();
+		UUID playerId = getUniqueId();
+		String gameType = "todo";
+		String server = Bukkit.getServerName();
+		String result = GameAPI.getGson().toJson(toPost);
+
+		PreparedStatement statement = null;
+
+		try {
+			statement = GameAPI.getAPI().getSqlDatabase().preparedStatement(
+					"INSERT INTO parties(id, party, player, playerId, gametype, servername, day, result)"
+							+ " VALUES(?, ?, ?, ?, ?, ?, NOW(), ?)");
+			statement.setLong(1, id);
+			statement.setLong(2, party);
+			statement.setString(3, player);
+			statement.setString(4, playerId.toString());
+			statement.setString(5, gameType);
+			statement.setString(6, server);
+			statement.setString(7, result);
+
+			statement.executeUpdate();
+
+			int percent = (int) Math
+					.round(((double) getPlayerData().getXp() / (double) getPlayerData().getXpUntilNextLevel()) * 100);
+
+			String line = "&a";
+
+			for (int i = 0; i < 100; i++) {
+				if (i == percent)
+					line += "&8";
+				line += "|";
+			}
+
+			sendTranslatedMessage("game.result", getPlayerData().getBadcoins(), getPlayerData().getLevel(), percent,
+					getPlayerData().getXp(), getPlayerData().getXpUntilNextLevel(), line, Base64Url.encode(id));
+
+			saveGameData();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (statement != null)
+				try {
+					statement.close();
+				} catch (SQLException e) {
+				}
+		}
+
+	}
+
+	@Override
+	public void pseudoJail(Location location, double radius) {
+		this.centerJail = location;
+		this.radius = radius;
+	}
+
+	@Override
+	public void reloadMap() {
+		WorldServer server = (WorldServer) ReflectionUtils.getHandle(getWorld());
+		try {
+			PlayerChunkMap map = ((PlayerChunkMap) new Reflector(server).getFieldValue("manager"));
+			map.removePlayer(getHandle());
+			map.addPlayer(getHandle());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -284,27 +622,19 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public int getPing() {
-		return getHandle().ping;
-	}
+	public void removeBossBar() {
+		if (enderdragon != null)
+			enderdragon.remove();
 
+		enderdragon = null;
+		bossBarMessage = null;
+	}
 	@Override
-	public void playSound(Sound sound) {
-		playSound(getLocation(), sound);
-	}
-
-	@Override
-	public void playSound(Location location, Sound sound) {
-		playSound(location, sound, 3.0f, 1.0f);
-	}
-
-	protected Locale getLocale() {
-		return playerData.getLocale() == null ? Locale.FRENCH_FRANCE : playerData.getLocale();
-	}
-
-	@Override
-	public String[] getTranslatedMessage(String key, Object... args) {
-		return getI18n().get(getLocale(), key, args);
+	public void removePotionEffects() {
+		for (PotionEffectType type : PotionEffectType.values()) {
+			if (type != null)
+				removePotionEffect(type);
+		}
 	}
 
 	@Override
@@ -313,72 +643,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void postResult(Result toPost) {
-		long   id	    = new SecureRandom().nextLong();
-		long   party    = GamePlugin.getInstance().getGameServer().getGameId();
-		String player   = getName().toLowerCase();
-		UUID   playerId = getUniqueId();
-		String gameType = "todo";
-		String server   = Bukkit.getServerName();
-		String result   = GameAPI.getGson().toJson(toPost);
-
-
-		PreparedStatement statement = null;
-
-		try {
-			statement = GameAPI.getAPI().getSqlDatabase().preparedStatement("INSERT INTO parties(id, party, player, playerId, gametype, servername, day, result)"
-					+ " VALUES(?, ?, ?, ?, ?, ?, NOW(), ?)");
-			statement.setLong(1, id);
-			statement.setLong(2, party);
-			statement.setString(3, player);
-			statement.setString(4, playerId.toString());
-			statement.setString(5, gameType);
-			statement.setString(6, server);
-			statement.setString(7, result);
-
-			statement.executeUpdate();
-
-			int percent = (int) Math.round(((double)getPlayerData().getXp() / (double)getPlayerData().getXpUntilNextLevel()) * 100);
-
-			String line = "&a";
-
-			for(int i=0;i<100;i++){
-				if(i == percent)
-					line += "&8";
-				line += "|";
-			}
-
-			sendTranslatedMessage("game.result", 
-					getPlayerData().getBadcoins(), getPlayerData().getLevel(), percent, getPlayerData().getXp(),
-					getPlayerData().getXpUntilNextLevel(), line, Base64Url.encode(id));
-
-			saveGameData();
-		} catch(Exception e){
-			e.printStackTrace();
-		} finally {
-			if(statement != null)
-				try {
-					statement.close();
-				} catch (SQLException e){}
-		}
-
-	}
-
-	@Override
-	public void sendTranslatedMessage(String key, Object... args) {
-		sendMessage(getTranslatedMessage(key, args));
-	}
-
-	@Override
 	public void sendActionBar(String message) {
 		message = getI18n().replaceColors(message);
-		getAPI().createPacket(PlayChat.class).setType(ChatType.ACTION)
-		.setContent(message).send(this);
-	}
-
-	@Override
-	public void sendTranslatedActionBar(String key, Object... args) {
-		sendActionBar(getTranslatedMessage(key, args)[0]);
+		getAPI().createPacket(PlayChat.class).setType(ChatType.ACTION).setContent(message).send(this);
 	}
 
 	@Override
@@ -413,17 +680,41 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void removeBossBar() {
-		if (enderdragon != null)
-			enderdragon.remove();
-
-		enderdragon = null;
-		bossBarMessage = null;
+	public void sendPacket(BadblockOutPacket packet) {
+		try {
+			Packet<?> nmsPacket = ((GameBadblockOutPacket) packet).buildPacket(this);
+			getHandle().playerConnection.sendPacket(nmsPacket);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void sendTranslatedBossBar(String key, Object... args) {
-		sendBossBar(getTranslatedMessage(key, args)[0]);
+	public void sendParticle(Location location, ParticleEffect effect) {
+		getAPI().createPacket(PlayWorldParticles.class).setLocation(location).setParticle(effect).send(this);
+	}
+
+	@Override
+	public void sendPlayer(String server) {
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF("ConnectOther");
+		out.writeUTF(getName());
+		out.writeUTF(server);
+		sendPluginMessage(GameAPI.getAPI(), "BungeeCord", out.toByteArray());
+	}
+
+	@Override
+	public void sendTabHeader(String header, String footer) {
+		header = getI18n().replaceColors(header);
+		footer = getI18n().replaceColors(footer);
+
+		getAPI().createPacket(PlayPlayerListHeaderFooter.class).setHeader(header).setFooter(footer).send(this);
+	}
+
+	@Override
+	public void sendTimings(long fadeIn, long stay, long fadeOut) {
+		getAPI().createPacket(PlayTitle.class).setAction(Action.TIMES).setFadeIn(fadeIn).setStay(stay)
+				.setFadeOut(fadeOut).send(this);
 	}
 
 	@Override
@@ -434,6 +725,26 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		getAPI().createPacket(PlayTitle.class).setAction(Action.RESET).send(this);
 		getAPI().createPacket(PlayTitle.class).setAction(Action.TITLE).setContent(title).send(this);
 		getAPI().createPacket(PlayTitle.class).setAction(Action.SUBTITLE).setContent(subtitle).send(this);
+	}
+
+	@Override
+	public void sendTranslatedActionBar(String key, Object... args) {
+		sendActionBar(getTranslatedMessage(key, args)[0]);
+	}
+
+	@Override
+	public void sendTranslatedBossBar(String key, Object... args) {
+		sendBossBar(getTranslatedMessage(key, args)[0]);
+	}
+
+	@Override
+	public void sendTranslatedMessage(String key, Object... args) {
+		sendMessage(getTranslatedMessage(key, args));
+	}
+
+	@Override
+	public void sendTranslatedTabHeader(TranslatableString header, TranslatableString footer) {
+		sendTabHeader(StringUtils.join(header.get(this), "\\n"), StringUtils.join(footer.get(this), "\\n"));
 	}
 
 	@Override
@@ -449,27 +760,74 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void clearTitle(){
-		getAPI().createPacket(PlayTitle.class).setAction(Action.RESET).send(this);
+	public void setArrowsInBody(byte amount) {
+		getHandle().getDataWatcher().watch(MetadataIndex.ARROW_COUNT.getIndex(), new Byte(amount));
 	}
 
 	@Override
-	public void sendTimings(long fadeIn, long stay, long fadeOut) {
-		getAPI().createPacket(PlayTitle.class).setAction(Action.TIMES).setFadeIn(fadeIn).setStay(stay)
-		.setFadeOut(fadeOut).send(this);
+	public void setBadblockMode(BadblockMode newMode) {
+		if (newMode != badblockMode) {
+			if (newMode == BadblockMode.PLAYER) {
+				if (spectatorRunnable != null) {
+					spectatorRunnable.cancel();
+					spectatorRunnable = null;
+				}
+
+				setGameMode(GameMode.SURVIVAL);
+			} else if (spectatorRunnable == null) {
+				setGameMode(GameMode.SPECTATOR);
+
+				if (!isPseudoJailed() || newMode == BadblockMode.SPECTATOR) {
+					spectatorRunnable = new TooFarRunnable();
+					spectatorRunnable.runTaskTimer(GameAPI.getAPI(), 0, 20L);
+				}
+			}
+
+			badblockMode = newMode;
+		}
 	}
 
 	@Override
-	public void sendTabHeader(String header, String footer) {
-		header = getI18n().replaceColors(header);
-		footer = getI18n().replaceColors(footer);
-
-		getAPI().createPacket(PlayPlayerListHeaderFooter.class).setHeader(header).setFooter(footer).send(this);
+	public void setCanBuild(boolean canBuild) {
+		getHandle().abilities.mayBuild = canBuild;
+		getHandle().updateAbilities();
 	}
 
 	@Override
-	public void sendTranslatedTabHeader(TranslatableString header, TranslatableString footer) {
-		sendTabHeader(StringUtils.join(header.get(this), "\\n"), StringUtils.join(footer.get(this), "\\n"));
+	public void setCanInstantlyBuild(boolean instantlyBuild) {
+		getHandle().abilities.canInstantlyBuild = instantlyBuild;
+		getHandle().updateAbilities();
+	}
+
+	@Override
+	public void setEntityCollision(boolean collision) {
+		getHandle().collidesWithEntities = collision;
+	}
+
+	@Override
+	public void setInvulnerable(boolean invulnerable) {
+		getHandle().abilities.isInvulnerable = invulnerable;
+		getHandle().updateAbilities();
+	}
+
+	@Override
+	public void setReducedDebugInfo(boolean reducedDebugInfo) {
+		getAPI().createPacket(PlayEntityStatus.class).setEntityId(getEntityId())
+				.setStatus(reducedDebugInfo ? EntityStatus.REDUCED_DEBUG_ENABLE : EntityStatus.REDUCED_DEBUG_DISABLE)
+				.send(this);
+	}
+
+	@Override
+	public void showCustomObjective(CustomObjective objective) {
+		if (objective == null)
+			return;
+
+		objective.showObjective(this);
+	}
+
+	@Override
+	public void showDemoScreen() {
+		getAPI().createPacket(PlayChangeGameState.class).setState(GameState.DEMO_MESSAGE).setValue(0).send(this);
 	}
 
 	@Override
@@ -511,109 +869,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void jailPlayerAt(Location location) {
-		if (location == null) {
-			fakeJailer.remove();
-			setGameMode(gamemodeBefJail);
+	public void undisguise() {
+		if (isDisguised()) {
+			this.disguise = null;
+			this.disguiseEntity.destroy();
+			this.disguiseEntity = null;
 
-			getAPI().createPacket(PlayCamera.class).setEntityId(getEntityId()).send(this);
-
-			fakeJailer = null;
-		} else {
-			gamemodeBefJail = getGameMode();
-			setGameMode(GameMode.SPECTATOR);
-
-			teleport(location);
-
-			fakeJailer = getAPI().spawnFakeLivingEntity(location, EntityType.BAT, WatcherPig.class);
-			fakeJailer.getWatchers().setInvisibile(true);
-			fakeJailer.show(this);
-
-			BadblockPlayer player = this;
-
-			new BukkitRunnable() {
-				int time = 20;
-
-				@Override
-				public void run() {
-					time--;
-
-					getAPI().createPacket(PlayCamera.class).setEntityId(fakeJailer.getId()).send(player);
-
-					if(time == 0)
-						cancel();
-				}
-			}.runTaskTimer(GameAPI.getAPI(), 0, 1L);
-
-		}
-	}
-
-	@Getter private Location centerJail = null;
-	@Getter private double   radius 	= 0.0d;
-
-	@Override
-	public void pseudoJail(Location location, double radius) {
-		this.centerJail = location;
-		this.radius		= radius;
-	}
-
-	@Override
-	public boolean isJailed() {
-		return fakeJailer != null;
-	}
-
-	@Override
-	public boolean isPseudoJailed(){
-		return centerJail != null;
-	}
-
-	@Override
-	public void playChestAnimation(Block block, boolean open) {
-		getAPI().createPacket(PlayBlockAction.class).setBlockPosition(new Vector3f(block.getLocation()))
-		.setBlockType(Material.CHEST).setByte1((byte) 1).setByte2((byte) (open ? 1 : 0)).send(this);
-	}
-
-	@Override
-	public void setEntityCollision(boolean collision) {
-		getHandle().collidesWithEntities = collision;
-	}
-
-	@Override
-	public void setArrowsInBody(byte amount) {
-		getHandle().getDataWatcher().watch(MetadataIndex.ARROW_COUNT.getIndex(), new Byte(amount));
-	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void changePlayerDimension(Environment world) {
-		if(customEnvironment != null && customEnvironment == world) return;
-		if(world == getWorld().getEnvironment()) return;
-
-		customEnvironment = world;
-
-		getAPI().createPacket(PlayRespawn.class).setDimension(world).setDifficulty(getWorld().getDifficulty())
-		.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
-
-		setMaxHealth(getMaxHealth());
-
-		for(Player player : Bukkit.getOnlinePlayers()){
-			hidePlayer(player);
-			showPlayer(player);
-		}
-
-		reloadMap();
-		updateInventory(); // euh ... pk d�pr�ci� ? (pas d�pr�ci� pour Player)
-	}
-
-	@Override
-	public void reloadMap() {
-		WorldServer server = (WorldServer) ReflectionUtils.getHandle(getWorld());
-		try {
-			PlayerChunkMap map = ((PlayerChunkMap) new Reflector(server).getFieldValue("manager"));
-			map.removePlayer(getHandle());
-			map.addPlayer(getHandle());
-		} catch (Exception e) {
-			e.printStackTrace();
+			getHandle().setInvisible(false);
 		}
 	}
 
@@ -622,255 +884,18 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		getHandle().chunkCoordIntPairQueue.add(new ChunkCoordIntPair(chunk.getX(), chunk.getZ()));
 	}
 
-	@Override
-	public void sendPacket(BadblockOutPacket packet) {
-		try {
-			Packet<?> nmsPacket = ((GameBadblockOutPacket) packet).buildPacket(this);
-			getHandle().playerConnection.sendPacket(nmsPacket);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	public void updateData(JsonObject object) {
+		if (object.has("game")) {
+			JsonObject game = object.get("game").getAsJsonObject();
+			this.object.add("game", game);
 
-	@Override
-	public void sendParticle(Location location, ParticleEffect effect) {
-		getAPI().createPacket(PlayWorldParticles.class).setLocation(location).setParticle(effect).send(this);
-	}
-
-	@Override
-	public void showCustomObjective(CustomObjective objective) {
-		if(objective == null) return;
-
-		objective.showObjective(this);
-	}
-
-	@Override
-	public <T extends InGameData> T inGameData(Class<T> clazz) {
-		try {
-			if (!inGameData.containsKey(clazz)) {
-				inGameData.put(clazz, (InGameData) clazz.getConstructor().newInstance());
-			}
-
-			return clazz.cast(inGameData.get(clazz));
-		} catch (Exception e) {
-			e.printStackTrace();
-			GameAPI.logError("Invalid InGameData class (" + clazz + ") ! Return null.");
-			return null;
-		}
-	}
-
-	@Override
-	public boolean hasPermission(GamePermission permission) {
-		return permission.getPermission() == null ? true : hasPermission(permission.getPermission());
-	}
-
-	@Override
-	public boolean hasPermission(String permission) {
-		if(GamePlugin.EMPTY_VERSION)
-			return OtherPermissions.has(this, permission);
-
-		return permission == null ? true : permissions.hasPermission(permission);
-	}
-
-	@Override
-	public TranslatableString getGroupPrefix() {
-		return new TranslatableString("permissions.chat." + permissions.getParent().getName());
-	}
-
-	@Override
-	public TranslatableString getTabGroupPrefix() {
-		return new TranslatableString("permissions.tab." + permissions.getParent().getName());
-	}
-
-	@Override
-	public String getMainGroup() {
-		return permissions.getSuperGroup();
-	}
-
-	@Override
-	public Collection<String> getAlternateGroups() {
-		return permissions.getAlternateGroups().keySet();
-	}
-
-	@Override
-	public void sendPlayer(String server) {
-		ByteArrayDataOutput out = ByteStreams.newDataOutput();
-		out.writeUTF("ConnectOther");
-		out.writeUTF(getName());
-		out.writeUTF(server);
-		sendPluginMessage(GameAPI.getAPI(), "BungeeCord", out.toByteArray());
-	}
-
-	@Override
-	public void setBadblockMode(BadblockMode newMode) {
-		if (newMode != badblockMode) {
-			if (newMode == BadblockMode.PLAYER) {
-				if (spectatorRunnable != null) {
-					spectatorRunnable.cancel();
-					spectatorRunnable = null;
-				}
-
-				setGameMode(GameMode.SURVIVAL);
-			} else if (spectatorRunnable == null) {
-				setGameMode(GameMode.SPECTATOR);
-
-				if(!isPseudoJailed() || newMode == BadblockMode.SPECTATOR){
-					spectatorRunnable = new TooFarRunnable();
-					spectatorRunnable.runTaskTimer(GameAPI.getAPI(), 0, 20L);
-				}
-			}
-
-			badblockMode = newMode;
-		}
-	}
-
-	class TooFarRunnable extends BukkitRunnable {
-		@Override
-		public void run() {
-			if (!isOnline()) {
-				cancel();
-				return;
-			}
-
-			Player closestPlayer = null;
-			double minDistance = Integer.MAX_VALUE;
-
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				if (online.equals(this) || online.getGameMode() == GameMode.SPECTATOR
-						|| !online.getLocation().getWorld().equals(getLocation().getWorld()))
-					continue;
-
-				double distance = getLocation().distance(online.getLocation());
-
-				if (distance < minDistance) {
-					minDistance = distance;
-					closestPlayer = online;
-				}
-			}
-
-			if (minDistance > 32.0D) {
-				Player tp = closestPlayer;
-				if (tp == null)
-					tp = getRandomNonSpecPlayer();
-
-				if (tp != null){
-					teleport(tp);
-					GameMessages.doNotGoTooFarWhenSpectator().send(GameBadblockPlayer.this);
-				}
-			}
+			playerData = GameAPI.getGson().fromJson(game, GamePlayerData.class);
+			playerData.setData(game);
 		}
 
-		public Player getRandomNonSpecPlayer() {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (player.getGameMode() != GameMode.SPECTATOR)
-					return player;
-			}
-			return null;
-		}
-	}
-
-	class BossBarRunnable extends BukkitRunnable {
-		private int time = 2;
-		private String lastMessage = null;
-
-		@Override
-		public void run() {
-			if (bossBarMessage == null || enderdragon == null || !isOnline()) { // message
-				cancel();
-				return;
-			}
-
-			time--;
-
-			if (time == 0) {
-				Location loc = getLocation().clone();
-
-				if(getGameMode() == GameMode.SPECTATOR) {
-					loc.add(loc.getDirection().multiply(100.0D));
-				} else {
-					loc.add(loc.getDirection().multiply(50.0D));
-				}
-
-				if (enderdragon.getLocation().distance(loc) > 128.0d) { // trop
-					enderdragon.teleport(loc);
-					enderdragon.remove(GameBadblockPlayer.this);
-					enderdragon.show(GameBadblockPlayer.this);
-				} else {
-					enderdragon.teleport(loc); // on t�l�porte l'entit� pour
-				}
-
-				if(!bossBarMessage.equals(lastMessage)){
-					enderdragon.getWatchers().setCustomName(bossBarMessage); // si
-					enderdragon.updateWatchers(); // on informe le joueur du
-
-					lastMessage = bossBarMessage;
-				}
-
-				time = 8;
-			}
-		}
-	}
-
-	@Override
-	public CuboidSelection getSelection() {
-		if(firstVector != null && secondVector != null){
-			return new CuboidSelection(getWorld().getName(), firstVector, secondVector);
-		}
-
-		return null;
-	}
-
-	@Override
-	public boolean hasAdminMode(){
-		return adminMode;
-	}
-
-	@Override
-	public void disguise(Disguise disguise) {
-		if(isDisguised()){
-			disguiseEntity.destroy();
-		}
-
-		this.disguise  = disguise;
-		disguiseEntity = disguise.createEntity(this);
-
-		getHandle().setInvisible(true);
-
-		disguiseEntity.setVisibility(Visibility.SERVER);
-
-		// update equipment for other players :o
-		for(Player player : Bukkit.getOnlinePlayers()){
-			BadblockPlayer bp = (BadblockPlayer) player;
-
-			if(bp.getUniqueId().equals(getUniqueId()) && !disguise.isCanSeeHimself()){
-				continue;
-			}
-
-			if(bp.getUniqueId().equals(getUniqueId())) continue;
-
-			for(int i=0;i<5;i++){
-				GameAPI.getAPI().createPacket(PlayEntityEquipment.class)
-				.setEntityId(getEntityId())
-				.setItemStack(null)
-				.send(bp);
-			}
-		}
-
-	}
-
-	@Override
-	public boolean isDisguised(){
-		return disguise != null && disguiseEntity != null;
-	}
-
-	@Override
-	public void undisguise() {
-		if(isDisguised()){
-			this.disguise 		= null;
-			this.disguiseEntity.destroy();
-			this.disguiseEntity = null;
-
-			getHandle().setInvisible(false);
+		if (object.has("permissions")) {
+			this.object.add("permissions", object.get("permissions"));
+			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
 		}
 	}
 }

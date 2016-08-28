@@ -22,19 +22,20 @@ public class UpCommand extends AbstractCommand {
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 
-		Block    toChange = concerned.getLocation().getBlock();
-		Location location = concerned.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().add(0.5d, 0, 0.5d);
+		Block toChange = concerned.getLocation().getBlock();
+		Location location = concerned.getLocation().getBlock().getRelative(BlockFace.UP).getLocation().add(0.5d, 0,
+				0.5d);
 
 		location.setYaw(concerned.getLocation().getYaw());
 		location.setPitch(concerned.getLocation().getPitch());
-		
-		if(toChange.getType() == Material.AIR){
+
+		if (toChange.getType() == Material.AIR) {
 			toChange.setType(Material.GLASS);
 		}
-		
+
 		concerned.teleport(location);
 		concerned.sendMessage(GameAPI.i18n().replaceColors("&7Whoosh!"));
-		
+
 		return true;
 	}
 }

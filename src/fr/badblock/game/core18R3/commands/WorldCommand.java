@@ -18,7 +18,8 @@ public class WorldCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length != 1) return false;
+		if (args.length != 1)
+			return false;
 		World world = Bukkit.getWorld(args[0]);
 		if (world == null) {
 			GameAPI.i18n().sendMessage(sender, "commands.weather.unknownworld");

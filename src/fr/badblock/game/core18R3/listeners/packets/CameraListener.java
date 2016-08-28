@@ -13,22 +13,22 @@ public class CameraListener extends OutPacketListener<PlayCamera> {
 	@Override
 	public void listen(BadblockPlayer player, PlayCamera packet) {
 		Entity entity = null;
-		
-		for(Entity e : player.getWorld().getEntities()) {
-			if(e.getEntityId() == packet.getEntityId()) {
+
+		for (Entity e : player.getWorld().getEntities()) {
+			if (e.getEntityId() == packet.getEntityId()) {
 				entity = e;
 				break;
 			}
 		}
-		
-		if(entity == null){
-			// Il s'agit d'une fake entité, donc fait par un plugin, on laisse
+
+		if (entity == null) {
+			// Il s'agit d'une fake entitï¿½, donc fait par un plugin, on laisse
 		} else {
 			PlayerSpectateEvent e = new PlayerSpectateEvent(player, entity);
-			
+
 			Bukkit.getPluginManager().callEvent(e);
-			
-			if(e.isCancelled()){
+
+			if (e.isCancelled()) {
 				packet.setCancelled(true);
 			}
 		}

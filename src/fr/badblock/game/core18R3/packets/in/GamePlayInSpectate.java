@@ -8,14 +8,16 @@ import fr.badblock.gameapi.utils.reflection.Reflector;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInSpectate;
 
-@Getter public class GamePlayInSpectate extends GameBadblockInPacket implements PlayInSpectate {
+@Getter
+public class GamePlayInSpectate extends GameBadblockInPacket implements PlayInSpectate {
 	private UUID playerUID;
-	
-	public GamePlayInSpectate(PacketPlayInSpectate packet){
+
+	public GamePlayInSpectate(PacketPlayInSpectate packet) {
 		super(packet);
 		Reflector reflector = new Reflector(packet);
 		try {
 			this.playerUID = (UUID) reflector.getFieldValue("a");
-		} catch (Exception e){}
+		} catch (Exception e) {
+		}
 	}
 }

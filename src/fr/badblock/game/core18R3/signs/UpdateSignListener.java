@@ -8,13 +8,13 @@ import fr.badblock.gameapi.signs.SignManager;
 
 public class UpdateSignListener extends OutPacketListener<PlayUpdateSign> {
 	private static final SignManager manager = GameAPI.getAPI().getSignManager();
-	
+
 	@Override
 	public void listen(BadblockPlayer player, PlayUpdateSign packet) {
-		if( !manager.isSignTranslatable(packet.getBlock()) ){
+		if (!manager.isSignTranslatable(packet.getBlock())) {
 			return;
 		}
-		
-		packet.setLinesI18n( manager.getTraduction(packet.getBlock()) );
+
+		packet.setLinesI18n(manager.getTraduction(packet.getBlock()));
 	}
 }

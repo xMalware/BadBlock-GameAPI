@@ -10,8 +10,9 @@ import lombok.experimental.Accessors;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAbilities;
 
-@NoArgsConstructor@Data
-@EqualsAndHashCode(callSuper=false)
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayAbilities extends GameBadblockOutPacket implements PlayAbilities {
 	private boolean godmoded;
@@ -21,20 +22,21 @@ public class GamePlayAbilities extends GameBadblockOutPacket implements PlayAbil
 
 	private float flyingSpeed;
 	private float walkingSpeed;
-	
-	public GamePlayAbilities(PacketPlayOutAbilities packet){
-		godmoded 	 = packet.a();
-		flying   	 = packet.b();
+
+	public GamePlayAbilities(PacketPlayOutAbilities packet) {
+		godmoded = packet.a();
+		flying = packet.b();
 		allowedToFly = packet.c();
-		creative     = packet.d();
-		
+		creative = packet.d();
+
 		Reflector reflector = new Reflector(packet);
 		try {
-			flyingSpeed  = (float) reflector.getFieldValue("e");
+			flyingSpeed = (float) reflector.getFieldValue("e");
 			walkingSpeed = (float) reflector.getFieldValue("f");
-		} catch(Exception e){}
+		} catch (Exception e) {
+		}
 	}
-	
+
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		PacketPlayOutAbilities packet = new PacketPlayOutAbilities();
@@ -42,10 +44,10 @@ public class GamePlayAbilities extends GameBadblockOutPacket implements PlayAbil
 		packet.b(flying);
 		packet.c(allowedToFly);
 		packet.d(creative);
-		
+
 		packet.a(flyingSpeed);
 		packet.b(walkingSpeed);
-		
+
 		return packet;
 	}
 

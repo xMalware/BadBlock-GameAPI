@@ -18,11 +18,13 @@ public class WeatherCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length == 0) return false;
+		if (args.length == 0)
+			return false;
 		World defaultWorld = null;
 		switch (args.length) {
 		case 1:
-			defaultWorld = sender instanceof BadblockPlayer ? Bukkit.getWorlds().get(0) : ((BadblockPlayer) sender).getWorld();
+			defaultWorld = sender instanceof BadblockPlayer ? Bukkit.getWorlds().get(0)
+					: ((BadblockPlayer) sender).getWorld();
 			break;
 		case 2:
 			defaultWorld = Bukkit.getWorld(args[1]);
@@ -38,20 +40,20 @@ public class WeatherCommand extends AbstractCommand {
 				defaultWorld.setThundering(false);
 				defaultWorld.setWeatherDuration(0);
 				GameAPI.i18n().sendMessage(sender, "commands.weather.nowsunny");
-			}else{
+			} else {
 				GameAPI.i18n().sendMessage(sender, "commands.weather.alreadysunny");
 				return true;
 			}
-		}else if (type.equalsIgnoreCase("rain") || type.equalsIgnoreCase("storm")) {
+		} else if (type.equalsIgnoreCase("rain") || type.equalsIgnoreCase("storm")) {
 			if (!defaultWorld.hasStorm()) {
 				defaultWorld.setStorm(true);
 				defaultWorld.setWeatherDuration(Integer.MAX_VALUE);
 				GameAPI.i18n().sendMessage(sender, "commands.weather.nowrainy");
-			}else{
+			} else {
 				GameAPI.i18n().sendMessage(sender, "commands.weather.alreadyrainy");
 				return true;
 			}
-		}else{
+		} else {
 			return false;
 		}
 		return true;

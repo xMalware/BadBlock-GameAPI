@@ -6,10 +6,10 @@ import org.bukkit.entity.Entity;
 import fr.badblock.gameapi.packets.watchers.WatcherWolf;
 
 public class GameWatcherWolf extends GameWatcherTameableAnimal implements WatcherWolf {
-	public GameWatcherWolf(Class<? extends Entity> clazz){
+	public GameWatcherWolf(Class<? extends Entity> clazz) {
 		super(clazz);
 	}
-	
+
 	@Override
 	public WatcherWolf setAngry(boolean angry) {
 		map.setBit(MetadataIndex.WOLF_FLAGS, 0x02, angry);
@@ -22,7 +22,8 @@ public class GameWatcherWolf extends GameWatcherTameableAnimal implements Watche
 		return this;
 	}
 
-	@SuppressWarnings("deprecation") @Override
+	@SuppressWarnings("deprecation")
+	@Override
 	public WatcherWolf setCollarColor(DyeColor color) {
 		set(MetadataIndex.WOLF_COLOR, color.getDyeData());
 		return this;

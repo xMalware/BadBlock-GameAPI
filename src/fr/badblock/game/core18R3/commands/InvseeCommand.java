@@ -17,16 +17,17 @@ public class InvseeCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0) return false;
-		
+		if (args.length == 0)
+			return false;
+
 		BadblockPlayer concerned = (BadblockPlayer) sender;
-		BadblockPlayer invsee	 = (BadblockPlayer) Bukkit.getPlayer(args[0]);
-		
-		if(invsee == null){
+		BadblockPlayer invsee = (BadblockPlayer) Bukkit.getPlayer(args[0]);
+
+		if (invsee == null) {
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 			return true;
 		}
-		
+
 		concerned.closeInventory();
 		concerned.inGameData(CommandInGameData.class).invsee = true;
 		concerned.openInventory(invsee.getInventory());

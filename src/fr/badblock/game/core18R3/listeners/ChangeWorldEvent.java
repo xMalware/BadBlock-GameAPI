@@ -8,7 +8,7 @@ import fr.badblock.gameapi.BadListener;
 
 public class ChangeWorldEvent extends BadListener {
 	@EventHandler
-	public void onTeleport(PlayerChangedWorldEvent e){
+	public void onTeleport(PlayerChangedWorldEvent e) {
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 		player.setCustomEnvironment(null);
 	}

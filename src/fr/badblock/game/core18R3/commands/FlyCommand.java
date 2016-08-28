@@ -16,23 +16,23 @@ public class FlyCommand extends AbstractCommand {
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		Player concerned = null;
-		if(args.length == 0 && !(sender instanceof Player)){
+		if (args.length == 0 && !(sender instanceof Player)) {
 			return false;
-		} else if(args.length > 0){
+		} else if (args.length > 0) {
 			concerned = Bukkit.getPlayer(args[0]);
 		} else {
 			concerned = (Player) sender;
 		}
 
-		if(concerned == null){
+		if (concerned == null) {
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
 			boolean result = true;
-			String  key	   = "allowed";
+			String key = "allowed";
 
-			if(concerned.getAllowFlight()){
+			if (concerned.getAllowFlight()) {
 				result = false;
-				key    = "disallowed";
+				key = "disallowed";
 			}
 
 			concerned.setAllowFlight(result);
@@ -40,11 +40,11 @@ public class FlyCommand extends AbstractCommand {
 
 			new TranslatableString("commands.fly." + key).send(concerned);
 
-			if(args.length > 0){
+			if (args.length > 0) {
 				new TranslatableString("commands.fly." + key + "-success", concerned.getName()).send(sender);
 			}
 		}
-		
+
 		return true;
 	}
 }

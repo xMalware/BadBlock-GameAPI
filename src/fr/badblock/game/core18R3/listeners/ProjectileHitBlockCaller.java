@@ -16,13 +16,30 @@ import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 
 public class ProjectileHitBlockCaller extends BadListener {
+	private int getX(Object handler) throws Exception {
+		return (int) new Reflector(handler).getFieldValue("d");
+	}
+
+	private int getY(Object handler) throws Exception {
+		return (int) new Reflector(handler).getFieldValue("e");
+	}
+
+	private int getZ(Object handler) throws Exception {
+		return (int) new Reflector(handler).getFieldValue("f");
+	}
+
+	private boolean isValidBlock(int y) {
+		return y != -1;
+	}
+
 	@EventHandler
 	private void onProjectileHit(final ProjectileHitEvent e) {
 		boolean arrow = e.getEntityType() == EntityType.ARROW;
 
 		if (!arrow) {
 			World world = e.getEntity().getWorld();
-			BlockIterator iterator = new BlockIterator(world, e.getEntity().getLocation().toVector(), e.getEntity().getVelocity().normalize(), 0, 4);
+			BlockIterator iterator = new BlockIterator(world, e.getEntity().getLocation().toVector(),
+					e.getEntity().getVelocity().normalize(), 0, 4);
 			Block hitBlock = null;
 
 			while (iterator.hasNext()) {
@@ -51,28 +68,13 @@ public class ProjectileHitBlockCaller extends BadListener {
 
 					if (isValidBlock(y)) {
 						Block block = e.getEntity().getWorld().getBlockAt(x, y, z);
-						Bukkit.getServer().getPluginManager().callEvent(new ProjectileHitBlockEvent(e.getEntity(), block));
+						Bukkit.getServer().getPluginManager()
+								.callEvent(new ProjectileHitBlockEvent(e.getEntity(), block));
 					}
 				} catch (Exception exc) {
 					exc.printStackTrace();
 				}
 			}
 		});
-	}
-
-	private int getX(Object handler) throws Exception {
-		return (int) new Reflector(handler).getFieldValue("d");
-	}
-
-	private int getY(Object handler) throws Exception {
-		return (int) new Reflector(handler).getFieldValue("e");
-	}
-	
-	private int getZ(Object handler) throws Exception {
-		return (int) new Reflector(handler).getFieldValue("f");
-	}
-
-	private boolean isValidBlock(int y) {
-		return y != -1;
 	}
 }

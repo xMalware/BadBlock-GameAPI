@@ -38,95 +38,136 @@ import lombok.Setter;
 @Getter
 public class Merchant {
 	public static final double VIEW_DISTANCE = 48.0d;
-	
-	private String									 name;
-	private String					   				 entityName;
-	private CreatureType			   				 entityType;
+
+	private String name;
+	private String entityName;
+	private CreatureType entityType;
 	@Setter
 	private MapList<MapRecipe, CustomMerchantRecipe> recipes;
-	
-	private Villager.Profession		   				 profession;
-	private DyeColor				   				 color;
-	private boolean					   				 isZombieVillager;
-	
-	private List<MapNamedLocation>     				 handlers;
-	private Map<String, FakeEntity<?>> 				 entities;
-	
+
+	private Villager.Profession profession;
+	private DyeColor color;
+	private boolean isZombieVillager;
+
+	private List<MapNamedLocation> handlers;
+	private Map<String, FakeEntity<?>> entities;
+
 	@SuppressWarnings("deprecation")
-	public Merchant(String name, BadConfiguration config){
-		this.name 		 = name;
-		entityName 		 = config.getValue("entityName", MapString.class, new MapString("shops." + name)).getHandle();
-		entityType 		 = CreatureType.matchCreature(
-					 	   config.getValue("entityType", MapString.class, new MapString(EntityType.VILLAGER.name())).getHandle()
-		);
-		profession 		 = Villager.Profession.valueOf(
-		 		   		   config.getValue("entity-villager-profession", MapString.class, new MapString(Villager.Profession.LIBRARIAN.name())).getHandle()
-		);
-		color	   		 = DyeColor.getByWoolData(
-				 		   config.getValue("entity-sheep-color", MapNumber.class, new MapNumber()).getHandle().byteValue()
-		);
+	public Merchant(String name, BadConfiguration config) {
+		this.name = name;
+		entityName = config.getValue("entityName", MapString.class, new MapString("shops." + name)).getHandle();
+		entityType = CreatureType.matchCreature(
+				config.getValue("entityType", MapString.class, new MapString(EntityType.VILLAGER.name())).getHandle());
+		profession = Villager.Profession.valueOf(config.getValue("entity-villager-profession", MapString.class,
+				new MapString(Villager.Profession.LIBRARIAN.name())).getHandle());
+		color = DyeColor.getByWoolData(
+				config.getValue("entity-sheep-color", MapNumber.class, new MapNumber()).getHandle().byteValue());
 		isZombieVillager = config.getValue("entity-zombie-villager", MapBoolean.class, new MapBoolean()).getHandle();
 
-		recipes    		 = config.getValueList("offers", MapRecipe.class);
-		handlers    	 = config.getValueList("handlers", MapNamedLocation.class);
+		recipes = config.getValueList("offers", MapRecipe.class);
+		handlers = config.getValueList("handlers", MapNamedLocation.class);
 
-		if(entityType == null)
+		if (entityType == null)
 			entityType = CreatureType.VILLAGER;
-	
+
 		createEntities();
 	}
-	
-	public void addEntity(Location location, String name){
+
+	public void addEntity(Location location, String name) {
 		FakeEntity<?> result = null;
-		
-		if(entityType == CreatureType.VILLAGER){
-			FakeEntity<WatcherVillager> villager = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherVillager.class);
-		
+
+		if (entityType == CreatureType.VILLAGER) {
+			FakeEntity<WatcherVillager> villager = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(),
+					WatcherVillager.class);
+
 			villager.getWatchers().setProfession(this.profession);
 			result = villager;
-		} else if(entityType == CreatureType.SHEEP){
-			FakeEntity<WatcherSheep> 	sheep    = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherSheep.class);
-			
+		} else if (entityType == CreatureType.SHEEP) {
+			FakeEntity<WatcherSheep> sheep = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(),
+					WatcherSheep.class);
+
 			sheep.getWatchers().setColor(this.color);
 			result = sheep;
-		} else if(entityType == CreatureType.ZOMBIE){
-			FakeEntity<WatcherZombie> 	zombie	 = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherZombie.class);
-		
+		} else if (entityType == CreatureType.ZOMBIE) {
+			FakeEntity<WatcherZombie> zombie = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(),
+					WatcherZombie.class);
+
 			zombie.getWatchers().setVillager(this.isZombieVillager);
 			result = zombie;
-		} else if(entityType == CreatureType.SKELETON){
+		} else if (entityType == CreatureType.SKELETON) {
 			result = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherSkeleton.class);
-		} else if(entityType == CreatureType.WITCH){
+		} else if (entityType == CreatureType.WITCH) {
 			result = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherWitch.class);
 		} else {
 			result = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherEntity.class);
 		}
-		
-		result.getWatchers().setCustomNameVisible(true)
-							.setCustomName(new TranslatableString(entityName));
-		
+
+		result.getWatchers().setCustomNameVisible(true).setCustomName(new TranslatableString(entityName));
+
 		entities.put(name, result);
-		
-		/*for(Player player : Bukkit.getOnlinePlayers()){
-			move((BadblockPlayer) player, player.getLocation().clone().add(0, 64, 0), player.getLocation());
-		}*/
-		
+
+		/*
+		 * for(Player player : Bukkit.getOnlinePlayers()){ move((BadblockPlayer)
+		 * player, player.getLocation().clone().add(0, 64, 0),
+		 * player.getLocation()); }
+		 */
+
 		result.setVisibility(Visibility.SERVER);
 	}
-	
-	protected void createEntities(){
+
+	public boolean click(BadblockPlayer player, FakeEntity<?> entity) {
+
+		for (FakeEntity<?> handled : entities.values()) {
+			if (handled.getId() == entity.getId()) {
+				openInventory(player);
+				return true;
+			}
+
+		}
+
+		return false;
+
+	}
+
+	protected void createEntities() {
 		entities = Maps.newConcurrentMap();
-		
-		for(MapNamedLocation handler : handlers){
+
+		for (MapNamedLocation handler : handlers) {
 			addEntity(handler.getHandle(), handler.getName());
 		}
-		
+
 	}
-	
+
+	/*
+	 * public void move(BadblockPlayer player, Location from, Location to){
+	 * for(MapNamedLocation handler : handlers){ FakeEntity<?> entity =
+	 * entities.get(handler.getName());
+	 * 
+	 * boolean bef = from.distance(entity.getLocation()) < VIEW_DISTANCE;
+	 * boolean now = to.distance(entity.getLocation()) < VIEW_DISTANCE;
+	 * 
+	 * if(!bef && now) entity.show(player); else if(bef && !now)
+	 * entity.remove(player); }
+	 * 
+	 * }
+	 */
+
+	public void openInventory(BadblockPlayer player) {
+		List<CustomMerchantRecipe> content = recipes.getHandle();
+
+		if (content.isEmpty())
+			return;
+
+		CustomMerchantInventory inventory = GameAPI.getAPI().getCustomMerchantInventory();
+		content.forEach(recipe -> inventory.addRecipe(recipe));
+
+		inventory.open(player, new TranslatableString(entityName));
+	}
+
 	@SuppressWarnings("deprecation")
-	public BadConfiguration save(){
+	public BadConfiguration save() {
 		BadConfiguration config = GameAPI.getAPI().loadConfiguration(new JsonObject());
-		
+
 		config.setValue("entityName", new MapString(entityName));
 		config.setValue("entityType", new MapString(entityType.name()));
 		config.setValue("entity-villager-profession", new MapString(profession.name()));
@@ -134,47 +175,7 @@ public class Merchant {
 		config.setValue("entity-zombie-villager", new MapBoolean(isZombieVillager));
 		config.setValueList("offers", recipes);
 		config.setValueList("handlers", handlers);
-		
-		return config;
-	}
-	
-	/*public void move(BadblockPlayer player, Location from, Location to){
-		for(MapNamedLocation handler : handlers){
-			FakeEntity<?> entity = entities.get(handler.getName());
 
-			boolean bef = from.distance(entity.getLocation()) < VIEW_DISTANCE;
-			boolean now = to.distance(entity.getLocation()) < VIEW_DISTANCE;
-			
-			if(!bef && now)
-				entity.show(player);
-			else if(bef && !now)
-				entity.remove(player);
-		}
-		
-	}*/
-	
-	public void openInventory(BadblockPlayer player){
-		List<CustomMerchantRecipe> content   = recipes.getHandle();
-		
-		if(content.isEmpty()) return;
-		
-		CustomMerchantInventory    inventory = GameAPI.getAPI().getCustomMerchantInventory();
-		content.forEach(recipe -> inventory.addRecipe(recipe));
-		
-		inventory.open(player, new TranslatableString(entityName));
-	}
-	
-	public boolean click(BadblockPlayer player, FakeEntity<?> entity){
-		
-		for(FakeEntity<?> handled : entities.values()){
-			if(handled.getId() == entity.getId()){
-				openInventory(player);
-				return true;
-			}
-			
-		}
-		
-		return false;
-		
+		return config;
 	}
 }

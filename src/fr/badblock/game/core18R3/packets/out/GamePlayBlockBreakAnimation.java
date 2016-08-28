@@ -14,25 +14,27 @@ import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutBlockBreakAnimation;
 
-@NoArgsConstructor@Data
-@EqualsAndHashCode(callSuper=false)
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayBlockBreakAnimation extends GameBadblockOutPacket implements PlayBlockBreakAnimation {
-	private int	  entityId = -1;
-	private Block block    = null;
-	private int	  state    = 0;
+	private int entityId = -1;
+	private Block block = null;
+	private int state = 0;
 
-	public GamePlayBlockBreakAnimation(PacketPlayOutBlockBreakAnimation packet){
+	public GamePlayBlockBreakAnimation(PacketPlayOutBlockBreakAnimation packet) {
 		Reflector reflector = new Reflector(packet);
-		
+
 		try {
-			entityId  = (int) reflector.getFieldValue("a");
+			entityId = (int) reflector.getFieldValue("a");
 			BlockPosition pos = (BlockPosition) reflector.getFieldValue("b");
-			block     = Bukkit.getWorlds().get(0).getBlockAt(pos.getX(), pos.getY(), pos.getZ());
-			state 	  = (int) reflector.getFieldValue("c");
-		} catch(Exception e){}
+			block = Bukkit.getWorlds().get(0).getBlockAt(pos.getX(), pos.getY(), pos.getZ());
+			state = (int) reflector.getFieldValue("c");
+		} catch (Exception e) {
+		}
 	}
-	
+
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());

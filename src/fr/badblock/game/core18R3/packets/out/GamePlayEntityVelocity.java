@@ -12,25 +12,25 @@ import lombok.experimental.Accessors;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityVelocity;
 
-@NoArgsConstructor@Data
-@EqualsAndHashCode(callSuper=false)
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayEntityVelocity extends GameBadblockOutPacket implements PlayEntityVelocity {
-	private int    entityId = 0;
+	private int entityId = 0;
 	private Vector velocity = null;
-	
-	public GamePlayEntityVelocity(PacketPlayOutEntityVelocity packet){
+
+	public GamePlayEntityVelocity(PacketPlayOutEntityVelocity packet) {
 		Reflector reflector = new Reflector(packet);
-		
+
 		try {
-			entityId   = (int) reflector.getFieldValue("a");
-			velocity   = new Vector(((double) reflector.getFieldValue("b")) / 8000.D,
-				((double) reflector.getFieldValue("c")) / 8000.D,
-				((double) reflector.getFieldValue("d")) / 8000.D
-			);
-		} catch(Exception e){}
+			entityId = (int) reflector.getFieldValue("a");
+			velocity = new Vector(((double) reflector.getFieldValue("b")) / 8000.D,
+					((double) reflector.getFieldValue("c")) / 8000.D, ((double) reflector.getFieldValue("d")) / 8000.D);
+		} catch (Exception e) {
+		}
 	}
-	
+
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		return new PacketPlayOutEntityVelocity(entityId, velocity.getX(), velocity.getY(), velocity.getZ());

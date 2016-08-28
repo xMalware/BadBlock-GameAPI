@@ -17,12 +17,12 @@ public class SkullCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0) return false;
+		if (args.length == 0)
+			return false;
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 
 		concerned.getInventory().addItem(GameAPI.getAPI().createItemStackFactory().type(Material.SKULL_ITEM)
-												 .durability((short) 3)
-												 .asSkull(1, args[0]));
+				.durability((short) 3).asSkull(1, args[0]));
 		concerned.sendTranslatedMessage("commands.skull.success");
 		return true;
 	}

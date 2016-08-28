@@ -17,38 +17,38 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class DisconnectListener extends BadListener {
 	@EventHandler
-	public void onQuit(PlayerQuitEvent e){
+	public void onQuit(PlayerQuitEvent e) {
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
 		player.undisguise();
-		
-		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING) {
-			if(player.getTeam() != null)
+
+		if (GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING) {
+			if (player.getTeam() != null)
 				player.getTeam().leaveTeam(player);
 		} else {
 			GameServer server = GamePlugin.getInstance().getGameServer();
-			
-			if(server.isSaving() && server.getPlay().contains(player.getUniqueId())){
+
+			if (server.isSaving() && server.getPlay().contains(player.getUniqueId())) {
 				server.getSavedPlayers().add(new GameBadblockPlayerData((GameBadblockPlayer) e.getPlayer()));
 			}
-			
+
 			boolean backup = server.getType() == WhileRunningConnectionTypes.BACKUP;
 
-			if(backup){
+			if (backup) {
 				PlayerReconnectionPropositionEvent event = new PlayerReconnectionPropositionEvent(player);
 				Bukkit.getPluginManager().callEvent(event);
 				backup = !event.isCancelled();
 			}
 
-			if(!backup){
-				if(player.getTeam() != null){
+			if (!backup) {
+				if (player.getTeam() != null) {
 					player.getTeam().leaveTeam(player);
 				}
 
 				return;
 			}
 
-			if(backup)
+			if (backup)
 				server.remember(player);
 		}
 	}

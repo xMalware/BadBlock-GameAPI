@@ -44,212 +44,31 @@ import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import lombok.NoArgsConstructor;
 
 public class FakeDeathCaller extends BadListener {
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
-	public void onDamage(EntityDamageEvent e){
-		if(e.getCause() == DamageCause.ENTITY_ATTACK) return;
+	@NoArgsConstructor
+	public static class FakeDeathData implements InGameData {
+		long lastDamage = 0;
+		FightingDeaths lastPvPDamage = null;
+		int lastDamager = -1;
 
-		if(!e.isCancelled() && e.getEntityType() == EntityType.PLAYER){
-			BadblockPlayer player = (BadblockPlayer) e.getEntity();
-			Entity		   killer = null;
-			FakeDeathData  data	  = player.inGameData(FakeDeathData.class);
-			FightingDeaths type   = data.lastPvPDamage;
-			FakeDeathEvent event  = null;
+		long lastSpawnkill = 0;
 
-			if(player.inGameData(CommandInGameData.class).godmode){
-				e.setCancelled(true); return;
-			}
-
-			if(e.getDamage() >= player.getHealth()){
-				e.setCancelled(true);
-
-				if(data.lastDamager != -1){
-					if(System.currentTimeMillis() - data.lastDamage < 30 * 1000L){
-						killer = getEntity(player, data.lastDamager);
-					}
-				}
-
-				if(killer != null){
-					event = new FightingDeathEvent(player, killer, type, e.getCause());
-				} else {
-					event = new NormalDeathEvent(player, e.getCause());
-				}
-
-				event.getDrops().addAll(items(player.getInventory()));
-				Bukkit.getPluginManager().callEvent(event);
-
-				if(!event.isCancelled()){
-					if(killer != null && doASKill(player, killer, !event.isKeepInventory())){
-						iWillSurvive(player);
-						return;
-					}
-
-					death(player, event);
-				}
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
-	public void onDamage(EntityDamageByEntityEvent e){
-		if(!e.isCancelled() && e.getEntityType() == EntityType.PLAYER){
-			BadblockPlayer player = (BadblockPlayer) e.getEntity();
-			Entity		   killer = getTrueEntity(e.getDamager());
-			FakeDeathData  data	  = player.inGameData(FakeDeathData.class);
-			FakeDeathEvent event  = null;
-
-			FightingDeaths type   = FightingDeaths.INFIGHTING;
-
-			if(player.inGameData(CommandInGameData.class).godmode){
-				e.setCancelled(true); return;
-			}
-			
-			if(e.getEntityType() == EntityType.ARROW)
-				type = FightingDeaths.BOW;
-			else if(e.getEntityType() == EntityType.SPLASH_POTION)
-				type = FightingDeaths.POTION;
-
-			if(killer.getType() == EntityType.PLAYER){
-
-				BadblockPlayer bkiller = (BadblockPlayer) killer;
-				if(bkiller.inGameData(FakeDeathData.class).lastDamager == -1){
-
-					if(player.inGameData(FakeDeathData.class).lastKill.containsKey(bkiller.getUniqueId()))
-						player.inGameData(FakeDeathData.class).lastKill.remove(bkiller.getUniqueId());
-
-				}
-
-			}
-
-			if(e.getDamage() >= player.getHealth()){
-				e.setCancelled(true);
-
-				event = new FightingDeathEvent(player, killer, type, e.getCause());
-				event.getDrops().addAll(items(player.getInventory()));
-
-				Bukkit.getPluginManager().callEvent(event);
-
-				if(!event.isCancelled()){
-					if(doASKill(player, killer, !event.isKeepInventory())){
-						iWillSurvive(player);
-						return;
-					}
-
-					death(player, event);
-				}
-			} else {
-				data.lastDamage    = System.currentTimeMillis();
-				data.lastPvPDamage = type;
-				data.lastDamager   = killer.getEntityId();
-			}
-		}
-	}
-
-	private boolean doASKill(BadblockPlayer player, Entity killer, boolean drop){
-		if(antiSpawnKill() && killer.getType() == EntityType.PLAYER){
-			BadblockPlayer bKiller = (BadblockPlayer) killer;
-			FakeDeathData  fData   = bKiller.inGameData(FakeDeathData.class);
-
-			if(fData.alert < 0) fData.alert = 0;
-
-			boolean changed = false;
-
-			// Si un joueur a �t� tap� r�cemment
-			if(fData.lastKill.containsKey(player.getUniqueId())){
-				long delta = System.currentTimeMillis() - fData.lastKill.get(player.getUniqueId());
-
-				// Il y a moins de 20 secondes
-				if(delta < 20 * 1000){
-					// On incr�mente
-					fData.alert++;
-					fData.lastSpawnkill = System.currentTimeMillis();
-					changed = true;
-				} else if(fData.alert > 0){
-					fData.alert--;
-				}
-			}
-
-			if(System.currentTimeMillis() - fData.lastSpawnkill > 120 * 1000)
-				fData.alert = 0;
-
-			fData.lastKill.put(player.getUniqueId(), System.currentTimeMillis());
-
-			// Si il n'a pas tap� un joueur depuis 60 secondes, on l'enl�ve de la liste
-			fData.lastKill.forEach((p, last) -> {
-				long delta = System.currentTimeMillis() - fData.lastKill.get(player.getUniqueId());
-
-				if(delta > 60 * 1000){ // 60 secondes
-					fData.alert--;
-					fData.lastKill.remove(p);
-				}
-			});
-
-			if(fData.alert == 2 && changed){
-				bKiller.sendTranslatedTitle("antispawnkill.warning.first");
-				bKiller.sendTimings(20, 40, 20);
-			}
-
-			if(fData.alert == 3 && changed){
-				bKiller.sendTranslatedTitle("antispawnkill.warning.second");
-				bKiller.setHealth(1.0d);
-			}
-
-			if(fData.alert == 4 && changed){
-				cantReconnect.add(bKiller.getUniqueId());
-				bKiller.kickPlayer(new TranslatableString("antispawnkill.kick").getAsLine(bKiller));
-
-				if(drop)
-					drop(items(bKiller.getInventory()), bKiller.getLocation());
-			}
-
-		}
-
-		return false;
+		int alert = 0;
+		int kill = 0;
+		Map<UUID, Long> lastKill = Maps.newConcurrentMap();
 	}
 
 	private List<UUID> cantReconnect = new ArrayList<>();
 
-	@EventHandler
-	public void onProposition(PlayerReconnectionPropositionEvent e){
-		if(cantReconnect.contains(e.getPlayer()))
-			e.setCancelled(true);
-	}
-
-	private boolean antiSpawnKill(){
+	private boolean antiSpawnKill() {
 		return GamePlugin.getInstance().isAntiSpawnKill();
 	}
 
-	private void iWillSurvive(BadblockPlayer p){
-		p.heal();
-		p.feed();
-	}
-
-	private List<ItemStack> items(PlayerInventory inventory){
-		List<ItemStack> result = new ArrayList<>();
-
-		for(ItemStack is : inventory.getContents())
-			if(is != null && is.getType() != Material.AIR && can(is))
-				result.add(is);
-		for(ItemStack is : inventory.getArmorContents())
-			if(is != null && is.getType() != Material.AIR && can(is))
-				result.add(is);
-
-		return result;
-	}
-
-	private boolean can(ItemStack item){
+	private boolean can(ItemStack item) {
 		GameItemExtra extra = ItemStackExtras.getExtra(item);
 		return !(extra != null && !extra.isAllowDropOnDeath());
 	}
-	
-	private void drop(List<ItemStack> items, Location place){
-		for(ItemStack item : items){
-			if(item != null && item.getType() != Material.AIR && can(item)){
-				place.getWorld().dropItemNaturally(place, item);
-			}
-		}
-	}
 
-	private void death(BadblockPlayer p, FakeDeathEvent e){
+	private void death(BadblockPlayer p, FakeDeathEvent e) {
 		p.inGameData(CommandInGameData.class).lastLocation = p.getLocation();
 		p.heal();
 		p.feed();
@@ -257,58 +76,60 @@ public class FakeDeathCaller extends BadListener {
 
 		p.playEffect(EntityEffect.HURT);
 
-		if(!e.isKeepInventory()){
+		if (!e.isKeepInventory()) {
 			p.clearInventory();
 			drop(e.getDrops(), p.getLocation());
 		}
 
-		p.inGameData(FakeDeathData.class).lastDamage    = 0;
+		p.inGameData(FakeDeathData.class).lastDamage = 0;
 		p.inGameData(FakeDeathData.class).lastPvPDamage = null;
-		p.inGameData(FakeDeathData.class).lastDamager   = -1;
+		p.inGameData(FakeDeathData.class).lastDamager = -1;
 
-		if(e.getDeathMessage() != null){
-			//System.out.println(e.getDeathMessage());
+		if (e.getDeathMessage() != null) {
+			// System.out.println(e.getDeathMessage());
 			Object end = e.getDeathMessageEnd() == null ? "" : e.getDeathMessageEnd();
 
 			List<Object> res = new ArrayList<>();
 
-			for(Object obj : e.getDeathMessage().getObjects())
+			for (Object obj : e.getDeathMessage().getObjects())
 				res.add(obj);
 			res.add(end);
-			//System.out.println(res);
+			// System.out.println(res);
 			new TranslatableString(e.getDeathMessage().getKey(), res.toArray()).broadcast();
 
-			for(Player player : Bukkit.getOnlinePlayers()){
+			for (Player player : Bukkit.getOnlinePlayers()) {
 				BadblockPlayer bplayer = (BadblockPlayer) player;
 				bplayer.sendTranslatedActionBar(e.getDeathMessage().getKey(), res.toArray());
 			}
 		}
 
-		if(e.isLightning()){
+		if (e.isLightning()) {
 			p.getWorld().strikeLightningEffect(p.getLocation());
 		}
 
-		if(e.getTimeBeforeRespawn() > 0){
-			new BukkitRunnable(){
+		if (e.getTimeBeforeRespawn() > 0) {
+			new BukkitRunnable() {
 				private int time = e.getTimeBeforeRespawn();
 				private boolean first = true;
-				
+
 				@Override
-				public void run(){
-					if(first){
+				public void run() {
+					if (first) {
 						p.setBadblockMode(BadblockMode.RESPAWNING);
-						
-						if(e.getWhileRespawnPlace() != null)
+
+						if (e.getWhileRespawnPlace() != null)
 							p.teleport(e.getWhileRespawnPlace());
-						
-						first = false; return;
-					}
-					
-					if(!p.isValid() || !p.isOnline()){
-						cancel(); return;
+
+						first = false;
+						return;
 					}
 
-					if(time == 0){
+					if (!p.isValid() || !p.isOnline()) {
+						cancel();
+						return;
+					}
+
+					if (time == 0) {
 						cancel();
 						respawn(p, e.getRespawnPlace());
 					} else {
@@ -322,49 +143,236 @@ public class FakeDeathCaller extends BadListener {
 		}
 	}
 
-	private void respawn(BadblockPlayer player, Location location){
-		if(player.getBadblockMode()== BadblockMode.RESPAWNING)
-			player.setBadblockMode(BadblockMode.PLAYER);
+	private boolean doASKill(BadblockPlayer player, Entity killer, boolean drop) {
+		if (antiSpawnKill() && killer.getType() == EntityType.PLAYER) {
+			BadblockPlayer bKiller = (BadblockPlayer) killer;
+			FakeDeathData fData = bKiller.inGameData(FakeDeathData.class);
 
-		player.clearTitle();
-		
-		if(location != null)
-			player.teleport(location);
-		else location = player.getLocation();
+			if (fData.alert < 0)
+				fData.alert = 0;
 
-		Bukkit.getPluginManager().callEvent(new PlayerFakeRespawnEvent(player, location));
-	}
+			boolean changed = false;
 
-	private Entity getTrueEntity(Entity base){
-		if(base instanceof Projectile){
-			Projectile projectile = (Projectile) base;
+			// Si un joueur a �t� tap� r�cemment
+			if (fData.lastKill.containsKey(player.getUniqueId())) {
+				long delta = System.currentTimeMillis() - fData.lastKill.get(player.getUniqueId());
 
-			if(projectile.getShooter() instanceof Entity)
-				return (Entity) projectile.getShooter();
+				// Il y a moins de 20 secondes
+				if (delta < 20 * 1000) {
+					// On incr�mente
+					fData.alert++;
+					fData.lastSpawnkill = System.currentTimeMillis();
+					changed = true;
+				} else if (fData.alert > 0) {
+					fData.alert--;
+				}
+			}
+
+			if (System.currentTimeMillis() - fData.lastSpawnkill > 120 * 1000)
+				fData.alert = 0;
+
+			fData.lastKill.put(player.getUniqueId(), System.currentTimeMillis());
+
+			// Si il n'a pas tap� un joueur depuis 60 secondes, on l'enl�ve de
+			// la liste
+			fData.lastKill.forEach((p, last) -> {
+				long delta = System.currentTimeMillis() - fData.lastKill.get(player.getUniqueId());
+
+				if (delta > 60 * 1000) { // 60 secondes
+					fData.alert--;
+					fData.lastKill.remove(p);
+				}
+			});
+
+			if (fData.alert == 2 && changed) {
+				bKiller.sendTranslatedTitle("antispawnkill.warning.first");
+				bKiller.sendTimings(20, 40, 20);
+			}
+
+			if (fData.alert == 3 && changed) {
+				bKiller.sendTranslatedTitle("antispawnkill.warning.second");
+				bKiller.setHealth(1.0d);
+			}
+
+			if (fData.alert == 4 && changed) {
+				cantReconnect.add(bKiller.getUniqueId());
+				bKiller.kickPlayer(new TranslatableString("antispawnkill.kick").getAsLine(bKiller));
+
+				if (drop)
+					drop(items(bKiller.getInventory()), bKiller.getLocation());
+			}
+
 		}
 
-		return base;
+		return false;
 	}
 
-	private Entity getEntity(Player player, int id){
-		for(Entity entity : player.getWorld().getEntities()){
-			if(entity.getEntityId() == id)
+	private void drop(List<ItemStack> items, Location place) {
+		for (ItemStack item : items) {
+			if (item != null && item.getType() != Material.AIR && can(item)) {
+				place.getWorld().dropItemNaturally(place, item);
+			}
+		}
+	}
+
+	private Entity getEntity(Player player, int id) {
+		for (Entity entity : player.getWorld().getEntities()) {
+			if (entity.getEntityId() == id)
 				return entity;
 		}
 
 		return null;
 	}
 
-	@NoArgsConstructor
-	public static class FakeDeathData implements InGameData {
-		long      	    lastDamage  		 = 0;
-		FightingDeaths  lastPvPDamage  	 = null;
-		int			    lastDamager		 = -1;
+	private Entity getTrueEntity(Entity base) {
+		if (base instanceof Projectile) {
+			Projectile projectile = (Projectile) base;
 
-		long			lastSpawnkill	 = 0;
+			if (projectile.getShooter() instanceof Entity)
+				return (Entity) projectile.getShooter();
+		}
 
-		int			    alert			 = 0;
-		int				kill			 = 0;
-		Map<UUID, Long> lastKill		 = Maps.newConcurrentMap();
+		return base;
+	}
+
+	private List<ItemStack> items(PlayerInventory inventory) {
+		List<ItemStack> result = new ArrayList<>();
+
+		for (ItemStack is : inventory.getContents())
+			if (is != null && is.getType() != Material.AIR && can(is))
+				result.add(is);
+		for (ItemStack is : inventory.getArmorContents())
+			if (is != null && is.getType() != Material.AIR && can(is))
+				result.add(is);
+
+		return result;
+	}
+
+	private void iWillSurvive(BadblockPlayer p) {
+		p.heal();
+		p.feed();
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onDamage(EntityDamageByEntityEvent e) {
+		if (!e.isCancelled() && e.getEntityType() == EntityType.PLAYER) {
+			BadblockPlayer player = (BadblockPlayer) e.getEntity();
+			Entity killer = getTrueEntity(e.getDamager());
+			FakeDeathData data = player.inGameData(FakeDeathData.class);
+			FakeDeathEvent event = null;
+
+			FightingDeaths type = FightingDeaths.INFIGHTING;
+
+			if (player.inGameData(CommandInGameData.class).godmode) {
+				e.setCancelled(true);
+				return;
+			}
+
+			if (e.getEntityType() == EntityType.ARROW)
+				type = FightingDeaths.BOW;
+			else if (e.getEntityType() == EntityType.SPLASH_POTION)
+				type = FightingDeaths.POTION;
+
+			if (killer.getType() == EntityType.PLAYER) {
+
+				BadblockPlayer bkiller = (BadblockPlayer) killer;
+				if (bkiller.inGameData(FakeDeathData.class).lastDamager == -1) {
+
+					if (player.inGameData(FakeDeathData.class).lastKill.containsKey(bkiller.getUniqueId()))
+						player.inGameData(FakeDeathData.class).lastKill.remove(bkiller.getUniqueId());
+
+				}
+
+			}
+
+			if (e.getDamage() >= player.getHealth()) {
+				e.setCancelled(true);
+
+				event = new FightingDeathEvent(player, killer, type, e.getCause());
+				event.getDrops().addAll(items(player.getInventory()));
+
+				Bukkit.getPluginManager().callEvent(event);
+
+				if (!event.isCancelled()) {
+					if (doASKill(player, killer, !event.isKeepInventory())) {
+						iWillSurvive(player);
+						return;
+					}
+
+					death(player, event);
+				}
+			} else {
+				data.lastDamage = System.currentTimeMillis();
+				data.lastPvPDamage = type;
+				data.lastDamager = killer.getEntityId();
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	public void onDamage(EntityDamageEvent e) {
+		if (e.getCause() == DamageCause.ENTITY_ATTACK)
+			return;
+
+		if (!e.isCancelled() && e.getEntityType() == EntityType.PLAYER) {
+			BadblockPlayer player = (BadblockPlayer) e.getEntity();
+			Entity killer = null;
+			FakeDeathData data = player.inGameData(FakeDeathData.class);
+			FightingDeaths type = data.lastPvPDamage;
+			FakeDeathEvent event = null;
+
+			if (player.inGameData(CommandInGameData.class).godmode) {
+				e.setCancelled(true);
+				return;
+			}
+
+			if (e.getDamage() >= player.getHealth()) {
+				e.setCancelled(true);
+
+				if (data.lastDamager != -1) {
+					if (System.currentTimeMillis() - data.lastDamage < 30 * 1000L) {
+						killer = getEntity(player, data.lastDamager);
+					}
+				}
+
+				if (killer != null) {
+					event = new FightingDeathEvent(player, killer, type, e.getCause());
+				} else {
+					event = new NormalDeathEvent(player, e.getCause());
+				}
+
+				event.getDrops().addAll(items(player.getInventory()));
+				Bukkit.getPluginManager().callEvent(event);
+
+				if (!event.isCancelled()) {
+					if (killer != null && doASKill(player, killer, !event.isKeepInventory())) {
+						iWillSurvive(player);
+						return;
+					}
+
+					death(player, event);
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void onProposition(PlayerReconnectionPropositionEvent e) {
+		if (cantReconnect.contains(e.getPlayer()))
+			e.setCancelled(true);
+	}
+
+	private void respawn(BadblockPlayer player, Location location) {
+		if (player.getBadblockMode() == BadblockMode.RESPAWNING)
+			player.setBadblockMode(BadblockMode.PLAYER);
+
+		player.clearTitle();
+
+		if (location != null)
+			player.teleport(location);
+		else
+			location = player.getLocation();
+
+		Bukkit.getPluginManager().callEvent(new PlayerFakeRespawnEvent(player, location));
 	}
 }

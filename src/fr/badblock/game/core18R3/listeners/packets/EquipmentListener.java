@@ -13,15 +13,15 @@ public class EquipmentListener extends OutPacketListener<PlayEntityEquipment> {
 	@Override
 	public void listen(BadblockPlayer player, PlayEntityEquipment packet) {
 		BadblockPlayer p = null;
-		
-		for(Player e : Bukkit.getOnlinePlayers()) {
-			if(e.getEntityId() == packet.getEntityId()) {
+
+		for (Player e : Bukkit.getOnlinePlayers()) {
+			if (e.getEntityId() == packet.getEntityId()) {
 				p = (BadblockPlayer) e;
 				break;
 			}
 		}
-		
-		if(p != null && p.isDisguised()){
+
+		if (p != null && p.isDisguised()) {
 			packet.setItemStack(new ItemStack(Material.AIR, 1));
 		}
 	}

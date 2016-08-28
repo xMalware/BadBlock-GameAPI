@@ -22,82 +22,46 @@ import net.minecraft.server.v1_8_R3.DataWatcher;
 public class GameWatcherEntity implements WatcherEntity {
 	protected MetadataMap map;
 
-	private boolean onFire 	  = false;
+	private boolean onFire = false;
 	private boolean invisible = false;
-	
+
 	private TranslatableString customName;
-	
-	public GameWatcherEntity(Class<? extends Entity> clazz){
+
+	public GameWatcherEntity(Class<? extends Entity> clazz) {
 		map = new MetadataMap(clazz);
-	}
-	
-	@Override
-	public WatcherEntity setOnFire(boolean onFire) {
-		this.onFire = onFire;
-		setFlag();
-		return this;
-	}
-
-	@Override
-	public WatcherEntity setInvisibile(boolean invisible) {
-		this.invisible = invisible;
-		setFlag();
-		return this;
-	}
-
-	@Override
-	public WatcherEntity setCustomNameVisible(boolean customNameVisible) {
-		set(MetadataIndex.SHOW_NAME_TAG, customNameVisible ? 1 : 0);
-		return this;
-	}
-	
-	@Override
-	public WatcherEntity setCustomName(TranslatableString name) {
-		customName = name;
-		set(MetadataIndex.NAME_TAG, customName.getAsLine(Locale.FRENCH_FRANCE));
-		return this;
-	}
-	
-	@Override
-	public WatcherEntity setCustomName(String name) {
-		customName = null;
-		set(MetadataIndex.NAME_TAG, name);
-		return this;
-	}
-
-	protected void setFlag(){
-		int value = 0;
-		
-		if(onFire)
-			value |= 0x01;
-		if(invisible)
-			value |= 0x20;
-		
-		set(MetadataIndex.STATUS, value);
-	}
-	
-	
-	public void set(MetadataIndex index, Object value){
-		map.set(index, value);
 	}
 
 	@Override
 	public void applyToEntity(Entity entity) {
 		CraftEntity applyTo = (CraftEntity) entity;
-		
+
 		DataWatcher watcher = convertToDatawatcher(applyTo.getHandle().getDataWatcher());
 		try {
-			new Reflector(applyTo.getHandle(), ReflectionUtils.getNMSClass("Entity")).setFieldValue("datawatcher", watcher);
+			new Reflector(applyTo.getHandle(), ReflectionUtils.getNMSClass("Entity")).setFieldValue("datawatcher",
+					watcher);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}		
+		}
 	}
-	
+
+	public DataWatcher convertToDatawatcher() {
+		return map.toDatawatcher();
+	}
+
+	public DataWatcher convertToDatawatcher(BadblockPlayer player) {
+		MetadataMap mapClone = map.clone();
+
+		if (customName != null)
+			mapClone.set(MetadataIndex.NAME_TAG, customName.getAsLine(player));
+
+		return mapClone.toDatawatcher();
+	}
+
 	public DataWatcher convertToDatawatcher(DataWatcher watcher) {
-		for(MetadataMap.Entry entry : map.getEntryList()) {
+		for (MetadataMap.Entry entry : map.getEntryList()) {
 			int id = entry.index.getIndex();
 			Object value = entry.value;
-			
+
 			if (value instanceof ItemStack) {
 				value = CraftItemStack.asNMSCopy((ItemStack) value);
 			}
@@ -108,39 +72,75 @@ public class GameWatcherEntity implements WatcherEntity {
 				watcher.watch(id, value);
 			}
 		}
-		
+
 		return watcher;
 	}
-	
-	public DataWatcher convertToDatawatcher(BadblockPlayer player){
-		MetadataMap mapClone = map.clone();
-		
-		if(customName != null)
-			mapClone.set(MetadataIndex.NAME_TAG, customName.getAsLine(player));
-		
-		return mapClone.toDatawatcher();
-	}
-	
-	public DataWatcher convertToDatawatcher(){
-		return map.toDatawatcher();
-	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List convertToWatchables(){
+	public List convertToWatchables() {
 		ArrayList ret = Lists.newArrayList();
 		ret.addAll(map.getEntryList().stream().map(MetadataMap.Entry::toWatchable).collect(Collectors.toList()));
 		return ret;
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public List convertToWatchables(BadblockPlayer player){
+	public List convertToWatchables(BadblockPlayer player) {
 		MetadataMap mapClone = map.clone();
-		
-		if(customName != null)
+
+		if (customName != null)
 			mapClone.set(MetadataIndex.NAME_TAG, customName.getAsLine(player));
-		
+
 		ArrayList ret = Lists.newArrayList();
 		ret.addAll(mapClone.getEntryList().stream().map(MetadataMap.Entry::toWatchable).collect(Collectors.toList()));
 		return ret;
+	}
+
+	public void set(MetadataIndex index, Object value) {
+		map.set(index, value);
+	}
+
+	@Override
+	public WatcherEntity setCustomName(String name) {
+		customName = null;
+		set(MetadataIndex.NAME_TAG, name);
+		return this;
+	}
+
+	@Override
+	public WatcherEntity setCustomName(TranslatableString name) {
+		customName = name;
+		set(MetadataIndex.NAME_TAG, customName.getAsLine(Locale.FRENCH_FRANCE));
+		return this;
+	}
+
+	@Override
+	public WatcherEntity setCustomNameVisible(boolean customNameVisible) {
+		set(MetadataIndex.SHOW_NAME_TAG, customNameVisible ? 1 : 0);
+		return this;
+	}
+
+	protected void setFlag() {
+		int value = 0;
+
+		if (onFire)
+			value |= 0x01;
+		if (invisible)
+			value |= 0x20;
+
+		set(MetadataIndex.STATUS, value);
+	}
+
+	@Override
+	public WatcherEntity setInvisibile(boolean invisible) {
+		this.invisible = invisible;
+		setFlag();
+		return this;
+	}
+
+	@Override
+	public WatcherEntity setOnFire(boolean onFire) {
+		this.onFire = onFire;
+		setFlag();
+		return this;
 	}
 }

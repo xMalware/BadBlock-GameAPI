@@ -5,13 +5,14 @@ import fr.badblock.gameapi.packets.in.play.PlayInCustomPayload;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
 
-@Getter public class GamePlayInCustomPayload extends GameBadblockInPacket implements PlayInCustomPayload {
+@Getter
+public class GamePlayInCustomPayload extends GameBadblockInPacket implements PlayInCustomPayload {
 	private String channel;
 	private byte[] data;
-	
-	public GamePlayInCustomPayload(PacketPlayInCustomPayload packet){
+
+	public GamePlayInCustomPayload(PacketPlayInCustomPayload packet) {
 		super(packet);
 		this.channel = packet.a();
-		this.data    = packet.b().array();
+		this.data = packet.b().array();
 	}
 }

@@ -17,14 +17,14 @@ public class MoreCommand extends AbstractCommand {
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer player = (BadblockPlayer) sender;
-		
-		if(!ItemStackUtils.isValid(player.getItemInHand())){
+
+		if (!ItemStackUtils.isValid(player.getItemInHand())) {
 			sendTranslatedMessage(player, "commands.more.handempty");
 		} else {
 			ItemStackUtils.maxStack(player.getItemInHand());
 			sendTranslatedMessage(player, "commands.more.make");
 		}
-		
+
 		return true;
 	}
 }

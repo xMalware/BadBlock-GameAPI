@@ -9,11 +9,11 @@ import fr.badblock.gameapi.utils.selections.Vector3f;
 
 public class ACPlayer implements InGameData {
 	public Vector3f lastMove;
-	public int		lastCount = 0;
-	public boolean  wasWater  = false;
-	
-	public void kick(BadblockPlayer player, String msg){
-		new BukkitRunnable(){
+	public int lastCount = 0;
+	public boolean wasWater = false;
+
+	public void kick(BadblockPlayer player, String msg) {
+		new BukkitRunnable() {
 			@Override
 			public void run() {
 				player.kickPlayer(msg);

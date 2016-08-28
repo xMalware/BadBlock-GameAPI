@@ -6,14 +6,15 @@ import net.minecraft.server.v1_8_R3.Packet;
 
 public abstract class GameBadblockInPacket extends GameBadblockPacket implements BadblockInPacket {
 
-	@Setter Packet<?> packet;
-	
+	@Setter
+	Packet<?> packet;
+
 	public GameBadblockInPacket(Packet<?> packet) {
-		 this.setPacket(packet);
+		this.setPacket(packet);
 	}
-	
+
 	public Packet<?> toNms() {
 		return this.packet;
 	}
-	
+
 }

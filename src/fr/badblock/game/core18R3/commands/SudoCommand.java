@@ -17,21 +17,22 @@ public class SudoCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length != 2) return false;
+		if (args.length != 2)
+			return false;
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 		String playerName = args[0];
 		Player to = Bukkit.getPlayer(playerName);
-		
-		if(to == null) {
+
+		if (to == null) {
 			concerned.sendTranslatedMessage("commands.sudo.offline", playerName);
 			return true;
 		}
 
 		String message = args[1];
-		
-		if(message.startsWith("c:")) {
+
+		if (message.startsWith("c:")) {
 			to.chat(message.replace("c:", ""));
-		} else{
+		} else {
 			to.performCommand(message);
 		}
 		return true;

@@ -62,44 +62,67 @@ import net.minecraft.server.v1_8_R3.PacketPlayInWindowClick;
 import net.minecraft.server.v1_8_R3.PacketStatusInPing;
 import net.minecraft.server.v1_8_R3.PacketStatusInStart;
 
-@Getter public enum GameBadblockInPackets {
-	HANDSHAKE(Handshake.class, PacketHandshakingInSetProtocol.class),
-	LOGIN_START(LoginStart.class, PacketLoginInStart.class),
-	PLAY_ABILITIES(PlayInAbilities.class, PacketPlayInAbilities.class),
-	PLAY_ARM_ANIMATION(PlayInArmAnimation.class, PacketPlayInArmAnimation.class),
-	PLAY_BLOCK_DIG(PlayInBlockDig.class, PacketPlayInBlockDig.class),
-	PLAY_BLOCK_PLACE(PlayInBlockPlace.class, PacketPlayInBlockPlace.class),
-	PLAY_CHAT(PlayInChat.class, PacketPlayInChat.class),
-	PLAY_CLIENT_COMMAND(PlayInClientCommand.class, PacketPlayInClientCommand.class),
-	PLAY_CLOSE_WINDOW(PlayInCloseWindow.class,PacketPlayInCloseWindow.class),
-	PLAY_CUSTOM_PAYLOAD(PlayInCustomPayload.class, PacketPlayInCustomPayload.class),
-	PLAY_ENCHANT_ITEM(PlayInEnchantItem.class, PacketPlayInEnchantItem.class),
-	PLAY_ENTITY_ACTION(PlayInEntityAction.class, PacketPlayInEntityAction.class),
-	PLAY_HELD_ITEM_SLOT(PlayInHeldItemSlot.class, PacketPlayInHeldItemSlot.class),
-	PLAY_KEEPALIVE(PlayInKeepAlive.class, PacketPlayInKeepAlive.class),
-	PLAY_LOOK(PlayInLook.class, PacketPlayInLook.class),
-	PLAY_POSITION(PlayInPosition.class, PacketPlayInPosition.class),
-	PLAY_POSITION_LOOK(PlayInPositionLook.class, PacketPlayInPositionLook.class),
-	PLAY_RESOURCEPACK_STATUS(PlayInResourcePackStatus.class, PacketPlayInResourcePackStatus.class),
-	PLAY_SET_CREATIVE_SLOT(PlayInSetCreativeSlot.class, PacketPlayInSetCreativeSlot.class),
-	PLAY_SETTINGS(PlayInSettings.class, PacketPlayInSettings.class),
-	PLAY_SPECCTATE(PlayInSpectate.class, PacketPlayInSpectate.class),
-	PLAY_STEER_VEHICLE(PlayInSteerVehicle.class, PacketPlayInSteerVehicle.class),
-	PLAY_TAB_COMPLETE(PlayInTabComplete.class, PacketPlayInTabComplete.class),
-	PLAY_TRANSACTION(PlayInTransaction.class, PacketPlayInTransaction.class),
-	PLAY_UPDATE_SIGN(PlayInUpdateSign.class, PacketPlayInUpdateSign.class),
-	PLAY_USE_ENTITY(PlayInUseEntity.class, PacketPlayInUseEntity.class),
-	PLAY_WINDOW_CLICK(PlayInWindowClick.class, PacketPlayInWindowClick.class),
-	STATUS_PING(StatusPing.class, PacketStatusInPing.class),
-	STATUS_REQUEST(StatusRequest.class, PacketStatusInStart.class);
-	
+@Getter
+public enum GameBadblockInPackets {
+	HANDSHAKE(Handshake.class, PacketHandshakingInSetProtocol.class), LOGIN_START(LoginStart.class,
+			PacketLoginInStart.class), PLAY_ABILITIES(PlayInAbilities.class,
+					PacketPlayInAbilities.class), PLAY_ARM_ANIMATION(PlayInArmAnimation.class,
+							PacketPlayInArmAnimation.class), PLAY_BLOCK_DIG(PlayInBlockDig.class,
+									PacketPlayInBlockDig.class), PLAY_BLOCK_PLACE(PlayInBlockPlace.class,
+											PacketPlayInBlockPlace.class), PLAY_CHAT(PlayInChat.class,
+													PacketPlayInChat.class), PLAY_CLIENT_COMMAND(
+															PlayInClientCommand.class,
+															PacketPlayInClientCommand.class), PLAY_CLOSE_WINDOW(
+																	PlayInCloseWindow.class,
+																	PacketPlayInCloseWindow.class), PLAY_CUSTOM_PAYLOAD(
+																			PlayInCustomPayload.class,
+																			PacketPlayInCustomPayload.class), PLAY_ENCHANT_ITEM(
+																					PlayInEnchantItem.class,
+																					PacketPlayInEnchantItem.class), PLAY_ENTITY_ACTION(
+																							PlayInEntityAction.class,
+																							PacketPlayInEntityAction.class), PLAY_HELD_ITEM_SLOT(
+																									PlayInHeldItemSlot.class,
+																									PacketPlayInHeldItemSlot.class), PLAY_KEEPALIVE(
+																											PlayInKeepAlive.class,
+																											PacketPlayInKeepAlive.class), PLAY_LOOK(
+																													PlayInLook.class,
+																													PacketPlayInLook.class), PLAY_POSITION(
+																															PlayInPosition.class,
+																															PacketPlayInPosition.class), PLAY_POSITION_LOOK(
+																																	PlayInPositionLook.class,
+																																	PacketPlayInPositionLook.class), PLAY_RESOURCEPACK_STATUS(
+																																			PlayInResourcePackStatus.class,
+																																			PacketPlayInResourcePackStatus.class), PLAY_SET_CREATIVE_SLOT(
+																																					PlayInSetCreativeSlot.class,
+																																					PacketPlayInSetCreativeSlot.class), PLAY_SETTINGS(
+																																							PlayInSettings.class,
+																																							PacketPlayInSettings.class), PLAY_SPECCTATE(
+																																									PlayInSpectate.class,
+																																									PacketPlayInSpectate.class), PLAY_STEER_VEHICLE(
+																																											PlayInSteerVehicle.class,
+																																											PacketPlayInSteerVehicle.class), PLAY_TAB_COMPLETE(
+																																													PlayInTabComplete.class,
+																																													PacketPlayInTabComplete.class), PLAY_TRANSACTION(
+																																															PlayInTransaction.class,
+																																															PacketPlayInTransaction.class), PLAY_UPDATE_SIGN(
+																																																	PlayInUpdateSign.class,
+																																																	PacketPlayInUpdateSign.class), PLAY_USE_ENTITY(
+																																																			PlayInUseEntity.class,
+																																																			PacketPlayInUseEntity.class), PLAY_WINDOW_CLICK(
+																																																					PlayInWindowClick.class,
+																																																					PacketPlayInWindowClick.class), STATUS_PING(
+																																																							StatusPing.class,
+																																																							PacketStatusInPing.class), STATUS_REQUEST(
+																																																									StatusRequest.class,
+																																																									PacketStatusInStart.class);
+
 	private Class<? extends BadblockInPacket> clazz;
-	private Class<? extends Packet<?>>		  nmsClazz;
-	private Class<?>					      gameClazz;
-	
-	GameBadblockInPackets(Class<? extends BadblockInPacket> clazz, Class<? extends Packet<?>> nmsClazz){
-		this.clazz     = clazz;
-		this.nmsClazz  = nmsClazz;
+	private Class<? extends Packet<?>> nmsClazz;
+	private Class<?> gameClazz;
+
+	GameBadblockInPackets(Class<? extends BadblockInPacket> clazz, Class<? extends Packet<?>> nmsClazz) {
+		this.clazz = clazz;
+		this.nmsClazz = nmsClazz;
 		try {
 			this.gameClazz = Class.forName("fr.badblock.game.core18R3.packets.in.Game" + clazz.getSimpleName());
 		} catch (ClassNotFoundException e) {

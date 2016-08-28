@@ -17,26 +17,26 @@ public class FeedCommand extends AbstractCommand {
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer concerned = null;
-		if(args.length == 0 && !(sender instanceof Player)){
+		if (args.length == 0 && !(sender instanceof Player)) {
 			return false;
-		} else if(args.length > 0){
+		} else if (args.length > 0) {
 			concerned = (BadblockPlayer) Bukkit.getPlayer(args[0]);
 		} else {
 			concerned = (BadblockPlayer) sender;
 		}
 
-		if(concerned == null){
+		if (concerned == null) {
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
 			concerned.feed();
-			
+
 			new TranslatableString("commands.feed.feeded").send(sender);
-			
-			if(args.length > 0){
+
+			if (args.length > 0) {
 				new TranslatableString("commands.feed.feeded-success", concerned.getName()).send(sender);
 			}
 		}
-		
+
 		return true;
 	}
 }

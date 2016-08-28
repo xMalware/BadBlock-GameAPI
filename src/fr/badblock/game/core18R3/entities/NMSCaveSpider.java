@@ -12,21 +12,31 @@ import net.minecraft.server.v1_8_R3.MobEffectList;
 import net.minecraft.server.v1_8_R3.World;
 
 public class NMSCaveSpider extends NMSSpider {
-	public NMSCaveSpider(World w){
+	public NMSCaveSpider(World w) {
 		super(w);
 		setSize(0.7F, 0.5F);
 	}
 
 	@Override
-	public CreatureType getEntityType(){
+	public CreatureType getEntityType() {
 		return CreatureType.CAVE_SPIDER;
 	}
-	
+
+	@Override
+	public float getHeadHeight() {
+		return 0.45F;
+	}
+
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
 
 		getAttributeInstance(GenericAttributes.maxHealth).setValue(12.0D);
+	}
+
+	@Override
+	public GroupDataEntity prepare(DifficultyDamageScaler a, GroupDataEntity b) {
+		return b;
 	}
 
 	@Override
@@ -39,23 +49,13 @@ public class NMSCaveSpider extends NMSSpider {
 				} else if (this.world.getDifficulty() == EnumDifficulty.HARD) {
 					a = 15;
 				}
-			
+
 				if (a > 0) {
-					((EntityLiving)e).addEffect(new MobEffect(MobEffectList.POISON.id, a * 20, 0));
+					((EntityLiving) e).addEffect(new MobEffect(MobEffectList.POISON.id, a * 20, 0));
 				}
 			}
 			return true;
 		}
 		return false;
-	}
-
-	@Override
-	public GroupDataEntity prepare(DifficultyDamageScaler a, GroupDataEntity b) {
-		return b;
-	}
-
-	@Override
-	public float getHeadHeight() {
-		return 0.45F;
 	}
 }

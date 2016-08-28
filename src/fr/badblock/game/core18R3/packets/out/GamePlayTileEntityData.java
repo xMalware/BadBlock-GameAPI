@@ -9,17 +9,18 @@ import lombok.experimental.Accessors;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutTileEntityData;
 
-@NoArgsConstructor@Data
-@EqualsAndHashCode(callSuper=false)
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayTileEntityData extends GameBadblockOutPacket implements PlayTileEntityData {
-	
+
 	private Packet<?> packet;
-	
-	public GamePlayTileEntityData(PacketPlayOutTileEntityData packet){
+
+	public GamePlayTileEntityData(PacketPlayOutTileEntityData packet) {
 		this.packet = packet;
 	}
-	
+
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		return packet;

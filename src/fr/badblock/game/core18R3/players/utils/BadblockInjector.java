@@ -24,81 +24,88 @@ import net.minecraft.server.v1_8_R3.Packet;
 @AllArgsConstructor
 public class BadblockInjector extends ChannelDuplexHandler {
 	private GameBadblockPlayer player;
-	
+
 	@Override
 	public void channelRead(ChannelHandlerContext channelHandlerContext, Object msg) throws Exception {
 		boolean cancel = false;
-		
+
 		for (GameBadblockInPackets packet : GameBadblockInPackets.values()) {
 			try {
 				// Le packet recherch� dans la boucle est pas celui qui est re�u
-				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
-				
+				if (!packet.getNmsClazz().equals(msg.getClass()))
+					continue;
+
 				// Aucun listener pour ce packet
 				if (GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()) == null) {
 					break;
 				}
 				// Cr�ation de notre packet sp�cial
 				Packet<?> pack = (Packet<?>) msg;
-				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
+				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());
 				GameBadblockInPacket inPacket = (GameBadblockInPacket) constructor.newInstance(pack);
 
-				
-				Method method = InPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockInPacket.class);
-				
+				Method method = InPacketListener.class.getMethod("listen", BadblockPlayer.class,
+						BadblockInPacket.class);
+
 				GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()).forEach(listener -> {
 					try {
-						method.invoke(listener, player, (BadblockInPacket) inPacket);
+						method.invoke(listener, player, inPacket);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				});
 
-				if (inPacket.isCancelled()) cancel = true;
+				if (inPacket.isCancelled())
+					cancel = true;
 				msg = inPacket.toNms();
-			} catch(Exception error) {
+			} catch (Exception error) {
 				error.printStackTrace();
 			}
 		}
-		
-		if(!cancel) {
+
+		if (!cancel) {
 			super.channelRead(channelHandlerContext, msg);
 		}
 	}
-	
+
 	@Override
-	public void write(ChannelHandlerContext channelHandlerContext, Object msg, final ChannelPromise promise) throws Exception {
+	public void write(ChannelHandlerContext channelHandlerContext, Object msg, final ChannelPromise promise)
+			throws Exception {
 		boolean cancel = false;
-		
+
 		for (GameBadblockOutPackets packet : GameBadblockOutPackets.values()) {
 			try {
 				// Le packet recherch� dans la boucle est pas celui qui est re�u
-				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
+				if (!packet.getNmsClazz().equals(msg.getClass()))
+					continue;
 				// Aucun listener pour ce packet
-				if (!GamePlugin.getInstance().getPacketOutListeners().containsKey(packet.getClazz())) break;
+				if (!GamePlugin.getInstance().getPacketOutListeners().containsKey(packet.getClazz()))
+					break;
 				// Cr�ation de notre packet sp�cial
 				Packet<?> pack = (Packet<?>) msg;
-				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
+				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());
 				GameBadblockOutPacket outPacket = (GameBadblockOutPacket) constructor.newInstance(pack);
-				
-				Method method = OutPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockOutPacket.class);
-				
+
+				Method method = OutPacketListener.class.getMethod("listen", BadblockPlayer.class,
+						BadblockOutPacket.class);
+
 				GamePlugin.getInstance().getPacketOutListeners().get(packet.getClazz()).forEach(listener -> {
 					try {
-						method.invoke(listener, player, (BadblockOutPacket) outPacket);
+						method.invoke(listener, player, outPacket);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				});
 
-				if (outPacket.isCancelled()) cancel = true;
+				if (outPacket.isCancelled())
+					cancel = true;
 				msg = outPacket.buildPacket(player);
-			} catch(Exception error) {
+			} catch (Exception error) {
 				error.printStackTrace();
 			}
 		}
-		
-		if(!cancel) {
+
+		if (!cancel) {
 			super.write(channelHandlerContext, msg, promise);
 		}
 	}

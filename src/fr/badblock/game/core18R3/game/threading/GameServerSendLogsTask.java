@@ -20,10 +20,10 @@ import org.apache.commons.net.ftp.FTPSClient;
 import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
 
 public class GameServerSendLogsTask extends GameServerTask {
-	
-	private APIConfig	config;
-	private String		logFile;
-	
+
+	private APIConfig config;
+	private String logFile;
+
 	public GameServerSendLogsTask(APIConfig config) {
 		this.config = config;
 		new Timer().schedule(this, 0, config.timeBetweenLogs);
@@ -40,12 +40,7 @@ public class GameServerSendLogsTask extends GameServerTask {
 			}
 		}
 	}
-	
-	@Override
-	public void run() {
-		doLog();
-	}
-	
+
 	public void doLog() {
 		File file = new File("logs/latest.log");
 		if (file.exists()) {
@@ -54,18 +49,20 @@ public class GameServerSendLogsTask extends GameServerTask {
 				ftpClient.connect(config.ftpHostname, config.ftpPort);
 				ftpClient.login(config.ftpUsername, config.ftpPassword);
 				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-				ftpClient.execPBSZ(0); 
+				ftpClient.execPBSZ(0);
 				ftpClient.execPROT("P");
-				//ServerConfigurationFactory serverConfigurationFactory = GamePlugin.getInstance().getGameServerManager().getServerConfigurationFactory();
+				// ServerConfigurationFactory serverConfigurationFactory =
+				// GamePlugin.getInstance().getGameServerManager().getServerConfigurationFactory();
 
 				/*
-				String[] splitt = GameAPI.getAPI().getServer().getServerName().split("_");
-				String af;
-				if (splitt.length < 2) af = "1";
-				else af = GameAPI.getAPI().getServer().getServerName().split("_")[1];
-				String prefix = GameAPI.getAPI().getServer().getServerName().split("_")[0];
-				long serverId = Integer.parseInt(af);
-				*/
+				 * String[] splitt =
+				 * GameAPI.getAPI().getServer().getServerName().split("_");
+				 * String af; if (splitt.length < 2) af = "1"; else af =
+				 * GameAPI.getAPI().getServer().getServerName().split("_")[1];
+				 * String prefix =
+				 * GameAPI.getAPI().getServer().getServerName().split("_")[0];
+				 * long serverId = Integer.parseInt(af);
+				 */
 
 				String logFile = "/logs/" + this.logFile;
 				String[] splitter = logFile.split("/");
@@ -74,7 +71,8 @@ public class GameServerSendLogsTask extends GameServerTask {
 				int i = 0;
 				for (String split : splitter) {
 					i++;
-					if (i == nb) break;
+					if (i == nb)
+						break;
 					old += split + "/";
 					ftpClient.makeDirectory(old);
 				}
@@ -83,7 +81,9 @@ public class GameServerSendLogsTask extends GameServerTask {
 				String line = null;
 				String string = "";
 				while ((line = br.readLine()) != null) {
-					string += line.replaceAll("(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):(\\d{1,5})", "REGEX_IP").replaceAll("^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$", "REGEX_URL") + System.lineSeparator();
+					string += line.replaceAll("(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}):(\\d{1,5})", "REGEX_IP")
+							.replaceAll("^((?!-)[A-Za-z0-9-]{1,63}(?<!-)\\.)+[A-Za-z]{2,6}$", "REGEX_URL")
+							+ System.lineSeparator();
 				}
 				br.close();
 				fis.close();
@@ -91,12 +91,17 @@ public class GameServerSendLogsTask extends GameServerTask {
 				ftpClient.storeFile(logFile, stream);
 				stream.close();
 				ftpClient.disconnect();
-			}catch(Exception error) {
+			} catch (Exception error) {
 				error.printStackTrace();
 			}
-		}else{
+		} else {
 			System.out.println("Unknown log file. (" + file.getAbsolutePath() + ")");
 		}
+	}
+
+	@Override
+	public void run() {
+		doLog();
 	}
 
 }

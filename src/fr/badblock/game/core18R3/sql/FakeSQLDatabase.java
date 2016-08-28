@@ -12,16 +12,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FakeSQLDatabase implements SQLDatabase {
 	@Override
-	public Statement createStatement() throws Exception {
-		throw new IllegalAccessException("Cannot create statement with a fake database!");	
-	}
-
-	@Override
-	public PreparedStatement preparedStatement(String request) throws Exception {
-		throw new IllegalAccessException("Cannot create statement with a fake database!");	
-	}
-
-	@Override
 	public void call(String request, SQLRequestType requestType) {
 
 	}
@@ -29,5 +19,15 @@ public class FakeSQLDatabase implements SQLDatabase {
 	@Override
 	public void call(String request, SQLRequestType requestType, Callback<ResultSet> callback) {
 
+	}
+
+	@Override
+	public Statement createStatement() throws Exception {
+		throw new IllegalAccessException("Cannot create statement with a fake database!");
+	}
+
+	@Override
+	public PreparedStatement preparedStatement(String request) throws Exception {
+		throw new IllegalAccessException("Cannot create statement with a fake database!");
 	}
 }

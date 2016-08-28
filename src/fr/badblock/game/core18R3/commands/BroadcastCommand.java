@@ -14,10 +14,11 @@ public class BroadcastCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0)
+		if (args.length == 0)
 			return false;
-		
-		new TranslatableString("commands.broadcast.message", StringUtils.join(args, " ")).broadcast();;
+
+		new TranslatableString("commands.broadcast.message", StringUtils.join(args, " ")).broadcast();
+		;
 		return true;
 	}
 }

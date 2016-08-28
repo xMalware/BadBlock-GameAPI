@@ -16,7 +16,7 @@ public class BackCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0)
+		if (args.length == 0)
 			return false;
 		BadblockPlayer badblockPlayer = (BadblockPlayer) sender;
 		CommandInGameData data = badblockPlayer.inGameData(CommandInGameData.class);

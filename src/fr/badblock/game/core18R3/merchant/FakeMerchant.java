@@ -12,36 +12,31 @@ import net.minecraft.server.v1_8_R3.MerchantRecipe;
 import net.minecraft.server.v1_8_R3.MerchantRecipeList;
 
 public class FakeMerchant implements IMerchant {
-	private BadblockPlayer 	   player;
-	private EntityHuman        tradingPlayer;
+	private BadblockPlayer player;
+	private EntityHuman tradingPlayer;
 	private MerchantRecipeList offers;
 	private TranslatableString displayName;
 
-	public FakeMerchant(BadblockPlayer player, MerchantRecipeList offers, TranslatableString name){
-		this.player		   = player;
-		this.offers 	   = offers;
-		this.displayName   = name;
-		
+	public FakeMerchant(BadblockPlayer player, MerchantRecipeList offers, TranslatableString name) {
+		this.player = player;
+		this.offers = offers;
+		this.displayName = name;
+
 		this.tradingPlayer = ((GameBadblockPlayer) player).getHandle();
 	}
 
 	@Override
-	public void a_(EntityHuman entityhuman){
+	public void a(MerchantRecipe merchantrecipe) {
+
+	}
+
+	@Override
+	public void a_(EntityHuman entityhuman) {
 		this.tradingPlayer = entityhuman;
 	}
 
 	@Override
-	public EntityHuman v_(){
-		return this.tradingPlayer;
-	}
-
-	@Override
-	public void a(MerchantRecipe merchantrecipe){
-
-	}
-	
-	@Override
-	public void a_(ItemStack itemstack){
+	public void a_(ItemStack itemstack) {
 
 	}
 
@@ -51,11 +46,16 @@ public class FakeMerchant implements IMerchant {
 	}
 
 	@Override
-	public IChatBaseComponent getScoreboardDisplayName(){
+	public IChatBaseComponent getScoreboardDisplayName() {
 		return toChat(displayName.getAsLine(player));
 	}
-	
-	private IChatBaseComponent toChat(String base){
+
+	private IChatBaseComponent toChat(String base) {
 		return ChatSerializer.a("{\"text\": \"" + base + "\"}");
+	}
+
+	@Override
+	public EntityHuman v_() {
+		return this.tradingPlayer;
 	}
 }

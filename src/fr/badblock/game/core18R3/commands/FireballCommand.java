@@ -31,39 +31,26 @@ public class FireballCommand extends AbstractCommand {
 		Class<? extends Entity> type = Fireball.class;
 		Projectile projectile;
 		int speed = 2;
-		if (args.length > 0)
-		{
-			if (args[0].equalsIgnoreCase("small"))
-			{
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("small")) {
 				type = SmallFireball.class;
-			}
-			else if (args[0].equalsIgnoreCase("arrow"))
-			{
+			} else if (args[0].equalsIgnoreCase("arrow")) {
 				type = Arrow.class;
-			}
-			else if (args[0].equalsIgnoreCase("skull"))
-			{
+			} else if (args[0].equalsIgnoreCase("skull")) {
 				type = WitherSkull.class;
-			}
-			else if (args[0].equalsIgnoreCase("egg"))
-			{
+			} else if (args[0].equalsIgnoreCase("egg")) {
 				type = Egg.class;
-			}
-			else if(args[0].equalsIgnoreCase("snowball"))
-			{
+			} else if (args[0].equalsIgnoreCase("snowball")) {
 				type = Snowball.class;
-			}
-			else if(args[0].equalsIgnoreCase("expbottle"))
-			{
+			} else if (args[0].equalsIgnoreCase("expbottle")) {
 				type = ThrownExpBottle.class;
-			}
-			else if(args[0].equalsIgnoreCase("large"))
-			{
+			} else if (args[0].equalsIgnoreCase("large")) {
 				type = LargeFireball.class;
 			}
 		}
 		final Vector direction = badblockPlayer.getEyeLocation().getDirection().multiply(speed);
-		projectile = (Projectile)badblockPlayer.getWorld().spawn(badblockPlayer.getEyeLocation().add(direction.getX(), direction.getY(), direction.getZ()), type);
+		projectile = (Projectile) badblockPlayer.getWorld()
+				.spawn(badblockPlayer.getEyeLocation().add(direction.getX(), direction.getY(), direction.getZ()), type);
 		projectile.setShooter(badblockPlayer);
 		projectile.setVelocity(direction);
 		return true;

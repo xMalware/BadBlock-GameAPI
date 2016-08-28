@@ -18,11 +18,13 @@ public class ThunderCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length == 0) return false;
+		if (args.length == 0)
+			return false;
 		World defaultWorld = null;
 		switch (args.length) {
 		case 1:
-			defaultWorld = sender instanceof BadblockPlayer ? Bukkit.getWorlds().get(0) : ((BadblockPlayer) sender).getWorld();
+			defaultWorld = sender instanceof BadblockPlayer ? Bukkit.getWorlds().get(0)
+					: ((BadblockPlayer) sender).getWorld();
 			break;
 		case 2:
 			defaultWorld = Bukkit.getWorld(args[1]);
@@ -38,20 +40,20 @@ public class ThunderCommand extends AbstractCommand {
 				defaultWorld.setThundering(true);
 				defaultWorld.setThunderDuration(Integer.MAX_VALUE);
 				GameAPI.i18n().sendMessage(sender, "commands.thunder.true");
-			}else{
+			} else {
 				GameAPI.i18n().sendMessage(sender, "commands.thunder.alreadythundering");
 				return true;
 			}
-		}else if (type.equalsIgnoreCase("false")) {
+		} else if (type.equalsIgnoreCase("false")) {
 			if (defaultWorld.isThundering()) {
 				defaultWorld.setThundering(false);
 				defaultWorld.setThunderDuration(0);
 				GameAPI.i18n().sendMessage(sender, "commands.thunder.false");
-			}else{
+			} else {
 				GameAPI.i18n().sendMessage(sender, "commands.thunder.alreadynotthundering");
 				return true;
 			}
-		}else{
+		} else {
 			return false;
 		}
 		return true;

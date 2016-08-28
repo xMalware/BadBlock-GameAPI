@@ -18,15 +18,15 @@ public class KickallCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0){
+		if (args.length == 0) {
 			return false;
 		}
-		
+
 		UUID uniqueId = (sender instanceof Player) ? ((Player) sender).getUniqueId() : null;
 		String server = args[0].toLowerCase();
-		
-		for(Player player : Bukkit.getOnlinePlayers()){
-			if(!player.getUniqueId().equals(uniqueId)){
+
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			if (!player.getUniqueId().equals(uniqueId)) {
 				BadblockPlayer bbPlayer = (BadblockPlayer) player;
 				bbPlayer.sendPlayer(server);
 			}

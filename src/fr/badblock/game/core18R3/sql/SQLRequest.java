@@ -9,10 +9,12 @@ import fr.badblock.gameapi.utils.general.Callback;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter public class SQLRequest {
+@Getter
+@Setter
+public class SQLRequest {
 
-	private SQLRequestType 		requestType;
-	public 	String 		   		request;
+	private SQLRequestType requestType;
+	public String request;
 	private Callback<ResultSet> callback;
 
 	public SQLRequest(SQLRequestType requestType, String request, Callback<ResultSet> callback) {
@@ -29,7 +31,8 @@ import lombok.Setter;
 				this.getCallback().done(resultSet, null);
 				if (!resultSet.isClosed())
 					resultSet.close();
-			}else statement.executeUpdate(this.getRequest());
+			} else
+				statement.executeUpdate(this.getRequest());
 			statement.close();
 		} catch (Exception e) {
 			e.printStackTrace();

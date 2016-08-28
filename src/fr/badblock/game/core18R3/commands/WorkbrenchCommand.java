@@ -17,7 +17,7 @@ public class WorkbrenchCommand extends AbstractCommand {
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 		concerned.openWorkbench(null, true);
-		
+
 		return true;
 	}
 }

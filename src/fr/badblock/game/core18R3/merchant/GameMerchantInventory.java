@@ -17,23 +17,7 @@ import net.minecraft.server.v1_8_R3.MerchantRecipeList;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class GameMerchantInventory implements CustomMerchantInventory {
-	private MerchantRecipeList 			 recipeList = new MerchantRecipeList();
-	
-	@Override
-	public CustomMerchantRecipe[] getRecipes() {
-		CustomMerchantRecipe[] recipes = new CustomMerchantRecipe[recipeList.size()];
-
-		for(int i=0;i<recipeList.size();i++){
-			recipes[i] = fromNMS(recipeList.get(i));
-		}
-
-		return recipes;
-	}
-
-	@Override
-	public void removeRecipe(CustomMerchantRecipe recipe) {
-		recipeList.remove(toNMS(recipe));
-	}
+	private MerchantRecipeList recipeList = new MerchantRecipeList();
 
 	@Override
 	public void addRecipe(CustomMerchantRecipe recipe) {
@@ -51,7 +35,7 @@ public class GameMerchantInventory implements CustomMerchantInventory {
 		}
 	}
 
-	public CustomMerchantRecipe fromNMS(MerchantRecipe recipe){
+	public CustomMerchantRecipe fromNMS(MerchantRecipe recipe) {
 		ItemStack a = CraftItemStack.asBukkitCopy(recipe.getBuyItem1());
 		ItemStack b = recipe.getBuyItem2() == null ? null : CraftItemStack.asBukkitCopy(recipe.getBuyItem2());
 		ItemStack c = CraftItemStack.asBukkitCopy(recipe.getBuyItem3());
@@ -59,10 +43,15 @@ public class GameMerchantInventory implements CustomMerchantInventory {
 		return new CustomMerchantRecipe(a, b, c);
 	}
 
-	public MerchantRecipe toNMS(CustomMerchantRecipe recipe){
-		return new MerchantRecipe(CraftItemStack.asNMSCopy(recipe.getFirstItem()),
-				recipe.getSecondItem() == null ? null : CraftItemStack.asNMSCopy(recipe.getSecondItem()), 
-						CraftItemStack.asNMSCopy(recipe.getResult()), 0, Integer.MAX_VALUE);
+	@Override
+	public CustomMerchantRecipe[] getRecipes() {
+		CustomMerchantRecipe[] recipes = new CustomMerchantRecipe[recipeList.size()];
+
+		for (int i = 0; i < recipeList.size(); i++) {
+			recipes[i] = fromNMS(recipeList.get(i));
+		}
+
+		return recipes;
 	}
 
 	@Override
@@ -77,8 +66,19 @@ public class GameMerchantInventory implements CustomMerchantInventory {
 	@Override
 	public void open(BadblockPlayer player, TranslatableString customName) {
 		FakeMerchant merchant = new FakeMerchant(player, recipeList, customName);
-		
+
 		GameBadblockPlayer gplayer = (GameBadblockPlayer) player;
 		gplayer.getHandle().openTrade(merchant);
+	}
+
+	@Override
+	public void removeRecipe(CustomMerchantRecipe recipe) {
+		recipeList.remove(toNMS(recipe));
+	}
+
+	public MerchantRecipe toNMS(CustomMerchantRecipe recipe) {
+		return new MerchantRecipe(CraftItemStack.asNMSCopy(recipe.getFirstItem()),
+				recipe.getSecondItem() == null ? null : CraftItemStack.asNMSCopy(recipe.getSecondItem()),
+				CraftItemStack.asNMSCopy(recipe.getResult()), 0, Integer.MAX_VALUE);
 	}
 }

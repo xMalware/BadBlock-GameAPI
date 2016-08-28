@@ -15,12 +15,8 @@ public class GameFakeLivingEntity<T extends WatcherEntity> extends GameFakeEntit
 
 	@Override
 	public BadblockOutPacket getSpawnPacket() {
-		return GameAPI.getAPI().createPacket(PlaySpawnEntityCreature.class)
-							   .setEntityId(getId())
-							   .setLocation(getLocation())
-							   .setHeadRotation(getHeadYaw())
-							   .setType(getType())
-							   .setWatchers(getWatchers());
+		return GameAPI.getAPI().createPacket(PlaySpawnEntityCreature.class).setEntityId(getId())
+				.setLocation(getLocation()).setHeadRotation(getHeadYaw()).setType(getType()).setWatchers(getWatchers());
 	}
 
 }

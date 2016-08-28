@@ -6,11 +6,12 @@ import org.bukkit.inventory.ItemStack;
 import fr.badblock.gameapi.packets.watchers.WatcherEnderman;
 
 public class GameWatcherEnderman extends GameWatcherLivingEntity implements WatcherEnderman {
-	public GameWatcherEnderman(Class<? extends Entity> clazz){
+	public GameWatcherEnderman(Class<? extends Entity> clazz) {
 		super(clazz);
 	}
-	
-	@SuppressWarnings("deprecation")@Override
+
+	@SuppressWarnings("deprecation")
+	@Override
 	public WatcherEnderman setCarriedBlock(ItemStack block) {
 		short type = (short) block.getType().getId();
 		byte data = block.getData().getData();

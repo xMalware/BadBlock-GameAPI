@@ -10,30 +10,33 @@ import lombok.experimental.Accessors;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardDisplayObjective;
 
-@NoArgsConstructor@Data
-@EqualsAndHashCode(callSuper=false)
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true, fluent = false)
-public class GamePlayScoreboardDisplayObjective extends GameBadblockOutPacket implements PlayScoreboardDisplayObjective {
+public class GamePlayScoreboardDisplayObjective extends GameBadblockOutPacket
+		implements PlayScoreboardDisplayObjective {
 	private ObjectivePosition objectivePosition;
-	private String			  objectiveName;
+	private String objectiveName;
 
-	public GamePlayScoreboardDisplayObjective(PacketPlayOutScoreboardDisplayObjective packet){
+	public GamePlayScoreboardDisplayObjective(PacketPlayOutScoreboardDisplayObjective packet) {
 		Reflector reflector = new Reflector(packet);
-		
+
 		try {
 			objectivePosition = ObjectivePosition.getByValue((byte) reflector.getFieldValue("a"));
-			objectiveName     = (String) reflector.getFieldValue("b");
-		} catch(Exception e){}
+			objectiveName = (String) reflector.getFieldValue("b");
+		} catch (Exception e) {
+		}
 	}
-	
+
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		PacketPlayOutScoreboardDisplayObjective objective = new PacketPlayOutScoreboardDisplayObjective();
-		
+
 		Reflector reflector = new Reflector(objective);
 		reflector.setFieldValue("b", objectiveName);
 		reflector.setFieldValue("a", (int) objectivePosition.getData());
-		
+
 		return objective;
 	}
 }

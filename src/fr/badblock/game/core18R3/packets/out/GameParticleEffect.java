@@ -10,18 +10,19 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-@NoArgsConstructor@Data
-@EqualsAndHashCode(callSuper=false)
+@NoArgsConstructor
+@Data
+@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true, fluent = false)
 public class GameParticleEffect implements ParticleEffect {
-	private ParticleEffectType type			= null;
-	private ParticleData	   data 		= null;
-	private boolean			   longDistance = false;
-	private Vector			   offset		= null;
-	private float			   speed		= 0f;
-	private int				   amount		= 0;
+	private ParticleEffectType type = null;
+	private ParticleData data = null;
+	private boolean longDistance = false;
+	private Vector offset = null;
+	private float speed = 0f;
+	private int amount = 0;
 
-	public GameParticleEffect(ParticleEffectType type){
+	public GameParticleEffect(ParticleEffectType type) {
 		this.type = type;
 	}
 }

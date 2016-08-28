@@ -24,57 +24,58 @@ public class SpawnMobCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length < 2){
+		if (args.length < 2) {
 			return false;
 		}
 
-		CreatureType   creature = CreatureType.matchCreature(args[0]);
-		int			   count	= 1;
-		BadblockPlayer player   = null;
-		if(creature == null){
+		CreatureType creature = CreatureType.matchCreature(args[0]);
+		int count = 1;
+		BadblockPlayer player = null;
+		if (creature == null) {
 			sendTranslatedMessage(sender, "commands.spawnmob.unknowmob", args[0]);
 		}
 
 		try {
 			count = Integer.parseInt(args[1]);
-		
-			if(count <= 0)
+
+			if (count <= 0)
 				throw new Exception();
-		} catch(Exception e){
+		} catch (Exception e) {
 			sendTranslatedMessage(sender, "commands.nan", args[1]);
 			return true;
 		}
-		
-		if(args.length >= 3){
+
+		if (args.length >= 3) {
 			player = (BadblockPlayer) Bukkit.getPlayer(args[2]);
-		} else if(sender instanceof Player == false){
+		} else if (sender instanceof Player == false) {
 			return false;
 		} else {
 			player = (BadblockPlayer) sender;
 		}
-		
-		if(player == null){
+
+		if (player == null) {
 			sendTranslatedMessage(sender, "commands.unknowplayer", args[2]);
 			return true;
 		}
 
 		Location spawnLocation = GameAPI.getAPI().getSafeLocation(player.getLocation());
-		World	 world		   = spawnLocation.getWorld();
-		
-		for(int i=0;i<count;i++){
+		World world = spawnLocation.getWorld();
+
+		for (int i = 0; i < count; i++) {
 			Entity e = world.spawnEntity(spawnLocation, creature.bukkit());
-		
-			if(e instanceof Ageable){
+
+			if (e instanceof Ageable) {
 				((Ageable) e).setAdult();
 			}
-			
-			if(e instanceof Zombie){
+
+			if (e instanceof Zombie) {
 				((Zombie) e).setBaby(false);
 			}
 		}
-		
-		sendTranslatedMessage(sender, "commands.spawnmob.spawned", creature.getWord(count > 1, WordDeterminant.SIMPLE), count);
-		
+
+		sendTranslatedMessage(sender, "commands.spawnmob.spawned", creature.getWord(count > 1, WordDeterminant.SIMPLE),
+				count);
+
 		return true;
 	}
 }

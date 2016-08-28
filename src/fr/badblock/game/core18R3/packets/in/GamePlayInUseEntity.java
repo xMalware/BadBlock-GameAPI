@@ -7,23 +7,26 @@ import fr.badblock.gameapi.utils.selections.Vector3f;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 
-@Getter public class GamePlayInUseEntity extends GameBadblockInPacket implements PlayInUseEntity {
-	private int 			entityId;
+@Getter
+public class GamePlayInUseEntity extends GameBadblockInPacket implements PlayInUseEntity {
+	private int entityId;
 	private UseEntityAction action;
-	private Vector3f 		targetPosition;
-	
-	public GamePlayInUseEntity(PacketPlayInUseEntity packet){
+	private Vector3f targetPosition;
+
+	public GamePlayInUseEntity(PacketPlayInUseEntity packet) {
 		super(packet);
-		
-		if(packet.b() == null){
+
+		if (packet.b() == null) {
 			this.targetPosition = new Vector3f();
-		} else this.targetPosition = new Vector3f(packet.b().a, packet.b().b, packet.b().c);
-		
-		this.action			= UseEntityAction.valueOf(packet.a().name());
-		
+		} else
+			this.targetPosition = new Vector3f(packet.b().a, packet.b().b, packet.b().c);
+
+		this.action = UseEntityAction.valueOf(packet.a().name());
+
 		Reflector reflector = new Reflector(packet);
 		try {
-			this.entityId   = (int) reflector.getFieldValue("a");
-		} catch (Exception e){}
+			this.entityId = (int) reflector.getFieldValue("a");
+		} catch (Exception e) {
+		}
 	}
 }

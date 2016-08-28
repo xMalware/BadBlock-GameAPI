@@ -8,14 +8,25 @@ import com.google.common.collect.Queues;
  * @author xMalware
  */
 public class SQLThread extends Thread {
-	
-	private Queue<SQLRequest>	requests	= Queues.newLinkedBlockingDeque();
-	
+
+	private Queue<SQLRequest> requests = Queues.newLinkedBlockingDeque();
+
 	public SQLThread(int id) {
 		this.setName("BadBlockAPI/SQL/" + id);
 		this.start();
 	}
-	
+
+	public void call(SQLRequest sqlRequest) {
+		requests.add(sqlRequest);
+		synchronized (this) {
+			this.notify();
+		}
+	}
+
+	public boolean isAvailable() {
+		return this.getState() != null && this.getState().equals(State.WAITING);
+	}
+
 	@Override
 	public void run() {
 		synchronized (this) {
@@ -32,16 +43,5 @@ public class SQLThread extends Thread {
 			}
 		}
 	}
-	
-	public boolean isAvailable() {
-		return this.getState() != null && this.getState().equals(State.WAITING);
-	}
 
-	public void call(SQLRequest sqlRequest) {
-		requests.add(sqlRequest);
-		synchronized (this) {
-			this.notify();
-		}
-	}
-	
 }

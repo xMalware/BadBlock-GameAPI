@@ -10,16 +10,17 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class ClearChatCommand extends AbstractCommand {
 	public ClearChatCommand() {
-		super("clearchat", new TranslatableString("commands.clearchat.usage"), GamePermission.BMODERATOR, "cc", "clearc");
+		super("clearchat", new TranslatableString("commands.clearchat.usage"), GamePermission.BMODERATOR, "cc",
+				"clearc");
 	}
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		for(int i=0;i<150;i++){
-			for(Player player : Bukkit.getOnlinePlayers())
+		for (int i = 0; i < 150; i++) {
+			for (Player player : Bukkit.getOnlinePlayers())
 				player.sendMessage(" ");
 		}
-		
+
 		return true;
 	}
 }

@@ -7,9 +7,11 @@ import fr.badblock.game.core18R3.game.GameServerManager;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter public abstract class GameServerTask extends TimerTask implements Runnable {
-	
-	private GamePlugin		  gamePlugin 		= GamePlugin.getInstance();
+@Getter
+@Setter
+public abstract class GameServerTask extends TimerTask implements Runnable {
+
+	private GamePlugin gamePlugin = GamePlugin.getInstance();
 	private GameServerManager gameServerManager = gamePlugin.getGameServerManager();
 
 }

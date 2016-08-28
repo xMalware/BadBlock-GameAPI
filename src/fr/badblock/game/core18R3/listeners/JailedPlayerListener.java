@@ -7,15 +7,17 @@ import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
 /**
- * Permet de bloquer certaines interractions au joueur qui le permettrai de sortir de son état de 'jail'
+ * Permet de bloquer certaines interractions au joueur qui le permettrai de
+ * sortir de son ï¿½tat de 'jail'
+ * 
  * @author LeLanN
  */
 public class JailedPlayerListener extends BadListener {
 	@EventHandler
-	public void onTeleport(PlayerTeleportEvent e){
+	public void onTeleport(PlayerTeleportEvent e) {
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-		
-		if(player.isJailed()){
+
+		if (player.isJailed()) {
 			e.setCancelled(true);
 		}
 	}
