@@ -30,6 +30,7 @@ import fr.badblock.game.core18R3.commands.BroadcastCommand;
 import fr.badblock.game.core18R3.commands.ClearChatCommand;
 import fr.badblock.game.core18R3.commands.ClearInventoryCommand;
 import fr.badblock.game.core18R3.commands.CompassCommand;
+import fr.badblock.game.core18R3.commands.EnderchestCommand;
 import fr.badblock.game.core18R3.commands.FeedCommand;
 import fr.badblock.game.core18R3.commands.FlyCommand;
 import fr.badblock.game.core18R3.commands.FreezeCommand;
@@ -373,6 +374,7 @@ public class GamePlugin extends GameAPI {
 			new RepairCommand();
 			new SpawnMobCommand();
 			new ClearInventoryCommand();
+			new EnderchestCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
