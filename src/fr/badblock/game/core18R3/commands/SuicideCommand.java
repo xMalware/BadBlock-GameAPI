@@ -1,9 +1,7 @@
 package fr.badblock.game.core18R3.commands;
 
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 
-import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;

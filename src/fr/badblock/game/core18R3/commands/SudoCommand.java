@@ -1,11 +1,8 @@
 package fr.badblock.game.core18R3.commands;
 
-import java.util.HashSet;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -24,15 +21,17 @@ public class SudoCommand extends AbstractCommand {
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 		String playerName = args[0];
 		Player to = Bukkit.getPlayer(playerName);
-		if (to == null) {
+		
+		if(to == null) {
 			concerned.sendTranslatedMessage("commands.sudo.offline", playerName);
 			return true;
 		}
-		BadblockPlayer player = (BadblockPlayer) to;
+
 		String message = args[1];
-		if (message.startsWith("c:")) {
+		
+		if(message.startsWith("c:")) {
 			to.chat(message.replace("c:", ""));
-		}else{
+		} else{
 			to.performCommand(message);
 		}
 		return true;
