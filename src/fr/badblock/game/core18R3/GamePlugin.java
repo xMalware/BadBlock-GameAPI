@@ -44,6 +44,7 @@ import fr.badblock.game.core18R3.commands.I18RCommand;
 import fr.badblock.game.core18R3.commands.InvseeCommand;
 import fr.badblock.game.core18R3.commands.JumpToCommand;
 import fr.badblock.game.core18R3.commands.KickallCommand;
+import fr.badblock.game.core18R3.commands.KillCommand;
 import fr.badblock.game.core18R3.commands.KillallCommand;
 import fr.badblock.game.core18R3.commands.KitsCommand;
 import fr.badblock.game.core18R3.commands.LagCommand;
@@ -401,7 +402,8 @@ public class GamePlugin extends GameAPI {
 			new ThunderCommand();
 			new WorldCommand();
 			new WorldsCommand();
-
+			new KillCommand();
+			
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
 
