@@ -33,6 +33,7 @@ import fr.badblock.game.core18R3.commands.ClearInventoryCommand;
 import fr.badblock.game.core18R3.commands.CompassCommand;
 import fr.badblock.game.core18R3.commands.EnderchestCommand;
 import fr.badblock.game.core18R3.commands.FeedCommand;
+import fr.badblock.game.core18R3.commands.FireballCommand;
 import fr.badblock.game.core18R3.commands.FlyCommand;
 import fr.badblock.game.core18R3.commands.FreezeCommand;
 import fr.badblock.game.core18R3.commands.GameModeCommand;
@@ -393,6 +394,7 @@ public class GamePlugin extends GameAPI {
 			new SpeedCommand();
 			new WeatherCommand();
 			new GiveCommand();
+			new FireballCommand();
 
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
