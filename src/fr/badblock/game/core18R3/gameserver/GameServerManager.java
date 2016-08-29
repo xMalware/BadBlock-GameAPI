@@ -1,4 +1,4 @@
-package fr.badblock.game.core18R3.game;
+package fr.badblock.game.core18R3.gameserver;
 
 import java.io.File;
 
@@ -7,10 +7,11 @@ import org.bukkit.command.ConsoleCommandSender;
 
 import com.google.gson.Gson;
 
-import fr.badblock.game.core18R3.game.threading.GameServerKeeperAliveTask;
-import fr.badblock.game.core18R3.game.threading.GameServerMonitoringTask;
-import fr.badblock.game.core18R3.game.threading.GameServerSendLogsTask;
-import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
+import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
+import fr.badblock.game.core18R3.gameserver.threading.GameServerMonitoringTask;
+import fr.badblock.game.core18R3.gameserver.threading.GameServerSendLogsTask;
+import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,8 +25,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameServerManager {
+	
 	private Gson gson;
-	private APIConfig apiConfig;
+	private GameServerConfig gameServerConfig;
+	private FTPConfig ftpConfig;
 	private ConsoleCommandSender console;
 	private GameServerSendLogsTask gameServerSendLogsTask;
 	private GameServerKeeperAliveTask gameServerKeeperAliveTask;
@@ -33,8 +36,9 @@ public class GameServerManager {
 	private boolean loaded;
 	// private ServerConfigurationFactory serverConfigurationFactory;
 
-	public GameServerManager(APIConfig config) {
-		this.setApiConfig(config);
+	public GameServerManager(GameServerConfig config, FTPConfig ftpConfig) {
+		this.setGameServerConfig(config);
+		this.setFtpConfig(ftpConfig);
 		this.setGson(GameAPI.getPrettyGson());
 		this.setConsole(Bukkit.getConsoleSender());
 	}
@@ -63,9 +67,9 @@ public class GameServerManager {
 			 * GameServerMessages.SENDING_SHUTDOWN_SIGNAL.log();
 			 * Bukkit.shutdown(); return; }
 			 */
-			this.setGameServerKeeperAliveTask(new GameServerKeeperAliveTask(this.getApiConfig()));
-			this.setGameServerMonitoringTask(new GameServerMonitoringTask(this.getApiConfig()));
-			this.setGameServerSendLogsTask(new GameServerSendLogsTask(this.getApiConfig()));
+			this.setGameServerKeeperAliveTask(new GameServerKeeperAliveTask(this.getGameServerConfig()));
+			this.setGameServerMonitoringTask(new GameServerMonitoringTask(this.getGameServerConfig()));
+			this.setGameServerSendLogsTask(new GameServerSendLogsTask(this.getGameServerConfig(), this.getFtpConfig()));
 
 			this.setLoaded(true);
 		}

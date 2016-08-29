@@ -1,4 +1,4 @@
-package fr.badblock.game.core18R3.game;
+package fr.badblock.game.core18R3.gameserver;
 
 import fr.badblock.gameapi.GameAPI;
 import lombok.Getter;

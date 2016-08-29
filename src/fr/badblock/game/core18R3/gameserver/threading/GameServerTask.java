@@ -1,9 +1,9 @@
-package fr.badblock.game.core18R3.game.threading;
+package fr.badblock.game.core18R3.gameserver.threading;
 
 import java.util.TimerTask;
 
 import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.game.GameServerManager;
+import fr.badblock.game.core18R3.gameserver.GameServerManager;
 import lombok.Getter;
 import lombok.Setter;
 

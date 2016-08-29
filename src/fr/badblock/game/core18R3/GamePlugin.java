@@ -74,16 +74,21 @@ import fr.badblock.game.core18R3.commands.WorldsCommand;
 import fr.badblock.game.core18R3.configuration.GameConfiguration;
 import fr.badblock.game.core18R3.entities.CustomCreatures;
 import fr.badblock.game.core18R3.fakeentities.FakeEntities;
-import fr.badblock.game.core18R3.game.GameServer;
-import fr.badblock.game.core18R3.game.GameServerManager;
+import fr.badblock.game.core18R3.gameserver.GameServer;
+import fr.badblock.game.core18R3.gameserver.GameServerManager;
 import fr.badblock.game.core18R3.i18n.GameI18n;
 import fr.badblock.game.core18R3.internalutils.TeleportUtils;
 import fr.badblock.game.core18R3.itemstack.GameCustomInventory;
 import fr.badblock.game.core18R3.itemstack.GameItemExtra;
 import fr.badblock.game.core18R3.itemstack.GameItemStackFactory;
 import fr.badblock.game.core18R3.itemstack.ItemStackExtras;
-import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.DefaultKitContentManager;
+import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.LadderConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.RabbitMQConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.SQLConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.ServerConfig;
 import fr.badblock.game.core18R3.ladder.GameLadderSpeaker;
 import fr.badblock.game.core18R3.listeners.ChangeWorldEvent;
 import fr.badblock.game.core18R3.listeners.ChatListener;
@@ -166,8 +171,7 @@ import net.minecraft.server.v1_8_R3.World;
 public class GamePlugin extends GameAPI {
 	public static final boolean EMPTY_VERSION = false;
 
-	public static final String FOLDER_I18N = "/home/dev01/i18n", FOLDER_KITS = "kits",
-			CONFIG_DATABASES = "databases.json", WHITELIST = "whitelist.yml";
+	public static final String FOLDER_I18N = "/home/dev01/i18n", FOLDER_CONFIG = "config", FOLDER_KITS = "kits", WHITELIST = "whitelist.yml";
 	public static Thread thread;
 
 	@Getter
@@ -282,11 +286,14 @@ public class GamePlugin extends GameAPI {
 			GameAPI.logColor("&b[GameAPI] &aLoading API...");
 			long nano = System.nanoTime();
 
-			File configFile = new File(getDataFolder(), CONFIG_DATABASES);
-
-			if (!configFile.exists())
-				configFile.createNewFile();
-			APIConfig config = JsonUtils.load(configFile, APIConfig.class);
+			File configFolder = new File(getDataFolder(), FOLDER_CONFIG);
+			if (!configFolder.exists()) configFolder.mkdirs();
+			FTPConfig ftpConfig = JsonUtils.load(new File(configFolder, "ftp.json"), FTPConfig.class);
+			GameServerConfig gameServerConfig = JsonUtils.load(new File(configFolder, "gameServer.json"), GameServerConfig.class);
+			LadderConfig ladderConfig = JsonUtils.load(new File(configFolder, "ladder.json"), LadderConfig.class);
+			RabbitMQConfig rabbitMQConfig = JsonUtils.load(new File(configFolder, "rabbitmq.json"), RabbitMQConfig.class);
+			ServerConfig serverConfig = JsonUtils.load(new File(configFolder, "server.json"), ServerConfig.class);
+			SQLConfig sqlConfig = JsonUtils.load(new File(configFolder, "sql.json"), SQLConfig.class);
 
 			loadI18n();
 
@@ -295,29 +302,23 @@ public class GamePlugin extends GameAPI {
 
 				GameAPI.logColor("&b[GameAPI] &aLoading databases configuration...");
 
-				if (config == null) {
-					config = new APIConfig();
-					JsonUtils.save(configFile, config, true);
-				}
+				runType = gameServerConfig.runType;
 
-				runType = config.runType;
-
-				GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + config.ladderIp + ":" + config.ladderPort);
+				GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + ladderConfig.ladderIp + ":" + ladderConfig.ladderPort);
 				GameAPI.logColor("&b[GameAPI] &aConnecting to Ladder...");
 
 				new PermissionManager(new JsonArray());
-				ladderDatabase = new GameLadderSpeaker(config.ladderIp, config.ladderPort);
+				ladderDatabase = new GameLadderSpeaker(ladderConfig.ladderIp, ladderConfig.ladderPort);
 				ladderDatabase.askForPermissions();
 
 				if (!GameAPI.TEST_MODE) {
-					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + config.sqlIp + ":" + config.sqlPort);
+					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + sqlConfig.sqlIp + ":" + sqlConfig.sqlPort);
 					GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
 
-					sqlDatabase = new GameSQLDatabase(config.sqlIp, Integer.toString(config.sqlPort), config.sqlUser,
-							config.sqlPassword, config.sqlDatabase);
+					sqlDatabase = new GameSQLDatabase(sqlConfig.sqlIp, Integer.toString(sqlConfig.sqlPort), sqlConfig.sqlUser, sqlConfig.sqlPassword, sqlConfig.sqlDatabase);
 					((GameSQLDatabase) sqlDatabase).openConnection();
 
-					rabbitSpeaker = new RabbitSpeaker(config);
+					rabbitSpeaker = new RabbitSpeaker(rabbitMQConfig);
 				} else {
 					sqlDatabase = new FakeSQLDatabase();
 				}
@@ -462,15 +463,15 @@ public class GamePlugin extends GameAPI {
 			whitelist.save(whitelistFile);
 
 			// Set server bonus
-			serverXpBonus = config.getBonusXp();
-			serverBadcoinsBonus = config.getBonusCoins();
+			serverXpBonus = serverConfig.getBonusXp();
+			serverBadcoinsBonus = serverConfig.getBonusCoins();
 
 			// Loading GameServer
 			if (!EMPTY_VERSION) {
 				GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
 				// GameServer apr�s tout
 				this.gameServer = new GameServer();
-				this.gameServerManager = new GameServerManager(config);
+				this.gameServerManager = new GameServerManager(gameServerConfig, ftpConfig);
 				this.getGameServerManager().start();
 			}
 

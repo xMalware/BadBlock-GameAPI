@@ -8,8 +8,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.game.GameServerManager;
-import fr.badblock.game.core18R3.game.threading.GameServerKeeperAliveTask;
+import fr.badblock.game.core18R3.gameserver.GameServerManager;
+import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 

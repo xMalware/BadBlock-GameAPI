@@ -1,4 +1,4 @@
-package fr.badblock.game.core18R3.game.threading;
+package fr.badblock.game.core18R3.gameserver.threading;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -9,15 +9,15 @@ import java.lang.reflect.Method;
 import org.bukkit.Bukkit;
 
 import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.game.GameServerManager;
-import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
+import fr.badblock.game.core18R3.gameserver.GameServerManager;
+import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class GameServerMonitoringTask extends GameServerTask {
 
-	public GameServerMonitoringTask(APIConfig config) {
+	public GameServerMonitoringTask(GameServerConfig config) {
 		TaskManager.scheduleAsyncRepeatingTask("gameServerMonitoring", this, 0, config.ticksBetweenMonitoreLogs);
 	}
 

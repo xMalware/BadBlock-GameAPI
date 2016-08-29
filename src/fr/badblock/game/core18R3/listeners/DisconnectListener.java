@@ -5,7 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.game.GameServer;
+import fr.badblock.game.core18R3.gameserver.GameServer;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameBadblockPlayerData;
 import fr.badblock.gameapi.BadListener;

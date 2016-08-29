@@ -2,7 +2,7 @@ package fr.badblock.game.core18R3.technologies;
 
 import java.io.IOException;
 
-import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.RabbitMQConfig;
 import fr.badblock.rabbitconnector.RabbitConnector;
 import fr.badblock.rabbitconnector.types.RabbitPacketType;
 import fr.badblock.rabbitconnector.workers.RabbitService;
@@ -20,16 +20,13 @@ public class RabbitSpeaker implements fr.badblock.gameapi.technologies.RabbitSpe
 
 	private RabbitService rabbitService;
 
-	public RabbitSpeaker(APIConfig apiConfig) throws IOException {
-		this.setRabbitService(getRabbitConnector().newService("default", apiConfig.getRabbitHostname(),
-				apiConfig.getRabbitPort(), apiConfig.getRabbitUsername(), apiConfig.getRabbitPassword(),
-				apiConfig.getRabbitVirtualHost()));
+	public RabbitSpeaker(RabbitMQConfig rabbitMQConfig) throws IOException {
+		this.setRabbitService(getRabbitConnector().newService("default", rabbitMQConfig.getRabbitHostname(), rabbitMQConfig.getRabbitPort(), rabbitMQConfig.getRabbitUsername(), rabbitMQConfig.getRabbitPassword(), rabbitMQConfig.getRabbitVirtualHost()));
 	}
 
 	@Override
 	public void sendAsyncUTF8Message(String queueName, String content, long ttl, boolean debug) {
-		this.getRabbitService().sendPacket(queueName, content, Encodage.UTF8, RabbitPacketType.MESSAGE_BROKER, ttl,
-				debug);
+		this.getRabbitService().sendPacket(queueName, content, Encodage.UTF8, RabbitPacketType.MESSAGE_BROKER, ttl, debug);
 	}
 
 	@Override
@@ -39,14 +36,12 @@ public class RabbitSpeaker implements fr.badblock.gameapi.technologies.RabbitSpe
 
 	@Override
 	public void sendSyncUTF8Message(String queueName, String content, long ttl, boolean debug) {
-		this.getRabbitService().sendSyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.MESSAGE_BROKER, ttl,
-				debug);
+		this.getRabbitService().sendSyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.MESSAGE_BROKER, ttl, debug);
 	}
 
 	@Override
 	public void sendSyncUTF8Publisher(String queueName, String content, long ttl, boolean debug) {
-		this.getRabbitService().sendSyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.PUBLISHER, ttl,
-				debug);
+		this.getRabbitService().sendSyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.PUBLISHER, ttl, debug);
 	}
 
 }

@@ -1,4 +1,4 @@
-package fr.badblock.game.core18R3.game.threading;
+package fr.badblock.game.core18R3.gameserver.threading;
 
 import java.io.File;
 import java.util.Arrays;
@@ -8,8 +8,8 @@ import org.bukkit.Bukkit;
 
 import fr.badblock.docker.factories.GameAliveFactory;
 import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.game.GameServerManager;
-import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
+import fr.badblock.game.core18R3.gameserver.GameServerManager;
+import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameServer;
 import fr.badblock.gameapi.game.GameState;
@@ -24,13 +24,13 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 	private boolean firstServer;
 	private long joinTime;
 
-	public GameServerKeeperAliveTask(APIConfig apiConfig) {
+	public GameServerKeeperAliveTask(GameServerConfig apiConfig) {
 		this.incrementJoinTime();
 		TaskManager.scheduleSyncRepeatingTask("gameServerKeeperAlive", this, 0, apiConfig.ticksBetweenKeepAlives);
 	}
 
 	public void incrementJoinTime() {
-		this.setJoinTime(System.currentTimeMillis() + this.getGameServerManager().getApiConfig().uselessUntilTime);
+		this.setJoinTime(System.currentTimeMillis() + this.getGameServerManager().getGameServerConfig().uselessUntilTime);
 	}
 
 	private boolean isJoinable() {
@@ -65,10 +65,8 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		// ServerConfigurationFactory serverConfigurationFactory =
 		// gameServerManager.getServerConfigurationFactory();
 		GameServer gameServer = gameApi.getGameServer();
-		GameAliveFactory gameAliveFactory = new GameAliveFactory(gameApi.getServer().getServerName(), isJoinable(),
-				Bukkit.getOnlinePlayers().size(), gameServer.getMaxPlayers());
-		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.keepalive",
-				gameServerManager.getGson().toJson(gameAliveFactory), 5000, false);
+		GameAliveFactory gameAliveFactory = new GameAliveFactory(gameApi.getServer().getServerName(), isJoinable(),	Bukkit.getOnlinePlayers().size(), gameServer.getMaxPlayers());
+		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.keepalive", gameServerManager.getGson().toJson(gameAliveFactory), 5000, false);
 	}
 
 	public void sendStopPacket() {

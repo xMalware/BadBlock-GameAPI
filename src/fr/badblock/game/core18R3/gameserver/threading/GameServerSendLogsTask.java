@@ -1,4 +1,4 @@
-package fr.badblock.game.core18R3.game.threading;
+package fr.badblock.game.core18R3.gameserver.threading;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -17,16 +17,17 @@ import java.util.Timer;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPSClient;
 
-import fr.badblock.game.core18R3.jsonconfiguration.APIConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 
 public class GameServerSendLogsTask extends GameServerTask {
 
-	private APIConfig config;
+	private FTPConfig config;
 	private String logFile;
 
-	public GameServerSendLogsTask(APIConfig config) {
-		this.config = config;
-		new Timer().schedule(this, 0, config.timeBetweenLogs);
+	public GameServerSendLogsTask(GameServerConfig gameServerConfig, FTPConfig ftpConfig) {
+		this.config = ftpConfig;
+		new Timer().schedule(this, 0, gameServerConfig.timeBetweenLogs);
 		// Temporary
 		List<String> lines = null;
 		try {

@@ -1,4 +1,4 @@
-package fr.badblock.game.core18R3.game;
+package fr.badblock.game.core18R3.gameserver;
 
 /**
  * Le static tue. Autant regrouper le cancer dans sa propre classe
