@@ -26,7 +26,7 @@ public class KillCommand extends AbstractCommand {
 		if (concerned == null) {
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
-			concerned.damage(Double.MAX_VALUE);
+			concerned.damage(2000.0d);
 			concerned.sendTranslatedMessage("commands.kill.killed");
 
 			if (!concerned.equals(sender)) {
