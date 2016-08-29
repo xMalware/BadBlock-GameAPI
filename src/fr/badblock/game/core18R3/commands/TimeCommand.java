@@ -93,7 +93,7 @@ public class TimeCommand extends AbstractCommand {
 				World world = Bukkit.getWorld(args[first]);
 				
 				if(world == null){
-					sendTranslatedMessage(sender, "commands.time.unknowworld", args[first]);
+					sendTranslatedMessage(sender, "commands.unknowworld", args[first]);
 					return null;
 				}
 				
