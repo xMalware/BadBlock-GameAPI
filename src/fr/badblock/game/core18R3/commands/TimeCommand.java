@@ -66,23 +66,7 @@ public class TimeCommand extends AbstractCommand {
 					return true;
 			
 				for(World world : worlds){
-					long   hour = world.getTime() / 1000L;
-					double mins = (double) (world.getTime() % 1000L);
-					
-					mins /= 1000d;
-					mins *= 60d;
-					
-					String result = "";
-					
-					if(hour < 10)
-						result += "0";
-					result += hour;
-					
-					if(mins < 10)
-						result += "0";
-					result += mins;
-					
-					sendTranslatedMessage(sender, "commands.time.view", world.getName(), world.getTime(), result);
+					sendTranslatedMessage(sender, "commands.time.view", world.getName(), world.getTime());
 				}
 					
 			break;
@@ -95,9 +79,9 @@ public class TimeCommand extends AbstractCommand {
 	private List<World> getWorlds(CommandSender sender, String[] args, int first){
 		List<World> worlds = null;
 		
-		if(args.length < first){
+		if(args.length <= first){
 			if(sender instanceof Player){
-				Arrays.asList( ((Player) sender).getWorld() );
+				worlds = Arrays.asList( ((Player) sender).getWorld() );
 			} else {
 				worlds = Bukkit.getWorlds();
 			}
@@ -106,7 +90,7 @@ public class TimeCommand extends AbstractCommand {
 			if(args[first].equalsIgnoreCase("all")){
 				worlds = Bukkit.getWorlds();
 			} else {
-				World world = Bukkit.getWorld(args[2]);
+				World world = Bukkit.getWorld(args[first]);
 				
 				if(world == null){
 					sendTranslatedMessage(sender, "commands.time.unknowworld", args[first]);
