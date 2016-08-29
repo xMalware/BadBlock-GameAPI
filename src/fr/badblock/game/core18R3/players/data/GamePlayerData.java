@@ -50,9 +50,9 @@ public class GamePlayerData implements PlayerData {
 		badcoins = Math.abs(badcoins);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
-			badcoins = BoosterUtil.getBoosted(this, BoostedValue.COINS, badcoins);
+			double playerBonus = BoosterUtil.getBoosted(this, BoostedValue.COINS);
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
-			badcoins *= serverBonus;
+			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
 		}
 		return this.badcoins += badcoins;
 	}
@@ -62,9 +62,9 @@ public class GamePlayerData implements PlayerData {
 		xp = Math.abs(xp);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
-			xp = BoosterUtil.getBoosted(this, BoostedValue.XP, badcoins);
+			double playerBonus = BoosterUtil.getBoosted(this, BoostedValue.XP);
 			double serverBonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
-			xp *= serverBonus;
+			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
 		}
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
 		if (delta > 0)
