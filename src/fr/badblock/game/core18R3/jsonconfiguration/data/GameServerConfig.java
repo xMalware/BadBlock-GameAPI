@@ -18,8 +18,4 @@ public class GameServerConfig {
 	// Run type
 	public RunType runType = RunType.LOBBY;
 
-	// Server bonus
-	public double bonusXp;
-	public double bonusCoins;
-
 }
