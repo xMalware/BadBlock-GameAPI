@@ -24,7 +24,7 @@ public class WorldCommand extends AbstractCommand {
 		World world = Bukkit.getWorld(args[0]);
 		
 		if(world == null) {
-			GameAPI.i18n().sendMessage(sender, "commands.unknowworld");
+			GameAPI.i18n().sendMessage(sender, "commands.unknowworld", args[0]);
 			return true;
 		}
 		

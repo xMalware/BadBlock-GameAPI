@@ -33,7 +33,7 @@ public class WeatherCommand extends AbstractCommand {
 		}
 		
 		if(defaultWorld == null) {
-			GameAPI.i18n().sendMessage(sender, "commands.unknownworld");
+			GameAPI.i18n().sendMessage(sender, "commands.unknownworld", args[1]);
 			return true;
 		}
 		
