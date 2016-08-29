@@ -60,7 +60,6 @@ import fr.badblock.game.core18R3.commands.SpeedCommand;
 import fr.badblock.game.core18R3.commands.SudoCommand;
 import fr.badblock.game.core18R3.commands.SuicideCommand;
 import fr.badblock.game.core18R3.commands.TeleportCommand;
-import fr.badblock.game.core18R3.commands.ThunderCommand;
 import fr.badblock.game.core18R3.commands.TimeCommand;
 import fr.badblock.game.core18R3.commands.UpCommand;
 import fr.badblock.game.core18R3.commands.VanishCommand;
@@ -440,7 +439,6 @@ public class GamePlugin extends GameAPI {
 			new WeatherCommand();
 			new GiveCommand();
 			new FireballCommand();
-			new ThunderCommand();
 			new WorldCommand();
 			new WorldsCommand();
 			new KillCommand();
