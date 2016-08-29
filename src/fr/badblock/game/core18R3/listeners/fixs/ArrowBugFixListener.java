@@ -33,13 +33,11 @@ public class ArrowBugFixListener extends BadListener {
 		return arrow;
 	}
 
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent e) {
 		if (firstPlayer == null)
 			firstPlayer = e.getPlayer().getUniqueId();
 	}
 
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onPlayerQuit(PlayerQuitEvent e) {
 		if (e.getPlayer().getUniqueId().equals(firstPlayer))
 			firstPlayer = null;

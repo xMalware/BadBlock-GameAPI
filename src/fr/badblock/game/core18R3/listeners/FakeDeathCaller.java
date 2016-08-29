@@ -255,7 +255,7 @@ public class FakeDeathCaller extends BadListener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onDamage(EntityDamageByEntityEvent e) {
-		if (!e.isCancelled() && e.getEntityType() == EntityType.PLAYER) {
+		if (e.getEntityType() == EntityType.PLAYER) {
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
 			Entity killer = getTrueEntity(e.getDamager());
 			FakeDeathData data = player.inGameData(FakeDeathData.class);
@@ -314,7 +314,7 @@ public class FakeDeathCaller extends BadListener {
 		if (e.getCause() == DamageCause.ENTITY_ATTACK)
 			return;
 
-		if (!e.isCancelled() && e.getEntityType() == EntityType.PLAYER) {
+		if (e.getEntityType() == EntityType.PLAYER) {
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
 			Entity killer = null;
 			FakeDeathData data = player.inGameData(FakeDeathData.class);

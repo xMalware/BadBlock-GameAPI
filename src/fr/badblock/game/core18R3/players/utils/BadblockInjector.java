@@ -55,8 +55,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 					}
 				});
 
-				if (inPacket.isCancelled())
-					cancel = true;
+				cancel = inPacket.isCancelled();
 				msg = inPacket.toNms();
 			} catch (Exception error) {
 				error.printStackTrace();
@@ -97,8 +96,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 					}
 				});
 
-				if (outPacket.isCancelled())
-					cancel = true;
+				cancel = outPacket.isCancelled();
 				msg = outPacket.buildPacket(player);
 			} catch (Exception error) {
 				error.printStackTrace();

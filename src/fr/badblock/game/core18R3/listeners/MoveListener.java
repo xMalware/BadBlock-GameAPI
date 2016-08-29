@@ -44,10 +44,8 @@ public class MoveListener extends BadListener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onTeleport(PlayerTeleportEvent e) {
-		if (e.isCancelled())
-			return;
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
 		if (player.isDisguised()) {
