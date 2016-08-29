@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
+import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class WorldsCommand extends AbstractCommand {
@@ -23,8 +24,7 @@ public class WorldsCommand extends AbstractCommand {
 		
 		List<String> strings = Bukkit.getWorlds().stream().map(world -> GameAPI.i18n().get(sender, "commands.worlds.eachmessage", world.getName())[0]).collect(Collectors.toList());
 		
-		GameAPI.i18n().sendMessage(sender, "commands.worlds.displayer", strings);
+		GameAPI.i18n().sendMessage(sender, "commands.worlds.displayer", StringUtils.join(strings, "&b, ", "&8, "));
 		return true;
 	}
-
 }
