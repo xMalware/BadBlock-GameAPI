@@ -18,20 +18,25 @@ public class WorldCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length != 1)
+		if(args.length < 1)
 			return false;
+		
 		World world = Bukkit.getWorld(args[0]);
-		if (world == null) {
-			GameAPI.i18n().sendMessage(sender, "commands.weather.unknownworld");
+		
+		if(world == null) {
+			GameAPI.i18n().sendMessage(sender, "commands.time.unknowworld");
 			return true;
 		}
-		if (world.getSpawnLocation() == null) {
+		
+		if(world.getSpawnLocation() == null) {
 			GameAPI.i18n().sendMessage(sender, "commands.world.unknownspawnlocation", world.getName());
 			return true;
 		}
+		
 		BadblockPlayer badblockPlayer = (BadblockPlayer) sender;
 		badblockPlayer.teleport(world.getSpawnLocation());
-		GameAPI.i18n().sendMessage(sender, "commands.world.teleported-to", world.getName());
+		
+		sendTranslatedMessage(sender, "commands.world.teleported-to", world.getName());
 		return true;
 	}
 }
