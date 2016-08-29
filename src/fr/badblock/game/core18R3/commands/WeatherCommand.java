@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 
-import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
@@ -33,27 +32,30 @@ public class WeatherCommand extends AbstractCommand {
 		}
 		
 		if(defaultWorld == null) {
-			GameAPI.i18n().sendMessage(sender, "commands.unknownworld", args[1]);
+			sendTranslatedMessage(sender, "commands.unknownworld", args[1]);
 			return true;
 		}
 		
 		String type = args[0];
-		if (type.equalsIgnoreCase("sun")) {
+		if(type.equalsIgnoreCase("sun") || type.equalsIgnoreCase("clear")) {
 			if (defaultWorld.isThundering() || defaultWorld.hasStorm()) {
 				defaultWorld.setThundering(false);
-				defaultWorld.setWeatherDuration(0);
-				GameAPI.i18n().sendMessage(sender, "commands.weather.nowsunny");
+				defaultWorld.setStorm(false);
+
+				defaultWorld.setWeatherDuration(Integer.MAX_VALUE);
+				sendTranslatedMessage(sender, "commands.weather.nowsunny");
 			} else {
-				GameAPI.i18n().sendMessage(sender, "commands.weather.alreadysunny");
+				sendTranslatedMessage(sender, "commands.weather.alreadysunny");
 				return true;
 			}
 		} else if (type.equalsIgnoreCase("rain") || type.equalsIgnoreCase("storm")) {
 			if (!defaultWorld.hasStorm()) {
 				defaultWorld.setStorm(true);
 				defaultWorld.setWeatherDuration(Integer.MAX_VALUE);
-				GameAPI.i18n().sendMessage(sender, "commands.weather.nowrainy");
+				
+				sendTranslatedMessage(sender, "commands.weather.nowrainy");
 			} else {
-				GameAPI.i18n().sendMessage(sender, "commands.weather.alreadyrainy");
+				sendTranslatedMessage(sender, "commands.weather.alreadyrainy");
 				return true;
 			}
 		} else {
