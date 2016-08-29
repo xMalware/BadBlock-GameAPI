@@ -1,8 +1,12 @@
 package fr.badblock.game.core18R3.commands;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import fr.badblock.gameapi.command.AbstractCommand;
@@ -19,7 +23,6 @@ public class GiveCommand extends AbstractCommand {
 		super("give", new TranslatableString("commands.give.usage"), GamePermission.ADMIN);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		if (args.length < 2)
@@ -44,7 +47,8 @@ public class GiveCommand extends AbstractCommand {
 			Item nmsItem = Item.REGISTRY.get(new MinecraftKey(args[1]));
 
 			if (nmsItem != null) {
-				Material.getMaterial(Item.getId(nmsItem));
+				net.minecraft.server.v1_8_R3.ItemStack localItemStack = new net.minecraft.server.v1_8_R3.ItemStack(nmsItem, 1);
+				material = CraftItemStack.asBukkitCopy(localItemStack).getType();
 			}
 		}
 
@@ -79,14 +83,44 @@ public class GiveCommand extends AbstractCommand {
 			return item.getAmount();
 		}).sum();
 
-		if (notGived == 0) {
+		if (notGived != 0) {
 			sendTranslatedMessage(sender, "commands.give.notgived",
-					GameMessages.material(material, notGived > 0, WordDeterminant.SIMPLE), notGived, amount - notGived);
+					GameMessages.material(material, notGived > 1, WordDeterminant.SIMPLE), notGived, amount - notGived);
 		} else {
 			sendTranslatedMessage(sender, "commands.give.gived",
-					GameMessages.material(material, notGived > 0, WordDeterminant.SIMPLE), amount);
+					GameMessages.material(material, notGived > 1, WordDeterminant.SIMPLE), amount);
 		}
 
 		return true;
+	}
+
+	@Override
+	public Collection<String> doTab(CommandSender sender, String[] args) {
+		if(args.length == 1){
+			return super.doTab(sender, args);
+		} else if(args.length == 2){
+			args[1] = args[1].toLowerCase();
+
+			if(!args[1].startsWith("minecraft:"))
+				args[1] = "minecraft:" + args[1];
+
+			return Item.REGISTRY.keySet().stream().map(mcKey -> {
+				return mcKey.toString();
+			}).collect(Collectors.toList());
+		}
+
+		return null;
+	}
+
+	@Override
+	public String[] changeArgs(CommandSender sender, String[] args){
+		if(args.length == 2){
+			args[1] = args[1].toLowerCase();
+
+			if(!args[1].startsWith("minecraft:"))
+				args[1] = "minecraft:" + args[1];
+		}
+		
+		return args;
 	}
 }
