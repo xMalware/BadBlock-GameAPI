@@ -58,6 +58,16 @@ public class WeatherCommand extends AbstractCommand {
 				sendTranslatedMessage(sender, "commands.weather.alreadyrainy");
 				return true;
 			}
+		} else if (type.equalsIgnoreCase("thunder")) {
+			if (!defaultWorld.isThundering()) {
+				defaultWorld.setThundering(true);
+				defaultWorld.setThunderDuration(Integer.MAX_VALUE);
+				
+				sendTranslatedMessage(sender, "commands.weather.nowthundering");
+			} else {
+				sendTranslatedMessage(sender, "commands.weather.alreadynotthundering");
+				return true;
+			}
 		} else {
 			return false;
 		}

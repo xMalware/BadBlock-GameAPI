@@ -16,14 +16,14 @@ public class BackCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length == 0)
-			return false;
 		BadblockPlayer badblockPlayer = (BadblockPlayer) sender;
 		CommandInGameData data = badblockPlayer.inGameData(CommandInGameData.class);
-		if (data.lastLocation == null) {
+		
+		if(data.lastLocation == null) {
 			badblockPlayer.sendTranslatedMessage("commands.back.nolastlocation");
 			return true;
 		}
+		
 		badblockPlayer.teleport(data.lastLocation);
 		badblockPlayer.sendTranslatedMessage("commands.back.teleportedtolastlocation");
 		return true;

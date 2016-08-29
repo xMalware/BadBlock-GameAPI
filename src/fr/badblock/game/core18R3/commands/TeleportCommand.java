@@ -1,5 +1,9 @@
 package fr.badblock.game.core18R3.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -9,6 +13,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
+import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class TeleportCommand extends AbstractCommand {
@@ -23,7 +28,7 @@ public class TeleportCommand extends AbstractCommand {
 		else if (args.length >= 3)
 			return tppos(sender, args);
 
-		BadblockPlayer who = null;
+		List<BadblockPlayer> who = new ArrayList<>();
 		BadblockPlayer to = null;
 
 		String toName = null;
@@ -31,7 +36,7 @@ public class TeleportCommand extends AbstractCommand {
 		if (args.length == 1) {
 
 			if (sender instanceof Player)
-				who = (BadblockPlayer) sender;
+				who.add((BadblockPlayer) sender);
 			else
 				return false;
 
@@ -41,11 +46,19 @@ public class TeleportCommand extends AbstractCommand {
 		} else if (args.length == 2) {
 			toName = args[1];
 
-			who = (BadblockPlayer) Bukkit.getPlayer(args[0]);
+			if(args[0].equalsIgnoreCase("@a")){
+				who = Bukkit.getOnlinePlayers().stream().map(player -> (BadblockPlayer) player).collect(Collectors.toList());
+			} else 	{
+				BadblockPlayer player = (BadblockPlayer) Bukkit.getPlayer(args[0]);
+			
+				if(player != null)
+					who.add(player);
+			}
+			
 			to = (BadblockPlayer) Bukkit.getPlayer(args[1]);
 		}
 
-		if (who == null) {
+		if (who.isEmpty()) {
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 			return true;
 		} else if (to == null) {
@@ -53,12 +66,13 @@ public class TeleportCommand extends AbstractCommand {
 			return true;
 		}
 
-		who.teleport(to);
-
-		if (who.equals(sender)) {
+		for(BadblockPlayer player : who) {
+			player.teleport(to);
 			GameAPI.i18n().sendMessage(sender, "commands.teleport.to", to.getName());
-		} else {
-			GameAPI.i18n().sendMessage(sender, "commands.teleport.to-other", who.getName(), to.getName());
+		}
+
+		if (!who.contains(sender)) {
+			GameAPI.i18n().sendMessage(sender, "commands.teleport.to-other", StringUtils.join(who.stream().map(player -> player.getName()), ", "), to.getName());
 		}
 
 		return true;
@@ -91,42 +105,60 @@ public class TeleportCommand extends AbstractCommand {
 	}
 
 	private boolean tppos(CommandSender sender, String[] args) {
-		BadblockPlayer player = null;
+		List<BadblockPlayer> players = new ArrayList<>();
 
 		int begin = 0;
 
 		if (args.length == 4) {
 			begin = 1;
-			player = (BadblockPlayer) Bukkit.getPlayer(args[0]);
+			
+			if(args[0].equalsIgnoreCase("@a")){
+				players = Bukkit.getOnlinePlayers().stream().map(player -> (BadblockPlayer) player).collect(Collectors.toList());
+			} else 	{
+				BadblockPlayer player = (BadblockPlayer) Bukkit.getPlayer(args[0]);
+			
+				if(player != null)
+					players.add(player);
+			}
+			
 		} else if (!(sender instanceof Player)) {
 			return false;
 		} else
-			player = (BadblockPlayer) sender;
+			players.add((BadblockPlayer) sender);
 
-		if (player == null) {
+		if (players.isEmpty()) {
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 			return true;
 		}
 
-		Double x = get(args[begin], player.getLocation().getX(), sender);
+		BadblockPlayer relativeTo = null;
+		
+		if(sender instanceof Player && players.size() > 1)
+			relativeTo = (BadblockPlayer) sender;
+		else relativeTo = players.get(0);
+		
+		Double x = get(args[begin], relativeTo.getLocation().getX(), sender);
 		if (x == null)
 			return true;
 
-		Double y = get(args[begin + 1], player.getLocation().getY(), sender);
+		Double y = get(args[begin + 1], relativeTo.getLocation().getY(), sender);
 		if (y == null)
 			return true;
 
-		Double z = get(args[begin + 2], player.getLocation().getZ(), sender);
+		Double z = get(args[begin + 2], relativeTo.getLocation().getZ(), sender);
 		if (z == null)
 			return true;
 
-		player.teleport(new Location(player.getWorld(), x, y, z, player.getLocation().getYaw(),
-				player.getLocation().getPitch()));
-
-		if (player.equals(sender)) {
+		Location to = new Location(relativeTo.getWorld(), x, y, z, relativeTo.getLocation().getYaw(),
+				relativeTo.getLocation().getPitch());
+		
+		for(Player player : players){
+			player.teleport(to);
 			GameAPI.i18n().sendMessage(sender, "commands.teleport.place");
-		} else {
-			GameAPI.i18n().sendMessage(sender, "commands.teleport.place-other", player.getName());
+		}
+
+		if (!players.contains(sender)) {
+			GameAPI.i18n().sendMessage(sender, "commands.teleport.place-other",  StringUtils.join(players.stream().map(player -> player.getName()), ", "));
 		}
 
 		return true;

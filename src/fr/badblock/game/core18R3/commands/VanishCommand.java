@@ -3,6 +3,8 @@ package fr.badblock.game.core18R3.commands;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import fr.badblock.game.core18R3.players.ingamedata.CommandInGameData;
 import fr.badblock.gameapi.GameAPI;
@@ -47,6 +49,10 @@ public class VanishCommand extends AbstractCommand {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			BadblockPlayer p = (BadblockPlayer) player;
 
+			if(vanish){
+				p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1, Integer.MAX_VALUE, false, false));
+			} else p.removePotionEffect(PotionEffectType.INVISIBILITY);
+			
 			if (!p.hasPermission(GamePermission.BMODERATOR) && !p.equals(concerned)) {
 				if (!vanish)
 					p.hidePlayer(concerned);

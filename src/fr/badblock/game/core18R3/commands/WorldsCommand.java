@@ -24,7 +24,7 @@ public class WorldsCommand extends AbstractCommand {
 		
 		List<String> strings = Bukkit.getWorlds().stream().map(world -> GameAPI.i18n().get(sender, "commands.worlds.eachmessage", world.getName())[0]).collect(Collectors.toList());
 		
-		GameAPI.i18n().sendMessage(sender, "commands.worlds.displayer", StringUtils.join(strings, "&b, ", "&8, "));
+		GameAPI.i18n().sendMessage(sender, "commands.worlds.displayer", StringUtils.join(strings, "&b, ", "&7, "));
 		return true;
 	}
 }
