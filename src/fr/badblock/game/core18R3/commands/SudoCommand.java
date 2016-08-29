@@ -24,7 +24,7 @@ public class SudoCommand extends AbstractCommand {
 		Player to = Bukkit.getPlayer(playerName);
 
 		if (to == null) {
-			concerned.sendTranslatedMessage("commands.sudo.offline", playerName);
+			concerned.sendTranslatedMessage("commands.unknowplayer", playerName);
 			return true;
 		}
 
