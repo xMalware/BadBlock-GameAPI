@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
+import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class SudoCommand extends AbstractCommand {
@@ -17,8 +18,9 @@ public class SudoCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length != 2)
+		if (args.length < 2)
 			return false;
+		
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 		String playerName = args[0];
 		Player to = Bukkit.getPlayer(playerName);
@@ -28,7 +30,7 @@ public class SudoCommand extends AbstractCommand {
 			return true;
 		}
 
-		String message = args[1];
+		String message = StringUtils.join(args, " ", 1);
 
 		if (message.startsWith("c:")) {
 			to.chat(message.replace("c:", ""));
