@@ -30,7 +30,7 @@ public class HealCommand extends AbstractCommand {
 		} else {
 			concerned.heal();
 
-			new TranslatableString("commands.heal.healed").send(sender);
+			new TranslatableString("commands.heal.healed").send(concerned);
 
 			if (args.length > 0) {
 				new TranslatableString("commands.heal.healed-success", concerned.getName()).send(sender);
