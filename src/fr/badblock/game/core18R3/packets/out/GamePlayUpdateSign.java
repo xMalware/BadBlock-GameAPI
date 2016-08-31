@@ -1,6 +1,7 @@
 package fr.badblock.game.core18R3.packets.out;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 
@@ -67,7 +68,7 @@ public class GamePlayUpdateSign extends GameBadblockOutPacket implements PlayUpd
 				text = lines[i];
 			}
 			
-			while(text.startsWith("§f")){
+			while(text.startsWith(ChatColor.COLOR_CHAR + "f")){
 				text = text.substring(2);
 			}
 			
