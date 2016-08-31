@@ -1,9 +1,5 @@
 package fr.badblock.game.core18R3.commands;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.Collectors;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -77,15 +73,9 @@ public class SpawnMobCommand extends AbstractCommand {
 			}
 		}
 
-		sendTranslatedMessage(sender, "commands.spawnmob.spawned", creature.getWord(count > 1, WordDeterminant.SIMPLE), count);
+		sendTranslatedMessage(sender, "commands.spawnmob.spawned", creature.getWord(count > 1, WordDeterminant.SIMPLE),
+				count);
 
 		return true;
-	}
-	
-	@Override
-	public Collection<String> doTab(CommandSender sender, String[] args){
-		if(args.length > 1)
-			return super.doTab(sender, args);
-		else return Arrays.stream(CreatureType.values()).map(type -> type.getName()).collect(Collectors.toSet());
 	}
 }
