@@ -2,16 +2,12 @@ package fr.badblock.game.core18R3.ladder;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
 import org.bukkit.Bukkit;
- 
+
 import com.google.common.collect.Queues;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -20,6 +16,7 @@ import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.databases.LadderSpeaker;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.utils.ServerProperties;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.permissions.PermissionManager;
 import fr.badblock.protocol.PacketHandler;
@@ -69,7 +66,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 		this.socketHandler.start();
 
-        ip = Bukkit.getIp();
+        /*
+ 		ip = Bukkit.getIp();
  		String fileName = "server.properties";
  		List<String> lines = null;
  		try {
@@ -81,7 +79,10 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
  			if (line.startsWith("docker-ip=")) {
  				ip = line.replace("docker-ip=", "");
  			}
- 		}
+ 		}*/
+        
+        ip = ServerProperties.getProperties().getProperty("docker-ip", Bukkit.getIp());;
+        
 		socketHandler.getOut().writeUTF(ip);
 		this.socketHandler.getOut().writeInt(Bukkit.getPort());
 
