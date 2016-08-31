@@ -7,8 +7,6 @@ public class NMSNoMoveController extends ControllerMove {
 	public NMSNoMoveController(EntityInsentient entity) {
 		super(entity);
 	}
-
-	@Override
-	public void c() {
-	}
+	
+	@Override public void c(){}
 }

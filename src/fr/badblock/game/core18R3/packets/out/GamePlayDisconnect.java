@@ -9,14 +9,13 @@ import lombok.experimental.Accessors;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutKickDisconnect;
 
-@NoArgsConstructor
-@Data
-@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor@Data
+@EqualsAndHashCode(callSuper=false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayDisconnect extends GameBadblockOutPacket implements PlayDisconnect {
 	private Packet<?> packet;
 
-	public GamePlayDisconnect(PacketPlayOutKickDisconnect packet) {
+	public GamePlayDisconnect(PacketPlayOutKickDisconnect packet){
 		this.packet = packet;
 	}
 

@@ -6,12 +6,11 @@ import org.bukkit.entity.Entity;
 import fr.badblock.gameapi.packets.watchers.WatcherSheep;
 
 public class GameWatcherSheep extends GameWatcherAgeable implements WatcherSheep {
-	public GameWatcherSheep(Class<? extends Entity> clazz) {
+	public GameWatcherSheep(Class<? extends Entity> clazz){
 		super(clazz);
 	}
-
-	@SuppressWarnings("deprecation")
-	@Override
+	
+	@SuppressWarnings("deprecation") @Override
 	public WatcherSheep setColor(DyeColor color) {
 		byte theByte = (Byte) map.get(MetadataIndex.SHEEP_DATA);
 		map.set(MetadataIndex.SHEEP_DATA, (byte) (theByte & 240 | color.getDyeData() & 15));

@@ -18,20 +18,58 @@ import lombok.RequiredArgsConstructor;
 public class GameSQLDatabase implements SQLDatabase {
 	private static final int THREADS = 16;
 	private final String hostname, port, username, password, database;
-
-	protected Connection connection = null;
-	protected List<SQLThread> sqlThread = new ArrayList<>();
-
+	
+	protected Connection 	  connection = null;
+	protected List<SQLThread> sqlThread  = new ArrayList<>();
+	
 	{
-		for (int i = 0; i < THREADS; i++)
+		for (int i = 0; i < THREADS; i++) 
 			sqlThread.add(new SQLThread(i));
+			
+	}
 
+	public Connection openConnection() throws SQLException, ClassNotFoundException {
+		if (checkConnection()) {
+			return this.connection;
+		}
+
+		Class.forName("com.mysql.jdbc.Driver");
+		this.connection = DriverManager.getConnection("jdbc:mysql://" + 
+				this.hostname + ":" + this.port + "/" + this.database + "?autoReconnect=true", this.username, this.password);
+
+		return this.connection;
+	}
+
+	public boolean checkConnection() throws SQLException {
+		return (this.connection != null) && (!this.connection.isClosed());
+	}
+
+	public void closeConnection() throws SQLException {
+		if(checkConnection());
+		connection.close();
+	}
+
+	@Override
+	public Statement createStatement() throws Exception {
+		if(!checkConnection()) {
+			openConnection();
+		}
+
+		return connection.createStatement();
+	}
+
+	@Override
+	public PreparedStatement preparedStatement(String request) throws Exception {
+		if(!checkConnection()) {
+			openConnection();
+		}
+
+		return connection.prepareStatement(request);
 	}
 
 	@Override
 	public void call(String request, SQLRequestType requestType) {
-		if (requestType.equals(SQLRequestType.QUERY))
-			throw new IllegalArgumentException("U can't done a query if you don't handle a callback!");
+		if (requestType.equals(SQLRequestType.QUERY)) throw new IllegalArgumentException("U can't done a query if you don't handle a callback!");
 		call(request, requestType, null);
 	}
 
@@ -43,52 +81,8 @@ public class GameSQLDatabase implements SQLDatabase {
 			if (sqlThread.isAvailable()) {
 				availableThread = sqlThread;
 				break;
-			} else
-				firstThread = sqlThread;
-		if (availableThread != null)
-			availableThread.call(new SQLRequest(requestType, request, callback));
-		else if (firstThread != null)
-			firstThread.call(new SQLRequest(requestType, request, callback));
-	}
-
-	public boolean checkConnection() throws SQLException {
-		return (this.connection != null) && (!this.connection.isClosed());
-	}
-
-	public void closeConnection() throws SQLException {
-		if (checkConnection())
-			;
-		connection.close();
-	}
-
-	@Override
-	public Statement createStatement() throws Exception {
-		if (!checkConnection()) {
-			openConnection();
-		}
-
-		return connection.createStatement();
-	}
-
-	public Connection openConnection() throws SQLException, ClassNotFoundException {
-		if (checkConnection()) {
-			return this.connection;
-		}
-
-		Class.forName("com.mysql.jdbc.Driver");
-		this.connection = DriverManager.getConnection(
-				"jdbc:mysql://" + this.hostname + ":" + this.port + "/" + this.database + "?autoReconnect=true",
-				this.username, this.password);
-
-		return this.connection;
-	}
-
-	@Override
-	public PreparedStatement preparedStatement(String request) throws Exception {
-		if (!checkConnection()) {
-			openConnection();
-		}
-
-		return connection.prepareStatement(request);
+			}else firstThread = sqlThread;
+		if (availableThread != null) availableThread.call(new SQLRequest(requestType, request, callback));
+		else if (firstThread != null) firstThread.call(new SQLRequest(requestType, request, callback));
 	}
 }

@@ -14,12 +14,11 @@ public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 	@Override
 	public void listen(BadblockPlayer player, PlayInUseEntity packet) {
 		FakeEntity<?> entity = FakeEntities.retrieveFakeEntity(packet.getEntityId());
-
-		if (entity != null) {
+		
+		if(entity != null){
 			packet.setCancelled(true);
-
-			Bukkit.getPluginManager()
-					.callEvent(new PlayerFakeEntityInteractEvent(player, entity, packet.getAction(), false));
+			
+			Bukkit.getPluginManager().callEvent(new PlayerFakeEntityInteractEvent(player, entity, packet.getAction(), false));
 		}
 	}
 

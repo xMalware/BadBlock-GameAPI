@@ -14,41 +14,40 @@ import fr.badblock.gameapi.portal.Portal;
 
 public class MoveListener extends BadListener {
 	@EventHandler
-	public void onMove(PlayerMoveEvent e) {
+	public void onMove(PlayerMoveEvent e){
 
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
-		if (player.getCenterJail() != null) {
+		if(player.getCenterJail() != null){
 
 			Location loc = e.getTo().clone();
 			loc.setY(player.getCenterJail().getY());
 
-			if (loc.distance(player.getCenterJail()) >= player.getRadius()) {
+			if(loc.distance(player.getCenterJail()) >= player.getRadius()){
 				e.setCancelled(true);
 
 				player.teleport(player.getCenterJail());
 				player.sendTranslatedMessage("game.move-toofar");
 			}
 
-		} else if (player.isDisguised()) {
+		} else if(player.isDisguised()){
 			player.getDisguiseEntity().teleport(e.getTo());
 		}
 
-		if (e.getFrom().getBlock().equals(e.getTo().getBlock()))
-			return;
+		if(e.getFrom().getBlock().equals(e.getTo().getBlock())) return;
 
 		Portal portal = GameAPI.getAPI().getPortal(e.getTo());
 
-		if (portal != null && portal.canUsePortal(player, e.getTo())) {
+		if(portal != null && portal.canUsePortal(player, e.getTo())){
 			portal.teleport(player);
 		}
 	}
 
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void onTeleport(PlayerTeleportEvent e) {
+ 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onTeleport(PlayerTeleportEvent e){
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
-		if (player.isDisguised()) {
+		if(player.isDisguised()){
 			player.getDisguiseEntity().teleport(e.getTo());
 		}
 		player.inGameData(CommandInGameData.class).lastLocation = e.getFrom();

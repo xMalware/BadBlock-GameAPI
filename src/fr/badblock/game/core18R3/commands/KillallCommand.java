@@ -19,26 +19,6 @@ import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class KillallCommand extends AbstractCommand {
-	private class Count {
-		int count = 0;
-
-		public void inc() {
-			count++;
-		}
-	}
-
-	private class Filter {
-		Predicate<EntityType> test;
-
-		public Filter(Predicate<EntityType> test) {
-			this.test = test;
-		}
-
-		public boolean test(EntityType type) {
-			return test.test(type);
-		}
-	}
-
 	private static final List<EntityType> no = new ArrayList<>();
 
 	static {
@@ -52,29 +32,13 @@ public class KillallCommand extends AbstractCommand {
 		no.add(EntityType.UNKNOWN);
 	}
 
-	private static List<String> values() {
-		List<String> result = new ArrayList<>();
-
-		result.add("all");
-		result.add("monsters");
-		result.add("peaceful");
-
-		for (EntityType type : EntityType.values()) {
-			if (!no.contains(type))
-				result.add(type.name().toLowerCase());
-		}
-
-		return result;
-	}
-
 	public KillallCommand() {
-		super("killall", new TranslatableString("commands.killall.usage", StringUtils.join(values(), ", ")),
-				GamePermission.ADMIN);
+		super("killall", new TranslatableString("commands.killall.usage", StringUtils.join(values(), ", ")), GamePermission.ADMIN);
 	}
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length == 0) {
+		if(args.length == 0){
 			return false;
 		}
 
@@ -82,17 +46,17 @@ public class KillallCommand extends AbstractCommand {
 
 		Filter filter;
 
-		if (name.equalsIgnoreCase("all")) {
+		if(name.equalsIgnoreCase("all")){
 			filter = new Filter(type -> {
 				return type != EntityType.PLAYER;
 			});
-		} else if (name.equalsIgnoreCase("monsters")) {
+		} else if(name.equalsIgnoreCase("monsters")){
 			filter = new Filter(type -> {
 				CreatureType ctype = CreatureType.getByBukkit(type);
 
 				return ctype != null && ctype.isHostile();
 			});
-		} else if (name.equalsIgnoreCase("peaceful")) {
+		} else if(name.equalsIgnoreCase("peaceful")){
 			filter = new Filter(type -> {
 				CreatureType ctype = CreatureType.getByBukkit(type);
 
@@ -104,9 +68,9 @@ public class KillallCommand extends AbstractCommand {
 			try {
 				type = EntityType.valueOf(name);
 
-				if (no.contains(type))
+				if(no.contains(type))
 					return false;
-			} catch (Exception e) {
+			} catch(Exception e){
 				return false;
 			}
 
@@ -121,7 +85,7 @@ public class KillallCommand extends AbstractCommand {
 
 			world.getEntities().forEach(entity -> {
 
-				if (filter.test(entity.getType())) {
+				if(filter.test(entity.getType())){
 					count.inc();
 					entity.remove();
 				}
@@ -129,26 +93,25 @@ public class KillallCommand extends AbstractCommand {
 			});
 
 		});
-
+		
 		int removed = 0;
-
-		if (sender instanceof Player) {
-			removed = remove(Arrays.asList(((Player) sender).getWorld()), filter);
-		} else
-			removed = remove(Bukkit.getWorlds(), filter);
+		
+		if(sender instanceof Player){
+			removed = remove(Arrays.asList( ((Player) sender).getWorld() ), filter);
+		} else removed = remove(Bukkit.getWorlds(), filter);
 
 		new TranslatableString("commands.killall.killed", removed).send(sender);
 		return true;
 	}
 
-	private int remove(Collection<World> worlds, Filter filter) {
+	private int remove(Collection<World> worlds, Filter filter){
 		Count count = new Count();
-
+		
 		Bukkit.getWorlds().forEach(world -> {
 
 			world.getEntities().forEach(entity -> {
 
-				if (filter.test(entity.getType())) {
+				if(filter.test(entity.getType())){
 					count.inc();
 					entity.remove();
 				}
@@ -156,7 +119,42 @@ public class KillallCommand extends AbstractCommand {
 			});
 
 		});
-
+		
 		return count.count;
+	}
+
+	private static List<String> values(){
+		List<String> result = new ArrayList<>();
+
+		result.add("all");
+		result.add("monsters");
+		result.add("peaceful");
+
+		for(EntityType type : EntityType.values()){
+			if(!no.contains(type))
+				result.add(type.name().toLowerCase());
+		}
+
+		return result;
+	}
+
+	private class Count {
+		int count = 0;
+
+		public void inc(){
+			count++;
+		}
+	}
+
+	private class Filter {
+		Predicate<EntityType> test;
+
+		public Filter(Predicate<EntityType> test){
+			this.test = test;
+		}
+
+		public boolean test(EntityType type){
+			return test.test(type);
+		}
 	}
 }

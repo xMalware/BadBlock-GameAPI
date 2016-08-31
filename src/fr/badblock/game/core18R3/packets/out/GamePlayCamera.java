@@ -10,29 +10,27 @@ import lombok.experimental.Accessors;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutCamera;
 
-@NoArgsConstructor
-@Data
-@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor@Data
+@EqualsAndHashCode(callSuper=false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayCamera extends GameBadblockOutPacket implements PlayCamera {
 	private int entityId;
-
-	public GamePlayCamera(PacketPlayOutCamera packet) {
+	
+	public GamePlayCamera(PacketPlayOutCamera packet){
 		Reflector reflector = new Reflector(packet);
-
+		
 		try {
-			entityId = (int) reflector.getFieldValue("a");
-		} catch (Exception e) {
-		}
+			entityId  = (int) reflector.getFieldValue("a");
+		} catch(Exception e){}
 	}
-
+	
 	@Override
 	public Packet<?> buildPacket() throws Exception {
-		PacketPlayOutCamera packet = new PacketPlayOutCamera();
-		Reflector reflector = new Reflector(packet);
-
+		PacketPlayOutCamera packet    = new PacketPlayOutCamera();
+		Reflector			reflector = new Reflector(packet);
+		
 		reflector.setFieldValue("a", entityId);
-
+		
 		return packet;
 	}
 

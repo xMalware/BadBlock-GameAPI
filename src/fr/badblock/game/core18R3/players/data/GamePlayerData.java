@@ -25,36 +25,52 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
 
-@Getter
-@ToString
+@Getter@ToString
 public class GamePlayerData implements PlayerData {
 
-	private int badcoins = 0;
-	private int level = 1;
-	private long xp = 0L;
-	private Set<PlayerBooster> boosters = new HashSet<>();
-	private Map<String, Integer> kits = Maps.newConcurrentMap();
-	private Map<String, String> lastUsedKits = Maps.newConcurrentMap();
-	private Map<String, PlayerAchievementState> achievements = Maps.newConcurrentMap();
+	private int  				 						  badcoins     	   = 0;
+	private int  				 						  level	     	   = 1;
+	private long 										  xp		       = 0L;
+	private Set<PlayerBooster>							  boosters		   = new HashSet<>();
+	private Map<String, Integer> 						  kits 		 	   = Maps.newConcurrentMap();
+	private Map<String, String>							  lastUsedKits 	   = Maps.newConcurrentMap();
+	private Map<String, PlayerAchievementState> 		  achievements 	   = Maps.newConcurrentMap();
 
-	private Map<String, Map<String, Double>> stats = Maps.newConcurrentMap();
+	private Map<String, Map<String, Double>> 			  stats   	 	   = Maps.newConcurrentMap();
 
-	private transient List<String> achloadeds = new ArrayList<>();
+	private transient List<String>						  achloadeds	   = new ArrayList<>();
 
-	private transient Map<String, GameData> datas = Maps.newConcurrentMap();
-	private transient JsonObject data = new JsonObject();
-	private transient JsonObject object = new JsonObject();
+	private transient Map<String, GameData> 			  datas 		   = Maps.newConcurrentMap();
+	private transient JsonObject 						  data		 	   = new JsonObject();
+	private transient JsonObject 						  object		   = new JsonObject();
+
+	public void setData(JsonObject data){
+		if(data.has("other")){
+			this.data = data.get("other").getAsJsonObject();
+		}
+	}
 
 	@Override
 	public int addBadcoins(int badcoins, boolean applyBonus) {
 		badcoins = Math.abs(badcoins);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
-			double playerBonus = BoosterUtil.getBoosted(this, BoostedValue.COINS);
+            double playerBonus = BoosterUtil.getBoosted(this, BoostedValue.COINS);
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
-			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
-		}
+ 			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
+        }
 		return this.badcoins += badcoins;
+	}
+
+	@Override
+	public void removeBadcoins(int badcoins) {
+		this.badcoins -= Math.abs(badcoins);
+	}
+
+	@Override
+	public long getXpUntilNextLevel() {
+		Double doublet = Math.pow(1.1d, level + 1) * 100;
+		return doublet.longValue();
 	}
 
 	@Override
@@ -62,10 +78,10 @@ public class GamePlayerData implements PlayerData {
 		xp = Math.abs(xp);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
-			double playerBonus = BoosterUtil.getBoosted(this, BoostedValue.XP);
+ 			double playerBonus = BoosterUtil.getBoosted(this, BoostedValue.XP);
 			double serverBonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
-			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
-		}
+ 			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
+        }
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
 		if (delta > 0)
 			return this.xp += xp;
@@ -74,31 +90,142 @@ public class GamePlayerData implements PlayerData {
 	}
 
 	@Override
+	public PlayerAchievementState getAchievementState(@NonNull PlayerAchievement achievement) {
+		String name = achievement.getName().toLowerCase();
+
+		if(achievements.containsKey(name)){
+			PlayerAchievementState ach = achievements.get(name);
+			if(achievement.isTemp() && !achloadeds.contains(name) && !ach.isSucceeds()){
+				ach.setProgress(0.0d);
+			}
+
+			return ach;
+		} else {
+			PlayerAchievementState state = new PlayerAchievementState();
+			achievements.put(name, state);
+			achloadeds.add(name);
+
+			return state;
+		}
+	}
+	
+	@Override
+	public void incrementAchievements(BadblockPlayer player, PlayerAchievement... achievements) {
+		for(PlayerAchievement achievement : achievements){
+			PlayerAchievementState state = getAchievementState(achievement);
+			state.progress(1.0d);
+			state.trySucceed(player, achievement);
+		}		
+	}
+
+	@Override
+	public int getUnlockedKitLevel(@NonNull PlayerKit kit) {
+		String name = kit.getKitName().toLowerCase();
+
+		if(kits.containsKey(name))
+			return kits.get(name);
+		else return 0;
+	}
+
+	@Override
 	public boolean canUnlockNextLevel(@NonNull PlayerKit kit) {
 		int nextLevel = getUnlockedKitLevel(kit) + 1;
 
-		if (kit.getMaxLevel() < nextLevel || kit.getBadcoinsCost(nextLevel) > badcoins)
+		if(kit.getMaxLevel() < nextLevel || kit.getBadcoinsCost(nextLevel) > badcoins)
 			return false;
 
-		for (PlayerAchievement achievement : kit.getNeededAchievements(nextLevel)) {
-			if (!getAchievementState(achievement).isSucceeds())
+		for(PlayerAchievement achievement : kit.getNeededAchievements(nextLevel)){
+			if(!getAchievementState(achievement).isSucceeds())
 				return false;
 		}
 
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
+	public void unlockNextLevel(@NonNull PlayerKit kit){
+		if(!canUnlockNextLevel(kit)) return;
+
+		int nextLevel = getUnlockedKitLevel(kit) + 1;
+
+		removeBadcoins(kit.getBadcoinsCost(nextLevel));
+		kits.put(kit.getKitName().toLowerCase(), nextLevel);
+	}
+
+	@Override
+	public String getLastUsedKit(@NonNull String game) {
+		game = game.toLowerCase();
+		return lastUsedKits.containsKey(game) ? lastUsedKits.get(game) : null;
+	}
+
+	@Override
+	public void setLastUsedKit(@NonNull String game, String kit) {
+		game = game.toLowerCase();
+		kit  = kit == null ? null : kit.toLowerCase();
+
+
+		if(kit == null && lastUsedKits.containsKey(game)){
+			lastUsedKits.remove(game);
+		} else if(kit != null){
+			lastUsedKits.put(game, kit);
+		}
+	}
+
+	@Override
+	public Locale getLocale() {
+		return Locale.FRENCH_FRANCE; //TODO changer �a
+	}
+
+	@Override
+	public double getStatistics(String gameName, String stat) {
+		stat = stat.toLowerCase();
+		Map<String, Double> gameStats = getGameStats(gameName);
+
+		if(!gameStats.containsKey(stat)){
+			gameStats.put(stat, 0d);
+		}
+
+		return gameStats.get(stat);
+	}
+
+	@Override
+	public void incrementStatistic(String gameName, String stat){
+		increaseStatistic(gameName, stat, 1.0d);
+	}
+
+	@Override
+	public void increaseStatistic(String gameName, String stat, double value){
+		stat = stat.toLowerCase();
+		Map<String, Double> gameStats = getGameStats(gameName);
+
+		if(!gameStats.containsKey(stat)){
+			gameStats.put(stat, 0d);
+		}
+
+		double newValue = value + gameStats.get(stat);
+		gameStats.put(stat, newValue);
+	}
+
+	protected Map<String, Double> getGameStats(String gameName){
+		gameName = gameName.toLowerCase();
+
+		if(!stats.containsKey(gameName)){
+			stats.put(gameName, Maps.newConcurrentMap());
+		}
+
+		return stats.get(gameName);
+	}
+
+	@SuppressWarnings("unchecked") @Override
 	public <T extends GameData> T gameData(String key, Class<T> clazz) {
 		key = key.toLowerCase();
 
 		T result = null;
 
-		if (datas.containsKey(key)) {
+		if(datas.containsKey(key)){
 			result = (T) datas.get(key);
-		} else if (data.has(key)) {
-			// System.out.println(data.get(key));
+		} else if(data.has(key)){
+			//System.out.println(data.get(key));
 			result = GameAPI.getGson().fromJson(data.get(key), clazz);
 			datas.put(key, result);
 		} else
@@ -113,112 +240,11 @@ public class GamePlayerData implements PlayerData {
 	}
 
 	@Override
-	public PlayerAchievementState getAchievementState(@NonNull PlayerAchievement achievement) {
-		String name = achievement.getName().toLowerCase();
-
-		if (achievements.containsKey(name)) {
-			PlayerAchievementState ach = achievements.get(name);
-			if (achievement.isTemp() && !achloadeds.contains(name) && !ach.isSucceeds()) {
-				ach.setProgress(0.0d);
-			}
-
-			return ach;
-		} else {
-			PlayerAchievementState state = new PlayerAchievementState();
-			achievements.put(name, state);
-			achloadeds.add(name);
-
-			return state;
-		}
-	}
-
-	protected Map<String, Double> getGameStats(String gameName) {
-		gameName = gameName.toLowerCase();
-
-		if (!stats.containsKey(gameName)) {
-			stats.put(gameName, Maps.newConcurrentMap());
-		}
-
-		return stats.get(gameName);
-	}
-
-	@Override
-	public String getLastUsedKit(@NonNull String game) {
-		game = game.toLowerCase();
-		return lastUsedKits.containsKey(game) ? lastUsedKits.get(game) : null;
-	}
-
-	@Override
-	public Locale getLocale() {
-		return Locale.FRENCH_FRANCE; // TODO changer �a
-	}
-
-	@Override
-	public double getStatistics(String gameName, String stat) {
-		stat = stat.toLowerCase();
-		Map<String, Double> gameStats = getGameStats(gameName);
-
-		if (!gameStats.containsKey(stat)) {
-			gameStats.put(stat, 0d);
-		}
-
-		return gameStats.get(stat);
-	}
-
-	@Override
-	public int getUnlockedKitLevel(@NonNull PlayerKit kit) {
-		String name = kit.getKitName().toLowerCase();
-
-		if (kits.containsKey(name))
-			return kits.get(name);
-		else
-			return 0;
-	}
-
-	@Override
-	public long getXpUntilNextLevel() {
-		Double doublet = Math.pow(1.1d, level + 1) * 100;
-		return doublet.longValue();
-	}
-
-	@Override
-	public void increaseStatistic(String gameName, String stat, double value) {
-		stat = stat.toLowerCase();
-		Map<String, Double> gameStats = getGameStats(gameName);
-
-		if (!gameStats.containsKey(stat)) {
-			gameStats.put(stat, 0d);
-		}
-
-		double newValue = value + gameStats.get(stat);
-		gameStats.put(stat, newValue);
-	}
-
-	@Override
-	public void incrementAchievements(BadblockPlayer player, PlayerAchievement... achievements) {
-		for (PlayerAchievement achievement : achievements) {
-			PlayerAchievementState state = getAchievementState(achievement);
-			state.progress(1.0d);
-			state.trySucceed(player, achievement);
-		}
-	}
-
-	@Override
-	public void incrementStatistic(String gameName, String stat) {
-		increaseStatistic(gameName, stat, 1.0d);
-	}
-
-	@Override
-	public void removeBadcoins(int badcoins) {
-		this.badcoins -= Math.abs(badcoins);
-	}
-
-	@Override
 	public JsonObject saveData() {
 		JsonObject object = GameAPI.getGson().toJsonTree(this).getAsJsonObject();
 
-		for (Entry<String, GameData> entries : datas.entrySet()) {
-			if (data.has(entries.getKey())) {
+		for(Entry<String, GameData> entries : datas.entrySet()){
+			if(data.has(entries.getKey())){
 				data.remove(entries.getKey());
 			}
 
@@ -231,34 +257,5 @@ public class GamePlayerData implements PlayerData {
 		result.add("game", object);
 
 		return result;
-	}
-
-	public void setData(JsonObject data) {
-		if (data.has("other")) {
-			this.data = data.get("other").getAsJsonObject();
-		}
-	}
-
-	@Override
-	public void setLastUsedKit(@NonNull String game, String kit) {
-		game = game.toLowerCase();
-		kit = kit == null ? null : kit.toLowerCase();
-
-		if (kit == null && lastUsedKits.containsKey(game)) {
-			lastUsedKits.remove(game);
-		} else if (kit != null) {
-			lastUsedKits.put(game, kit);
-		}
-	}
-
-	@Override
-	public void unlockNextLevel(@NonNull PlayerKit kit) {
-		if (!canUnlockNextLevel(kit))
-			return;
-
-		int nextLevel = getUnlockedKitLevel(kit) + 1;
-
-		removeBadcoins(kit.getBadcoinsCost(nextLevel));
-		kits.put(kit.getKitName().toLowerCase(), nextLevel);
 	}
 }

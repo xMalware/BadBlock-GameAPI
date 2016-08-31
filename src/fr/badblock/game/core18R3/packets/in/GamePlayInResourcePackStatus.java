@@ -7,18 +7,16 @@ import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInResourcePackStatus;
 import net.minecraft.server.v1_8_R3.PacketPlayInResourcePackStatus.EnumResourcePackStatus;
 
-@Getter
-public class GamePlayInResourcePackStatus extends GameBadblockInPacket implements PlayInResourcePackStatus {
-	private String hash;
+@Getter public class GamePlayInResourcePackStatus extends GameBadblockInPacket implements PlayInResourcePackStatus {
+	private String 			   hash;
 	private ResourcePackStatus status;
-
-	public GamePlayInResourcePackStatus(PacketPlayInResourcePackStatus packet) {
+	
+	public GamePlayInResourcePackStatus(PacketPlayInResourcePackStatus packet){
 		super(packet);
 		Reflector reflector = new Reflector(packet);
 		try {
-			this.hash = (String) reflector.getFieldValue("a");
+			this.hash   = (String) reflector.getFieldValue("a");
 			this.status = ResourcePackStatus.valueOf(((EnumResourcePackStatus) reflector.getFieldValue("b")).name());
-		} catch (Exception e) {
-		}
+		} catch (Exception e){}
 	}
 }

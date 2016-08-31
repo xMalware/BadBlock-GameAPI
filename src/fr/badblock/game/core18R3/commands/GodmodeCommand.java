@@ -20,31 +20,30 @@ public class GodmodeCommand extends AbstractCommand {
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer concerned = null;
 
-		if (args.length == 0) {
-			if (sender instanceof Player) {
+		if(args.length == 0){
+			if(sender instanceof Player){
 				concerned = (BadblockPlayer) sender;
-			} else
-				return false;
+			} else return false;
 		} else {
 			concerned = (BadblockPlayer) Bukkit.getPlayer(args[0]);
 		}
-
-		if (concerned == null) {
+		
+		if(concerned == null){
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 			return true;
 		}
-
+		
 		boolean godmode = concerned.inGameData(CommandInGameData.class).godmode;
-
+		
 		concerned.inGameData(CommandInGameData.class).godmode = !godmode;
-
+		
 		String godStr = godmode ? "remove" : "set";
-
+		
 		concerned.sendTranslatedMessage("commands.godmode." + godStr);
-
-		if (!concerned.equals(sender))
+		
+		if(!concerned.equals(sender))
 			GameAPI.i18n().sendMessage(sender, "commands.godmode." + godStr + "-confirm", concerned.getName());
-
+		
 		return true;
 	}
 }

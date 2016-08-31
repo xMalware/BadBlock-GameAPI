@@ -7,29 +7,27 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 
-@NoArgsConstructor
-@Data
-@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor@Data
+@EqualsAndHashCode(callSuper=false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayChat extends GameBadblockOutPacket implements PlayChat {
-	private ChatType type = ChatType.CHAT;
-	private String content = "";
+	private ChatType 		type	   = ChatType.CHAT;
+	private String			content    = "";
 
-	public GamePlayChat(PacketPlayOutChat packet) {
+	public GamePlayChat(PacketPlayOutChat packet){
 		Reflector reflector = new Reflector(packet);
-
+		
 		try {
-			type = ChatType.getByValue((byte) reflector.getFieldValue("b"));
-			content = BaseComponent.toLegacyText(fromChat((IChatBaseComponent) reflector.getFieldValue("a")));
-		} catch (Exception e) {
-		}
+			type  	   = ChatType.getByValue((byte) reflector.getFieldValue("b"));
+			content	   = TextComponent.toLegacyText(fromChat((IChatBaseComponent) reflector.getFieldValue("a")));
+		} catch(Exception e){}
 	}
-
+	
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		return new PacketPlayOutChat(getChat(content), type.getValue());

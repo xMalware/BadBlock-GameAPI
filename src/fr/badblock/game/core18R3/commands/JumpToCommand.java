@@ -13,11 +13,10 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 /**
  * Commande de j
- * 
  * @author LeLanN
  */
 public class JumpToCommand extends AbstractCommand {
-
+	
 	public JumpToCommand() {
 		super("jumpto", new TranslatableString("commands.jumpto.usage"), GamePermission.ADMIN, "j");
 		allowConsole(false);
@@ -26,54 +25,54 @@ public class JumpToCommand extends AbstractCommand {
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		Block blockTarget = null;
-		boolean first = true;
-		boolean can = false;
-
+		boolean first 	  = true;
+		boolean can   	  = false;
+		
 		int maxBlock = 40;
-		int block = 0;
+		int block	 = 0;
 		BadblockPlayer player = (BadblockPlayer) sender;
-		Location location = player.getEyeLocation().clone();
-		Vector direction = player.getEyeLocation().getDirection();
-
-		Block previous = location.getBlock();
-
-		while (true) {
+		Location location  = player.getEyeLocation().clone();
+		Vector   direction = player.getEyeLocation().getDirection();
+		
+		Block 	   previous = location.getBlock();
+		
+		while(true){
 			location = location.add(direction);
 			Block b = location.getBlock();
-
-			if (previous.equals(b)) {
+			
+			if(previous.equals(b)){
 				continue;
 			}
-
+			
 			previous = b;
-
-			if (!b.getType().equals(Material.AIR)) {
-				if (first) {
+			
+			if(!b.getType().equals(Material.AIR)) {
+				if(first){
 					first = false;
-				} else if (can) {
+				} else if(can){
 					blockTarget = b;
 					break;
 				}
-			} else if (!first) {
+			} else if(!first){
 				can = true;
 			}
-
+			
 			block++;
-
-			if (block > maxBlock)
+			
+			if(block > maxBlock)
 				break;
 		}
-
-		if (blockTarget == null) {
+		
+		if(blockTarget == null){
 			player.sendTranslatedMessage("game.compass.tp.nothingpassthrough");
 		} else {
 			Location to = blockTarget.getLocation().add(0.5d, 1d, 0.5d);
 			to.setYaw(player.getLocation().getYaw());
 			to.setPitch(player.getLocation().getPitch());
-
+			
 			player.teleport(to);
 		}
 		return true;
 	}
-
+	
 }

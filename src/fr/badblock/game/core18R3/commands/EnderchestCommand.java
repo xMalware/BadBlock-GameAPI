@@ -16,28 +16,28 @@ public class EnderchestCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		BadblockPlayer player = (BadblockPlayer) sender;
+		BadblockPlayer player	 = (BadblockPlayer) sender;
 		BadblockPlayer concerned = null;
-
-		if (args.length > 0) {
+	
+		if(args.length > 0){
 			concerned = (BadblockPlayer) Bukkit.getPlayer(args[0]);
 		} else {
 			concerned = (BadblockPlayer) sender;
 		}
 
-		if (concerned == null) {
+		if(concerned == null){
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
-			if (!concerned.equals(sender)) {
-				if (!sender.hasPermission(GamePermission.ADMIN.getPermission())) {
+			if(!concerned.equals(sender)){
+				if(!sender.hasPermission(GamePermission.ADMIN.getPermission())){
 					sendTranslatedMessage(sender, "commands.nopermission");
 					return true;
 				}
 			}
-
+			
 			player.openInventory(concerned.getEnderChest());
 		}
-
+		
 		return true;
 	}
 }

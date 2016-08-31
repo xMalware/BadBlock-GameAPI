@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class ToOpenVillager {
-	BadblockPlayer player;
+	BadblockPlayer 		  player;
 	GameMerchantInventory inventory;
-	TranslatableString customName;
+	TranslatableString 	  customName;
 }

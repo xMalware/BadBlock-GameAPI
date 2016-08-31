@@ -39,74 +39,39 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class GameChestGenerator extends BadListener implements ChestGenerator {
-	@NoArgsConstructor
-	public static class ChestConfiguration {
-		public int maxItemsPerLine = 3;
-		public List<ChestMapItemStack> itemStacks = new ArrayList<>();
-	}
-	@Data
-	@EqualsAndHashCode(callSuper = false)
-	public static class ChestMapItemStack extends MapItemStack {
-		private int probability;
-		private transient boolean keep;
-
-		public ChestMapItemStack() {
-			this.keep = true;
-		}
-
-		public ChestMapItemStack(ItemStack is, int prob) {
-			super(is);
-
-			this.probability = prob;
-			this.keep = true;
-		}
-
-		public ChestMapItemStack(ItemStack is, int prob, boolean keep) {
-			super(is);
-
-			this.probability = prob;
-			this.keep = keep;
-		}
-	}
-
-	@AllArgsConstructor
-	public static class RemovedChest {
-		public Location location;
-		public BlockFace blockFace;
-	}
-
-	private List<Location> filledChests = new ArrayList<>();
+	private List<Location> 	   filledChests = new ArrayList<>();
 	private List<RemovedChest> removedChest = new ArrayList<>();
-	@Getter
-	private boolean working = false;
-	private File configFile;
 
+	@Getter
+	private boolean 		   working 		= false;
+
+	private File 			   configFile;
 	private ChestConfiguration config;
-
-	private Random random = new Random();
-
-	@Getter
-	@Setter
-	private boolean removeOnOpen = false;
+	private Random 			   random 	    = new Random();
+	@Getter@Setter
+	private boolean			   removeOnOpen = false;
 
 	@Override
-	public void addItemInConfiguration(ItemStack item, int probability, boolean save) {
-		if (!isConfigurated())
-			throw new IllegalStateException("ChestGenerator is not configurated!");
+	public void setConfigurationFile(File file) {
+		if(isConfigurated())
+			throw new IllegalStateException("ChestGenerator is already configurated!");
 
-		config.itemStacks.add(new ChestMapItemStack(item, probability, save));
+		new ChestGeneratorCommand(this);
+
+		this.configFile = file;
+		this.config 	= JsonUtils.load(file, ChestConfiguration.class);
+
 		saveConfig();
 	}
 
-	@Override
-	public void beginJob() {
-		working = true;
-	}
-
-	private void generate0(Chest chest) {
-		Inventory inv = chest.getBlockInventory();
-
-		inv.setContents(generateChest(3));
+	private void saveConfig(){
+		ChestConfiguration cloned = new ChestConfiguration();
+		cloned.maxItemsPerLine = config.maxItemsPerLine;
+		cloned.itemStacks	   = config.itemStacks.stream().filter(item -> {
+			return item.keep;
+		}).collect(Collectors.toList());
+		
+		JsonUtils.save(configFile, cloned, true);
 	}
 
 	@Override
@@ -116,30 +81,28 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 		ItemStack[] result = new ItemStack[lines * 9];
 
-		int max = config.itemStacks.stream().mapToInt(item -> {
-			return item.probability;
-		}).sum();
+		int max = config.itemStacks.stream().mapToInt(item -> { return item.probability; }).sum();
 
-		if (max > 0)
-			for (int i = 0; i < items; i++) {
+		if(max > 0)
+			for(int i=0;i<items;i++){
 				int value = new Random().nextInt(max);
-				int curr = 0;
+				int curr  = 0;
 
 				ChestMapItemStack res = null;
 
-				for (ChestMapItemStack item : config.itemStacks) {
+				for(ChestMapItemStack item : config.itemStacks){
 					curr += item.probability;
 
-					if (value <= curr) {
+					if(value <= curr){
 						res = item;
 						break;
 					}
 				}
 
-				while (true) {
+				while(true){
 					int pos = random.nextInt(result.length);
 
-					if (result[pos] == null) {
+					if(result[pos] == null){
 						result[pos] = res.getHandle();
 						break;
 					}
@@ -149,75 +112,78 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		return result;
 	}
 
-	private Block getNearbyChest(Block block) {
-		BlockFace[] faces = new BlockFace[] { BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH };
-
-		for (BlockFace face : faces) {
-			Block relative = block.getRelative(face);
-
-			if (relative.getType() == Material.CHEST)
-				return relative;
-		}
-
-		return null;
-	}
-
 	@Override
-	public boolean isConfigurated() {
+	public boolean isConfigurated(){
 		return config != null && configFile != null;
 	}
 
+	@Override
+	public void beginJob() {
+		working = true;
+	}
+
+	@Override
+	public void resetChests() {
+		filledChests.clear();
+
+		for(RemovedChest chest : removedChest){
+			Block block = chest.location.getBlock();
+			block.setType(Material.CHEST);
+
+			DirectionalContainer container = (DirectionalContainer) block.getState().getData();
+			container.setFacingDirection(chest.blockFace);
+		}
+	}
+
 	@EventHandler
-	public void onInteract(PlayerInteractEvent e) {
-		if (!working || e.getAction() != Action.RIGHT_CLICK_BLOCK)
+	public void onInteract(PlayerInteractEvent e){
+		if(!working || e.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
 
 		Block block = e.getClickedBlock();
 
-		if (block.getType() != Material.CHEST || filledChests.contains(block.getLocation()))
+		if(block.getType() != Material.CHEST || filledChests.contains(block.getLocation()))
 			return;
 
-		generate0((Chest) block.getState());
+		generate0( (Chest) block.getState() );
 
 		Block relative = getNearbyChest(block);
 
-		if (relative != null)
-			generate0((Chest) relative.getState());
+		if(relative != null)
+			generate0( (Chest) relative.getState() );
 	}
 
 	@EventHandler
-	public void onInventoryClose(InventoryCloseEvent e) {
-		if (isWorking() && isRemoveOnOpen()) {
-			if (e.getInventory().getHolder() instanceof Chest) {
+	public void onInventoryClose(InventoryCloseEvent e){
+		if(isWorking() && isRemoveOnOpen()){
+			if(e.getInventory().getHolder() instanceof Chest){
 				Chest c = (Chest) e.getInventory().getHolder();
 
 				remove0(c);
-			} else if (e.getInventory().getHolder() instanceof DoubleChest) {
+			} else if(e.getInventory().getHolder() instanceof DoubleChest){
 				DoubleChest c = (DoubleChest) e.getInventory().getHolder();
-
+			
 				Block block = c.getLocation().getBlock();
 
-				remove0((Chest) block.getState());
-
+				remove0( (Chest) block.getState() );
+				
 				Block relative = getNearbyChest(block);
 
-				if (relative != null)
-					remove0((Chest) relative.getState());
+				if(relative != null)
+					remove0( (Chest) relative.getState() );
 			}
 		}
 	}
 
-	private void remove0(Chest c) {
+	private void remove0(Chest c){
 		DirectionalContainer container = (DirectionalContainer) c.getData();
-		removedChest.add(new RemovedChest(c.getBlock().getLocation(), container.getFacing()));
+		removedChest.add( new RemovedChest(c.getBlock().getLocation(), container.getFacing()) );
 
-		Set<ItemStack> toDrop = Arrays.stream(c.getInventory().getContents()).filter(item -> {
-			return ItemStackUtils.isValid(item);
-		}).collect(Collectors.toSet());
-
-		// c.getBlock().getDrops().remove(new ItemStack(Material.CHEST));
-		// c.getBlock().breakNaturally();
-
+		Set<ItemStack> toDrop = Arrays.stream(c.getInventory().getContents()).filter(item -> { return ItemStackUtils.isValid(item); }).collect(Collectors.toSet());
+		
+		//c.getBlock().getDrops().remove(new ItemStack(Material.CHEST));
+		//c.getBlock().breakNaturally();
+		
 		c.getBlock().setType(Material.AIR);
 		Location spawn = c.getBlock().getLocation().add(0d, 0.3d, 0d);
 
@@ -228,38 +194,66 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	}
 
 	@Override
-	public void resetChests() {
-		filledChests.clear();
+	public void addItemInConfiguration(ItemStack item, int probability, boolean save) {
+		if(!isConfigurated())
+			throw new IllegalStateException("ChestGenerator is not configurated!");
 
-		for (RemovedChest chest : removedChest) {
-			Block block = chest.location.getBlock();
-			block.setType(Material.CHEST);
-
-			DirectionalContainer container = (DirectionalContainer) block.getState().getData();
-			container.setFacingDirection(chest.blockFace);
-		}
-	}
-
-	private void saveConfig() {
-		ChestConfiguration cloned = new ChestConfiguration();
-		cloned.maxItemsPerLine = config.maxItemsPerLine;
-		cloned.itemStacks = config.itemStacks.stream().filter(item -> {
-			return item.keep;
-		}).collect(Collectors.toList());
-
-		JsonUtils.save(configFile, cloned, true);
-	}
-
-	@Override
-	public void setConfigurationFile(File file) {
-		if (isConfigurated())
-			throw new IllegalStateException("ChestGenerator is already configurated!");
-
-		new ChestGeneratorCommand(this);
-
-		this.configFile = file;
-		this.config = JsonUtils.load(file, ChestConfiguration.class);
-
+		config.itemStacks.add(new ChestMapItemStack(item, probability, save));
 		saveConfig();
+	}
+	
+	private void generate0(Chest chest){
+		Inventory inv = chest.getBlockInventory();
+
+		inv.setContents(generateChest(3));
+	}
+
+	private Block getNearbyChest(Block block){
+		BlockFace[] faces = new BlockFace[]{BlockFace.EAST, BlockFace.WEST, BlockFace.NORTH, BlockFace.SOUTH};
+
+		for(BlockFace face : faces){
+			Block relative = block.getRelative(face);
+
+			if(relative.getType() == Material.CHEST)
+				return relative;
+		}
+
+		return null;
+	}
+
+	@AllArgsConstructor
+	public static class RemovedChest {
+		public Location  location;
+		public BlockFace blockFace;
+	}
+
+	@NoArgsConstructor
+	public static class ChestConfiguration {
+		public int 				       maxItemsPerLine = 3;
+		public List<ChestMapItemStack> itemStacks	   = new ArrayList<>();
+	}
+
+	@Data@EqualsAndHashCode(callSuper=false)
+	public static class ChestMapItemStack extends MapItemStack {
+		private 		  int 	  probability;
+		private transient boolean keep;
+		
+		public ChestMapItemStack(){
+			this.keep = true;
+		}
+		
+		public ChestMapItemStack(ItemStack is, int prob){
+			super(is);
+
+			this.probability = prob;
+			this.keep		 = true;
+		}
+		
+		public ChestMapItemStack(ItemStack is, int prob, boolean keep){
+			super(is);
+
+			this.probability = prob;
+			this.keep		 = keep;
+		}
 	}
 }

@@ -22,7 +22,7 @@ public class CompassCommand extends AbstractCommand {
 
 		concerned.getInventory().addItem(new ItemStack(Material.COMPASS, 1));
 		concerned.sendMessage(GameAPI.i18n().replaceColors("&7Wi-aah!"));
-
+		
 		return true;
 	}
 }

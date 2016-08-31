@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="files"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="D:/JavaLibs/lombok-1.16.4.jar"/>
+	<classpathentry kind="lib" path="D:/JavaLibs/spigot-1.8.8.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="https://hub.spigotmc.org/javadocs/spigot/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/JavaLibs/commons-net-3.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/BadblockAPI"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/BadBlockCommon"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

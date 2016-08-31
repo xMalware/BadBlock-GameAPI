@@ -22,7 +22,7 @@ public class WandCommand extends AbstractCommand {
 
 		concerned.getInventory().addItem(new ItemStack(Material.BLAZE_ROD, 1));
 		concerned.sendMessage(GameAPI.i18n().replaceColors("&7Wi-aah!"));
-
+		
 		return true;
 	}
 }

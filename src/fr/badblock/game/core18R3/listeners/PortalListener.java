@@ -13,48 +13,45 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.portal.Portal;
 
 public class PortalListener extends BadListener {
-	@EventHandler(ignoreCancelled = true)
-	public void blockPhysics(BlockPhysicsEvent e) {
-		if ((e.getChangedType() == Material.PORTAL) || (e.getBlock().getType() == Material.PORTAL)) {
-			Portal p = GameAPI.getAPI().getPortal(e.getBlock().getLocation());
-
-			if (p != null)
-				e.setCancelled(true);
+	@EventHandler(ignoreCancelled=true)
+	public void onPortalCreate(EntityCreatePortalEvent e){
+		boolean cancel = false;
+		for(BlockState b : e.getBlocks()){
+			Portal p = GameAPI.getAPI().getPortal(b.getBlock().getLocation());
+			
+			if(p != null){
+				cancel = true; break;
+			}
 		}
+		if(cancel) e.setCancelled(true);
 	}
-
+	
 	@EventHandler
-	public void onJoin(PlayerJoinEvent e) {
+	public void onJoin(PlayerJoinEvent e){
 		Portal p = GameAPI.getAPI().getPortal(e.getPlayer().getLocation());
-
-		if (p != null) {
+		
+		if(p != null){
 			e.getPlayer().teleport(e.getPlayer().getLocation().getWorld().getSpawnLocation());
 		}
 	}
-
-	@EventHandler(ignoreCancelled = true)
-	public void onPortalCreate(EntityCreatePortalEvent e) {
-		boolean cancel = false;
-		for (BlockState b : e.getBlocks()) {
-			Portal p = GameAPI.getAPI().getPortal(b.getBlock().getLocation());
-
-			if (p != null) {
-				cancel = true;
-				break;
-			}
-		}
-		if (cancel)
-			e.setCancelled(true);
-	}
-
-	@EventHandler(ignoreCancelled = true)
-	public void onWaterOrLavaFlow(BlockFromToEvent e) {
+	
+	@EventHandler(ignoreCancelled=true)
+	public void onWaterOrLavaFlow(BlockFromToEvent e){
 		Portal p = GameAPI.getAPI().getPortal(e.getBlock().getLocation());
 
-		if (p != null) {
+		if(p != null){
 			Portal p2 = GameAPI.getAPI().getPortal(e.getToBlock().getLocation());
-
-			if (!p.equals(p2))
+			
+			if(!p.equals(p2)) e.setCancelled(true);
+		}
+	}
+	
+	@EventHandler(ignoreCancelled=true)
+	public void blockPhysics(BlockPhysicsEvent e) {
+		if((e.getChangedType() == Material.PORTAL) || (e.getBlock().getType() == Material.PORTAL)){
+			Portal p = GameAPI.getAPI().getPortal(e.getBlock().getLocation());
+			
+			if(p != null)
 				e.setCancelled(true);
 		}
 	}

@@ -12,38 +12,38 @@ import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.i18n.Message;
 
 public class GameLanguageFile {
-	private final File file;
+	private final File 			 	 file;
 	private Map<String, GameMessage> content;
-
-	public GameLanguageFile(File file, String whenUnknow) {
-		this.file = file;
+	
+	public GameLanguageFile(File file, String whenUnknow){
+		this.file    = file;
 		this.content = Maps.newLinkedHashMap();
-
+		
 		JsonObject object = JsonUtils.loadObject(file);
-
-		for (Entry<String, JsonElement> entry : object.entrySet()) {
-			if (entry.getValue().isJsonObject()) {
+		
+		for(Entry<String, JsonElement> entry : object.entrySet()){
+			if(entry.getValue().isJsonObject()){
 				content.put(entry.getKey().toLowerCase(), JsonUtils.convert(entry.getValue(), GameMessage.class));
 				content.get(entry.getKey().toLowerCase()).verify(whenUnknow);
 			}
 		}
 	}
-
-	public Message getMessage(String key, String def) {
+	
+	public Message getMessage(String key, String def){
 		key = key.toLowerCase();
-
-		if (!content.containsKey(key)) {
+		
+		if(!content.containsKey(key)){
 			content.put(key, new GameMessage(def));
 		}
-
+		
 		return content.get(key);
 	}
-
-	public String getName() {
+	
+	public String getName(){
 		return file.getName().split("\\.")[0].toLowerCase();
 	}
-
-	public void save() {
+	
+	public void save(){
 		JsonUtils.save(file, content, true);
 	}
 }

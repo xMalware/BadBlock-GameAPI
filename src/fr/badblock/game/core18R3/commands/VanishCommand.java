@@ -22,45 +22,43 @@ public class VanishCommand extends AbstractCommand {
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer concerned = null;
 
-		if (args.length == 0) {
-			if (sender instanceof Player) {
+		if(args.length == 0){
+			if(sender instanceof Player){
 				concerned = (BadblockPlayer) sender;
-			} else
-				return false;
+			} else return false;
 		} else {
 			concerned = (BadblockPlayer) Bukkit.getPlayer(args[0]);
 		}
-
-		if (concerned == null) {
+		
+		if(concerned == null){
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 			return true;
 		}
-
+		
 		boolean vanish = concerned.inGameData(CommandInGameData.class).vanish;
 		concerned.inGameData(CommandInGameData.class).vanish = !vanish;
-
+		
 		String vanStr = vanish ? "remove" : "set";
-
+		
 		concerned.sendTranslatedMessage("commands.vanish." + vanStr);
-
-		if (!concerned.equals(sender))
+		
+		if(!concerned.equals(sender))
 			GameAPI.i18n().sendMessage(sender, "commands.vanish." + vanStr + "-confirm", concerned.getName());
-
-		for (Player player : Bukkit.getOnlinePlayers()) {
+		
+        if(vanish){
+				concerned.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1, Integer.MAX_VALUE, false, false));
+        } else concerned.removePotionEffect(PotionEffectType.INVISIBILITY);
+        
+		for(Player player : Bukkit.getOnlinePlayers()){
 			BadblockPlayer p = (BadblockPlayer) player;
-
-			if(vanish){
-				p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1, Integer.MAX_VALUE, false, false));
-			} else p.removePotionEffect(PotionEffectType.INVISIBILITY);
 			
-			if (!p.hasPermission(GamePermission.BMODERATOR) && !p.equals(concerned)) {
-				if (!vanish)
+			if(!p.hasPermission(GamePermission.BMODERATOR) && !p.equals(concerned)){
+				if(!vanish)
 					p.hidePlayer(concerned);
-				else
-					p.showPlayer(concerned);
+				else p.showPlayer(concerned);
 			}
 		}
-
+		
 		return true;
 	}
 }

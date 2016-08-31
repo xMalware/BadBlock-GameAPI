@@ -12,37 +12,37 @@ import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.i18n.Word;
 
 public class GameLanguageWordFile {
-	private final File file;
+	private final File 			  file;
 	private Map<String, GameWord> content;
 
-	public GameLanguageWordFile(File file) {
-		this.file = file;
+	public GameLanguageWordFile(File file){
+		this.file    = file;
 		this.content = Maps.newLinkedHashMap();
 
 		JsonObject object = JsonUtils.loadObject(file);
 
-		for (Entry<String, JsonElement> entry : object.entrySet()) {
-			if (entry.getValue().isJsonObject()) {
+		for(Entry<String, JsonElement> entry : object.entrySet()){
+			if(entry.getValue().isJsonObject()){
 				content.put(entry.getKey().toLowerCase(), JsonUtils.convert(entry.getValue(), GameWord.class));
 			}
 		}
 	}
 
-	public String getName() {
-		return file.getName().split("\\.")[0].toLowerCase();
-	}
-
-	public Word getWord(String key) {
+	public Word getWord(String key){
 		key = key.toLowerCase();
 
-		if (!content.containsKey(key)) {
+		if(!content.containsKey(key)){
 			content.put(key, new GameWord());
 		}
-
+		
 		return content.get(key);
 	}
 
-	public void save() {
+	public String getName(){
+		return file.getName().split("\\.")[0].toLowerCase();
+	}
+
+	public void save(){
 		JsonUtils.save(file, content, true);
 	}
 }
