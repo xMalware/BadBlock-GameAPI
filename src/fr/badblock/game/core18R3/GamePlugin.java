@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,6 +21,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -114,6 +117,7 @@ import fr.badblock.game.core18R3.merchant.shops.Merchant;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket.GameBadblockOutPackets;
 import fr.badblock.game.core18R3.packets.out.GameParticleEffect;
+import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.GameCustomObjective;
 import fr.badblock.game.core18R3.players.GameTeam;
 import fr.badblock.game.core18R3.players.data.GameKit;
@@ -142,6 +146,7 @@ import fr.badblock.gameapi.particles.ParticleEffectType;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
@@ -164,6 +169,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.World;
 
 public class GamePlugin extends GameAPI {
@@ -242,6 +249,9 @@ public class GamePlugin extends GameAPI {
 	private double						serverBadcoinsBonus;
 	@Getter
 	private double						serverXpBonus;
+    @Getter
+	private List<BadblockPlayer> 		onlinePlayers;
+
 	
 	@Override
 	public void onEnable() {
@@ -253,6 +263,14 @@ public class GamePlugin extends GameAPI {
 
 		if(!getDataFolder().exists()) getDataFolder().mkdirs();
 
+        this.onlinePlayers = Collections.unmodifiableList(Lists.transform(MinecraftServer.getServer().getPlayerList().players, new Function<EntityPlayer, GameBadblockPlayer>() {
+            @Override
+            public GameBadblockPlayer apply(EntityPlayer player) {
+                return (GameBadblockPlayer) player.getBukkitEntity();
+            }
+        }));
+
+		
 		try {
 			/**
 			 * Chargement de la configuration
@@ -482,7 +500,14 @@ public class GamePlugin extends GameAPI {
  		
 		i18n.load(file);
     }
-
+	
+	@Override
+	public List<BadblockPlayer> getRealOnlinePlayers(){
+		return onlinePlayers.stream().filter(player -> {
+			return player.getBadblockMode() != BadblockMode.SPECTATOR;
+		}).collect(Collectors.toList());
+	}
+ 
 	@Override
 	public ItemStackFactory createItemStackFactory() {
 		return new GameItemStackFactory();
