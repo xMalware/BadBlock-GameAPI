@@ -13,27 +13,28 @@ import lombok.NonNull;
 
 public class GameFakeFallingBlock extends GameFakeEntity<WatcherEntity> {
 	private Material material;
-	private byte data;
-
+	private byte 	 data;
+	
 	public GameFakeFallingBlock(int entityId, Location location, @NonNull Material material, byte data) {
 		super(EntityType.ARMOR_STAND, entityId, GameAPI.getAPI().createWatcher(WatcherEntity.class), location);
 		this.material = material;
-		this.data = data;
-	}
-
-	@SuppressWarnings("deprecation")
-	private int data() {
-		return material.getId() + (data << 12);
+		this.data     = data;
 	}
 
 	@Override
 	public BadblockOutPacket getSpawnPacket() {
-		return GameAPI.getAPI().createPacket(PlaySpawnEntityObject.class).setEntityId(getId())
-				.setLocation(getLocation()).setData(data()).setType(SpawnableObjects.FALLING_OBJECT);
+		return GameAPI.getAPI().createPacket(PlaySpawnEntityObject.class)
+							   .setEntityId(getId())
+							   .setLocation(getLocation())
+							   .setData(data())
+							   .setType(SpawnableObjects.FALLING_OBJECT);
 	}
-
-	@Override
-	public void yaw(Location loc) {
+	
+	@Override public void yaw(Location loc){}
+	
+	@SuppressWarnings("deprecation")
+	private int data(){
+		return material.getId() + (data << 12);
 	}
 
 }

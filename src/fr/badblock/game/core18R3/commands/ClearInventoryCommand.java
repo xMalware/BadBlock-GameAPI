@@ -11,39 +11,38 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class ClearInventoryCommand extends AbstractCommand {
 	public ClearInventoryCommand() {
-		super("clearinventory", new TranslatableString("commands.clearinventory.usage"), GamePermission.BMODERATOR,
-				"ci", "clear");
+		super("clearinventory", new TranslatableString("commands.clearinventory.usage"), GamePermission.BMODERATOR, "ci", "clear");
 	}
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer concerned = null;
-
-		if (args.length == 0 && !(sender instanceof Player)) {
+	
+		if(args.length == 0 && !(sender instanceof Player)){
 			return false;
-		} else if (args.length > 0) {
+		} else if(args.length > 0){
 			concerned = (BadblockPlayer) Bukkit.getPlayer(args[0]);
 		} else {
 			concerned = (BadblockPlayer) sender;
 		}
 
-		if (concerned == null) {
+		if(concerned == null){
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
-			if (!concerned.equals(sender)) {
-				if (!sender.hasPermission(GamePermission.ADMIN.getPermission())) {
+			if(!concerned.equals(sender)){
+				if(!sender.hasPermission(GamePermission.ADMIN.getPermission())){
 					sendTranslatedMessage(sender, "commands.nopermission");
 					return true;
 				}
-
+				
 				sendTranslatedMessage(concerned, "commands.clearinventory.cleared-other", concerned.getName());
 			}
-
+			
 			sendTranslatedMessage(concerned, "commands.clearinventory.cleared");
-
+		
 			concerned.clearInventory();
 		}
-
+		
 		return true;
 	}
 }

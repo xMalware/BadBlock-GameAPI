@@ -14,56 +14,51 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class ChatListener extends BadListener {
 	public static boolean enabled = false;
-	public static boolean team = false;
-	public static String custom = null;
+	public static boolean team	  = false;
+	public static String  custom  = null;
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onChat(AsyncPlayerChatEvent e) {
-		if (!enabled)
-			return;
+	@EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
+	public void onChat(AsyncPlayerChatEvent e){
+		if(!enabled) return;
 
 		e.setCancelled(true);
 
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
-		if (!player.hasPermission(GamePermission.ADMIN)) {
+		if(!player.hasPermission(GamePermission.ADMIN)){
 
 			String temp = ChatColor.translateAlternateColorCodes('&', e.getMessage());
-			temp = ChatColor.stripColor(temp);
+			temp		= ChatColor.stripColor(temp);
 
 			e.setMessage(temp);
 
 		}
 
-		if (player.getBadblockMode() == BadblockMode.SPECTATOR) {
-			TranslatableString result = new TranslatableString("chat.spectator" + (custom == null ? "" : "." + custom),
-					player.getName(), player.getGroupPrefix(), e.getMessage(), player.getPlayerData().getLevel());
+		if(player.getBadblockMode() == BadblockMode.SPECTATOR){
+			TranslatableString result = new TranslatableString("chat.spectator" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), e.getMessage(), player.getPlayerData().getLevel());
 
-			for (Player p : e.getRecipients()) {
+			for(Player p : e.getRecipients()){
 				BadblockPlayer bPlayer = (BadblockPlayer) p;
 
-				if (bPlayer.getBadblockMode() == BadblockMode.SPECTATOR) {
+				if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR){
 					result.send(bPlayer);
 				}
 			}
-		} else if (team && player.getTeam() != null && e.getMessage().startsWith("$")) {
-			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom),
-					player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(),
-					e.getMessage().substring(1), player.getPlayerData().getLevel());
+		} else if(team && player.getTeam() != null && e.getMessage().startsWith("$")){
+			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().substring(1), player.getPlayerData().getLevel());
 
-			for (BadblockPlayer p : player.getTeam().getOnlinePlayers()) {
+			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 				if (e.getRecipients().contains(p))
 					result.send(p);
 			}
 		} else {
 			Object team = "";
 
-			if (player.getTeam() != null)
+			if(player.getTeam() != null)
 				team = player.getTeam().getChatPrefix();
 
-			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom),
-					player.getName(), player.getGroupPrefix(), team, e.getMessage(), player.getPlayerData().getLevel());
-			for (Player pl : e.getRecipients())
+			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), team, e.getMessage(), player.getPlayerData().getLevel());
+			for(Player pl : e.getRecipients())
 				s.send(pl);
 		}
 

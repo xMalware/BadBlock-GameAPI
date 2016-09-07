@@ -41,109 +41,82 @@ import net.minecraft.server.v1_8_R3.EntityWolf;
 import net.minecraft.server.v1_8_R3.EntityZombie;
 
 public enum CustomCreatures {
-	BAT(EntityType.BAT, EntityBat.class, NMSBat.class), BLAZE(EntityType.BLAZE, EntityBlaze.class,
-			NMSBlaze.class), CAVE_SPIDER(EntityType.CAVE_SPIDER, EntityCaveSpider.class, NMSCaveSpider.class), CHICKEN(
-					EntityType.CHICKEN, EntityChicken.class,
-					NMSChicken.class), COW(EntityType.COW, EntityCow.class, NMSCow.class), CREEPER(EntityType.CREEPER,
-							EntityCreeper.class, NMSCreeper.class), ENDERMAN(EntityType.ENDERMAN, EntityEnderman.class,
-									NMSEnderman.class), ENDERMITE(EntityType.ENDERMITE, EntityEndermite.class,
-											NMSEndermite.class), GHAST(EntityType.GHAST, EntityGhast.class,
-													NMSGhast.class), GIANT(EntityType.GIANT, EntityGiantZombie.class,
-															NMSGiant.class), GUARDIAN(EntityType.GUARDIAN,
-																	EntityGuardian.class, NMSGuardian.class), HORSE(
-																			EntityType.HORSE, EntityHorse.class,
-																			NMSHorse.class), IRON_GOLEM(
-																					EntityType.IRON_GOLEM,
-																					EntityIronGolem.class,
-																					NMSIronGolem.class), OCELOT(
-																							EntityType.OCELOT,
-																							EntityOcelot.class,
-																							NMSOcelot.class), PIG(
-																									EntityType.PIG,
-																									EntityPig.class,
-																									NMSPig.class), PIG_ZOMBIE(
-																											EntityType.PIG_ZOMBIE,
-																											EntityPigZombie.class,
-																											NMSPigZombie.class), RABBIT(
-																													EntityType.RABBIT,
-																													EntityRabbit.class,
-																													NMSRabbit.class), SHEEP(
-																															EntityType.SHEEP,
-																															EntitySheep.class,
-																															NMSSheep.class), SILVERFISH(
-																																	EntityType.SILVERFISH,
-																																	EntitySilverfish.class,
-																																	NMSSilverfish.class), SKELETON(
-																																			EntityType.SKELETON,
-																																			EntitySkeleton.class,
-																																			NMSSkeleton.class), SNOWMAN(
-																																					EntityType.SNOWMAN,
-																																					EntitySnowman.class,
-																																					NMSSnowman.class), SPIDER(
-																																							EntityType.SPIDER,
-																																							EntitySpider.class,
-																																							NMSSpider.class), SQUID(
-																																									EntityType.SQUID,
-																																									EntitySquid.class,
-																																									NMSSquid.class), WITCH(
-																																											EntityType.WITCH,
-																																											EntityWitch.class,
-																																											NMSWitch.class), WOLF(
-																																													EntityType.WOLF,
-																																													EntityWolf.class,
-																																													NMSWolf.class), ZOMBIE(
-																																															EntityType.ZOMBIE,
-																																															EntityZombie.class,
-																																															NMSZombie.class);
+	BAT(EntityType.BAT, EntityBat.class, NMSBat.class),
+	BLAZE(EntityType.BLAZE, EntityBlaze.class, NMSBlaze.class),
+	CAVE_SPIDER(EntityType.CAVE_SPIDER, EntityCaveSpider.class, NMSCaveSpider.class),
+	CHICKEN(EntityType.CHICKEN, EntityChicken.class, NMSChicken.class),
+	COW(EntityType.COW, EntityCow.class, NMSCow.class),
+	CREEPER(EntityType.CREEPER, EntityCreeper.class, NMSCreeper.class),
+	ENDERMAN(EntityType.ENDERMAN, EntityEnderman.class, NMSEnderman.class),
+	ENDERMITE(EntityType.ENDERMITE, EntityEndermite.class, NMSEndermite.class),
+	GHAST(EntityType.GHAST, EntityGhast.class, NMSGhast.class),
+	GIANT(EntityType.GIANT, EntityGiantZombie.class, NMSGiant.class),
+	GUARDIAN(EntityType.GUARDIAN, EntityGuardian.class, NMSGuardian.class),
+	HORSE(EntityType.HORSE, EntityHorse.class, NMSHorse.class),
+	IRON_GOLEM(EntityType.IRON_GOLEM, EntityIronGolem.class, NMSIronGolem.class),
+	OCELOT(EntityType.OCELOT, EntityOcelot.class, NMSOcelot.class),
+	PIG(EntityType.PIG, EntityPig.class, NMSPig.class),
+	PIG_ZOMBIE(EntityType.PIG_ZOMBIE, EntityPigZombie.class, NMSPigZombie.class),
+	RABBIT(EntityType.RABBIT, EntityRabbit.class, NMSRabbit.class),
+	SHEEP(EntityType.SHEEP, EntitySheep.class, NMSSheep.class),
+	SILVERFISH(EntityType.SILVERFISH, EntitySilverfish.class, NMSSilverfish.class),
+	SKELETON(EntityType.SKELETON, EntitySkeleton.class, NMSSkeleton.class),
+	SNOWMAN(EntityType.SNOWMAN, EntitySnowman.class, NMSSnowman.class),
+	SPIDER(EntityType.SPIDER, EntitySpider.class, NMSSpider.class),
+	SQUID(EntityType.SQUID, EntitySquid.class, NMSSquid.class),
+	WITCH(EntityType.WITCH, EntityWitch.class, NMSWitch.class),
+	WOLF(EntityType.WOLF, EntityWolf.class, NMSWolf.class),
+	ZOMBIE(EntityType.ZOMBIE, EntityZombie.class, NMSZombie.class);
+	
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void a(Class paramClass, String paramString, int paramInt) {
-		try {
-			((Map) getPrivateStatic(EntityTypes.class, "c")).put(paramString, paramClass);
-			((Map) getPrivateStatic(EntityTypes.class, "d")).put(paramClass, paramString);
-			((Map) getPrivateStatic(EntityTypes.class, "e")).put(Integer.valueOf(paramInt), paramClass);
-			((Map) getPrivateStatic(EntityTypes.class, "f")).put(paramClass, Integer.valueOf(paramInt));
-			((Map) getPrivateStatic(EntityTypes.class, "g")).put(paramString, Integer.valueOf(paramInt));
-		} catch (Exception unused) {
-		}
-	}
-	public static CustomCreatures getByType(EntityType type) {
-		for (CustomCreatures creat : values())
-			if (creat.getEntityType() == type)
-				return creat;
-		return null;
-	}
-	public static CustomCreature getCustomCreature(Entity entity) {
-		Class<? extends EntityInsentient> clazz = null;
+	private String name;
+	private int id;
+	private EntityType entityType;
+	private Class<? extends EntityInsentient> nmsClass;
+	private Class<? extends EntityInsentient> customClass;
 
-		for (CustomCreatures creature : values()) {
-			if (creature.getEntityType() == entity.getType()) {
-				clazz = creature.getCustomClass();
-				break;
-			}
-		}
+	@SuppressWarnings("deprecation")
+	private CustomCreatures(EntityType entityType, Class<? extends EntityInsentient> nmsClass, Class<? extends EntityInsentient> customClass) {
+		this.name = entityType.getName();
+		this.id = entityType.getTypeId();
+		this.entityType = entityType;
+		this.nmsClass = nmsClass;
+		this.customClass = customClass;
+	}
 
-		return clazz == null ? null : (CustomCreature) ((CraftEntity) entity).getHandle();
+	public String getName() {
+		return name;
 	}
-	@SuppressWarnings("rawtypes")
-	private static Object getPrivateStatic(Class clazz, String f) throws Exception {
-		Field field = clazz.getDeclaredField(f);
-		field.setAccessible(true);
-		return field.get(null);
+
+	public int getID() {
+		return id;
 	}
-	public static EntityType getTypeFromEntity(EntityInsentient entity) {
-		for (CustomCreatures creature : values()) {
-			if (creature.nmsClass.isInstance(entity))
+
+	public EntityType getEntityType() {
+		return entityType;
+	}
+
+	public Class<? extends EntityInsentient> getNMSClass() {
+		return nmsClass;
+	}
+
+	public Class<? extends EntityInsentient> getCustomClass() {
+		return customClass;
+	}
+
+	public static EntityType getTypeFromEntity(EntityInsentient entity){
+		for(CustomCreatures creature : values()){
+			if(creature.nmsClass.isInstance(entity))
 				return creature.entityType;
 		}
-
+		
 		return EntityType.UNKNOWN;
 	}
-
+	
 	public static void registerEntities() {
-		for (CustomCreatures entity : values()) /* Get our entities */
+		for (CustomCreatures entity : values()) /*Get our entities*/
 			a(entity.getCustomClass(), entity.getName(), entity.getID());
-		/* Get all biomes on the server */
+		/*Get all biomes on the server*/
 		BiomeBase[] biomes;
 		try {
 			biomes = (BiomeBase[]) getPrivateStatic(BiomeBase.class, "biomes");
@@ -153,12 +126,7 @@ public enum CustomCreatures {
 		for (BiomeBase biomeBase : biomes) {
 			if (biomeBase == null)
 				break;
-			for (String field : new String[] { "at", "au", "av", "aw" }) // Lists
-																			// that
-																			// hold
-																			// all
-																			// entity
-																			// types
+			for (String field : new String[] { "at", "au", "av", "aw" }) //Lists that hold all entity types
 				try {
 					Field list = BiomeBase.class.getDeclaredField(field);
 					list.setAccessible(true);
@@ -167,17 +135,8 @@ public enum CustomCreatures {
 
 					for (BiomeMeta meta : mobList)
 						for (CustomCreatures entity : values())
-							if (entity.getNMSClass().equals(
-									meta.b)) /*
-												 * Test if the entity has the
-												 * custom entity type
-												 */
-								meta.b = entity.getCustomClass(); // Set it's
-																	// meta to
-																	// our
-																	// custom
-																	// class's
-																	// meta
+							if (entity.getNMSClass().equals(meta.b)) /*Test if the entity has the custom entity type*/
+								meta.b = entity.getCustomClass(); //Set it's meta to our custom class's meta
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -235,43 +194,46 @@ public enum CustomCreatures {
 		}
 	}
 
-	private String name;
-
-	private int id;
-
-	private EntityType entityType;
-
-	private Class<? extends EntityInsentient> nmsClass;
-
-	private Class<? extends EntityInsentient> customClass;
-
-	@SuppressWarnings("deprecation")
-	private CustomCreatures(EntityType entityType, Class<? extends EntityInsentient> nmsClass,
-			Class<? extends EntityInsentient> customClass) {
-		this.name = entityType.getName();
-		this.id = entityType.getTypeId();
-		this.entityType = entityType;
-		this.nmsClass = nmsClass;
-		this.customClass = customClass;
+	@SuppressWarnings("rawtypes")
+	private static Object getPrivateStatic(Class clazz, String f)
+			throws Exception {
+		Field field = clazz.getDeclaredField(f);
+		field.setAccessible(true);
+		return field.get(null);
 	}
 
-	public Class<? extends EntityInsentient> getCustomClass() {
-		return customClass;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static void a(Class paramClass, String paramString, int paramInt) {
+		try {
+			((Map) getPrivateStatic(EntityTypes.class, "c")).put(paramString,
+					paramClass);
+			((Map) getPrivateStatic(EntityTypes.class, "d")).put(paramClass,
+					paramString);
+			((Map) getPrivateStatic(EntityTypes.class, "e")).put(
+					Integer.valueOf(paramInt), paramClass);
+			((Map) getPrivateStatic(EntityTypes.class, "f")).put(paramClass,
+					Integer.valueOf(paramInt));
+			((Map) getPrivateStatic(EntityTypes.class, "g")).put(paramString,
+					Integer.valueOf(paramInt));
+		} catch (Exception unused){}
 	}
 
-	public EntityType getEntityType() {
-		return entityType;
+	public static CustomCreatures getByType(EntityType type){
+		for(CustomCreatures creat : values())
+			if(creat.getEntityType() == type)
+				return creat;
+		return null;
 	}
-
-	public int getID() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Class<? extends EntityInsentient> getNMSClass() {
-		return nmsClass;
+	
+	public static CustomCreature getCustomCreature(Entity entity){
+		Class<? extends EntityInsentient> clazz = null;
+		
+		for(CustomCreatures creature : values()){
+			if(creature.getEntityType() == entity.getType()){
+				clazz = creature.getCustomClass(); break;
+			}
+		}
+		
+		return clazz == null ? null : (CustomCreature) ((CraftEntity) entity).getHandle();
 	}
 }

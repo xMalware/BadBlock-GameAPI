@@ -31,150 +31,75 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class PlayerMapProtectorListener extends BadListener {
 	@EventHandler
-	public void onBlockBreak(BlockBreakEvent e) {
+	public void onJoin(PlayerJoinEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-
-		if (!GameAPI.getAPI().getMapProtector().blockBreak(player, e.getBlock()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onBlockPlace(BlockPlaceEvent e) {
-		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-
-		if (!GameAPI.getAPI().getMapProtector().blockPlace(player, e.getBlock()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onDamage(EntityDamageEvent e) {
-		if (e.getCause() == DamageCause.ENTITY_ATTACK)
-			return;
-
-		if (e.getEntityType() == EntityType.PLAYER) {
-			BadblockPlayer player = (BadblockPlayer) e.getEntity();
-
-			if (!GameAPI.getAPI().getMapProtector().canBeingDamaged(player)) {
-				e.setCancelled(true);
-			}
-		} else if (e.getEntityType() != EntityType.ITEM_FRAME) {
-			if (!GameAPI.getAPI().getMapProtector().canEntityBeingDamaged(e.getEntity())) {
-				e.setCancelled(true);
-			}
+		
+		if(GameAPI.getAPI().getMapProtector().healOnJoin(player)) {
+			player.heal();
 		}
+	}
+	
+	@EventHandler
+	public void onBlockPlace(BlockPlaceEvent e){
+		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+
+		if(!GameAPI.getAPI().getMapProtector().blockPlace(player, e.getBlock()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent e){
+		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+
+		if(!GameAPI.getAPI().getMapProtector().blockBreak(player, e.getBlock()))
+			e.setCancelled(true);
 	}
 
 	/* ItemFrames */
 
 	@EventHandler
-	public void onDropItem(PlayerDropItemEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canDrop((BadblockPlayer) e.getPlayer()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onDropItem(PlayerPickupItemEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canPickup((BadblockPlayer) e.getPlayer()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onEmptyBucket(PlayerBucketEmptyEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canEmptyBucket((BadblockPlayer) e.getPlayer()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onEnchant(EnchantItemEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canEnchant((BadblockPlayer) e.getEnchanter(), e.getEnchantBlock())) {
-			e.setCancelled(true);
-		}
-	}
-
-	@EventHandler
-	public void onEnterBed(PlayerBedEnterEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canUseBed((BadblockPlayer) e.getPlayer(), e.getBed()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-		if (e.getCause() == DamageCause.ENTITY_ATTACK && e.getEntityType() == EntityType.ITEM_FRAME) {
-			if (e.getDamager().getType() == EntityType.PLAYER) {
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent e){
+		if(e.getCause() == DamageCause.ENTITY_ATTACK && e.getEntityType() == EntityType.ITEM_FRAME){
+			if(e.getDamager().getType() == EntityType.PLAYER){
 				BadblockPlayer player = (BadblockPlayer) e.getDamager();
 
-				if (!GameAPI.getAPI().getMapProtector().modifyItemFrame(player, e.getEntity())) {
+				if(!GameAPI.getAPI().getMapProtector().modifyItemFrame(player, e.getEntity())){
 					e.setCancelled(true);
 				}
 			} else {
-				if (!GameAPI.getAPI().getMapProtector().modifyItemFrame(e.getEntity())) {
+				if(!GameAPI.getAPI().getMapProtector().modifyItemFrame(e.getEntity())){
 					e.setCancelled(true);
 				}
 			}
-		} else if (e.getEntityType() == EntityType.PLAYER) {
+		} else if(e.getEntityType() == EntityType.PLAYER){
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
 
-			if (!GameAPI.getAPI().getMapProtector().canBeingDamaged(player)) {
+			if(!GameAPI.getAPI().getMapProtector().canBeingDamaged(player)){
 				e.setCancelled(true);
 			}
 		} else {
-			if (!GameAPI.getAPI().getMapProtector().canEntityBeingDamaged(e.getEntity())) {
+			if(!GameAPI.getAPI().getMapProtector().canEntityBeingDamaged(e.getEntity())){
 				e.setCancelled(true);
 			}
 		}
-	}
-
-	@EventHandler
-	public void onFillBucket(PlayerBucketFillEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canFillBucket((BadblockPlayer) e.getPlayer()))
-			e.setCancelled(true);
 	}
 
 	@EventHandler
 	public void onHangingBreakEntity(HangingBreakByEntityEvent e) {
-		if (e.getEntity().getType() == EntityType.ITEM_FRAME && e.getRemover().getType() == EntityType.PLAYER) {
+		if(e.getEntity().getType() == EntityType.ITEM_FRAME && e.getRemover().getType() == EntityType.PLAYER){
 			BadblockPlayer player = (BadblockPlayer) e.getRemover();
 
-			if (!GameAPI.getAPI().getMapProtector().modifyItemFrame(player, e.getEntity())) {
+			if(!GameAPI.getAPI().getMapProtector().modifyItemFrame(player, e.getEntity())){
 				e.setCancelled(true);
 			}
 		}
 	}
 
 	@EventHandler
-	public void onInteract(PlayerInteractEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canInteract((BadblockPlayer) e.getPlayer(), e.getAction(),
-				e.getClickedBlock()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onInteractArmorStand(PlayerArmorStandManipulateEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canInteractArmorStand((BadblockPlayer) e.getPlayer(),
-				e.getRightClicked()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onInteractEntity(PlayerInteractEntityEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canInteractEntity((BadblockPlayer) e.getPlayer(), e.getRightClicked()))
-			e.setCancelled(true);
-	}
-
-	@EventHandler
-	public void onJoin(PlayerJoinEvent e) {
-		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-
-		if (GameAPI.getAPI().getMapProtector().healOnJoin(player)) {
-			player.heal();
-		}
-	}
-
-	@EventHandler
-	public void onLostFood(FoodLevelChangeEvent e) {
-		if (e.getEntityType() == EntityType.PLAYER) {
-			if (e.getFoodLevel() != 20) {
-				if (!GameAPI.getAPI().getMapProtector().canLostFood((BadblockPlayer) e.getEntity())) {
+	public void onLostFood(FoodLevelChangeEvent e){
+		if(e.getEntityType() == EntityType.PLAYER){
+			if(e.getFoodLevel() != 20){
+				if(!GameAPI.getAPI().getMapProtector().canLostFood((BadblockPlayer) e.getEntity())){
 					e.setCancelled(true);
 					e.setFoodLevel(20);
 				}
@@ -183,30 +108,102 @@ public class PlayerMapProtectorListener extends BadListener {
 	}
 
 	@EventHandler
-	public void onPrepareEnchantment(PrepareItemEnchantEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canEnchant((BadblockPlayer) e.getEnchanter(), e.getEnchantBlock())) {
+	public void onEnterBed(PlayerBedEnterEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canUseBed((BadblockPlayer) e.getPlayer(), e.getBed()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onUsePortal(PlayerPortalEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canUsePortal((BadblockPlayer) e.getPlayer()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onDropItem(PlayerDropItemEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canDrop((BadblockPlayer) e.getPlayer()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onDropItem(PlayerPickupItemEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canPickup((BadblockPlayer) e.getPlayer()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onFillBucket(PlayerBucketFillEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canFillBucket((BadblockPlayer) e.getPlayer()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onEmptyBucket(PlayerBucketEmptyEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canEmptyBucket((BadblockPlayer) e.getPlayer()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onInteract(PlayerInteractEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canInteract((BadblockPlayer) e.getPlayer(), e.getAction(), e.getClickedBlock()))
+			e.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onInteractArmorStand(PlayerArmorStandManipulateEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canInteractArmorStand((BadblockPlayer) e.getPlayer(), e.getRightClicked()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onInteractEntity(PlayerInteractEntityEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canInteractEntity((BadblockPlayer) e.getPlayer(), e.getRightClicked()))
+			e.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onPrepareEnchantment(PrepareItemEnchantEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canEnchant((BadblockPlayer) e.getEnchanter(), e.getEnchantBlock())){
 			e.setCancelled(true);
 		}
 	}
 
 	@EventHandler
-	public void onUsePortal(PlayerPortalEvent e) {
-		if (!GameAPI.getAPI().getMapProtector().canUsePortal((BadblockPlayer) e.getPlayer()))
+	public void onEnchant(EnchantItemEvent e){
+		if(!GameAPI.getAPI().getMapProtector().canEnchant((BadblockPlayer) e.getEnchanter(), e.getEnchantBlock())){
 			e.setCancelled(true);
+		}
 	}
 
 	@EventHandler
-	public void soilChangeEntity(EntityInteractEvent e) {
-		if (e.getEntityType() != EntityType.PLAYER && e.getBlock().getType() == Material.SOIL) {
-			if (!GameAPI.getAPI().getMapProtector().canSoilChange(e.getBlock()))
+	public void onDamage(EntityDamageEvent e){
+		if(e.getCause() == DamageCause.ENTITY_ATTACK) return;
+		
+		if(e.getEntityType() == EntityType.PLAYER){
+			BadblockPlayer player = (BadblockPlayer) e.getEntity();
+
+			if(!GameAPI.getAPI().getMapProtector().canBeingDamaged(player)){
+				e.setCancelled(true);
+			}
+		} else if(e.getEntityType() != EntityType.ITEM_FRAME){
+			if(!GameAPI.getAPI().getMapProtector().canEntityBeingDamaged(e.getEntity())){
+				e.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void soilChangePlayer(PlayerInteractEvent e) {
+		if(e.getAction() == Action.PHYSICAL && e.getClickedBlock().getType() == Material.SOIL) {
+			if(!GameAPI.getAPI().getMapProtector().canSoilChange(e.getClickedBlock()))
 				e.setCancelled(true);
 		}
 	}
 
 	@EventHandler
-	public void soilChangePlayer(PlayerInteractEvent e) {
-		if (e.getAction() == Action.PHYSICAL && e.getClickedBlock().getType() == Material.SOIL) {
-			if (!GameAPI.getAPI().getMapProtector().canSoilChange(e.getClickedBlock()))
+	public void soilChangeEntity(EntityInteractEvent e) {
+		if(e.getEntityType() != EntityType.PLAYER && e.getBlock().getType() == Material.SOIL) {
+			if(!GameAPI.getAPI().getMapProtector().canSoilChange(e.getBlock()))
 				e.setCancelled(true);
 		}
 	}

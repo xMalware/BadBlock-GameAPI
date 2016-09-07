@@ -15,22 +15,21 @@ public class FreezeCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length == 0) {
+		if(args.length == 0){
 			return false;
 		}
-
+		
 		BadblockPlayer concerned = (BadblockPlayer) Bukkit.getPlayer(args[0]);
 
-		if (concerned == null) {
+		if(concerned == null){
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
 			String type = concerned.isJailed() ? "un" : "";
-
-			if (concerned.isJailed()) {
+			
+			if(concerned.isJailed()){
 				concerned.jailPlayerAt(null);
-			} else
-				concerned.jailPlayerAt(concerned.getLocation());
-
+			} else concerned.jailPlayerAt(concerned.getLocation());
+			
 			concerned.sendTranslatedMessage("commands.freeze." + type + "jailed");
 			new TranslatableString("commands.freeze." + type + "jail").send(sender);
 		}

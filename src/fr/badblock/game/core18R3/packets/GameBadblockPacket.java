@@ -9,21 +9,18 @@ import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
 
 public class GameBadblockPacket {
+	
+	@Getter@Setter private boolean 		  cancelled;
 
-	@Getter
-	@Setter
-	private boolean cancelled;
-
-	public BaseComponent[] fromChat(IChatBaseComponent base) {
-		if (base == null)
-			return TextComponent.fromLegacyText("");
-
-		return ComponentSerializer.parse(ChatSerializer.a(base));
-	}
-
-	public IChatBaseComponent getChat(String base) {
+	public IChatBaseComponent getChat(String base){
 		base = base.replace("\"", "\\\"");
 		return ChatSerializer.a("{\"text\": \"" + base + "\"}");
+	}
+	
+	public BaseComponent[] fromChat(IChatBaseComponent base){
+		if(base == null) return TextComponent.fromLegacyText("");
+		
+		return ComponentSerializer.parse(ChatSerializer.a(base));
 	}
 
 }

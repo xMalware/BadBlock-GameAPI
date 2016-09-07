@@ -9,18 +9,17 @@ import lombok.experimental.Accessors;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutKeepAlive;
 
-@NoArgsConstructor
-@Data
-@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor@Data
+@EqualsAndHashCode(callSuper=false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayKeepAlive extends GameBadblockOutPacket implements PlayKeepAlive {
-
+	
 	private Packet<?> packet;
-
-	public GamePlayKeepAlive(PacketPlayOutKeepAlive packet) {
+	
+	public GamePlayKeepAlive(PacketPlayOutKeepAlive packet){
 		this.packet = packet;
 	}
-
+	
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		return packet;

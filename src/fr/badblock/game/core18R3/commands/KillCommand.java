@@ -16,24 +16,24 @@ public class KillCommand extends AbstractCommand {
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer concerned = null;
-
-		if (args.length == 0) {
+		
+		if(args.length == 0){
 			return false;
-		} else if (args.length > 0) {
+		} else if(args.length > 0){
 			concerned = (BadblockPlayer) Bukkit.getPlayer(args[0]);
 		}
 
-		if (concerned == null) {
+		if(concerned == null){
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
-			concerned.damage(2000.0d);
+ 			concerned.damage(2000.0d);
 			concerned.sendTranslatedMessage("commands.kill.killed");
-
-			if (!concerned.equals(sender)) {
+			
+			if(!concerned.equals(sender)){
 				sendTranslatedMessage(sender, "commands.kill.killedplayer", concerned.getName());
 			}
 		}
-
+		
 		return true;
 	}
 }

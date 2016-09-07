@@ -8,43 +8,29 @@ import fr.badblock.gameapi.utils.i18n.Message;
 
 public class GameMessage implements Message {
 	public transient File file;
-
-	private boolean useHeader, useShortHeader, useFooter;
-
+	
+	private boolean useHeader,
+					useShortHeader,
+					useFooter;
+	
 	private String[][] messages;
-
-	public GameMessage() {
-	}
-
-	public GameMessage(String whenUnknow) {
-		this.useHeader = false;
+	
+	public GameMessage(){}
+	
+	public GameMessage(String whenUnknow){
+		this.useHeader 		= false;
 		this.useShortHeader = false;
-		this.useFooter = false;
-
+		this.useFooter		= false;
+		
 		verify(whenUnknow);
 	}
-
-	@Override
-	public String[][] getAllMessages() {
-		return messages;
+	
+	public void verify(String whenUnknow){
+		if(messages == null || messages.length == 0){
+			messages = new String[][]{new String[]{whenUnknow}};
+		}
 	}
-
-	@Override
-	public String[] getUnformattedMessage() {
-		String[] message = messages[new Random().nextInt(messages.length)];
-		return Arrays.copyOf(message, message.length);
-	}
-
-	@Override
-	public boolean isRandomMessage() {
-		return messages.length > 1;
-	}
-
-	@Override
-	public boolean useFooter() {
-		return useFooter;
-	}
-
+	
 	@Override
 	public boolean useHeader() {
 		return useHeader;
@@ -55,9 +41,24 @@ public class GameMessage implements Message {
 		return useShortHeader;
 	}
 
-	public void verify(String whenUnknow) {
-		if (messages == null || messages.length == 0) {
-			messages = new String[][] { new String[] { whenUnknow } };
-		}
+	@Override
+	public boolean useFooter() {
+		return useFooter;
+	}
+
+	@Override
+	public boolean isRandomMessage() {
+		return messages.length > 1;
+	}
+
+	@Override
+	public String[] getUnformattedMessage() {
+		String[] message = messages[new Random().nextInt(messages.length)];
+		return Arrays.copyOf(message, message.length);
+	}
+
+	@Override
+	public String[][] getAllMessages() {
+		return messages;
 	}
 }

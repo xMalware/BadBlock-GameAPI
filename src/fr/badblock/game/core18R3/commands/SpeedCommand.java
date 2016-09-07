@@ -15,20 +15,19 @@ public class SpeedCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if (args.length != 1)
-			return false;
+		if(args.length != 1) return false;
 		BadblockPlayer concerned = (BadblockPlayer) sender;
 		float speed = -1F;
 		try {
 			speed = Float.parseFloat(args[0]);
-		} catch (Exception error) {
+		}catch(Exception error) {
 			concerned.sendTranslatedMessage("commands.speed.notavalue");
 			return true;
 		}
 		speed /= 10D;
 		if (speed < 0 || speed > 10) {
 			concerned.sendTranslatedMessage("commands.speed.outofrange");
-			return true;
+			return true;	
 		}
 		if (concerned.isFlying()) {
 			concerned.setFlySpeed(speed);

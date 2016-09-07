@@ -8,7 +8,5 @@ import lombok.Setter;
 
 @NoArgsConstructor
 public class VoteInGameData implements InGameData {
-	@Getter
-	@Setter
-	private VoteElement element;
+	@Getter@Setter private VoteElement element;
 }
