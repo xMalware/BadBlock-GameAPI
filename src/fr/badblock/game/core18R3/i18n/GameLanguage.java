@@ -102,7 +102,7 @@ public class GameLanguage implements Language {
 	@Override
 	public Message getMessage(String key) {
 		if(key.isEmpty())
-			throw new IllegalArgumentException("Empty key gived");
+			throw new IllegalArgumentException("Empty key given");
 		
 		key = key.toLowerCase();
 		
