@@ -1,6 +1,0 @@
-name: BadBlockHub
-main: fr.xmalware.badblock.hub.BadBlockHub
-version: 1.0
-author: xMalware
-depend: [BadblockGameAPI]
-description: A hub plugin for BadBlock
