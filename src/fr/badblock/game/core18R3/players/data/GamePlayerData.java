@@ -28,6 +28,8 @@ import lombok.ToString;
 @Getter@ToString
 public class GamePlayerData implements PlayerData {
 
+	public static Locale								  defaultLocale	   = Locale.FRENCH_FRANCE;
+	
 	private int  				 						  badcoins     	   = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
@@ -173,7 +175,7 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public Locale getLocale() {
-		return Locale.FRENCH_FRANCE; //TODO changer �a
+		return defaultLocale;
 	}
 
 	@Override

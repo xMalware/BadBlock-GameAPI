@@ -885,4 +885,16 @@ public class GamePlugin extends GameAPI {
 			whitelist.add(player.toLowerCase());
 		}
 	}
+
+	@Override
+	public List<BadblockPlayer> getOnlinePlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<BadblockPlayer> getRealOnlinePlayers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
