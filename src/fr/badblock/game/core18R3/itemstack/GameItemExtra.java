@@ -49,8 +49,10 @@ import lombok.experimental.Accessors;
 	
 	@Override
 	public ItemStackExtra setDisplayName(String displayName){
+		displayName = ItemStackUtils.encodeIDInName(displayName, id);
+		
 		ItemMeta meta = handler.getItemMeta();
-		meta.setDisplayName(ItemStackExtras.encodeInName(displayName, id));
+		meta.setDisplayName(displayName);
 		handler.setItemMeta(meta);
 		
 		return this;
@@ -61,11 +63,11 @@ import lombok.experimental.Accessors;
 			lore = new ArrayList<>();
 		
 		if(lore.isEmpty()){
-			lore.add(ItemStackExtras.encodeInName("", id));
+			lore.add(ItemStackUtils.encodeIDInName("", id));
 		} else {
 			String[] res = lore.toArray(new String[0]);
 			
-			res[0] = ItemStackExtras.encodeInName(res[0], id);
+			res[0] = ItemStackUtils.encodeIDInName(res[0], id);
 			lore = Arrays.asList(res);
 		}
 		
