@@ -14,7 +14,6 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
-import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -22,7 +21,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.DirectionalContainer;
-import org.bukkit.util.Vector;
 
 import fr.badblock.game.core18R3.commands.ChestGeneratorCommand;
 import fr.badblock.gameapi.BadListener;
@@ -184,13 +182,14 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		//c.getBlock().getDrops().remove(new ItemStack(Material.CHEST));
 		//c.getBlock().breakNaturally();
 		
-		c.getBlock().setType(Material.AIR);
 		Location spawn = c.getBlock().getLocation().add(0d, 0.3d, 0d);
 
 		toDrop.forEach(item -> {
-			Item spawned = spawn.getWorld().dropItemNaturally(spawn, item);
-			spawned.setVelocity(new Vector(0, 0, 0));
+			spawn.getWorld().dropItem(spawn, item);
 		});
+		
+		c.getInventory().clear();
+		c.getBlock().setType(Material.AIR);
 	}
 
 	@Override

@@ -72,6 +72,7 @@ import fr.badblock.gameapi.utils.i18n.I18n;
 import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
+import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import fr.badblock.gameapi.utils.selections.CuboidSelection;
@@ -583,7 +584,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		getHandle().getDataWatcher().watch(MetadataIndex.ARROW_COUNT.getIndex(), new Byte(amount));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void changePlayerDimension(Environment world) {
 		if(customEnvironment != null && customEnvironment == world) return;
@@ -602,7 +602,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 
 		reloadMap();
-		updateInventory(); // euh ... pk d�pr�ci� ? (pas d�pr�ci� pour Player)
+		updateInventory();
 	}
 
 	@Override
@@ -872,5 +872,50 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			getHandle().setInvisible(false);
 		}
+	}
+
+	@Override
+	public int countItems(Material type, byte data) {
+		int result = 0;
+		
+		for(ItemStack item : getInventory().getContents()){
+			if(ItemStackUtils.isValid(item) && item.getType() == type && item.getDurability() == data){
+				result += item.getAmount();
+			}
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int removeItems(Material type, byte data, int amount) {
+
+		for(int i=0;i<getInventory().getContents().length;i++){
+			ItemStack item = getInventory().getContents()[i];
+			
+			if(ItemStackUtils.isValid(item) && item.getType() == type && item.getDurability() == data){
+				
+				if(amount != -1){
+					
+					int to = 0;
+					
+					if(amount < item.getAmount()){
+						to = item.getAmount() - amount;
+						amount = 0;
+					} else amount -= item.getAmount();
+					
+					if(to <= 0)
+						getInventory().setItem(i, null);
+					else item.setAmount(to);
+				} else getInventory().setItem(i, null);
+				
+				if(amount == 0)
+					break;
+			}
+		}
+		
+		updateInventory();
+		
+		return amount;
 	}
 }

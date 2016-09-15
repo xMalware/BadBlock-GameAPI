@@ -6,8 +6,12 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -51,7 +55,8 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 	private boolean    doTeamsPrefix   = false;
 	private boolean    doGroupsPrefix  = false;
-
+	private boolean	   doDamageHolo    = false;
+	
 	Map<VoteElement, Integer> votes;
 
 	public GameScoreboard(){
@@ -155,11 +160,34 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			}
 		}
 	}
+	
+	@Override
+	public void doOnDamageHologram() {
+		doDamageHolo = true;
+	}
 
 	@EventHandler
 	public void onPlayerJoinTeam(PlayerJoinTeamEvent e){
 		if(doTeamsPrefix)
 			joinTeam(e.getPlayer(), e.getPreviousTeam(), e.getNewTeam());
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true)
+	public void onDamage(EntityDamageEvent e){
+		if(!doDamageHolo)
+			return;
+		
+		if(e.getEntityType() == EntityType.PLAYER && e.getDamage() >= 1.0d){
+			BadblockPlayer player = (BadblockPlayer) e.getEntity();
+			
+			for(Entity entity : player.getNearbyEntities(16.0d, 16.0d, 16.0d)){
+				if(entity.getType() == EntityType.PLAYER){
+					BadblockPlayer viewer = (BadblockPlayer) entity;
+					viewer.showFloatingText(ChatColor.RED + "-" + (int) e.getDamage(), player.getLocation().add(0, 2.3, 0), 10, 0.1d);
+				}
+				
+			}
+		}
 	}
 	
 	protected void joinTeam(BadblockPlayer p, BadblockTeam previous, BadblockTeam team){
@@ -204,7 +232,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		GameAPI.getAPI().createPacket(PlayScoreboardTeam.class)
 						.setMode(TeamMode.UPDATE)
 						.setTeamName(teamName)
-						.setFriendlyFire(TeamFriendlyFire.OFF)
+						.setFriendlyFire(doTeamsPrefix ? TeamFriendlyFire.OFF : TeamFriendlyFire.FRIENDLYFIRE)
 						.setPrefix(displayName)
 						.setDisplayName("")
 						.setSuffix(ChatColor.RESET + (tabListHealth == null ? "" : " "))
@@ -230,7 +258,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			Team teamHandler = getHandler().getTeam(group.getName());
 			
 			// On ne d�finit pas le pr�fixe car il faut le faire pour chaque joueur (pr�fixe alli� / ennemi)
-			teamHandler.setAllowFriendlyFire(false);
+			teamHandler.setAllowFriendlyFire(true);
 		});
 	}
 	
