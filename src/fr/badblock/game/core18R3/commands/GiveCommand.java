@@ -84,10 +84,10 @@ public class GiveCommand extends AbstractCommand {
 		}).sum();
 
 		if(notGived != 0) {
-			sendTranslatedMessage(sender, "commands.give.notgiven",
+			sendTranslatedMessage(sender, "commands.give.notgived",
 					GameMessages.material(material, notGived > 1, WordDeterminant.SIMPLE), notGived, amount - notGived);
 		} else {
-			sendTranslatedMessage(sender, "commands.give.given",
+			sendTranslatedMessage(sender, "commands.give.gived",
 					GameMessages.material(material, notGived > 1, WordDeterminant.SIMPLE), amount);
 		}
 
