@@ -17,7 +17,7 @@ public class CustomProjectileListener extends BadListener {
 		Projectile projectile = (Projectile) e.getProjectile();
 		
 		if(projectile.hasMetadata(metadataKey)){
-			ProjectileMetadata metadata = (ProjectileMetadata) projectile.getMetadata(metadataKey);
+			ProjectileMetadata metadata = (ProjectileMetadata) projectile.getMetadata(metadataKey).get(0);
 		
 			metadata.value().accept(e.getBlock(), null);
 			projectile.removeMetadata(metadataKey, GameAPI.getAPI());
@@ -33,7 +33,7 @@ public class CustomProjectileListener extends BadListener {
 		Projectile projectile = (Projectile) e.getDamager();
 		
 		if(projectile.hasMetadata(metadataKey)){
-			ProjectileMetadata metadata = (ProjectileMetadata) projectile.getMetadata(metadataKey);
+			ProjectileMetadata metadata = (ProjectileMetadata) projectile.getMetadata(metadataKey).get(0);
 		
 			metadata.value().accept(null, e.getEntity());
 			projectile.removeMetadata(metadataKey, GameAPI.getAPI());
