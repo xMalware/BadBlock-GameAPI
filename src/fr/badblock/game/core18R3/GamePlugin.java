@@ -93,6 +93,7 @@ import fr.badblock.game.core18R3.jsonconfiguration.data.ServerConfig;
 import fr.badblock.game.core18R3.ladder.GameLadderSpeaker;
 import fr.badblock.game.core18R3.listeners.ChangeWorldEvent;
 import fr.badblock.game.core18R3.listeners.ChatListener;
+import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.listeners.DisconnectListener;
 import fr.badblock.game.core18R3.listeners.FakeDeathCaller;
 import fr.badblock.game.core18R3.listeners.GameServerListener;
@@ -345,6 +346,7 @@ public class GamePlugin extends GameAPI {
 				new PlayerInteractListener();	    // Permet aux administrateurs de dï¿½finir une zone
 				new MoveListener();					// Permet d'empï¿½cher les joueurs de sortir d'une zone
 				new ChatListener();					// Permet de formatter le chat
+				new CustomProjectileListener();		// Gère projectile customs
 				joinItems = new GameJoinItems();    // Items donnï¿½ ï¿½ l'arrivï¿½e du joueur
 				chestGenerator = new GameChestGenerator();
 				

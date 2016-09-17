@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -17,9 +18,13 @@ import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.MetadataValue;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -30,6 +35,7 @@ import com.google.gson.JsonObject;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.internalutils.Base64Url;
+import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
@@ -80,6 +86,7 @@ import fr.badblock.gameapi.utils.selections.Vector3f;
 import fr.badblock.permissions.PermissiblePlayer;
 import fr.badblock.permissions.PermissionManager;
 import io.netty.channel.Channel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.ChunkCoordIntPair;
@@ -917,5 +924,74 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		updateInventory();
 		
 		return amount;
+	}
+
+	@Override
+	public <T extends Projectile> T launchProjectile(Class<T> projectile, BiConsumer<Block, Entity> action) {
+		T proj = launchProjectile(projectile);
+		
+		proj.setMetadata(CustomProjectileListener.metadataKey, new ProjectileMetadata(action));
+		
+		return proj;
+	}
+	
+	@AllArgsConstructor
+	public static class ProjectileMetadata implements MetadataValue {
+		private BiConsumer<Block, Entity> value;
+		
+		@Override
+		public BiConsumer<Block, Entity> value() {
+			return value;
+		}
+		
+		@Override
+		public void invalidate() {
+			value = null;
+		}
+		
+		@Override
+		public Plugin getOwningPlugin() {
+			return GameAPI.getAPI();
+		}
+		
+		@Override
+		public String asString() {
+			return "";
+		}
+		
+		@Override
+		public short asShort() {
+			return 0;
+		}
+		
+		@Override
+		public long asLong() {
+			return 0;
+		}
+		
+		@Override
+		public int asInt() {
+			return 0;
+		}
+		
+		@Override
+		public float asFloat() {
+			return 0;
+		}
+		
+		@Override
+		public double asDouble() {
+			return 0;
+		}
+		
+		@Override
+		public byte asByte() {
+			return 0;
+		}
+		
+		@Override
+		public boolean asBoolean() {
+			return false;
+		}
 	}
 }
