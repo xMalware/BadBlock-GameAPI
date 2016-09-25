@@ -23,7 +23,7 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
-import net.md_5.bungee.api.ChatColor;
+import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 
 public class ItemStackExtras implements Listener {
 	private static ItemStackExtras instance;
@@ -154,45 +154,21 @@ public class ItemStackExtras implements Listener {
 		}
 	}
 
-	public static String encodeInName(String itemName, int itemID) {
-		String id = Integer.toString(itemID);
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < id.length(); i++) {
-			builder.append(ChatColor.COLOR_CHAR).append(id.charAt(i));
-		}
-		String result = builder.toString() + ChatColor.COLOR_CHAR + "S" + itemName;
-		return result;
-	}
-
-	public static int decodeId(String itemName) {
-		int intId = -1;
-		if (itemName.contains(ChatColor.COLOR_CHAR + "S")) {
-			String[] stringID = itemName.split(ChatColor.COLOR_CHAR + "S");
-			if (stringID.length > 0) {
-				itemName = stringID[0].replaceAll(ChatColor.COLOR_CHAR + "", "");
-				try {
-					intId = Integer.parseInt(itemName);
-				} catch (NumberFormatException unused){}
-			}
-		}
-		return intId;
-	}
-
 	public static GameItemExtra getExtra(ItemStack item){
-		if(item == null || item.getItemMeta() == null) return null;
+		if(!ItemStackUtils.isValid(item))
+			return null;
+		
 		int id = -1;
 		
 		if(!item.getItemMeta().hasDisplayName()){
 			if(item.getItemMeta().getLore() != null && !item.getItemMeta().getLore().isEmpty()){
-				id = decodeId(item.getItemMeta().getLore().get(0));
+				id = ItemStackUtils.decodeItemFromName(item.getItemMeta().getLore().get(0));
 			}
 
-		} else id = decodeId(item.getItemMeta().getDisplayName());
+		} else id = ItemStackUtils.decodeItemFromName(item.getItemMeta().getDisplayName());
 
 		if(id == -1 || !get().items.containsKey(id)) return null;
 
-
-		GameItemExtra extra = get().items.get(id);
-		return extra;
+		return get().items.get(id);
 	}
 }
