@@ -31,6 +31,7 @@ public class EntityUtils {
 		if(entity.isFireProof())
 			creature.addCreatureFlag(CreatureFlag.FIREPROOF);
 
+		if (creature.getEntityType() == null) throw new NullPointerException("Unknown entity type :o");
 		if(creature.getEntityType().isHostile())
 			creature.addCreatureFlag(CreatureFlag.AGRESSIVE);
 		else entity.getAttributeMap().b(GenericAttributes.ATTACK_DAMAGE).setValue(3.0d);
