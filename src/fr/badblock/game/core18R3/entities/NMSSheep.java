@@ -2,6 +2,10 @@ package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
+
+import org.bukkit.inventory.ItemStack;
 
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import lombok.Getter;
@@ -28,6 +32,8 @@ import net.minecraft.server.v1_8_R3.PathfinderGoalTempt;
 import net.minecraft.server.v1_8_R3.World;
 
 public class NMSSheep extends EntitySheep implements NMSCustomCreature {
+	@Getter@Setter
+	private Function<Random, List<ItemStack>> customLoots;
 	@Getter@Setter
 	private ControllerMove    normalController;
 	
@@ -150,5 +156,12 @@ public class NMSSheep extends EntitySheep implements NMSCustomCreature {
 		public void d(){
 			set();
 		}
+	}
+	
+	@Override
+	protected void dropDeathLoot(boolean flag, int i) {
+		if(customLoots == null)
+			super.dropDeathLoot(flag, i);
+		else EntityUtils.doDrops(this);
 	}
 }
