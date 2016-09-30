@@ -3,6 +3,10 @@ package fr.badblock.game.core18R3.entities;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
+
+import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Predicate;
 
@@ -23,6 +27,8 @@ import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
 import net.minecraft.server.v1_8_R3.World;
 
 public class NMSGuardian extends EntityGuardian implements NMSCustomCreature {
+	@Getter@Setter
+	private Function<Random, List<ItemStack>> customLoots;
 	@Getter@Setter
 	private ControllerMove    normalController;
 	
@@ -127,6 +133,13 @@ public class NMSGuardian extends EntityGuardian implements NMSCustomCreature {
 	@Override
 	public boolean callSuperDamageEntity(DamageSource damagesource, float f) {
 		return super.damageEntity(damagesource, f);
+	}
+	
+	@Override
+	protected void dropDeathLoot(boolean flag, int i) {
+		if(customLoots == null)
+			super.dropDeathLoot(flag, i);
+		else EntityUtils.doDrops(this);
 	}
 }
 

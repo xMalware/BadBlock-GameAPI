@@ -4,7 +4,9 @@ import java.lang.reflect.Field;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 
 import fr.badblock.gameapi.utils.entities.CustomCreature.CreatureBehaviour;
 import fr.badblock.gameapi.utils.entities.CustomCreature.CreatureFlag;
@@ -290,5 +292,18 @@ public class EntityUtils {
 	
 	private static boolean isInLava(Entity entity){
 		return entity.world.a(entity.getBoundingBox().grow(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.LAVA);
+	}
+	
+	public static void doDrops(NMSCustomCreature creature){
+		if(creature.getCustomLoots() == null)
+			return;
+		
+		EntityInsentient ent = creature.getNMSEntity();
+		
+		for(ItemStack item : creature.getCustomLoots().apply(ent.bc())){
+			net.minecraft.server.v1_8_R3.ItemStack itemNms = CraftItemStack.asNMSCopy(item);
+			
+			ent.a(itemNms.getItem(), itemNms.count);
+		}
 	}
 }

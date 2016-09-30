@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import fr.badblock.game.core18R3.jsonconfiguration.data.RabbitMQConfig;
 import fr.badblock.rabbitconnector.RabbitConnector;
-import fr.badblock.rabbitconnector.RabbitPacketType;
-import fr.badblock.rabbitconnector.RabbitService;
+import fr.badblock.rabbitconnector.types.RabbitPacketType;
+import fr.badblock.rabbitconnector.workers.RabbitService;
 import fr.badblock.utils.Encodage;
 import lombok.Getter;
 import lombok.Setter;
