@@ -65,7 +65,7 @@ public class GameI18n implements I18n {
 		
 		languages = Maps.newConcurrentMap();
 
-		for(File languageFolder : folder.listFiles()){
+		for(File languageFolder : i18nFile.listFiles()){
 			if(languageFolder.isDirectory()){
 				Locale locale = Locale.getLocale(languageFolder.getName());
 
