@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import com.google.common.collect.Maps;
 
+import fr.badblock.game.core18R3.players.data.GamePlayerData;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.i18n.I18n;
@@ -185,7 +186,7 @@ public class GameI18n implements I18n {
 			BadblockPlayer player = (BadblockPlayer) sender;
 			locale = player.getPlayerData().getLocale();
 		} else {
-			locale = Locale.ENGLISH_US;
+			locale = GamePlayerData.defaultLocale;
 		}
 
 		if(locale == null)
