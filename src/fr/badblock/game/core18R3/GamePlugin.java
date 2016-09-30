@@ -498,7 +498,7 @@ public class GamePlugin extends GameAPI {
 	}
 
 	public void loadI18n(){
- 		File file = TEST_MODE ? new File(getDataFolder(), "i18n") : new File(FOLDER_I18N);
+ 		File file = new File(FOLDER_I18N);
  		
 		i18n.load(file);
     }
