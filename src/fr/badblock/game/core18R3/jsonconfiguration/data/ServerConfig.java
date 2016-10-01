@@ -11,4 +11,7 @@ public class ServerConfig {
 	public double bonusXp;
 	public double bonusCoins;
 
+	// Selected i18n work folder
+	public String i18nPath;
+	
 }

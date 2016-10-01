@@ -34,6 +34,7 @@ public class GameI18n implements I18n {
 			folder.mkdirs();
 		
 		languages = Maps.newConcurrentMap();
+		GameAPI.logColor("&b[GameAPI] &aLooking for i18n languages... (in " + folder.getAbsolutePath() + ")");
 
 		for(File languageFolder : folder.listFiles()){
 			if(languageFolder.isDirectory()){

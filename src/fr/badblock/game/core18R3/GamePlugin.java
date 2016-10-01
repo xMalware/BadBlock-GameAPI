@@ -178,7 +178,7 @@ public class GamePlugin extends GameAPI {
 	
 	public static final boolean EMPTY_VERSION = false;
 
-	public static final String FOLDER_I18N 		   = "/home/dev01/i18n",
+	public static final String
                                FOLDER_CONFIG = "config",
 							   FOLDER_KITS		   = "kits",
 							   CONFIG_DATABASES    = "databases.json",
@@ -253,7 +253,8 @@ public class GamePlugin extends GameAPI {
 	private double						serverXpBonus;
     @Getter
 	private List<BadblockPlayer> 		onlinePlayers;
-
+    @Getter
+    private String						i18nFolder 		= "/home/dev01/i18n";
 	
 	@Override
 	public void onEnable() {
@@ -292,7 +293,7 @@ public class GamePlugin extends GameAPI {
  			RabbitMQConfig rabbitMQConfig = JsonUtils.load(new File(configFolder, "rabbitmq.json"), RabbitMQConfig.class);
  			ServerConfig serverConfig = JsonUtils.load(new File(configFolder, "server.json"), ServerConfig.class);
 			SQLConfig sqlConfig = JsonUtils.load(new File(configFolder, "sql.json"), SQLConfig.class);
-            
+			i18nFolder = serverConfig.getI18nPath();
 			loadI18n();
 
 			if(!EMPTY_VERSION) {
@@ -498,7 +499,7 @@ public class GamePlugin extends GameAPI {
 	}
 
 	public void loadI18n(){
- 		File file = !TEST_MODE ? new File(getDataFolder(), "i18n") : new File(FOLDER_I18N);
+ 		File file = new File(this.getI18nFolder());
  		System.out.println("Fetch i18n from " + file.getAbsolutePath());
 		i18n.load(file);
     }
