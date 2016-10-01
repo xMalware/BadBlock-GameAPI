@@ -508,7 +508,7 @@ public class GamePlugin extends GameAPI {
 			return player.getBadblockMode() != BadblockMode.SPECTATOR;
 		}).collect(Collectors.toList());
 	}
- 
+
 	@Override
 	public ItemStackFactory createItemStackFactory() {
 		return new GameItemStackFactory();
