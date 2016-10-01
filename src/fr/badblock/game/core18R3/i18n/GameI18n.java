@@ -25,47 +25,11 @@ public class GameI18n implements I18n {
 	private final static Locale   def = Locale.FRENCH_FRANCE;
 	private Map<Locale, GameLanguage> languages;
 
-	public GameI18n(){
+	public GameI18n() {
 
 	}
-
-	/*
-	private void copy(File folderFrom, File folderTo) throws IOException {
-		if(!folderTo.exists())
-			folderTo.mkdirs();
-		
-		for(File file : folderFrom.listFiles()){
-			File to = new File(folderTo, file.getName());
-			
-			if(file.isDirectory())
-				copy(file, to);
-			else Files.copy(file, to);
-		}
-	}
-	*/
 	
 	public void load(File folder){
-		/*
-		 * Les parties commentées de ce code le sont volontairement (comme tout code commenté, d'ailleurs). En effet, le fait de copier depuis un dossier commun
-		 * présente l'énorme désaventage que l'on ne sauvegarde pas dans ce dossier et donc qu'il faut copié collé dans le sens inverse pour faire une modification.
-		 * Aussi, le redémarrage réinitialiserai le dossier utilisé à l'état précédent.
-		 * 
-		 * Signé le Captain (très) Obvious
-		 */
-		
-		/*
-		File i18nFile = new File("/home/dev01/i18n");
-
-		if(!i18nFile.exists())
-			i18nFile.mkdirs();
-
-		try {
-			Runtime.getRuntime().exec("rm -rf " + folder.getAbsolutePath()).waitFor();
-			copy(i18nFile, folder);
-		} catch(Exception e){
-			e.printStackTrace();
-		}
-		*/
 		if(!folder.exists())
 			folder.mkdirs();
 		

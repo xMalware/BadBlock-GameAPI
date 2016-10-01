@@ -271,7 +271,6 @@ public class GamePlugin extends GameAPI {
                 return (GameBadblockPlayer) player.getBukkitEntity();
             }
         }));
-
 		
 		try {
 			/**
@@ -346,7 +345,7 @@ public class GamePlugin extends GameAPI {
 				new PlayerInteractListener();	    // Permet aux administrateurs de dï¿½finir une zone
 				new MoveListener();					// Permet d'empï¿½cher les joueurs de sortir d'une zone
 				new ChatListener();					// Permet de formatter le chat
-				new CustomProjectileListener();		// Gère projectile customs
+				new CustomProjectileListener();		// Gï¿½re projectile customs
 				joinItems = new GameJoinItems();    // Items donnï¿½ ï¿½ l'arrivï¿½e du joueur
 				chestGenerator = new GameChestGenerator();
 				
@@ -499,13 +498,7 @@ public class GamePlugin extends GameAPI {
 	}
 
 	public void loadI18n(){
- 		/* Ceci est une condition temporaire qui sera utilisée jusqu'à la mise en place et qui permet d'avoir un dossier commun à tous les serveurs et donc configurer plus facilement
- 		 * La condition permet d'utiliser le dossier normal lorsqu'on est en mode test (utile par exemple pour tester sur Windows qui n'a pas de dossier /home/mc/dev01
- 		 * 
- 		 * Signé le Captain Obvious
- 		 */
-		File file = TEST_MODE ? new File(getDataFolder(), "i18n") : new File(FOLDER_I18N);
- 		
+ 		File file = !TEST_MODE ? new File(getDataFolder(), "i18n") : new File(FOLDER_I18N);
 		i18n.load(file);
     }
 	
