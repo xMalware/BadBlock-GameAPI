@@ -500,7 +500,6 @@ public class GamePlugin extends GameAPI {
 
 	public void loadI18n(){
  		File file = new File(this.getI18nFolder());
- 		System.out.println("Fetch i18n from " + file.getAbsolutePath());
 		i18n.load(file);
     }
 	
