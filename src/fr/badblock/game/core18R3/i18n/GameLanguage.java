@@ -125,11 +125,11 @@ public class GameLanguage implements Language {
 		GameMessage message = null;
 		
 		if(!file.exists()){
-			message = new GameMessage(getMessageWhenUnknow());
+			message = new GameMessage("§c" + key);
 			JsonUtils.save(file, message, true);
 		} else {
 			message = JsonUtils.load(file, GameMessage.class);
-			message.verify(getMessageWhenUnknow());
+			message.verify("§c" + key);
 		}
 		
 		message.file = file;
@@ -216,11 +216,6 @@ public class GameLanguage implements Language {
 		} else if(object instanceof TranslatableString){
 			return get(((TranslatableString) object).getKey())[0];
 		} else return object.toString();
-	}
-	
-	@Override
-	public String getMessageWhenUnknow() {
-		return config.unknowMessage;
 	}
 
 	@Override
