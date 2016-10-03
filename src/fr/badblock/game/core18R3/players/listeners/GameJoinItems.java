@@ -92,6 +92,10 @@ public class GameJoinItems extends BadListener implements JoinItems {
 						
 						slot++;
 					}
+					if (slot == 0) {
+						player.sendTranslatedMessage("game.nokit");
+						return true;
+					}
 					
 					inventory.openInventory(player);
 					
