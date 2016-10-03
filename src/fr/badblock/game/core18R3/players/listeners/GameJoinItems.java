@@ -81,6 +81,10 @@ public class GameJoinItems extends BadListener implements JoinItems {
 			ItemEvent event = new ItemEvent(){
 				@Override
 				public boolean call(ItemAction action, BadblockPlayer player) {
+					if (kits.isEmpty()) {
+						player.sendTranslatedMessage("game.nokit");
+						return true;
+					}
 					CustomInventory inventory = GameAPI.getAPI().createCustomInventory(kits.size() / 9, GameAPI.i18n().get(locale, "joinitems.kit.inventoryName")[0]);
 					
 					int slot = 0;
@@ -91,10 +95,6 @@ public class GameJoinItems extends BadListener implements JoinItems {
 						}
 						
 						slot++;
-					}
-					if (slot == 0) {
-						player.sendTranslatedMessage("game.nokit");
-						return true;
 					}
 					
 					inventory.openInventory(player);
