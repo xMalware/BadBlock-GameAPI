@@ -20,7 +20,6 @@ import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.databases.LadderSpeaker;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.utils.ServerProperties;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.permissions.PermissionManager;
 import fr.badblock.protocol.PacketHandler;
