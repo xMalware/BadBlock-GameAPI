@@ -24,7 +24,7 @@ public class GameLanguageFile {
 		for(Entry<String, JsonElement> entry : object.entrySet()){
 			if(entry.getValue().isJsonObject()){
 				content.put(entry.getKey().toLowerCase(), JsonUtils.convert(entry.getValue(), GameMessage.class));
-				content.get(entry.getKey().toLowerCase()).verify(whenUnknow);
+				content.get(entry.getKey().toLowerCase()).verify("§c" + entry.getKey());
 			}
 		}
 	}
