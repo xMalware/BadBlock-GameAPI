@@ -86,6 +86,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
         
 		socketHandler.getOut().writeUTF(ip);
 		this.socketHandler.getOut().writeInt(Bukkit.getPort());
+		
+		System.out.println("new GameLadderSpeaker(" + ip + ", " + Bukkit.getPort() + ")");
 
 		this.waitingPackets = Queues.newLinkedBlockingDeque();
 	}
