@@ -2,7 +2,11 @@ package fr.badblock.game.core18R3.ladder;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
@@ -66,7 +70,6 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 		this.socketHandler.start();
 
-        /*
  		ip = Bukkit.getIp();
  		String fileName = "server.properties";
  		List<String> lines = null;
@@ -79,9 +82,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
  			if (line.startsWith("docker-ip=")) {
  				ip = line.replace("docker-ip=", "");
  			}
- 		}*/
-        
-        ip = ServerProperties.getProperties().getProperty("docker-ip", Bukkit.getIp());;
+ 		}
         
 		socketHandler.getOut().writeUTF(ip);
 		this.socketHandler.getOut().writeInt(Bukkit.getPort());
