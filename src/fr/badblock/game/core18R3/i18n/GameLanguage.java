@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -125,11 +126,11 @@ public class GameLanguage implements Language {
 		GameMessage message = null;
 		
 		if(!file.exists()){
-			message = new GameMessage("§c" + key);
+			message = new GameMessage(ChatColor.RED + key);
 			JsonUtils.save(file, message, true);
 		} else {
 			message = JsonUtils.load(file, GameMessage.class);
-			message.verify("§c" + key);
+			message.verify(ChatColor.RED + key);
 		}
 		
 		message.file = file;

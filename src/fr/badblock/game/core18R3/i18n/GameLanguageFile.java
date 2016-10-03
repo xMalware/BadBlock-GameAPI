@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.ChatColor;
+
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -24,7 +26,7 @@ public class GameLanguageFile {
 		for(Entry<String, JsonElement> entry : object.entrySet()){
 			if(entry.getValue().isJsonObject()){
 				content.put(entry.getKey().toLowerCase(), JsonUtils.convert(entry.getValue(), GameMessage.class));
-				content.get(entry.getKey().toLowerCase()).verify("§c" + entry.getKey());
+				content.get(entry.getKey().toLowerCase()).verify(ChatColor.RED + entry.getKey());
 			}
 		}
 	}
