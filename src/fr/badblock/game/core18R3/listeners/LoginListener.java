@@ -80,56 +80,6 @@ public class LoginListener extends BadListener {
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
 
-		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
-			if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
-				// Booster
-				System.out.println("o");
-				List<String> players = new ArrayList<String>();
-				double xp = 0;
-				double badcoins = 0;
-				PlayerBooster playerBoosterZ = null;
-				for (PlayerBooster playerBoosterr : p.getPlayerData().getBoosters())
-					if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBoosterZ = playerBoosterr;
-				boolean hasBoosterEnabled = playerBoosterZ != null;
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					BadblockPlayer bbPlayer = (BadblockPlayer) player;
-					PlayerBooster playerBooster = null;
-					for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
-						if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBooster = playerBoosterr;
-					if (playerBooster != null) {
-						xp += playerBooster.getBooster().getXpMultiplier();
-						badcoins += playerBooster.getBooster().getCoinsMultiplier();
-					}
-				}
-				if (xp == 0) xp = 1;
-				if (badcoins == 0) badcoins = 1;
-				String o = "[";
-				Iterator<String> iterator = players.iterator();
-				while (iterator.hasNext()) {
-					String oo = iterator.next();
-					o += oo + (iterator.hasNext() ? ", " : "");
-				}
-				o += "]";
-				if (xp > 1 || badcoins > 1) {
-					final double xpp = xp;
-					final double badcoinss = badcoins;
-					final String oo = o;
-					if (hasBoosterEnabled) {
-						Bukkit.getOnlinePlayers().forEach(po -> {
-							BadblockPlayer pob = (BadblockPlayer) po;
-							pob.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
-							pob.playSound(Sound.LEVEL_UP);
-						});
-						p.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
-						p.playSound(Sound.LEVEL_UP);
-					}else{
-						p.sendTranslatedMessage("booster.resume", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
-						p.playSound(Sound.LEVEL_UP);
-					}
-				}
-			}
-		}
-
 		new BukkitRunnable(){
 			@Override
 			public void run(){
@@ -141,6 +91,55 @@ public class LoginListener extends BadListener {
 					} else */
 					if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
 						p.hidePlayer(bp);
+					}
+				}
+				if(GameAPI.getAPI().getGameServer().getGameState() == GameState.WAITING){
+					if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
+						// Booster
+						System.out.println("o");
+						List<String> players = new ArrayList<String>();
+						double xp = 0;
+						double badcoins = 0;
+						PlayerBooster playerBoosterZ = null;
+						for (PlayerBooster playerBoosterr : p.getPlayerData().getBoosters())
+							if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBoosterZ = playerBoosterr;
+						boolean hasBoosterEnabled = playerBoosterZ != null;
+						for (Player player : Bukkit.getOnlinePlayers()) {
+							BadblockPlayer bbPlayer = (BadblockPlayer) player;
+							PlayerBooster playerBooster = null;
+							for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
+								if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBooster = playerBoosterr;
+							if (playerBooster != null) {
+								xp += playerBooster.getBooster().getXpMultiplier();
+								badcoins += playerBooster.getBooster().getCoinsMultiplier();
+							}
+						}
+						if (xp == 0) xp = 1;
+						if (badcoins == 0) badcoins = 1;
+						String o = "[";
+						Iterator<String> iterator = players.iterator();
+						while (iterator.hasNext()) {
+							String oo = iterator.next();
+							o += oo + (iterator.hasNext() ? ", " : "");
+						}
+						o += "]";
+						if (xp > 1 || badcoins > 1) {
+							final double xpp = xp;
+							final double badcoinss = badcoins;
+							final String oo = o;
+							if (hasBoosterEnabled) {
+								Bukkit.getOnlinePlayers().forEach(po -> {
+									BadblockPlayer pob = (BadblockPlayer) po;
+									pob.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
+									pob.playSound(Sound.LEVEL_UP);
+								});
+								p.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
+								p.playSound(Sound.LEVEL_UP);
+							}else{
+								p.sendTranslatedMessage("booster.resume", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
+								p.playSound(Sound.LEVEL_UP);
+							}
+						}
 					}
 				}
 
