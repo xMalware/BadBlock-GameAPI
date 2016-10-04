@@ -96,7 +96,6 @@ public class LoginListener extends BadListener {
 				if(GameAPI.getAPI().getGameServer().getGameState() == GameState.WAITING){
 					if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 						// Booster
-						System.out.println("o");
 						List<String> players = new ArrayList<String>();
 						double xp = 0;
 						double badcoins = 0;
