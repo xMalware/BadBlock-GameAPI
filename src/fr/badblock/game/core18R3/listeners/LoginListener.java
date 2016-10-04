@@ -133,8 +133,6 @@ public class LoginListener extends BadListener {
 									pob.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
 									pob.playSound(Sound.LEVEL_UP);
 								});
-								p.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
-								p.playSound(Sound.LEVEL_UP);
 							}else{
 								p.sendTranslatedMessage("booster.resume", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
 								p.playSound(Sound.LEVEL_UP);
