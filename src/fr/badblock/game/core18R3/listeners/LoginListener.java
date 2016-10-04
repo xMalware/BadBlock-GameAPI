@@ -1,6 +1,11 @@
 package fr.badblock.game.core18R3.listeners;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -19,8 +24,11 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
+import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
+import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
+import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
@@ -35,7 +43,7 @@ public class LoginListener extends BadListener {
 		if(GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName())){
 			e.setResult(Result.KICK_WHITELIST); return;
 		}
-		
+
 		Reflector 			  reflector 	= new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 		GameBadblockPlayer    player;
@@ -57,25 +65,71 @@ public class LoginListener extends BadListener {
 		p.setHasJoined(true);
 
 		if(GamePlugin.EMPTY_VERSION) return;
-		
+
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 
 		if(offlinePlayer != null){
 			p.changePlayerDimension(offlinePlayer.getFalseDimension());
 			p.showCustomObjective(offlinePlayer.getCustomObjective());
-			
+
 			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
 			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getName().toLowerCase());
+
+			if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
+				// Booster
+				List<String> players = new ArrayList<String>();
+				double xp = 0;
+				double badcoins = 0;
+				PlayerBooster playerBoosterZ = null;
+				for (PlayerBooster playerBoosterr : p.getPlayerData().getBoosters())
+					if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBoosterZ = playerBoosterr;
+				boolean hasBoosterEnabled = playerBoosterZ != null;
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					BadblockPlayer bbPlayer = (BadblockPlayer) player;
+					PlayerBooster playerBooster = null;
+					for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
+						if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBooster = playerBoosterr;
+					if (playerBooster != null) {
+						xp += playerBooster.getBooster().getXpMultiplier();
+						badcoins += playerBooster.getBooster().getCoinsMultiplier();
+					}
+				}
+				if (xp == 0) xp = 1;
+				if (badcoins == 0) badcoins = 1;
+				String o = "[";
+				Iterator<String> iterator = players.iterator();
+				while (iterator.hasNext()) {
+					String oo = iterator.next();
+					o += oo + (iterator.hasNext() ? ", " : "");
+				}
+				o += "]";
+				if (xp > 1 || badcoins > 1) {
+					final double xpp = xp;
+					final double badcoinss = badcoins;
+					final String oo = o;
+					if (hasBoosterEnabled) {
+						Bukkit.getOnlinePlayers().forEach(po -> {
+							BadblockPlayer pob = (BadblockPlayer) po;
+							pob.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
+							pob.playSound(Sound.LEVEL_UP);
+						});
+						p.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
+						p.playSound(Sound.LEVEL_UP);
+					}else{
+						p.sendTranslatedMessage("booster.resume", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
+						p.playSound(Sound.LEVEL_UP);
+					}
+				}
+			}
 		} else if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
-		
-		
+
 		new BukkitRunnable(){
 			@Override
 			public void run(){
-				
+
 				for(Player player : Bukkit.getOnlinePlayers()){
 					GameBadblockPlayer bp = (GameBadblockPlayer) player;
 					/*if(bp.isDisguised()){
@@ -85,7 +139,7 @@ public class LoginListener extends BadListener {
 						p.hidePlayer(bp);
 					}
 				}
-				
+
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
 	}

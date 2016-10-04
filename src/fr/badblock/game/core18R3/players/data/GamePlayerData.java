@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 
@@ -18,8 +21,6 @@ import fr.badblock.gameapi.players.data.PlayerAchievementState;
 import fr.badblock.gameapi.players.data.PlayerData;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.players.kits.PlayerKit;
-import fr.badblock.gameapi.utils.boosters.BoostedValue;
-import fr.badblock.gameapi.utils.boosters.BoosterUtil;
 import fr.badblock.gameapi.utils.i18n.Locale;
 import lombok.Getter;
 import lombok.NonNull;
@@ -57,7 +58,17 @@ public class GamePlayerData implements PlayerData {
 		badcoins = Math.abs(badcoins);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
-            double playerBonus = BoosterUtil.getBoosted(this, BoostedValue.COINS);
+			double playerBonus = 0;
+			for (Player playerz : Bukkit.getOnlinePlayers()) {
+				BadblockPlayer bbPlayer = (BadblockPlayer) playerz;
+				PlayerBooster playerBooster = null;
+				for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
+					if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBooster = playerBoosterr;
+				if (playerBooster != null) {
+					playerBonus += playerBooster.getBooster().getCoinsMultiplier();
+				}
+			}
+			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
  			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
         }
@@ -80,7 +91,17 @@ public class GamePlayerData implements PlayerData {
 		xp = Math.abs(xp);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
- 			double playerBonus = BoosterUtil.getBoosted(this, BoostedValue.XP);
+			double playerBonus = 0;
+			for (Player playerz : Bukkit.getOnlinePlayers()) {
+				BadblockPlayer bbPlayer = (BadblockPlayer) playerz;
+				PlayerBooster playerBooster = null;
+				for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
+					if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBooster = playerBoosterr;
+				if (playerBooster != null) {
+					playerBonus += playerBooster.getBooster().getXpMultiplier();
+				}
+			}
+			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
  			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
         }
