@@ -75,8 +75,15 @@ public class LoginListener extends BadListener {
 			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
 			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getName().toLowerCase());
 
+		} else if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
+			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
+			p.setBadblockMode(BadblockMode.SPECTATOR);
+		}
+
+		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
 			if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 				// Booster
+				System.out.println("o");
 				List<String> players = new ArrayList<String>();
 				double xp = 0;
 				double badcoins = 0;
@@ -121,9 +128,6 @@ public class LoginListener extends BadListener {
 					}
 				}
 			}
-		} else if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
-			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
-			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
 
 		new BukkitRunnable(){
