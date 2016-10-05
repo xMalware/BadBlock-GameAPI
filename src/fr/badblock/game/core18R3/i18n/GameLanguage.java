@@ -201,7 +201,7 @@ public class GameLanguage implements Language {
 		
 		String[] arrayResult = result.toArray(new String[0]);
 		
-		for(int i=0;i<args.length;i++) {
+		for(int i=args.length-1;i>=0;i--) {
 			String toString = toString(args[i]);
 			arrayResult = ArraysUtils.replace(arrayResult, "%" + i, toString);
 		}
