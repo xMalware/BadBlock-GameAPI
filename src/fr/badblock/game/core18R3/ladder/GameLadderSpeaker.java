@@ -205,7 +205,6 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void handle(PacketPlayerData packet) {
-		System.out.println("reçu: " + packet.getType() + " / " + packet.getAction() + " / " + packet.getKey() + " / " + packet.getData());
 		if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.SEND){
 			Callback<JsonObject> callback = requestedPlayers.get(packet.getKey().toLowerCase());
 
