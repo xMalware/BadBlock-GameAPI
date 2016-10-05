@@ -1,5 +1,6 @@
 package fr.badblock.game.core18R3.players.listeners;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -300,6 +301,14 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				votes.put(vote, 0);
 			}
 		}
+
+		// Vote random
+		if (maps.size() > 0) {
+			VoteElement vote = new VoteElement("?", "?");
+			voteObjective.getScore(GameAPI.i18n().replaceColors("?")).setScore(0);
+			votes.put(vote, 0);
+		}
+
 	}
 
 	@Override
@@ -393,6 +402,9 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			if(max == null || max.getValue() < value.getValue())
 				max = value;
 		}
+		// Random :o
+		if (max != null && max.getKey().getInternalName().equals("?")) 
+			max = new ArrayList<>(votes.entrySet()).get(votes.size());
 
 		return max == null ? null : max.getKey();
 	}
