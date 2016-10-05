@@ -56,7 +56,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	private boolean    doTeamsPrefix   = false;
 	private boolean    doGroupsPrefix  = false;
 	private boolean	   doDamageHolo    = false;
-	
+
 	Map<VoteElement, Integer> votes;
 
 	public GameScoreboard(){
@@ -66,9 +66,9 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		e.getPlayer().setScoreboard(board);
-		
+
 		BadblockPlayer p = (BadblockPlayer) e.getPlayer();
-		
+
 		if(doGroupsPrefix)
 			sendTeams(p);
 		if(doTeamsPrefix){
@@ -81,34 +81,34 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onDataReceive(PlayerLoadedEvent e){
 		if(!doGroupsPrefix) return;
 
 		getHandler().getTeam(e.getPlayer().getMainGroup()).addEntry(e.getPlayer().getName());
-		
+
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
-		
+
 		if(player.isDisguised()){
 			player.getDisguiseEntity().getWatchers().setCustomName(getUsedName(player));
 			player.getDisguiseEntity().updateWatchers();
 		}
 	}
-	
+
 	@EventHandler
 	public void onDataReload(PlayerReloadedEvent e){
 		if(!doGroupsPrefix) return;
-		
+
 		Team team = getHandler().getEntryTeam(e.getPlayer().getName());
-		
+
 		if(!team.getName().equals(e.getPlayer().getMainGroup())){
 			team.removeEntry(e.getPlayer().getName());
 			getHandler().getTeam(e.getPlayer().getMainGroup()).addEntry(e.getPlayer().getName());
 		}
-		
+
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
-		
+
 		if(player.isDisguised()){
 			player.getDisguiseEntity().getWatchers().setCustomName(getUsedName(player));
 			player.getDisguiseEntity().updateWatchers();
@@ -138,15 +138,15 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if(doGroupsPrefix){
 			return new TranslatableString("game.customname", player.getName(), player.getTabGroupPrefix());
 		} else if(doTeamsPrefix){
-			
+
 			if(player.getTeam() != null){
 				return new TranslatableString("game.customname", player.getName(), player.getTeam().getTabPrefix(ChatColor.GRAY));
 			}
 		}
-		
+
 		return new TranslatableString("game.customname", player.getName(), "");
 	}
-	
+
 	@Override
 	public void doBelowNameHealth(){
 		if(belowNameHealth == null){
@@ -160,7 +160,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			}
 		}
 	}
-	
+
 	@Override
 	public void doOnDamageHologram() {
 		doDamageHolo = true;
@@ -171,33 +171,33 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if(doTeamsPrefix)
 			joinTeam(e.getPlayer(), e.getPreviousTeam(), e.getNewTeam());
 	}
-	
+
 	@EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true)
 	public void onDamage(EntityDamageEvent e){
 		if(!doDamageHolo)
 			return;
-		
+
 		if(e.getEntityType() == EntityType.PLAYER && e.getDamage() >= 1.0d){
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
-			
+
 			for(Entity entity : player.getNearbyEntities(16.0d, 16.0d, 16.0d)){
 				if(entity.getType() == EntityType.PLAYER){
 					BadblockPlayer viewer = (BadblockPlayer) entity;
 					viewer.showFloatingText(ChatColor.RED + "-" + (int) e.getDamage(), player.getLocation().add(0, 2.3, 0), 10, 0.1d);
 				}
-				
+
 			}
 		}
 	}
-	
+
 	protected void joinTeam(BadblockPlayer p, BadblockTeam previous, BadblockTeam team){
 		if(!getHandler().getTeam(team.getKey()).hasEntry(p.getName()))
 			getHandler().getTeam(team.getKey()).addEntry(p.getName());
-		
+
 		if(previous != null){
 			getHandler().getTeam(previous.getKey()).removeEntry(p.getName());
 		}
-		
+
 		GameAPI.getAPI().getTeams().forEach((knowTeam) -> {
 			if(team.equals(knowTeam)){
 				sendTeam(p, knowTeam, ChatColor.GREEN);
@@ -205,21 +205,21 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				sendTeam(p, knowTeam, ChatColor.GRAY);
 			}
 		});
-		
+
 		GameBadblockPlayer player = (GameBadblockPlayer) p;
-		
+
 		if(player.isDisguised()){
 			player.getDisguiseEntity().getWatchers().setCustomName(getUsedName(player));
 			player.getDisguiseEntity().updateWatchers();
 		}
 	}
-	
+
 	protected void sendTeams(BadblockPlayer player){
 		for(PermissibleGroup group : PermissionManager.getInstance().getGroups()){
 			sendTeamData(group.getName(), new TranslatableString("permissions.tab." + group.getName()).getAsLine(player), player);
 		}
 	}
-	
+
 	/*
 	 * Envoit le nouveau pr�fixe via packet, pour l'avoir custom sans le d�clarer dans un scoreboard personnel (opti)
 	 */
@@ -227,62 +227,62 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		String displayName = team.getTabPrefix(color).getAsLine(p);
 		sendTeamData(team.getKey(), displayName, p);
 	}
-	
+
 	private void sendTeamData(String teamName, String displayName, BadblockPlayer p){
 		GameAPI.getAPI().createPacket(PlayScoreboardTeam.class)
-						.setMode(TeamMode.UPDATE)
-						.setTeamName(teamName)
-						.setFriendlyFire(doTeamsPrefix ? TeamFriendlyFire.OFF : TeamFriendlyFire.FRIENDLYFIRE)
-						.setPrefix(displayName)
-						.setDisplayName("")
-						.setSuffix(ChatColor.RESET + (tabListHealth == null ? "" : " "))
-						.setColor((byte) 0)
-						.setNametagVisibility(TeamNameTag.always)
-						.send(p);
+		.setMode(TeamMode.UPDATE)
+		.setTeamName(teamName)
+		.setFriendlyFire(doTeamsPrefix ? TeamFriendlyFire.OFF : TeamFriendlyFire.FRIENDLYFIRE)
+		.setPrefix(displayName)
+		.setDisplayName("")
+		.setSuffix(ChatColor.RESET + (tabListHealth == null ? "" : " "))
+		.setColor((byte) 0)
+		.setNametagVisibility(TeamNameTag.always)
+		.send(p);
 	}
-	
+
 	@Override
 	public void doGroupsPrefix(){
 		if(doTeamsPrefix){
 			throw new RuntimeException("Already doing team prefixs");
 		}
-		
+
 		doGroupsPrefix = true;
-		
+
 		PermissionManager.getInstance().getGroups().forEach((group) -> {
-			
+
 			if(getHandler().getTeam(group.getName()) == null){
 				getHandler().registerNewTeam(group.getName());
 			}
-			
+
 			Team teamHandler = getHandler().getTeam(group.getName());
-			
+
 			// On ne d�finit pas le pr�fixe car il faut le faire pour chaque joueur (pr�fixe alli� / ennemi)
 			teamHandler.setAllowFriendlyFire(true);
 		});
 	}
-	
+
 	@Override
 	public void doTeamsPrefix(){
 		if(doGroupsPrefix){
 			throw new RuntimeException("Already doing group prefixs");
 		}
-		
+
 		doTeamsPrefix = true;
-		
+
 		GameAPI.getAPI().getTeams().forEach((team) -> {
-			
+
 			if(getHandler().getTeam(team.getKey()) == null){
 				getHandler().registerNewTeam(team.getKey());
 			}
-			
+
 			Team teamHandler = getHandler().getTeam(team.getKey());
-			
+
 			// On ne d�finit pas le pr�fixe car il faut le faire pour chaque joueur (pr�fixe alli� / ennemi)
 			teamHandler.setAllowFriendlyFire(false);
 		});
 	}
-	
+
 	@Override
 	public void beginVote(JsonArray maps) {
 		votes = Maps.newLinkedHashMap();
@@ -315,7 +315,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	@Override
 	public void openVoteInventory(BadblockPlayer player) {
 		Locale locale = player.getPlayerData().getLocale();
-		
+
 		I18n i18n = GameAPI.i18n();
 
 		int lines = votes.size() / 9 + (votes.size() % 9 == 0 ? 0 : 1);
@@ -331,7 +331,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			if(slot == inventory.size()) break;
 
 			final VoteElement element = entry.getKey();
-			
+
 			inventory.addClickableItem(slot, GameAPI.getAPI().createItemStackFactory()
 					.type(Material.PAPER)
 					.displayName(entry.getKey().getDisplayName())
@@ -341,48 +341,48 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				@Override
 				public boolean call(ItemAction action, BadblockPlayer player) {
 					if(votes == null || voteObjective == null) return true;
-					
+
 					VoteInGameData data = player.inGameData(VoteInGameData.class);
-					
+
 					if(data.getElement() != null && votes.containsKey(data.getElement())){
 						votes.put(data.getElement(), votes.get(data.getElement()) - 1);
 						voteObjective.getScore(i18n.replaceColors(data.getElement().getDisplayName())).setScore(votes.get(data.getElement()));
 					}
-					
+
 					data.setElement(element);
-					
+
 					votes.put(data.getElement(), votes.get(data.getElement()) + 1);
 					voteObjective.getScore(i18n.replaceColors(data.getElement().getDisplayName())).setScore(votes.get(data.getElement()));
-				
+
 					player.closeInventory();
 					player.sendTranslatedActionBar("vote.success", data.getElement().getDisplayName());
-				
+
 					return true;
 				}
 			});
-			
+
 			slot++;
 		}
-		
+
 		inventory.openInventory(player);
 	}
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-		
+
 		VoteInGameData data = player.inGameData(VoteInGameData.class);
-		
+
 		if(data.getElement() != null && votes.containsKey(data.getElement()) && voteObjective != null){
 			votes.put(data.getElement(), votes.get(data.getElement()) - 1);
 			voteObjective.getScore(GameAPI.i18n().replaceColors(data.getElement().getDisplayName())).setScore(votes.get(data.getElement()));
 		}
-		
+
 		if(getHandler().getEntryTeam(player.getName()) != null && GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING){
 			getHandler().getEntryTeam(player.getName()).removeEntry(player.getName());
 		}
 	}
-	
+
 	@Override
 	public VoteElement getWinner() {
 		if(votes == null) return null;
@@ -409,5 +409,10 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		}
 
 		return max == null ? 0 : max.getValue();
+	}
+
+	@Override
+	public boolean hasShownGroupPrefix() {
+		return this.doGroupsPrefix;
 	}
 }
