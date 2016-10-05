@@ -16,8 +16,10 @@ import com.google.common.collect.Queues;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.databases.LadderSpeaker;
+import fr.badblock.gameapi.events.api.PlayerPermissionLoadedEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.general.Callback;
@@ -222,6 +224,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 			if(player != null){
 				player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
+				if (packet.getData().startsWith("{\"permissions\":"))
+					GamePlugin.getAPI().getServer().getPluginManager().callEvent(new PlayerPermissionLoadedEvent(player));
 			}
 		} else if(packet.getType() == DataType.IP && packet.getAction() == DataAction.SEND){
 			Callback<JsonObject> callback = requestedIps.get(packet.getKey().toLowerCase());
