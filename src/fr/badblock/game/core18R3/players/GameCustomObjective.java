@@ -27,6 +27,9 @@ import lombok.Setter;
  * @author LeLanN
  */
 public class GameCustomObjective implements CustomObjective {
+	private static final String colorChar = Character.toString(ChatColor.COLOR_CHAR);
+
+	
 	private Map<Integer, CustomTeam> 	teams;
 	
 	private UUID 		  			 	player;
@@ -40,7 +43,7 @@ public class GameCustomObjective implements CustomObjective {
 		this.name  		 = name;
 		this.displayName = name;
 		
-		for(int i=1;i<=15;i++){ // on prépare toutes les teams, inutile de les unregisters elles ne gènent pas :3
+		for(int i=1;i<=15;i++){ // on prÃ©pare toutes les teams, inutile de les unregisters elles ne gÃ¨nent pas :3
 			CustomTeam custom = new CustomTeam(Identifiers.getLineIdentifier(i), "", "");
 			teams.put(i, custom);
 		}
@@ -54,7 +57,7 @@ public class GameCustomObjective implements CustomObjective {
 	@Override
 	public void showObjective(BadblockPlayer player) {
 		this.player = player.getUniqueId();
-		((GameBadblockPlayer) player).setCustomObjective(this); // on donne à la classe l'info
+		((GameBadblockPlayer) player).setCustomObjective(this); // on donne Ã  la classe l'info
 		
 		GameAPI.getAPI().createPacket(PlayScoreboardObjective.class).setDisplayName(displayName)
 															    .setMode(ObjectiveMode.CREATE)
@@ -92,7 +95,7 @@ public class GameCustomObjective implements CustomObjective {
 	@Override
 	public void changeLine(int line, String text) {
 		if(line < 1 || line > 15) return;
-		
+
 		CustomTeam team = teams.get(line);
 		text = GameAPI.i18n().replaceColors(text);
 
@@ -100,13 +103,13 @@ public class GameCustomObjective implements CustomObjective {
 		String suffix = "";
 
 
-		if(prefix.endsWith("§")){
+		if(prefix.endsWith(colorChar)){
 			prefix = prefix.substring(0, prefix.length() - 1);
 
-			suffix += "§";
+			suffix += colorChar;
 		} else {
 			String lastColor = lastColor(prefix);
-			suffix = lastColor == null ? "" : lastColor.toString();
+			suffix = lastColor == null ? "" : lastColor;
 		}
 
 		suffix += (text.length() > 16 ? text.substring(16) : "");
@@ -114,6 +117,8 @@ public class GameCustomObjective implements CustomObjective {
 		if(suffix.length() > 16){
 			suffix = suffix.substring(0,  16);
 		}
+		
+		System.out.println("CO line " + line + " -> (" + prefix + ", " + suffix + ")");
 		
 		team.prefix = prefix;
 		team.suffix = suffix;
@@ -151,7 +156,7 @@ public class GameCustomObjective implements CustomObjective {
 	}
 	
 	protected void sendTeam(BadblockPlayer player, CustomTeam team){
-		if(Bukkit.getScoreboardManager().getMainScoreboard().getTeam(team.name) == null) { // la team existe déjà on ajoute juste le 'joueur'
+		if(Bukkit.getScoreboardManager().getMainScoreboard().getTeam(team.name) == null) { // la team existe dÃ©jÃ  on ajoute juste le 'joueur'
 			GameAPI.getAPI().createPacket(PlayScoreboardTeam.class)
 							.setTeamName(team.name)
 							.setPlayers(new String[]{team.name})
