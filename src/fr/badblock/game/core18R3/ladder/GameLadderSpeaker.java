@@ -69,23 +69,23 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 		this.socketHandler.start();
 
- 		ip = Bukkit.getIp();
- 		String fileName = "server.properties";
- 		List<String> lines = null;
- 		try {
-            lines = Files.readAllLines(Paths.get(fileName), Charset.defaultCharset());
- 		} catch (IOException e) {
- 			e.printStackTrace();
- 		}
- 		for (String line : lines) {
- 			if (line.startsWith("docker-ip=")) {
- 				ip = line.replace("docker-ip=", "");
- 			}
- 		}
-        
+		ip = Bukkit.getIp();
+		String fileName = "server.properties";
+		List<String> lines = null;
+		try {
+			lines = Files.readAllLines(Paths.get(fileName), Charset.defaultCharset());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		for (String line : lines) {
+			if (line.startsWith("docker-ip=")) {
+				ip = line.replace("docker-ip=", "");
+			}
+		}
+
 		socketHandler.getOut().writeUTF(ip);
 		this.socketHandler.getOut().writeInt(Bukkit.getPort());
-		
+
 		System.out.println("new GameLadderSpeaker(" + ip + ", " + Bukkit.getPort() + ")");
 
 		this.waitingPackets = Queues.newLinkedBlockingDeque();
@@ -197,7 +197,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	public void executeCommand(String command) {
 		sendPacket(new PacketSimpleCommand(command));
 	}
-	
+
 	@Override
 	public void executeCommand(BadblockPlayer player, String command) {
 		sendPacket(new PacketSimpleCommand(player.getName(), command));
@@ -216,6 +216,13 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 				if(player != null){
 					player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
 				}
+			}
+		}else if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.MODIFICATION){
+			System.out.println("RECU");
+			GameBadblockPlayer player = (GameBadblockPlayer) Bukkit.getPlayer(packet.getKey());
+
+			if(player != null){
+				player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
 			}
 		} else if(packet.getType() == DataType.IP && packet.getAction() == DataAction.SEND){
 			Callback<JsonObject> callback = requestedIps.get(packet.getKey().toLowerCase());
