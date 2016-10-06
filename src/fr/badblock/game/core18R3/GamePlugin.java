@@ -43,7 +43,7 @@ import fr.badblock.game.core18R3.commands.GameModeCommand;
 import fr.badblock.game.core18R3.commands.GiveCommand;
 import fr.badblock.game.core18R3.commands.GodmodeCommand;
 import fr.badblock.game.core18R3.commands.HealCommand;
-import fr.badblock.game.core18R3.commands.I18RCommand;
+import fr.badblock.game.core18R3.commands.I18NCommand;
 import fr.badblock.game.core18R3.commands.InvseeCommand;
 import fr.badblock.game.core18R3.commands.JumpToCommand;
 import fr.badblock.game.core18R3.commands.KickallCommand;
@@ -385,7 +385,7 @@ public class GamePlugin extends GameAPI {
 
 			if(!EMPTY_VERSION){
 				new AdminModeCommand();
-				new I18RCommand();
+				new I18NCommand();
 
 				new FlyCommand();
 				new HealCommand();
