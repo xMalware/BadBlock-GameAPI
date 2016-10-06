@@ -25,6 +25,7 @@ import net.minecraft.server.v1_8_R3.EntityGuardian;
 import net.minecraft.server.v1_8_R3.EntityHorse;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityIronGolem;
+import net.minecraft.server.v1_8_R3.EntityMagmaCube;
 import net.minecraft.server.v1_8_R3.EntityMushroomCow;
 import net.minecraft.server.v1_8_R3.EntityOcelot;
 import net.minecraft.server.v1_8_R3.EntityPig;
@@ -33,10 +34,12 @@ import net.minecraft.server.v1_8_R3.EntityRabbit;
 import net.minecraft.server.v1_8_R3.EntitySheep;
 import net.minecraft.server.v1_8_R3.EntitySilverfish;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.EntitySlime;
 import net.minecraft.server.v1_8_R3.EntitySnowman;
 import net.minecraft.server.v1_8_R3.EntitySpider;
 import net.minecraft.server.v1_8_R3.EntitySquid;
 import net.minecraft.server.v1_8_R3.EntityTypes;
+import net.minecraft.server.v1_8_R3.EntityVillager;
 import net.minecraft.server.v1_8_R3.EntityWitch;
 import net.minecraft.server.v1_8_R3.EntityWolf;
 import net.minecraft.server.v1_8_R3.EntityZombie;
@@ -55,6 +58,8 @@ public enum CustomCreatures {
 	GUARDIAN(EntityType.GUARDIAN, EntityGuardian.class, NMSGuardian.class),
 	HORSE(EntityType.HORSE, EntityHorse.class, NMSHorse.class),
 	IRON_GOLEM(EntityType.IRON_GOLEM, EntityIronGolem.class, NMSIronGolem.class),
+	MUSHROOM_COW(EntityType.MUSHROOM_COW, EntityMushroomCow.class, NMSMushroomCow.class),
+	MAGMA_CUBE(EntityType.MAGMA_CUBE, EntityMagmaCube.class, NMSMagmaCube.class),
 	OCELOT(EntityType.OCELOT, EntityOcelot.class, NMSOcelot.class),
 	PIG(EntityType.PIG, EntityPig.class, NMSPig.class),
 	PIG_ZOMBIE(EntityType.PIG_ZOMBIE, EntityPigZombie.class, NMSPigZombie.class),
@@ -62,13 +67,14 @@ public enum CustomCreatures {
 	SHEEP(EntityType.SHEEP, EntitySheep.class, NMSSheep.class),
 	SILVERFISH(EntityType.SILVERFISH, EntitySilverfish.class, NMSSilverfish.class),
 	SKELETON(EntityType.SKELETON, EntitySkeleton.class, NMSSkeleton.class),
+	SLIME(EntityType.SLIME, EntitySlime.class, NMSSlime.class),
 	SNOWMAN(EntityType.SNOWMAN, EntitySnowman.class, NMSSnowman.class),
 	SPIDER(EntityType.SPIDER, EntitySpider.class, NMSSpider.class),
 	SQUID(EntityType.SQUID, EntitySquid.class, NMSSquid.class),
+	VILLAGER(EntityType.VILLAGER, EntityVillager.class, NMSVillager.class),
 	WITCH(EntityType.WITCH, EntityWitch.class, NMSWitch.class),
 	WOLF(EntityType.WOLF, EntityWolf.class, NMSWolf.class),
-	ZOMBIE(EntityType.ZOMBIE, EntityZombie.class, NMSZombie.class),
-	MUSHROOM_COW(EntityType.MUSHROOM_COW, EntityMushroomCow.class, NMSMushroomCow.class);
+	ZOMBIE(EntityType.ZOMBIE, EntityZombie.class, NMSZombie.class);
 
 	private String name;
 	private int id;
