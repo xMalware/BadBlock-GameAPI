@@ -110,7 +110,7 @@ public class GamePlayerData implements PlayerData {
 		if (delta > 0)
 			return this.xp += xp;
 		// passage de niveau jusqu'à ce qu'il y ait suffisament de niveau(x) passé(s) pour avoir une progression
-		while (getXpUntilNextLevel() <= 0) level++;
+		while (getXpUntilNextLevel() - (xp + this.xp) <= 0) level++;
 		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
 	}
 
