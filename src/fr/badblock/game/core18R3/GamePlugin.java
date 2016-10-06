@@ -146,8 +146,8 @@ import fr.badblock.gameapi.particles.ParticleEffect;
 import fr.badblock.gameapi.particles.ParticleEffectType;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
+import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
@@ -175,14 +175,14 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.World;
 
 public class GamePlugin extends GameAPI {
-	
+
 	public static final boolean EMPTY_VERSION = false;
 
 	public static final String
-                               FOLDER_CONFIG = "config",
-							   FOLDER_KITS		   = "kits",
-							   CONFIG_DATABASES    = "databases.json",
-							   WHITELIST		   = "whitelist.yml";
+	FOLDER_CONFIG = "config",
+	FOLDER_KITS		   = "kits",
+	CONFIG_DATABASES    = "databases.json",
+	WHITELIST		   = "whitelist.yml";
 	public static Thread thread;
 
 	@Getter private static GamePlugin   instance;
@@ -238,24 +238,24 @@ public class GamePlugin extends GameAPI {
 
 	@Getter
 	private SignManager					signManager		= new GameSignManager();
-	
+
 	@Getter
 	private GameChestGenerator			chestGenerator;
-	
+
 	@Getter
 	private RunType						runType;
 	@Getter@Setter
 	private boolean						compassSelectNearestTarget;
-	
+
 	@Getter
 	private double						serverBadcoinsBonus;
 	@Getter
 	private double						serverXpBonus;
-    @Getter
+	@Getter
 	private List<BadblockPlayer> 		onlinePlayers;
-    @Getter
-    private String						i18nFolder 		= "/home/dev01/i18n";
-	
+	@Getter
+	private String						i18nFolder 		= "/home/dev01/i18n";
+
 	@Override
 	public void onEnable() {
 		thread		= Thread.currentThread();
@@ -266,13 +266,13 @@ public class GamePlugin extends GameAPI {
 
 		if(!getDataFolder().exists()) getDataFolder().mkdirs();
 
-        this.onlinePlayers = Collections.unmodifiableList(Lists.transform(MinecraftServer.getServer().getPlayerList().players, new Function<EntityPlayer, GameBadblockPlayer>() {
-            @Override
-            public GameBadblockPlayer apply(EntityPlayer player) {
-                return (GameBadblockPlayer) player.getBukkitEntity();
-            }
-        }));
-		
+		this.onlinePlayers = Collections.unmodifiableList(Lists.transform(MinecraftServer.getServer().getPlayerList().players, new Function<EntityPlayer, GameBadblockPlayer>() {
+			@Override
+			public GameBadblockPlayer apply(EntityPlayer player) {
+				return (GameBadblockPlayer) player.getBukkitEntity();
+			}
+		}));
+
 		try {
 			/**
 			 * Chargement de la configuration
@@ -285,13 +285,13 @@ public class GamePlugin extends GameAPI {
 
 			if(!configFile.exists())
 				configFile.createNewFile();
- 			File configFolder = new File(getDataFolder(), FOLDER_CONFIG);
- 			if (!configFolder.exists()) configFolder.mkdirs();
- 			FTPConfig ftpConfig = JsonUtils.load(new File(configFolder, "ftp.json"), FTPConfig.class);
- 			GameServerConfig gameServerConfig = JsonUtils.load(new File(configFolder, "gameServer.json"), GameServerConfig.class);
- 			LadderConfig ladderConfig = JsonUtils.load(new File(configFolder, "ladder.json"), LadderConfig.class);
- 			RabbitMQConfig rabbitMQConfig = JsonUtils.load(new File(configFolder, "rabbitmq.json"), RabbitMQConfig.class);
- 			ServerConfig serverConfig = JsonUtils.load(new File(configFolder, "server.json"), ServerConfig.class);
+			File configFolder = new File(getDataFolder(), FOLDER_CONFIG);
+			if (!configFolder.exists()) configFolder.mkdirs();
+			FTPConfig ftpConfig = JsonUtils.load(new File(configFolder, "ftp.json"), FTPConfig.class);
+			GameServerConfig gameServerConfig = JsonUtils.load(new File(configFolder, "gameServer.json"), GameServerConfig.class);
+			LadderConfig ladderConfig = JsonUtils.load(new File(configFolder, "ladder.json"), LadderConfig.class);
+			RabbitMQConfig rabbitMQConfig = JsonUtils.load(new File(configFolder, "rabbitmq.json"), RabbitMQConfig.class);
+			ServerConfig serverConfig = JsonUtils.load(new File(configFolder, "server.json"), ServerConfig.class);
 			SQLConfig sqlConfig = JsonUtils.load(new File(configFolder, "sql.json"), SQLConfig.class);
 			i18nFolder = serverConfig.getI18nPath();
 			if (i18nFolder == null || i18nFolder.isEmpty()) i18nFolder = getDataFolder().getAbsolutePath() + "/i18n/";
@@ -303,23 +303,23 @@ public class GamePlugin extends GameAPI {
 				GameAPI.logColor("&b[GameAPI] &aLoading databases configuration...");
 
 				runType = gameServerConfig.runType;
-				
- 				GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + ladderConfig.ladderIp + ":" + ladderConfig.ladderPort);
+
+				GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + ladderConfig.ladderIp + ":" + ladderConfig.ladderPort);
 				GameAPI.logColor("&b[GameAPI] &aConnecting to Ladder...");
 
 				new PermissionManager(new JsonArray());
- 				ladderDatabase = new GameLadderSpeaker(ladderConfig.ladderIp, ladderConfig.ladderPort);
+				ladderDatabase = new GameLadderSpeaker(ladderConfig.ladderIp, ladderConfig.ladderPort);
 				ladderDatabase.askForPermissions();
 
 				if(!GameAPI.TEST_MODE){
- 					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + sqlConfig.sqlIp + ":" + sqlConfig.sqlPort);
+					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + sqlConfig.sqlIp + ":" + sqlConfig.sqlPort);
 					GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
 
- 					sqlDatabase = new GameSQLDatabase(sqlConfig.sqlIp, Integer.toString(sqlConfig.sqlPort), sqlConfig.sqlUser, sqlConfig.sqlPassword, sqlConfig.sqlDatabase);
+					sqlDatabase = new GameSQLDatabase(sqlConfig.sqlIp, Integer.toString(sqlConfig.sqlPort), sqlConfig.sqlUser, sqlConfig.sqlPassword, sqlConfig.sqlDatabase);
 					((GameSQLDatabase) sqlDatabase).openConnection();
-					
- 					rabbitSpeaker = new RabbitSpeaker(rabbitMQConfig);
-                 } else {
+
+					rabbitSpeaker = new RabbitSpeaker(rabbitMQConfig);
+				} else {
 					sqlDatabase = new FakeSQLDatabase();
 				}
 			}
@@ -350,7 +350,7 @@ public class GamePlugin extends GameAPI {
 				new CustomProjectileListener();		// G�re projectile customs
 				joinItems = new GameJoinItems();    // Items donn� � l'arriv�e du joueur
 				chestGenerator = new GameChestGenerator();
-				
+
 				/** Correction de bugs Bukkit */
 
 				new ArrowBugFixListener();			// Permet de corriger un bug avec les fl�ches se lan�ant mal
@@ -371,7 +371,7 @@ public class GamePlugin extends GameAPI {
 				new EquipmentListener().register();
 				new UpdateSignListener().register();
 				//AntiCheat.load();
-				
+
 				getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 				GameAPI.logColor("&b[GameAPI] &aCreating scoreboard...");
@@ -430,8 +430,8 @@ public class GamePlugin extends GameAPI {
 			new WorldCommand();
 			new WorldsCommand();
 			new KillCommand();
-            new TimeCommand();
-			
+			new TimeCommand();
+
 			File whitelistFile 			= new File(getDataFolder(), WHITELIST);
 			FileConfiguration whitelist = YamlConfiguration.loadConfiguration(whitelistFile);
 
@@ -447,15 +447,15 @@ public class GamePlugin extends GameAPI {
 			whitelist.save(whitelistFile);
 
 			// Set server bonus
- 			serverXpBonus = serverConfig.getBonusXp();
+			serverXpBonus = serverConfig.getBonusXp();
 			serverBadcoinsBonus = serverConfig.getBonusCoins();
-			
+
 			// Loading GameServer
 			if(!EMPTY_VERSION){
 				GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
 				// GameServer apr�s tout
 				this.gameServer 	   = new GameServer();
- 				this.gameServerManager = new GameServerManager(gameServerConfig, ftpConfig);
+				this.gameServerManager = new GameServerManager(gameServerConfig, ftpConfig);
 				this.getGameServerManager().start();
 			}
 
@@ -467,7 +467,7 @@ public class GamePlugin extends GameAPI {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
 
 			GameAPI.logColor("&b[GameAPI] &aAPI loaded! (" + ms + "ms)");
-			
+
 			File plugins = new File("plugins" + File.separator + "apiPlugins");
 			plugins.mkdirs();
 			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins)).forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
@@ -490,9 +490,9 @@ public class GamePlugin extends GameAPI {
 
 		if(i18n != null)
 			i18n.save();
-		
+
 		gameServer.cancelReconnectionInvitations();
-		
+
 		if(getGameServerManager() != null)
 			this.getGameServerManager().stop();
 
@@ -500,10 +500,10 @@ public class GamePlugin extends GameAPI {
 	}
 
 	public void loadI18n(){
- 		File file = new File(this.getI18nFolder());
+		File file = new File(this.getI18nFolder());
 		i18n.load(file);
-    }
-	
+	}
+
 	@Override
 	public List<BadblockPlayer> getRealOnlinePlayers(){
 		return onlinePlayers.stream().filter(player -> {
