@@ -121,9 +121,11 @@ public class GameCustomObjective implements CustomObjective {
 		team.prefix = prefix;
 		team.suffix = suffix;
 		
-		if(player != null){
+		if(player != null && getAssignedPlayer().isOnline()){
 			changeTeam(getAssignedPlayer(), team);
 			setScore(getAssignedPlayer(), team.name, line);
+		}else{
+			
 		}
 	}
 
