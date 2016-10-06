@@ -188,6 +188,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
 		}
+		
+		if (object.has("shoppoints")) {
+			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
+		}
 	}
 
 	private GameAPI getAPI() {

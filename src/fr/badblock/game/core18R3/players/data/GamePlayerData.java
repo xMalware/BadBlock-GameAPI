@@ -31,6 +31,7 @@ public class GamePlayerData implements PlayerData {
 	public static Locale								  defaultLocale	   = Locale.FRENCH_FRANCE;
 
 	private int  				 						  badcoins     	   = 0;
+	public int  				 						  shopPoints       = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
 	private List<PlayerBooster>					  		  boosters		   = new ArrayList<>();
@@ -286,4 +287,10 @@ public class GamePlayerData implements PlayerData {
 
 		return result;
 	}
+
+	@Override
+	public int getShopPoints() {
+		return shopPoints;
+	}
+	
 }
