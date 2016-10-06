@@ -135,7 +135,7 @@ public class GameCustomObjective implements CustomObjective {
 		custom.prefix = "";
 		custom.suffix = "";
 		
-		if(player != null){
+		if(player != null && getAssignedPlayer().isOnline()){
 			removeScore(getAssignedPlayer(), custom.name);
 		}
 	}
