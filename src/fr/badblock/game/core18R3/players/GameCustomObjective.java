@@ -124,8 +124,6 @@ public class GameCustomObjective implements CustomObjective {
 		if(player != null && getAssignedPlayer().isOnline()){
 			changeTeam(getAssignedPlayer(), team);
 			setScore(getAssignedPlayer(), team.name, line);
-		}else{
-			
 		}
 	}
 
