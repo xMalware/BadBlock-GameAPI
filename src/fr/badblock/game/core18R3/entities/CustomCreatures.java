@@ -25,6 +25,7 @@ import net.minecraft.server.v1_8_R3.EntityGuardian;
 import net.minecraft.server.v1_8_R3.EntityHorse;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityIronGolem;
+import net.minecraft.server.v1_8_R3.EntityMushroomCow;
 import net.minecraft.server.v1_8_R3.EntityOcelot;
 import net.minecraft.server.v1_8_R3.EntityPig;
 import net.minecraft.server.v1_8_R3.EntityPigZombie;
@@ -66,8 +67,8 @@ public enum CustomCreatures {
 	SQUID(EntityType.SQUID, EntitySquid.class, NMSSquid.class),
 	WITCH(EntityType.WITCH, EntityWitch.class, NMSWitch.class),
 	WOLF(EntityType.WOLF, EntityWolf.class, NMSWolf.class),
-	ZOMBIE(EntityType.ZOMBIE, EntityZombie.class, NMSZombie.class);
-	
+	ZOMBIE(EntityType.ZOMBIE, EntityZombie.class, NMSZombie.class),
+	MUSHROOM_COW(EntityType.MUSHROOM_COW, EntityMushroomCow.class, NMSMushroomCow.class);
 
 	private String name;
 	private int id;
