@@ -45,6 +45,7 @@ import net.minecraft.server.v1_8_R3.EntityWolf;
 import net.minecraft.server.v1_8_R3.EntityZombie;
 
 public enum CustomCreatures {
+	
 	BAT(EntityType.BAT, EntityBat.class, NMSBat.class),
 	BLAZE(EntityType.BLAZE, EntityBlaze.class, NMSBlaze.class),
 	CAVE_SPIDER(EntityType.CAVE_SPIDER, EntityCaveSpider.class, NMSCaveSpider.class),
@@ -63,6 +64,7 @@ public enum CustomCreatures {
 	OCELOT(EntityType.OCELOT, EntityOcelot.class, NMSOcelot.class),
 	PIG(EntityType.PIG, EntityPig.class, NMSPig.class),
 	PIG_ZOMBIE(EntityType.PIG_ZOMBIE, EntityPigZombie.class, NMSPigZombie.class),
+	//PLAYER(EntityType.PLAYER, EntityPlayer.class, NMSPlayer.class);
 	RABBIT(EntityType.RABBIT, EntityRabbit.class, NMSRabbit.class),
 	SHEEP(EntityType.SHEEP, EntitySheep.class, NMSSheep.class),
 	SILVERFISH(EntityType.SILVERFISH, EntitySilverfish.class, NMSSilverfish.class),
