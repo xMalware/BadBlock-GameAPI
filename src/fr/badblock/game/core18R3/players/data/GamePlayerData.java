@@ -30,7 +30,7 @@ import lombok.ToString;
 public class GamePlayerData implements PlayerData {
 
 	public static Locale								  defaultLocale	   = Locale.FRENCH_FRANCE;
-	
+
 	private int  				 						  badcoins     	   = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
@@ -70,8 +70,8 @@ public class GamePlayerData implements PlayerData {
 			}
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
- 			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
-        }
+			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
+		}
 		return this.badcoins += badcoins;
 	}
 
@@ -103,13 +103,15 @@ public class GamePlayerData implements PlayerData {
 			}
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
- 			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
-        }
+			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
+		}
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
+		// pas de passage de niveau
 		if (delta > 0)
 			return this.xp += xp;
-		level++;
-		return this.xp = -delta;
+		// passage de niveau jusqu'à ce qu'il y ait suffisament de niveau(x) passé(s) pour avoir une progression
+		while (getXpUntilNextLevel() <= 0) level++;
+		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
 	}
 
 	@Override
@@ -131,7 +133,7 @@ public class GamePlayerData implements PlayerData {
 			return state;
 		}
 	}
-	
+
 	@Override
 	public void incrementAchievements(BadblockPlayer player, PlayerAchievement... achievements) {
 		for(PlayerAchievement achievement : achievements){
