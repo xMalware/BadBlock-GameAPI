@@ -1,11 +1,9 @@
 package fr.badblock.game.core18R3.players.data;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -35,7 +33,7 @@ public class GamePlayerData implements PlayerData {
 	private int  				 						  badcoins     	   = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
-	private Set<PlayerBooster>							  boosters		   = new HashSet<>();
+	private List<PlayerBooster>					  		  boosters		   = new ArrayList<>();
 	private Map<String, Integer> 						  kits 		 	   = Maps.newConcurrentMap();
 	private Map<String, String>							  lastUsedKits 	   = Maps.newConcurrentMap();
 	private Map<String, PlayerAchievementState> 		  achievements 	   = Maps.newConcurrentMap();
