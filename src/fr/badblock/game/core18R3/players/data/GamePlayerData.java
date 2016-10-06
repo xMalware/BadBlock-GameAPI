@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Maps;
@@ -47,6 +48,8 @@ public class GamePlayerData implements PlayerData {
 	private transient JsonObject 						  data		 	   = new JsonObject();
 	private transient JsonObject 						  object		   = new JsonObject();
 
+	private transient BadblockPlayer					  badblockPlayer;
+	
 	public void setData(JsonObject data){
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
@@ -111,6 +114,8 @@ public class GamePlayerData implements PlayerData {
 			return this.xp += xp;
 		// passage de niveau jusqu'à ce qu'il y ait suffisament de niveau(x) passé(s) pour avoir une progression
 		while (getXpUntilNextLevel() - (xp + this.xp) <= 0) level++;
+		badblockPlayer.sendTranslatedMessage("game.level", level);
+		badblockPlayer.playSound(Sound.LEVEL_UP);
 		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
 	}
 
