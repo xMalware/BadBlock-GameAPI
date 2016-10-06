@@ -118,8 +118,6 @@ public class GameCustomObjective implements CustomObjective {
 			suffix = suffix.substring(0,  16);
 		}
 		
-		System.out.println("CO line " + line + " -> (" + prefix + ", " + suffix + ")");
-		
 		team.prefix = prefix;
 		team.suffix = suffix;
 		
