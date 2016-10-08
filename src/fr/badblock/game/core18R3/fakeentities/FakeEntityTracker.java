@@ -113,7 +113,7 @@ public class FakeEntityTracker {
 			players.add(player);
 			
 			new BukkitRunnable(){
-				private int count = 5;
+				private int count = 20;
 				
 				@Override
 				public void run(){
@@ -126,7 +126,7 @@ public class FakeEntityTracker {
 					fakeEntity.show0(player);					
 					if(count == 0) cancel();
 				}
-			}.runTaskTimer(GameAPI.getAPI(), 0, 10L);
+			}.runTaskTimer(GameAPI.getAPI(), 0, 5L);
 		}
 		
 		void remove(BadblockPlayer player){
