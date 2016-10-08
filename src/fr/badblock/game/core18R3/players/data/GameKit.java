@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 
 @Data@AllArgsConstructor
 public class GameKit implements PlayerKit {
+	
 	private String 	   kitName;
 	private boolean    VIP;
 
