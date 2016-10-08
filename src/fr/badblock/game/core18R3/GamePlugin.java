@@ -17,7 +17,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 
@@ -585,55 +584,67 @@ public class GamePlugin extends GameAPI {
 
 	@Override
 	public void balanceTeams(boolean sameSize) {
-		List<BadblockTeam> unfilled = new ArrayList<>();
+		if(teams.size() == 0)
+			return;
+
+		getOnlinePlayers().stream().filter(player -> { return player.getTeam() == null; }).forEach(player -> addPlayerInTeam(player, sameSize));
+
+		int playersByTeam = getOnlinePlayers().size() / getTeams().size() + 1;
+
+		if(sameSize) {
+			List<BadblockTeam> less = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() < playersByTeam; }).collect(Collectors.toList());
+			List<BadblockTeam> more = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() > playersByTeam; }).collect(Collectors.toList());
+
+			if(less.isEmpty() || more.isEmpty())
+				return;
+
+			for(BadblockTeam m : more){
+				GameTeam gm = (GameTeam) m;
+
+				while(m.getOnlinePlayers().size() > playersByTeam){
+					BadblockTeam t = less.get(0);
+					t.joinTeam(gm.getRandomPlayer(), JoinReason.REBALANCING);
+
+					if(t.getOnlinePlayers().size() >= playersByTeam)
+						less.remove(0);
+				}
+			}
+		}
+		
+		Set<BadblockTeam> toRemove = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() == 0; }).collect(Collectors.toSet());
+		toRemove.forEach(this::unregisterTeam);
+	}
+
+	private void addPlayerInTeam(BadblockPlayer player, boolean sameSize){
+		BadblockTeam team = getTeam(!sameSize);
+
+		if(team == null){
+			System.out.println("All teams are filled !");
+			player.sendPlayer("lobby");
+		} else {
+			team.joinTeam(player, JoinReason.REBALANCING);
+		}
+
+	}
+
+	private BadblockTeam getTeam(boolean max){
+		BadblockTeam choosed = null;
+		int          count	 = 0;
 
 		for(BadblockTeam team : getTeams()){
-			if(team.getOnlinePlayers().size() < team.getMaxPlayers()){
-				unfilled.add(team);
+			int cur = team.getOnlinePlayers().size();
+
+			if(cur >= team.getMaxPlayers())
+				continue;
+
+			if(choosed == null || (count < cur && max) || (count > cur && !max)){
+				choosed = team;
+				count   = cur;
 			}
+
 		}
 
-		for(Player player : Bukkit.getOnlinePlayers()){
-			BadblockPlayer p = (BadblockPlayer) player;
-
-			if(p.getTeam() == null){
-				if(unfilled.isEmpty()){
-					p.sendPlayer("lobby"); // kick
-					continue;
-				}
-
-				BadblockTeam team = unfilled.get(0);
-
-				team.joinTeam(p, JoinReason.REBALANCING);
-
-				if(team.getOnlinePlayers().size() == team.getMaxPlayers()){
-					unfilled.remove(0);
-				}
-			}
-		}
-
-		if(!unfilled.isEmpty() && sameSize){
-			int playersByTeam = Bukkit.getOnlinePlayers().size() / getTeams().size();
-
-			for(BadblockTeam team : getTeams()){
-
-				if(team.getOnlinePlayers().size() < playersByTeam){
-
-					for(BadblockTeam joinable : getTeams()){
-						GameTeam game = (GameTeam) joinable;
-
-						if(joinable.getOnlinePlayers().size() > playersByTeam){
-							team.joinTeam(game.getRandomPlayer(), JoinReason.REBALANCING);
-						}
-
-						if(team.getOnlinePlayers().size() == playersByTeam)
-							break;
-					}
-
-				}
-
-			}
-		}
+		return choosed;
 	}
 
 	@Override
@@ -724,7 +735,7 @@ public class GamePlugin extends GameAPI {
 	public FakeEntity<WatcherEntity> spawnFakeFallingBlock(Location location, Material type, byte data) {
 		return FakeEntities.spawnFakeFallingBlock(location, type, data);
 	}
-	
+
 	@Override
 	public FakeEntity<WatcherLivingEntity> spawnFakePlayer(Location location, PlayerInfo infos) {
 		return FakeEntities.spawnFakePlayer(location, infos);
