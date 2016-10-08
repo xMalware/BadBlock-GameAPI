@@ -98,7 +98,7 @@ public class GamePlayerData implements PlayerData {
 				BadblockPlayer bbPlayer = (BadblockPlayer) playerz;
 				if (bbPlayer.getPlayerData().getBoosters() != null) {
 					for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
-						if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) {
+						if (playerBoosterr.getBooster() != null && playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) {
 							playerBonus += playerBoosterr.getBooster().getXpMultiplier();
 							break;
 						}
