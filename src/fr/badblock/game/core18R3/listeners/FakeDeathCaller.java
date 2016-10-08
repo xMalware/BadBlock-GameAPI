@@ -139,7 +139,7 @@ public class FakeDeathCaller extends BadListener {
 			} else {
 				data.lastDamage    = System.currentTimeMillis();
 				data.lastPvPDamage = type;
-				data.lastDamager   = killer.getEntityId();
+				data.lastDamager   = !killer.equals(player) ? killer.getEntityId() : -1;
 			}
 		}
 	}
