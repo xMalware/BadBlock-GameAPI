@@ -118,6 +118,11 @@ public class FakeEntityTracker {
 				
 				@Override
 				public void run(){
+					if(!players.contains(player) || !isVisibleFrom(player.getLocation())){
+						cancel();
+						return;
+					}
+					
 					count--;
 					fakeEntity.show0(player);					
 					if(count == 0) cancel();
