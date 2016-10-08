@@ -22,5 +22,9 @@ public class GameBadblockPacket {
 		
 		return ComponentSerializer.parse(ChatSerializer.a(base));
 	}
+	
+	public String toLegacy(IChatBaseComponent base){
+		return BaseComponent.toLegacyText(fromChat(base));
+	}
 
 }
