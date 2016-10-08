@@ -305,11 +305,11 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		}
 
 		// Vote random
-		if (maps.size() > 0) {
+		/*if (maps.size() > 0) {
 			VoteElement vote = new VoteElement("random", "?");
 			voteObjective.getScore(GameAPI.i18n().replaceColors("§7?")).setScore(0);
 			votes.put(vote, 0);
-		}
+		}*/
 
 	}
 
