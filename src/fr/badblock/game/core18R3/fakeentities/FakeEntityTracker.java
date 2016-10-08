@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
@@ -80,13 +81,9 @@ public class FakeEntityTracker {
 		}
 
 		void updatePlayer(BadblockPlayer player){
-			//System.out.println(player.getName());
-			
 			if(player == null || fakeEntity.isRemoved()) return;
 
 			boolean canSee = fakeEntity.getVisibility() == Visibility.SERVER || fakeEntity.see(player);
-			
-			//System.out.println("a");
 			
 			if(!player.isOnline()){
 				if(players.contains(player)){
@@ -96,8 +93,6 @@ public class FakeEntityTracker {
 				return;
 			}
 
-			//System.out.println("b");
-			
 			if(!canSee){
 				if(players.contains(player)){
 					remove(player);
@@ -106,24 +101,28 @@ public class FakeEntityTracker {
 				return;
 			}
 			
-			//System.out.println("c");
-
 			if(isVisibleFrom(player.getLocation())) {
-				//System.out.println("d");
 				if(!players.contains(player)){
-				//	System.out.println("e");
 					spawn(player);
 				}
 			} else if(players.contains(player)) {
-				//System.out.println("e");
 				remove(player);
 			}
 		}
 
 		void spawn(BadblockPlayer player){
 			players.add(player);
-		
-			fakeEntity.show0(player);
+			
+			new BukkitRunnable(){
+				private int count = 5;
+				
+				@Override
+				public void run(){
+					count--;
+					fakeEntity.show0(player);					
+					if(count == 0) cancel();
+				}
+			}.runTaskTimer(GameAPI.getAPI(), 0, 10L);
 		}
 		
 		void remove(BadblockPlayer player){
