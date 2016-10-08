@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.badblock.gameapi.utils.entities.CustomCreature.CreatureBehaviour;
 import fr.badblock.gameapi.utils.entities.CustomCreature.CreatureFlag;
 import fr.badblock.gameapi.utils.entities.CustomCreature.CreatureGenericAttribute;
+import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EnchantmentManager;
@@ -59,6 +60,15 @@ public class EntityUtils {
 	
 	public static void setAttributeValue(NMSCustomCreature creature, CreatureGenericAttribute attribute, double value){
 		creature.getNMSEntity().getAttributeInstance(getAttribute(attribute)).setValue(value);
+	}
+	
+	public static void regen(NMSCustomCreature creature){
+		try {
+			new Reflector(creature.getNMSEntity()).setFieldValue("fireProof", creature.hasCreatureFlag(CreatureFlag.FIREPROOF));
+		} catch (Exception e) {
+			e.printStackTrace();
+		};
+		creature.getNMSEntity().setInvisible(creature.hasCreatureFlag(CreatureFlag.INVISIBLE));
 	}
 	
 	public static void move(NMSCustomCreature creature, float sideMot, float forMot){

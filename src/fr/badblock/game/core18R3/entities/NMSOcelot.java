@@ -76,6 +76,7 @@ public class NMSOcelot extends EntityOcelot  implements NMSCustomCreature {
 	
 	@Override
 	public void regenerateAttributes(){
+		EntityUtils.regen(this);
 		this.goalSelector   = new PathfinderGoalSelector((world != null) && (world.methodProfiler != null) ? world.methodProfiler : null);
 		this.targetSelector = new PathfinderGoalSelector((world != null) && (world.methodProfiler != null) ? world.methodProfiler : null);
 
