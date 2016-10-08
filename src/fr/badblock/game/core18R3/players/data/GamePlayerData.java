@@ -48,7 +48,7 @@ public class GamePlayerData implements PlayerData {
 	private transient JsonObject 						  object		   = new JsonObject();
 
 	private transient BadblockPlayer					  badblockPlayer;
-	
+
 	public void setData(JsonObject data){
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
@@ -96,11 +96,12 @@ public class GamePlayerData implements PlayerData {
 			double playerBonus = 0;
 			for (Player playerz : Bukkit.getOnlinePlayers()) {
 				BadblockPlayer bbPlayer = (BadblockPlayer) playerz;
-				PlayerBooster playerBooster = null;
-				for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
-					if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBooster = playerBoosterr;
-				if (playerBooster != null) {
-					playerBonus += playerBooster.getBooster().getXpMultiplier();
+				if (bbPlayer.getPlayerData().getBoosters() != null) {
+					for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
+						if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) {
+							playerBonus += playerBoosterr.getBooster().getXpMultiplier();
+							break;
+						}
 				}
 			}
 			if (playerBonus == 0) playerBonus = 1;
@@ -292,5 +293,5 @@ public class GamePlayerData implements PlayerData {
 	public int getShopPoints() {
 		return shopPoints;
 	}
-	
+
 }
