@@ -242,7 +242,7 @@ public class EntityUtils {
 			return creature.callSuperDamageEntity(damagesource, f);
 		}
 		
-		if(!creature.hasCreatureFlag(CreatureFlag.AGRESSIVE) || creature.getNMSEntity().isInvulnerable(damagesource))
+		if(creature.getNMSEntity().isInvulnerable(damagesource))
 			return false;
 		
 		if(creature.callSuperDamageEntity(damagesource, f)){
