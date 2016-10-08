@@ -140,8 +140,10 @@ import fr.badblock.gameapi.packets.BadblockInPacket;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
 import fr.badblock.gameapi.packets.InPacketListener;
 import fr.badblock.gameapi.packets.OutPacketListener;
+import fr.badblock.gameapi.packets.out.play.PlayPlayerInfo.PlayerInfo;
 import fr.badblock.gameapi.packets.watchers.WatcherArmorStand;
 import fr.badblock.gameapi.packets.watchers.WatcherEntity;
+import fr.badblock.gameapi.packets.watchers.WatcherLivingEntity;
 import fr.badblock.gameapi.particles.ParticleEffect;
 import fr.badblock.gameapi.particles.ParticleEffectType;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
@@ -721,6 +723,11 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public FakeEntity<WatcherEntity> spawnFakeFallingBlock(Location location, Material type, byte data) {
 		return FakeEntities.spawnFakeFallingBlock(location, type, data);
+	}
+	
+	@Override
+	public FakeEntity<WatcherLivingEntity> spawnFakePlayer(Location location, PlayerInfo infos) {
+		return FakeEntities.spawnFakePlayer(location, infos);
 	}
 
 	@Override

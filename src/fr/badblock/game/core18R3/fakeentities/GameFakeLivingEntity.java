@@ -1,5 +1,8 @@
 package fr.badblock.game.core18R3.fakeentities;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 
@@ -14,13 +17,16 @@ public class GameFakeLivingEntity<T extends WatcherEntity> extends GameFakeEntit
 	}
 
 	@Override
-	public BadblockOutPacket getSpawnPacket() {
-		return GameAPI.getAPI().createPacket(PlaySpawnEntityCreature.class)
+	public List<BadblockOutPacket> getSpawnPackets() {
+		return 
+				Arrays.asList(
+						GameAPI.getAPI().createPacket(PlaySpawnEntityCreature.class)
 							   .setEntityId(getId())
 							   .setLocation(getLocation())
 							   .setHeadRotation(getHeadYaw())
 							   .setType(getType())
-							   .setWatchers(getWatchers());
+							   .setWatchers(getWatchers())
+				);
 	}
 
 }

@@ -15,7 +15,6 @@ import com.google.common.collect.Queues;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
-import fr.badblock.gameapi.packets.out.play.PlayEntityDestroy;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class FakeEntityTracker {
@@ -132,8 +131,7 @@ public class FakeEntityTracker {
 		
 		void remove(BadblockPlayer player){
 			players.remove(player);
-			
-			GameAPI.getAPI().createPacket(PlayEntityDestroy.class).setEntities(new int[]{fakeEntity.getId()}).send(player);
+			fakeEntity.remove0(player);
 		}
 		
 		void remove(){

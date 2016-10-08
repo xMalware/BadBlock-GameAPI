@@ -12,8 +12,10 @@ import com.google.common.collect.Maps;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
+import fr.badblock.gameapi.packets.out.play.PlayPlayerInfo.PlayerInfo;
 import fr.badblock.gameapi.packets.watchers.WatcherArmorStand;
 import fr.badblock.gameapi.packets.watchers.WatcherEntity;
+import fr.badblock.gameapi.packets.watchers.WatcherLivingEntity;
 
 public class FakeEntities {
 	private static int lastId = -10;
@@ -43,6 +45,10 @@ public class FakeEntities {
 	
 	public static FakeEntity<WatcherArmorStand> spawnFakeArmorStand(Location location) {
 		return spawnNotify(new GameFakeArmorStand(lastId--, location));
+	}
+	
+	public static FakeEntity<WatcherLivingEntity> spawnFakePlayer(Location location, PlayerInfo infos) {
+		return spawnNotify(new GameFakePlayer(lastId--, infos, GameAPI.getAPI().createWatcher(WatcherLivingEntity.class), location));
 	}
 	
 	private static <T extends WatcherEntity> FakeEntity<T> spawnNotify(GameFakeEntity<T> entity){

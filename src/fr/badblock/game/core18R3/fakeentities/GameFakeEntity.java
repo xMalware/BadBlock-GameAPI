@@ -17,6 +17,7 @@ import fr.badblock.game.core18R3.fakeentities.FakeEntityTracker.FakeEntityTracke
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
+import fr.badblock.gameapi.packets.out.play.PlayEntityDestroy;
 import fr.badblock.gameapi.packets.out.play.PlayEntityEquipment;
 import fr.badblock.gameapi.packets.out.play.PlayEntityHeadRotation;
 import fr.badblock.gameapi.packets.out.play.PlayEntityLook;
@@ -73,7 +74,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 	}
 	
 	public void show0(BadblockPlayer player){
-		getSpawnPacket().send(player);
+		getSpawnPackets().forEach(packet-> packet.send(player));
 		GameAPI.getAPI().createPacket(PlayEntityMetadata.class)
 						.setEntityId(id)
 						.setWatcher(watchers)
@@ -188,6 +189,10 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		viewingPlayers.remove(player.getUniqueId());
 	}
 	
+	public void remove0(BadblockPlayer player){
+		GameAPI.getAPI().createPacket(PlayEntityDestroy.class).setEntities(new int[]{getId()}).send(player);
+	}
+
 	@Override
 	public void destroy(){
 		if(viewingPlayers.size() != 0)
@@ -197,7 +202,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		this.removed = true;
 	}
 
-	public abstract BadblockOutPacket getSpawnPacket();
+	public abstract List<BadblockOutPacket> getSpawnPackets();
 	
 	public void broadcastPacket(BadblockOutPacket packet){
 		for(BadblockPlayer player : entry.players){

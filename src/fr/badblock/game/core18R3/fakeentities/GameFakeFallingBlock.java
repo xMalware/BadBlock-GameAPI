@@ -1,5 +1,8 @@
 package fr.badblock.game.core18R3.fakeentities;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -22,12 +25,15 @@ public class GameFakeFallingBlock extends GameFakeEntity<WatcherEntity> {
 	}
 
 	@Override
-	public BadblockOutPacket getSpawnPacket() {
-		return GameAPI.getAPI().createPacket(PlaySpawnEntityObject.class)
+	public List<BadblockOutPacket> getSpawnPackets() {
+		return 
+				Arrays.asList(
+						GameAPI.getAPI().createPacket(PlaySpawnEntityObject.class)
 							   .setEntityId(getId())
 							   .setLocation(getLocation())
 							   .setData(data())
-							   .setType(SpawnableObjects.FALLING_OBJECT);
+							   .setType(SpawnableObjects.FALLING_OBJECT)
+				);
 	}
 	
 	@Override public void yaw(Location loc){}
