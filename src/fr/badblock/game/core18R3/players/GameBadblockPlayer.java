@@ -747,9 +747,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			Player closestPlayer = null;
 			double minDistance = Integer.MAX_VALUE;
 
-			for (Player online : Bukkit.getOnlinePlayers()) {
-				if (online.equals(this) || online.getGameMode() == GameMode.SPECTATOR
-						|| !online.getLocation().getWorld().equals(getLocation().getWorld()))
+			for (BadblockPlayer online : GameAPI.getAPI().getOnlinePlayers()) {
+				if (!able(online))
 					continue;
 
 				double distance = getLocation().distance(online.getLocation());
@@ -773,11 +772,17 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 
 		public Player getRandomNonSpecPlayer() {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (player.getGameMode() != GameMode.SPECTATOR)
+			for (BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()) {
+				if(able(player))
 					return player;
 			}
+			
 			return null;
+		}
+		
+		public boolean able(BadblockPlayer player){
+			return !player.getUniqueId().equals(getUniqueId()) && player.getGameMode() != GameMode.SPECTATOR && player.getBadblockMode() == BadblockMode.PLAYER
+				&& !player.getLocation().getWorld().equals(getLocation().getWorld());
 		}
 	}
 
