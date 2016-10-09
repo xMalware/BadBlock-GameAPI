@@ -14,6 +14,7 @@ public class GameBadblockPacket {
 
 	public IChatBaseComponent getChat(String base){
 		base = base.replace("\"", "\\\"");
+		base = base.replace("\\", "\\\\");
 		return ChatSerializer.a("{\"text\": \"" + base + "\"}");
 	}
 	

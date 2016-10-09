@@ -48,7 +48,7 @@ public class FakeDeathCaller extends BadListener {
 	public void onDamage(EntityDamageEvent e){
 		if(e.getCause() == DamageCause.ENTITY_ATTACK) return;
 
- 		if (e.getEntityType() == EntityType.PLAYER) {
+		if (e.getEntityType() == EntityType.PLAYER) {
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
 			Entity		   killer = null;
 			FakeDeathData  data	  = player.inGameData(FakeDeathData.class);
@@ -59,7 +59,7 @@ public class FakeDeathCaller extends BadListener {
 				e.setCancelled(true); return;
 			}
 
-			if(e.getDamage() >= player.getHealth()){
+			if(e.getFinalDamage() >= player.getHealth()){
 				e.setCancelled(true);
 
 				if(data.lastDamager != -1){
@@ -120,7 +120,7 @@ public class FakeDeathCaller extends BadListener {
 
 			}
 
-			if(e.getDamage() >= player.getHealth()){
+			if(e.getFinalDamage() >= player.getHealth()){
 				e.setCancelled(true);
 
 				event = new FightingDeathEvent(player, killer, type, e.getCause());
@@ -333,6 +333,15 @@ public class FakeDeathCaller extends BadListener {
 		else location = player.getLocation();
 
 		Bukkit.getPluginManager().callEvent(new PlayerFakeRespawnEvent(player, location));
+		
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				player.heal();
+				player.feed();
+			}
+		}.runTaskLater(GameAPI.getAPI(), 1L);
 	}
 
 	private Entity getTrueEntity(Entity base){
