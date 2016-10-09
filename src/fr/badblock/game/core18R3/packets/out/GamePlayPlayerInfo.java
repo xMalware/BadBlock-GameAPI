@@ -30,7 +30,7 @@ import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 @EqualsAndHashCode(callSuper=false)
 @Accessors(chain = true, fluent = false)
 public class GamePlayPlayerInfo extends GameBadblockOutPacket implements PlayPlayerInfo {
-	private Map<UUID, PlayerInfo> players;
+	private Map<UUID, PlayerInfo> players = new HashMap<>();
 	private TabAction 		      action;
 	
 	@Override
