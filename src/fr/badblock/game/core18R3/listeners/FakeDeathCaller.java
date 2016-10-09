@@ -333,6 +333,15 @@ public class FakeDeathCaller extends BadListener {
 		else location = player.getLocation();
 
 		Bukkit.getPluginManager().callEvent(new PlayerFakeRespawnEvent(player, location));
+		
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				player.heal();
+				player.feed();
+			}
+		}.runTaskLater(GameAPI.getAPI(), 1L);
 	}
 
 	private Entity getTrueEntity(Entity base){
