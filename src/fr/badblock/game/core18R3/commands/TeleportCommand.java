@@ -67,6 +67,7 @@ public class TeleportCommand extends AbstractCommand {
 		}
 
 		for(BadblockPlayer player : who) {
+			if (player.equals(to)) continue;
 			player.teleport(to);
 			GameAPI.i18n().sendMessage(sender, "commands.teleport.to", to.getName());
 		}
