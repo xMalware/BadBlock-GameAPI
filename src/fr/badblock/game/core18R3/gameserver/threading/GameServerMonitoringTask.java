@@ -6,10 +6,6 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.Method;
 
-import org.bukkit.Bukkit;
-
-import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.gameserver.GameServerManager;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.utils.general.MathsUtils;
@@ -61,8 +57,6 @@ public class GameServerMonitoringTask extends GameServerTask {
 
 	@Override
 	public void run() {
-		GamePlugin gamePlugin = GamePlugin.getInstance();
-		GameServerManager gameServerManager = gamePlugin.getGameServerManager();
 
 		long freeMemory = getMXBean("getFreePhysicalMemorySize").longValue() / (1024 * 1024);
 		double cpuLoad = (getMXBean("getProcessCpuLoad").doubleValue() + getMXBean("getSystemCpuLoad").doubleValue())
@@ -71,7 +65,6 @@ public class GameServerMonitoringTask extends GameServerTask {
 		GameAPI.logColor("&b[GameServer &6DEDICATED&b] &7Instance" + (getOpenedServers() > 1 ? "s" : "") + ": "
 				+ getOpenedServers() + " | CPU: " + MathsUtils.round(cpuLoad, 2) + "% | FREEMEM: "
 				+ MathsUtils.round(freeMemory, 2) + "MB");
-		Bukkit.dispatchCommand(gameServerManager.getConsole(), "tps");
 	}
 
 }
