@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 
 import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPSClient;
+import org.apache.commons.net.ftp.FTPClient;
 
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
@@ -43,13 +43,13 @@ public class GameServerSendLogsTask extends GameServerTask {
 	public void doLog() {
 		File file = new File("logs/latest.log");
 		if (file.exists()) {
-			FTPSClient ftpClient = new FTPSClient("TLS");
+			FTPClient ftpClient = new FTPClient();
 			try {
 				ftpClient.connect(config.ftpHostname, config.ftpPort);
 				ftpClient.login(config.ftpUsername, config.ftpPassword);
 				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-				ftpClient.execPBSZ(0);
-				ftpClient.execPROT("P");
+				//ftpClient.execPBSZ(0);
+				//ftpClient.execPROT("P");
 				// ServerConfigurationFactory serverConfigurationFactory =
 				// GamePlugin.getInstance().getGameServerManager().getServerConfigurationFactory();
 
