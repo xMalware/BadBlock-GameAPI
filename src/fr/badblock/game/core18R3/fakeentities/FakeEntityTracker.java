@@ -18,7 +18,7 @@ import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class FakeEntityTracker {
-	public static final double TRACKING_RANGE = 144.0d;
+	public static final double TRACKING_RANGE = 48.0d;
 
 	private World			              trackedWorld;
 	private List<FakeEntityTrackerEntry>  trackedEntities;
@@ -113,7 +113,7 @@ public class FakeEntityTracker {
 			players.add(player);
 			
 			new BukkitRunnable(){
-				private int count = 20;
+				private int count = 5;
 				
 				@Override
 				public void run(){
@@ -122,8 +122,8 @@ public class FakeEntityTracker {
 						return;
 					}
 					
-					count--;
 					fakeEntity.show0(player);					
+					count--;
 					if(count == 0) cancel();
 				}
 			}.runTaskTimer(GameAPI.getAPI(), 0, 5L);
