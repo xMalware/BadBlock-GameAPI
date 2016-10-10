@@ -93,7 +93,6 @@ public class GameJoinItems extends BadListener implements JoinItems {
 						if(kit != null){
 							inventory.addClickableItem(slot, kit.getKitItem(player));
 						}
-						
 						slot++;
 					}
 					
