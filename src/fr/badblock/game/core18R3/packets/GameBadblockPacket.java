@@ -13,9 +13,38 @@ public class GameBadblockPacket {
 	@Getter@Setter private boolean 		  cancelled;
 
 	public IChatBaseComponent getChat(String base){
-		base = base.replace("\"", "\\\"");
-		base = base.replace("\\", "\\\\");
-		return ChatSerializer.a("{\"text\": \"" + base + "\"}");
+		String res = "";
+		
+		boolean wasBackslash = false;
+		
+		for(int i=0;i<base.length();i++){
+			if(wasBackslash){
+				char car =  base.charAt(i);
+				
+				if(car == '"' || car == 'n' || car == 't'){
+					res += "\\";					
+				} else {
+					res += "\\\\";
+				}
+				
+				
+				res += base.charAt(i);
+				
+				wasBackslash = false;
+			} else if(base.charAt(i) == '\\'){
+				wasBackslash = true;
+			} else {
+				if(base.charAt(i) == '"'){
+					res += "\\\"";
+				} else res += base.charAt(i);
+			}
+		}
+		
+		if(wasBackslash){
+			res += "\\\\";
+		}
+		
+		return ChatSerializer.a("{\"text\": \"" + res + "\"}");
 	}
 	
 	public BaseComponent[] fromChat(IChatBaseComponent base){
