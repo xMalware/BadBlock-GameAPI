@@ -21,6 +21,7 @@ import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.LadderSpeaker;
+import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.events.api.PlayerPermissionLoadedEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -219,6 +220,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 				if(player != null){
 					player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
+					Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
 				}
 			}
 		}else if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.MODIFICATION){
@@ -232,6 +234,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 					Team team = gameAPI.getBadblockScoreboard().getHandler().getEntryTeam(player.getName());
 					if (!team.getName().equals(player.getMainGroup())) team.removeEntry(player.getName());
 					gameAPI.getBadblockScoreboard().getHandler().getTeam(player.getMainGroup()).addEntry(player.getName());
+					Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
 				}
 			}
 		} else if(packet.getType() == DataType.IP && packet.getAction() == DataAction.SEND){
