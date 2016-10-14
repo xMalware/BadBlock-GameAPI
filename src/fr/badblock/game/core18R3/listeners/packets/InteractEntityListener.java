@@ -15,9 +15,9 @@ public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 	public void listen(BadblockPlayer player, PlayInUseEntity packet) {
 		FakeEntity<?> entity = FakeEntities.retrieveFakeEntity(packet.getEntityId());
 		
-		if(entity != null){
+		if (entity != null && player.getLastFakeEntityUsedTime() < System.currentTimeMillis()) {
 			packet.setCancelled(true);
-			System.out.println(packet.toString());
+			player.useFakeEntity();
 			Bukkit.getPluginManager().callEvent(new PlayerFakeEntityInteractEvent(player, entity, packet.getAction(), false));
 		}
 	}

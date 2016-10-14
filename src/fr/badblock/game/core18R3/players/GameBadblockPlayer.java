@@ -131,6 +131,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private Disguise 	  disguise;
 	@Getter
 	private FakeEntity<?> disguiseEntity;
+	@Getter
+	private long lastFakeEntityUsedTime;
 
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
@@ -1004,5 +1006,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		public boolean asBoolean() {
 			return false;
 		}
+	}
+
+	@Override
+	public void useFakeEntity() {
+		this.lastFakeEntityUsedTime = System.currentTimeMillis() + 500; // décalage de 500ms pour les double packets
 	}
 }
