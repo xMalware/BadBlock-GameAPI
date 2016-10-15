@@ -14,6 +14,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -25,6 +27,8 @@ import org.bukkit.material.DirectionalContainer;
 import fr.badblock.game.core18R3.commands.ChestGeneratorCommand;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.configuration.values.MapItemStack;
+import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.servers.ChestGenerator;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.general.MathsUtils;
@@ -154,6 +158,10 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent e){
 		if(isWorking() && isRemoveOnOpen()){
+			HumanEntity humanEntity = e.getPlayer();
+			if (!humanEntity.getType().equals(EntityType.PLAYER)) return;
+			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+			if (!player.getBadblockMode().equals(BadblockMode.PLAYER)) return;
 			if(e.getInventory().getHolder() instanceof Chest){
 				Chest c = (Chest) e.getInventory().getHolder();
 
