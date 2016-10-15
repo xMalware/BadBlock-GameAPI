@@ -19,7 +19,6 @@ import net.minecraft.server.v1_8_R3.DataWatcher;
 import net.minecraft.server.v1_8_R3.MathHelper;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
 
 @NoArgsConstructor@Data
 @EqualsAndHashCode(callSuper=false)
@@ -53,7 +52,7 @@ public class GamePlayNamedEntitySpawn extends GameBadblockOutPacket implements P
 	@SuppressWarnings("deprecation")
 	@Override
 	public Packet<?> buildPacket() throws Exception {
-		PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving();
+		PacketPlayOutNamedEntitySpawn packet = new PacketPlayOutNamedEntitySpawn();
 		Reflector reflector = new Reflector(packet);
 		
 		reflector.setFieldValue("a", entityId);
