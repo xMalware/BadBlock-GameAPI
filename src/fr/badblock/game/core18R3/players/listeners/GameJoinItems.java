@@ -30,6 +30,7 @@ import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra.ItemPlaces;
 import lombok.NonNull;
+import net.md_5.bungee.api.ChatColor;
 
 public class GameJoinItems extends BadListener implements JoinItems {
 	private int 			       kitItemSlot   = -1;
@@ -117,7 +118,11 @@ public class GameJoinItems extends BadListener implements JoinItems {
 			ItemEvent event = new ItemEvent(){
 				@Override
 				public boolean call(ItemAction action, BadblockPlayer player) {
-					game.getGameData().getAchievements().openInventory(player);
+					try {
+						game.getGameData().getAchievements().openInventory(player);
+					} catch(Exception e){
+						player.sendMessage(ChatColor.RED + "error: badblock-bad-achiev-configuration");
+					}
 					return true;
 				}
 			};
