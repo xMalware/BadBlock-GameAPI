@@ -17,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -171,8 +172,16 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 	@EventHandler
 	public void onPlayerJoinTeam(PlayerJoinTeamEvent e){
-		if(doTeamsPrefix)
+		if(doTeamsPrefix){
 			joinTeam(e.getPlayer(), e.getPreviousTeam(), e.getNewTeam());
+		
+			new BukkitRunnable(){
+				@Override
+				public void run(){
+					joinTeam(e.getPlayer(), e.getPreviousTeam(), e.getNewTeam());
+				}
+			}.runTaskLater(GameAPI.getAPI(), 10L);
+		}
 	}
 
 	@EventHandler(priority=EventPriority.MONITOR,ignoreCancelled=true)
