@@ -2,7 +2,6 @@ package fr.badblock.game.core18R3.fakeentities;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,7 +17,6 @@ import fr.badblock.gameapi.packets.watchers.WatcherLivingEntity;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class GameFakePlayer extends GameFakeEntity<WatcherLivingEntity> {
-	private UUID 		uniqueId;
 	private PlayerInfo	playerInfos;
 
 	public GameFakePlayer(int entityId, PlayerInfo playerInfos, WatcherLivingEntity watchers, Location location) {
@@ -33,10 +31,10 @@ public class GameFakePlayer extends GameFakeEntity<WatcherLivingEntity> {
 				Arrays.asList(
 						GameAPI.getAPI().createPacket(PlayPlayerInfo.class)
 							.setAction(TabAction.ADD_PLAYER)
-							.addPlayer(uniqueId, playerInfos),
+							.addPlayer(playerInfos.uniqueId, playerInfos),
 						GameAPI.getAPI().createPacket(PlayNamedEntitySpawn.class)
 							.setEntityId(getId())
-							.setUniqueId(uniqueId)
+							.setUniqueId(playerInfos.uniqueId)
 							.setItemInHand(Material.AIR)
 							.setLocation(getLocation())
 							.setWatchers(getWatchers())
@@ -48,7 +46,7 @@ public class GameFakePlayer extends GameFakeEntity<WatcherLivingEntity> {
 		super.remove0(player);
 		GameAPI.getAPI().createPacket(PlayPlayerInfo.class)
 						.setAction(TabAction.REMOVE_PLAYER)
-						.addPlayer(uniqueId, playerInfos);
+						.addPlayer(playerInfos.uniqueId, playerInfos);
 	}
 
 }
