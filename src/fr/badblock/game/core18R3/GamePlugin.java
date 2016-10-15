@@ -580,6 +580,8 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public void unregisterTeam(@NonNull BadblockTeam team) {
 		teams.values().remove(team);
+	
+		getOnlinePlayers().stream().filter(player -> player.getCustomObjective() != null).forEach(player -> player.getCustomObjective().generate());
 	}
 
 	@Override
