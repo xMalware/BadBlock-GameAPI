@@ -313,7 +313,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	protected Locale getLocale() {
-		return playerData.getLocale() == null ? Locale.FRENCH_FRANCE : playerData.getLocale();
+		return playerData.getLocale() == null ? Locale.ENGLISH_US : playerData.getLocale();
 	}
 
 	@Override
