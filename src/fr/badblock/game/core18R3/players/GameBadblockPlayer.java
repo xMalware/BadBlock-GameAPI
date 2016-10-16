@@ -47,6 +47,7 @@ import fr.badblock.gameapi.disguise.Disguise;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.fakeentities.FakeEntity.EntityViewList;
+import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
 import fr.badblock.gameapi.game.result.Result;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
 import fr.badblock.gameapi.packets.out.play.PlayBlockAction;
@@ -415,6 +416,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			enderdragon = GameAPI.getAPI().spawnFakeLivingEntity(loc, EntityType.WITHER, WatcherWither.class); // en
 			enderdragon.getWatchers().setCustomName(message).setCustomNameVisible(true).setInvisibile(true);
+			enderdragon.setVisibility(Visibility.PLAYER);
+			enderdragon.addPlayer(EntityViewList.WHITELIST, this);
 
 			new BossBarRunnable().runTaskTimer(getAPI(), 0, 1L);
 		}
@@ -500,6 +503,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		entity.getWatchers().setInvisibile(true).setCustomName(text).setCustomNameVisible(true).setOnFire(false);
 
 		entity.updateWatchers();
+		entity.setVisibility(Visibility.PLAYER);
+		entity.addPlayer(EntityViewList.WHITELIST, this);
 
 		if (lifeTime > 0) {
 			new BukkitRunnable() {
@@ -846,6 +851,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		disguiseEntity = disguise.createEntity(this);
 
 		getHandle().setInvisible(true);
+
+		disguiseEntity.setVisibility(Visibility.SERVER);
+		disguiseEntity.addPlayer(EntityViewList.BLACKLIST, this);
 
 		// update equipment for other players :o
 		for(Player player : Bukkit.getOnlinePlayers()){
