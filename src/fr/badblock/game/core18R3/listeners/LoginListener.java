@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
@@ -116,13 +117,9 @@ public class LoginListener extends BadListener {
 						}
 						if (xp == 0) xp = 1;
 						if (badcoins == 0) badcoins = 1;
-						String o = "[";
-						Iterator<String> iterator = players.iterator();
-						while (iterator.hasNext()) {
-							String oo = iterator.next();
-							o += oo + (iterator.hasNext() ? ", " : "");
-						}
-						o += "]";
+						
+						String o = "[" + StringUtils.join(players, ", ") + "]";
+						
 						if (xp > 1 || badcoins > 1) {
 							final double xpp = xp;
 							final double badcoinss = badcoins;
