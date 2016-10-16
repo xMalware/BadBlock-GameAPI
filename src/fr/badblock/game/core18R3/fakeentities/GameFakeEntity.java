@@ -173,11 +173,6 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		whitelist.clear();
 	}
 	
-	@Override
-	public void remove(BadblockPlayer player) {
-		whitelist.remove(player.getUniqueId());
-	}
-	
 	public void remove0(BadblockPlayer player){
 		GameAPI.getAPI().createPacket(PlayEntityDestroy.class).setEntities(new int[]{getId()}).send(player);
 	}
