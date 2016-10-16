@@ -20,7 +20,6 @@ import fr.badblock.gameapi.configuration.values.MapNumber;
 import fr.badblock.gameapi.configuration.values.MapRecipe;
 import fr.badblock.gameapi.configuration.values.MapString;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
-import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
 import fr.badblock.gameapi.packets.watchers.WatcherEntity;
 import fr.badblock.gameapi.packets.watchers.WatcherSheep;
 import fr.badblock.gameapi.packets.watchers.WatcherSkeleton;
@@ -116,7 +115,6 @@ public class Merchant {
 			move((BadblockPlayer) player, player.getLocation().clone().add(0, 64, 0), player.getLocation());
 		}*/
 		
-		result.setVisibility(Visibility.SERVER);
 	}
 	
 	protected void createEntities(){
