@@ -54,7 +54,6 @@ public class GameWatcherEntity implements WatcherEntity {
 	@Override
 	public WatcherEntity setCustomName(TranslatableString name) {
 		customName = name;
-		// TODO set visible name packet for different languages?:o
 		set(MetadataIndex.NAME_TAG, customName.getAsLine(Locale.FRENCH_FRANCE));
 		return this;
 	}
