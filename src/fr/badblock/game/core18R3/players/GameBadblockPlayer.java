@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -134,6 +135,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private FakeEntity<?> disguiseEntity;
 	@Getter
 	private long lastFakeEntityUsedTime;
+	@Getter
+	private boolean visible;
+	@Getter
+	private Predicate<BadblockPlayer> visiblePredicate;
 
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
@@ -1009,5 +1014,22 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void useFakeEntity() {
 		this.lastFakeEntityUsedTime = System.currentTimeMillis() + 500; // décalage de 500ms pour les double packets
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		setVisible(visible, player -> true);
+	}
+
+	@Override
+	public void setVisible(boolean visible, Predicate<BadblockPlayer> visiblePredicate) {
+		this.visible		  = visible;
+		this.visiblePredicate = visiblePredicate;
+		
+		if(visible){
+			GameAPI.getAPI().getOnlinePlayers().forEach(player -> player.showPlayer(this));
+		} else {
+			GameAPI.getAPI().getOnlinePlayers().stream().filter(visiblePredicate).forEach(player -> player.showPlayer(this));
+		}
 	}
 }
