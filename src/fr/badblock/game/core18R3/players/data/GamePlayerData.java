@@ -27,8 +27,9 @@ import lombok.ToString;
 
 @Getter@ToString
 public class GamePlayerData implements PlayerData {
-
-	public Locale								  		 defaultLocale	   = Locale.ENGLISH_US;
+	public static final transient Locale DEFAULT_LANGUAGE = Locale.ENGLISH_US;
+	
+	public Locale								  		  locale	       = DEFAULT_LANGUAGE;
 
 	private int  				 						  badcoins     	   = 0;
 	public int  				 						  shopPoints       = 0;
@@ -199,11 +200,6 @@ public class GamePlayerData implements PlayerData {
 		} else if(kit != null){
 			lastUsedKits.put(game, kit);
 		}
-	}
-
-	@Override
-	public Locale getLocale() {
-		return defaultLocale;
 	}
 
 	@Override
