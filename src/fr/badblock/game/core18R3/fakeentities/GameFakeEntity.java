@@ -44,13 +44,8 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 	
 	@Getter private FakeEntityTrackerEntry entry;
 	
-<<<<<<< HEAD
 	@Getter
-	private Visibility visibility;
-=======
-	@Getter@Setter
 	private Visibility visibility = Visibility.SERVER;
->>>>>>> branch 'master' of http://gitlab.badblock-network.fr/API/BadblockAPICore.git
 	
 	private final Map<EquipmentSlot, ItemStack> equipment;
 	
