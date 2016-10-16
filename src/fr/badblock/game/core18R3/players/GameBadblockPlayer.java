@@ -852,8 +852,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		getHandle().setInvisible(true);
 
-		disguiseEntity.setVisibility(Visibility.SERVER);
-		disguiseEntity.addPlayer(EntityViewList.BLACKLIST, this);
+		if(!disguise.isCanSeeHimself())
+			disguiseEntity.addPlayer(EntityViewList.BLACKLIST, this);
 
 		// update equipment for other players :o
 		for(Player player : Bukkit.getOnlinePlayers()){
