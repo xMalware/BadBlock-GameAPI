@@ -100,6 +100,7 @@ public class Merchant {
 			FakeEntity<WatcherSkeleton> skeleton = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherSkeleton.class);
 		
 			skeleton.getWatchers().setWither(isWitherSkeleton);
+			result = skeleton;
 		} else if(entityType == CreatureType.WITCH){
 			result = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherWitch.class);
 		} else {
