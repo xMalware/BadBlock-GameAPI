@@ -46,7 +46,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 	@Getter private FakeEntityTrackerEntry entry;
 	
 	@Getter@Setter
-	private Visibility visibility;
+	private Visibility visibility = Visibility.SERVER;
 	
 	private final Map<EquipmentSlot, ItemStack> equipment;
 	
