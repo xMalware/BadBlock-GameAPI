@@ -14,7 +14,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 
 import fr.badblock.gameapi.GameAPI;
-import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class FakeEntityTracker {
@@ -82,7 +81,7 @@ public class FakeEntityTracker {
 		void updatePlayer(BadblockPlayer player){
 			if(player == null || fakeEntity.isRemoved()) return;
 
-			boolean canSee = fakeEntity.getVisibility() == Visibility.SERVER || fakeEntity.see(player);
+			boolean canSee = fakeEntity.canSeeEntity(player);
 			
 			if(!player.isOnline()){
 				if(players.contains(player)){

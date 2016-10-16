@@ -38,7 +38,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 	@Getter private Location   location;
 	@Getter private float      headYaw;
 	
-	@Getter private List<UUID> viewingPlayers;
+	@Getter private List<UUID> whitelist, blacklist;
 	@Getter private final T	   watchers;
 	
 	@Getter private boolean    removed;
@@ -58,19 +58,14 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		this.equipment		= Maps.newConcurrentMap();
 		
 		this.removed  	    = false;
-		this.viewingPlayers = Lists.newArrayList();
+		
+		this.whitelist	    = Lists.newArrayList();
+		this.blacklist      = Lists.newArrayList();
 		
 		this.location		= location;
 		this.headYaw		= location.getYaw();
 	
 		this.entry		    = new FakeEntityTrackerEntry(this);
-	}
-	
-	@Override
-	public void show(BadblockPlayer player) {
-		if(removed) return;
-		
-		viewingPlayers.add(player.getUniqueId());
 	}
 	
 	public void show0(BadblockPlayer player){
@@ -95,11 +90,6 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 								.send(player);
 			}
 		}
-	}
-
-	@Override
-	public boolean see(BadblockPlayer player){
-		return viewingPlayers.contains(player.getUniqueId());
 	}
 	
 	@Override
@@ -181,12 +171,12 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 
 	@Override
 	public void remove() {
-		viewingPlayers.clear();
+		whitelist.clear();
 	}
 	
 	@Override
 	public void remove(BadblockPlayer player) {
-		viewingPlayers.remove(player.getUniqueId());
+		whitelist.remove(player.getUniqueId());
 	}
 	
 	public void remove0(BadblockPlayer player){
@@ -195,8 +185,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 
 	@Override
 	public void destroy(){
-		if(viewingPlayers.size() != 0)
-			remove();
+		remove();
 		
 		FakeEntities.destroy(this);
 		this.removed = true;
@@ -210,5 +199,29 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		}
 		
 		entry.players.forEach(player -> player.sendPacket(packet));
+	}
+	
+	@Override
+	public void addPlayer(EntityViewList list, BadblockPlayer player) {
+		if(!removed && !isPlayerIn(list, player)) getList(list).add(player.getUniqueId());
+	}
+
+	@Override
+	public void removePlayer(EntityViewList list, BadblockPlayer player) {
+		getList(list).remove(player.getUniqueId());		
+	}
+
+	@Override
+	public boolean isPlayerIn(EntityViewList list, BadblockPlayer player) {
+		return getList(list).contains(player.getUniqueId());
+	}
+	
+	private List<UUID> getList(EntityViewList list){
+		switch(list){
+			case BLACKLIST: return blacklist;
+			case WHITELIST: return whitelist;
+		}
+		
+		return null;
 	}
 }
