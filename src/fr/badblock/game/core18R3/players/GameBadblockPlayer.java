@@ -138,7 +138,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Getter
 	private boolean visible;
 	@Getter
-	private Predicate<BadblockPlayer> visiblePredicate;
+	private Predicate<BadblockPlayer> visiblePredicate = (p -> false);
 
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
