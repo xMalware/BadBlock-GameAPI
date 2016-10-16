@@ -539,9 +539,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			fakeJailer = getAPI().spawnFakeLivingEntity(location, EntityType.BAT, WatcherPig.class);
 			fakeJailer.getWatchers().setInvisibile(true);
-			fakeJailer.setVisibility(Visibility.PLAYER);
-			fakeJailer.addPlayer(EntityViewList.WHITELIST, this);
-
+			//fakeJailer.show(this); visibility server ?
 			BadblockPlayer player = this;
 
 			new BukkitRunnable() {
@@ -855,6 +853,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		getHandle().setInvisible(true);
 
 		disguiseEntity.setVisibility(Visibility.SERVER);
+		disguiseEntity.addPlayer(EntityViewList.BLACKLIST, this);
 
 		// update equipment for other players :o
 		for(Player player : Bukkit.getOnlinePlayers()){
