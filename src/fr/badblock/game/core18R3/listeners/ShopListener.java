@@ -24,7 +24,7 @@ public class ShopListener extends BadListener {
 	
 	@EventHandler(ignoreCancelled=true)
 	public void onFakeInteract(PlayerFakeEntityInteractEvent e){
-		if(e.getAction() == UseEntityAction.INTERACT){
+		if(e.getAction() == UseEntityAction.INTERACT_AT){
 
 			for(Merchant merchant : GamePlugin.getInstance().getMerchants().values()){
 
