@@ -22,7 +22,7 @@ import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.i18n.Word.WordDeterminant;
 
 public class GameI18n implements I18n {
-	private final static Locale   def = Locale.FRENCH_FRANCE;
+	private final static Locale   def = Locale.ENGLISH_US;
 	private Map<Locale, GameLanguage> languages;
 
 	public GameI18n() {
@@ -50,7 +50,7 @@ public class GameI18n implements I18n {
 			}
 		}
 
-		Locale def = Locale.FRENCH_FRANCE;
+		Locale def = Locale.ENGLISH_US;
 
 		if(!languages.containsKey(def)){
 			languages.put(def, new GameLanguage(def, new File(folder, def.getLocaleId())));
