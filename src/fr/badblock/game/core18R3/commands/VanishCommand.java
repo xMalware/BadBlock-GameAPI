@@ -49,6 +49,9 @@ public class VanishCommand extends AbstractCommand {
 				concerned.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 1, Integer.MAX_VALUE, false, false));
         } else concerned.removePotionEffect(PotionEffectType.INVISIBILITY);
         
+        
+        concerned.setVisible(vanish, player -> player.hasPermission(GamePermission.BMODERATOR));
+       /* 
 		for(Player player : Bukkit.getOnlinePlayers()){
 			BadblockPlayer p = (BadblockPlayer) player;
 			
@@ -58,7 +61,7 @@ public class VanishCommand extends AbstractCommand {
 				else p.showPlayer(concerned);
 			}
 		}
-		
+		*/
 		return true;
 	}
 }

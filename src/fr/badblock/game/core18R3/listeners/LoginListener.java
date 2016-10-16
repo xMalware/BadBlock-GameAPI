@@ -17,7 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
-import fr.badblock.game.core18R3.players.ingamedata.CommandInGameData;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
@@ -26,7 +25,6 @@ import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
-import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
@@ -89,9 +87,12 @@ public class LoginListener extends BadListener {
 					/*if(bp.isDisguised()){
 						bp.getDisguiseEntity().show(p);
 					} else */
-					if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
+					if(!bp.isVisible() && bp.getVisiblePredicate().test(bp)){
 						p.hidePlayer(bp);
 					}
+					/*if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
+						p.hidePlayer(bp);
+					}*/
 				}
 				if(GameAPI.getAPI().getGameServer().getGameState() == GameState.WAITING){
 					if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
