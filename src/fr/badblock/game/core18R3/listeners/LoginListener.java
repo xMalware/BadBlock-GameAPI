@@ -1,7 +1,6 @@
 package fr.badblock.game.core18R3.listeners;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -125,12 +124,11 @@ public class LoginListener extends BadListener {
 							final double badcoinss = badcoins;
 							final String oo = o;
 							if (hasBoosterEnabled) {
-								Bukkit.getOnlinePlayers().forEach(po -> {
-									BadblockPlayer pob = (BadblockPlayer) po;
+								GameAPI.getAPI().getOnlinePlayers().forEach(pob ->{
 									pob.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
 									pob.playSound(Sound.LEVEL_UP);
 								});
-							}else{
+							} else{
 								p.sendTranslatedMessage("booster.resume", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
 								p.playSound(Sound.LEVEL_UP);
 							}
