@@ -48,6 +48,7 @@ public class Merchant {
 	private Villager.Profession		   				 profession;
 	private DyeColor				   				 color;
 	private boolean					   				 isZombieVillager;
+	private boolean									 isWitherSkeleton;
 	
 	private List<MapNamedLocation>     				 handlers;
 	private Map<String, FakeEntity<?>> 				 entities;
@@ -66,6 +67,7 @@ public class Merchant {
 				 		   config.getValue("entity-sheep-color", MapNumber.class, new MapNumber()).getHandle().byteValue()
 		);
 		isZombieVillager = config.getValue("entity-zombie-villager", MapBoolean.class, new MapBoolean()).getHandle();
+		isWitherSkeleton = config.getValue("entity-zombie-wither", MapBoolean.class, new MapBoolean()).getHandle();
 
 		recipes    		 = config.getValueList("offers", MapRecipe.class);
 		handlers    	 = config.getValueList("handlers", MapNamedLocation.class);
@@ -95,7 +97,9 @@ public class Merchant {
 			zombie.getWatchers().setVillager(this.isZombieVillager);
 			result = zombie;
 		} else if(entityType == CreatureType.SKELETON){
-			result = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherSkeleton.class);
+			FakeEntity<WatcherSkeleton> skeleton = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherSkeleton.class);
+		
+			skeleton.getWatchers().setWither(isWitherSkeleton);
 		} else if(entityType == CreatureType.WITCH){
 			result = GameAPI.getAPI().spawnFakeLivingEntity(location, entityType.bukkit(), WatcherWitch.class);
 		} else {
