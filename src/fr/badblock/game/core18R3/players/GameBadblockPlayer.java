@@ -1029,7 +1029,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		if(visible){
 			GameAPI.getAPI().getOnlinePlayers().forEach(player -> player.showPlayer(this));
 		} else {
-			GameAPI.getAPI().getOnlinePlayers().stream().filter(visiblePredicate).forEach(player -> player.showPlayer(this));
+			GameAPI.getAPI().getOnlinePlayers().stream().filter(visiblePredicate).forEach(player -> player.hidePlayer(this));
 		}
 	}
 }
