@@ -46,6 +46,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.disguise.Disguise;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
+import fr.badblock.gameapi.fakeentities.FakeEntity.EntityViewList;
 import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
 import fr.badblock.gameapi.game.result.Result;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
@@ -414,13 +415,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			loc.add(loc.getDirection().multiply(50.0D));
 
 			enderdragon = GameAPI.getAPI().spawnFakeLivingEntity(loc, EntityType.WITHER, WatcherWither.class); // en
-			// vr�
-			// c�
-			// un
-			// wither
 			enderdragon.getWatchers().setCustomName(message).setCustomNameVisible(true).setInvisibile(true);
-
-			enderdragon.show(this);
+			enderdragon.setVisibility(Visibility.PLAYER);
+			enderdragon.addPlayer(EntityViewList.WHITELIST, this);
 
 			new BossBarRunnable().runTaskTimer(getAPI(), 0, 1L);
 		}
@@ -506,7 +503,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		entity.getWatchers().setInvisibile(true).setCustomName(text).setCustomNameVisible(true).setOnFire(false);
 
 		entity.updateWatchers();
-		entity.show(this);
+		entity.setVisibility(Visibility.PLAYER);
+		entity.addPlayer(EntityViewList.WHITELIST, this);
 
 		if (lifeTime > 0) {
 			new BukkitRunnable() {
@@ -541,7 +539,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			fakeJailer = getAPI().spawnFakeLivingEntity(location, EntityType.BAT, WatcherPig.class);
 			fakeJailer.getWatchers().setInvisibile(true);
-			fakeJailer.show(this);
+			fakeJailer.setVisibility(Visibility.PLAYER);
+			fakeJailer.addPlayer(EntityViewList.WHITELIST, this);
 
 			BadblockPlayer player = this;
 
@@ -812,8 +811,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 				if (enderdragon.getLocation().distance(loc) > 128.0d) { // trop
 					enderdragon.teleport(loc);
-					enderdragon.remove(GameBadblockPlayer.this);
-					enderdragon.show(GameBadblockPlayer.this);
+					enderdragon.removePlayer(EntityViewList.WHITELIST, GameBadblockPlayer.this);
+					enderdragon.addPlayer(EntityViewList.WHITELIST, GameBadblockPlayer.this);
 				} else {
 					enderdragon.teleport(loc); // on t�l�porte l'entit� pour
 				}
