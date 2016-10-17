@@ -654,7 +654,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		getHandle().getDataWatcher().watch(MetadataIndex.ARROW_COUNT.getIndex(), new Byte(amount));
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void changePlayerDimension(Environment world) {
 		if(customEnvironment != null && customEnvironment == world) return;
@@ -966,7 +965,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		return result;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public int removeItems(Material type, byte data, int amount) {
 
