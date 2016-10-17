@@ -28,7 +28,9 @@ public class DisconnectListener extends BadListener {
 	public void onQuit(PlayerQuitEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
+		player.removeBossBars();
 		player.undisguise();
+		
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			// Booster
 			PlayerBooster playerBoosterZ = null;

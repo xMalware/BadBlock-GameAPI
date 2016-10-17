@@ -4,6 +4,7 @@ import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -71,6 +72,8 @@ import fr.badblock.gameapi.packets.watchers.WatcherWither;
 import fr.badblock.gameapi.particles.ParticleEffect;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.bossbars.BossBarColor;
+import fr.badblock.gameapi.players.bossbars.BossBarStyle;
 import fr.badblock.gameapi.players.data.InGameData;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.utils.general.Callback;
@@ -96,6 +99,10 @@ import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PlayerChunkMap;
 import net.minecraft.server.v1_8_R3.WorldServer;
+import us.myles.ViaVersion.api.ViaVersion;
+import us.myles.ViaVersion.api.boss.BossBar;
+import us.myles.ViaVersion.api.boss.BossColor;
+import us.myles.ViaVersion.api.boss.BossStyle;
 
 public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Getter@Setter
@@ -107,7 +114,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Getter
 	private Map<Class<?>, InGameData> 	 inGameData  		  = null;
 
-	private String 						 bossBarMessage 	  = null;
 	private FakeEntity<WatcherWither> 	 enderdragon 		  = null;
 
 	private GameMode 					 gamemodeBefJail 	  = null;
@@ -400,22 +406,21 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendTranslatedActionBar(String key, Object... args) {
 		sendActionBar(getTranslatedMessage(key, args)[0]);
 	}
-
+	
+	private Map<String, BossBar> bossBars    = new HashMap<>();
+	private BossBar	             lastBossBar = null;
+	
 	@Override
-	public void sendBossBar(String message) {
+	public void addBossBar(String key, String message, float life, BossBarColor color, BossBarStyle style) {
 		message = getI18n().replaceColors(message);
-
-		if (message.length() > 64)
-			message = message.substring(0, 63);
-
-		if (message.isEmpty()) {
-			removeBossBar();
-		} else {
-			this.bossBarMessage = message;
-
-			if (enderdragon != null)
-				return;
-
+		
+		BossBar bar = ViaVersion.getInstance().createBossBar(message, life, BossColor.valueOf(color.name()), BossStyle.valueOf(style.name()));
+		bar.addPlayer(this);
+		
+		bossBars.put(key.toLowerCase(), bar);
+		lastBossBar = bar;
+		
+		if (enderdragon == null && getProtocolVersion() < BadblockPlayer.VERSION_1_9){
 			Location loc = getLocation().clone();
 			loc.add(loc.getDirection().multiply(50.0D));
 
@@ -429,14 +434,58 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void removeBossBar() {
-		if (enderdragon != null)
-			enderdragon.remove();
-
-		enderdragon = null;
-		bossBarMessage = null;
+	public void changeBossBar(String key, String message) {
+		BossBar bar = bossBars.get(key.toLowerCase());
+		
+		if(bar != null){
+			message = getI18n().replaceColors(message);
+			bar.setTitle(message);
+			
+			lastBossBar = bar;
+		}
+	}
+	
+	@Override
+	public void changeBossBarStyle(String key, float life, BossBarColor color, BossBarStyle style) {
+		BossBar bar = bossBars.get(key.toLowerCase());
+		
+		if(bar != null){
+			bar.setHealth(life);
+			bar.setColor(BossColor.valueOf(color.name()));
+			bar.setStyle(BossStyle.valueOf(style.name()));
+			
+			lastBossBar = bar;
+		}
 	}
 
+	@Override
+	public void removeBossBar(String key) {
+		BossBar bar = bossBars.get(key.toLowerCase());
+		
+		if(bar != null){
+			bar.removePlayer(this);
+			bossBars.remove(key.toLowerCase());
+			
+			
+			if(!bossBars.isEmpty()){
+				lastBossBar = bossBars.values().iterator().next();
+			} else {
+				lastBossBar = null;
+				enderdragon = null;
+			}
+		}
+	}
+	
+	@Override
+	public void removeBossBars() {
+		bossBars.values().forEach(bar -> bar.removePlayer(this));
+		
+		bossBars.clear();
+		
+		lastBossBar = null;
+		enderdragon = null;
+	}
+	
 	@Override
 	public void sendTranslatedBossBar(String key, Object... args) {
 		sendBossBar(getTranslatedMessage(key, args)[0]);
@@ -796,7 +845,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		@Override
 		public void run() {
-			if (bossBarMessage == null || enderdragon == null || !isOnline()) { // message
+			if (lastBossBar == null || enderdragon == null || !isOnline()) { // message
 				cancel();
 				return;
 			}
@@ -820,11 +869,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					enderdragon.teleport(loc); // on t�l�porte l'entit� pour
 				}
 
-				if(!bossBarMessage.equals(lastMessage)){
-					enderdragon.getWatchers().setCustomName(bossBarMessage); // si
-					enderdragon.updateWatchers(); // on informe le joueur du
+				String title = lastBossBar.getTitle();
+				
+				if(!title.equals(lastMessage)){
+					enderdragon.getWatchers().setCustomName(title);
+					enderdragon.updateWatchers();
 
-					lastMessage = bossBarMessage;
+					lastMessage = title;
 				}
 
 				time = 8;
@@ -1031,5 +1082,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		} else {
 			GameAPI.getAPI().getOnlinePlayers().stream().filter(visiblePredicate).forEach(player -> player.hidePlayer(this));
 		}
+	}
+
+	@Override
+	public int getProtocolVersion() {
+		return ViaVersion.getInstance().getPlayerVersion(this);
 	}
 }
