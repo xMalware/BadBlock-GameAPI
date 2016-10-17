@@ -20,7 +20,7 @@ public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 		FakeEntity<?> entity = FakeEntities.retrieveFakeEntity(packet.getEntityId());
 		
 		if(entity != null){
-			for(BadblockPlayer pl : GameAPI.getAPI().getOnlinePlayers().stream().filter(p -> p.isDisguised()).collect(Collectors.toList())){
+			for(BadblockPlayer pl : GameAPI.getAPI().getOnlinePlayers().stream().filter(p -> p.isDisguised() && p != player).collect(Collectors.toList())){
 				GameBadblockPlayer gpl = (GameBadblockPlayer) pl;
 				
 				if(gpl.getDisguiseEntity().getId() == entity.getId()){
