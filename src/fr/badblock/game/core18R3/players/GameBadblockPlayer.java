@@ -414,6 +414,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void addBossBar(String key, String message, float life, BossBarColor color, BossBarStyle style) {
 		message = getI18n().replaceColors(message);
 		
+		if(bossBars.containsKey(key.toLowerCase())){
+			changeBossBar(key, message);
+			changeBossBarStyle(key, life, color, style);
+			
+			return;
+		}
+		
 		BossBar bar = ViaVersion.getInstance().createBossBar(message, life, BossColor.valueOf(color.name()), BossStyle.valueOf(style.name()));
 		bar.addPlayer(this);
 		
