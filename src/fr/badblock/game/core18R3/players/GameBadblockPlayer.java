@@ -1090,6 +1090,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			GameAPI.getAPI().getOnlinePlayers().stream().filter(visiblePredicate).forEach(player -> player.hidePlayer(this));
 		}
 	}
+	
+	public Predicate<BadblockPlayer> getVisiblePredicate(){
+		if(visiblePredicate == null)
+			return (p -> true);
+		else return visiblePredicate;
+	}
 
 	@Override
 	public int getProtocolVersion() {
