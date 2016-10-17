@@ -49,6 +49,12 @@ public class GamePlayerData implements PlayerData {
 	private transient JsonObject 						  object		   = new JsonObject();
 
 	private transient BadblockPlayer					  badblockPlayer;
+	
+	// temporary values
+	private transient int 								  addedBadcoins	   = 0;
+	private transient int								  addedShopPoints  = 0;
+	private transient int								  addedLevels      = 0;
+	private transient long								  addedXP		   = 0;
 
 	public void setData(JsonObject data){
 		if(data.has("other")){
@@ -75,11 +81,13 @@ public class GamePlayerData implements PlayerData {
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
 			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
 		}
+		addedBadcoins += badcoins;
 		return this.badcoins += badcoins;
 	}
 
 	@Override
 	public void removeBadcoins(int badcoins) {
+		addedBadcoins -= Math.abs(badcoins);
 		this.badcoins -= Math.abs(badcoins);
 	}
 
@@ -110,11 +118,15 @@ public class GamePlayerData implements PlayerData {
 			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
 		}
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
+		addedXP += xp;
 		// pas de passage de niveau
 		if (delta > 0)
 			return this.xp += xp;
 		// passage de niveau jusqu'à ce qu'il y ait suffisament de niveau(x) passé(s) pour avoir une progression
-		while (getXpUntilNextLevel() - (xp + this.xp) <= 0) level++;
+		while (getXpUntilNextLevel() - (xp + this.xp) <= 0) {
+			level++;
+			addedLevels++;
+		}
 		badblockPlayer.sendTranslatedMessage("game.level", level);
 		badblockPlayer.playSound(Sound.LEVEL_UP);
 		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
@@ -293,6 +305,7 @@ public class GamePlayerData implements PlayerData {
 	@Override
 	public long addShopPoints(long shopPoints) {
 		this.shopPoints += shopPoints;
+		addedBadcoins += shopPoints;
 		// envoi du packet d'update
 		GameAPI.getAPI().getLadderDatabase().updatePlayerData(getBadblockPlayer(), this.getObject());
 		return this.shopPoints;
@@ -301,6 +314,7 @@ public class GamePlayerData implements PlayerData {
 	@Override
 	public long removeShopPoints(long shopPoints) {
 		this.shopPoints -= shopPoints;
+		addedShopPoints -= shopPoints;
 		// envoi du packet d'update
 		GameAPI.getAPI().getLadderDatabase().updatePlayerData(getBadblockPlayer(), this.getObject());
 		return this.shopPoints;

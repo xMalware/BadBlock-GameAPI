@@ -376,7 +376,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			sendTranslatedMessage("game.result", 
 					getPlayerData().getBadcoins(), getPlayerData().getLevel(), percent, getPlayerData().getXp(),
-					getPlayerData().getXpUntilNextLevel(), line, Base64Url.encode(id));
+					getPlayerData().getXpUntilNextLevel(), line, Base64Url.encode(id), getPlayerData().getAddedBadcoins(), getPlayerData().getAddedLevels(), getPlayerData().getAddedXP(), getPlayerData().getAddedShopPoints());
 
 			saveGameData();
 		} catch(Exception e){
