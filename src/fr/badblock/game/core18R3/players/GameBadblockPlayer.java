@@ -916,8 +916,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		this.disguise  = disguise;
 		disguiseEntity = disguise.createEntity(this);
 
-		setVisible(false, player -> player != this);
-
+		getHandle().setInvisible(true);
+		
 		if(!disguise.isCanSeeHimself())
 			disguiseEntity.addPlayer(EntityViewList.BLACKLIST, this);
 
