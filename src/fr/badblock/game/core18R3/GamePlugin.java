@@ -176,6 +176,7 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.World;
 
 public class GamePlugin extends GameAPI {
+	
 	public static final boolean EMPTY_VERSION = false;
 
 	public static final String
