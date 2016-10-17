@@ -290,4 +290,12 @@ public class GamePlayerData implements PlayerData {
 		return shopPoints;
 	}
 
+	@Override
+	public long addShopPoints(long shopPoints) {
+		this.shopPoints += shopPoints;
+		// envoi du packet d'update
+		GameAPI.getAPI().getLadderDatabase().updatePlayerData(getBadblockPlayer(), this.getObject());
+		return this.shopPoints;
+	}
+
 }
