@@ -298,4 +298,12 @@ public class GamePlayerData implements PlayerData {
 		return this.shopPoints;
 	}
 
+	@Override
+	public long removeShopPoints(long shopPoints) {
+		this.shopPoints -= shopPoints;
+		// envoi du packet d'update
+		GameAPI.getAPI().getLadderDatabase().updatePlayerData(getBadblockPlayer(), this.getObject());
+		return this.shopPoints;
+	}
+
 }
