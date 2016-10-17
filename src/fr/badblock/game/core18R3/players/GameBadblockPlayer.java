@@ -143,7 +143,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private long lastFakeEntityUsedTime;
 	@Getter
 	private boolean visible;
-	private Predicate<BadblockPlayer> visiblePredicate = (p -> false);
+	private Predicate<BadblockPlayer> visiblePredicate;
 
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
