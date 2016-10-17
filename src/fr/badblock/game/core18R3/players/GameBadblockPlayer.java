@@ -579,8 +579,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void showTranslatedFloatingText(Location location, long lifeTime, double offset, String key,
-			Object... args) {
+	public void showTranslatedFloatingText(Location location, long lifeTime, double offset, String key, Object... args) {
 		showFloatingText(getTranslatedMessage(key, args)[0], location, lifeTime, offset);
 	}
 
