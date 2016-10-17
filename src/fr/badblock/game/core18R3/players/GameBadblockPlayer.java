@@ -662,7 +662,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		customEnvironment = world;
 
 		getAPI().createPacket(PlayRespawn.class).setDimension(world).setDifficulty(getWorld().getDifficulty())
-		.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
+				.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
 
 		setMaxHealth(getMaxHealth());
 
@@ -671,8 +671,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			showPlayer(player);
 		}
 
-		reloadMap();
-		updateInventory();
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				reloadMap();
+				updateInventory();				
+			}
+		}.runTaskLater(GameAPI.getAPI(), 10L);
 	}
 
 	@Override
