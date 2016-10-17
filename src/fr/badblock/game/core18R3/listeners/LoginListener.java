@@ -94,48 +94,40 @@ public class LoginListener extends BadListener {
 						p.hidePlayer(bp);
 					}*/
 				}
+				
 				if(GameAPI.getAPI().getGameServer().getGameState() == GameState.WAITING){
 					if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
-						// Booster
 						List<String> players = new ArrayList<String>();
 						double xp = 0;
 						double badcoins = 0;
-						PlayerBooster playerBoosterZ = null;
-						for (PlayerBooster playerBoosterr : p.getPlayerData().getBoosters())
-							if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBoosterZ = playerBoosterr;
-						boolean hasBoosterEnabled = playerBoosterZ != null;
-						for (Player player : Bukkit.getOnlinePlayers()) {
-							BadblockPlayer bbPlayer = (BadblockPlayer) player;
-							PlayerBooster playerBooster = null;
-							for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
-								if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBooster = playerBoosterr;
+						
+						for (BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()) {
+							PlayerBooster playerBooster = player.getPlayerData().getActiveBooster();
+							
 							if (playerBooster != null) {
-								xp += playerBooster.getBooster().getXpMultiplier();
+								xp 		 += playerBooster.getBooster().getXpMultiplier();
 								badcoins += playerBooster.getBooster().getCoinsMultiplier();
 							}
 						}
+						
 						if (xp == 0) xp = 1;
 						if (badcoins == 0) badcoins = 1;
 						
-						String o = "[" + StringUtils.join(players, ", ") + "]";
-						
 						if (xp > 1 || badcoins > 1) {
-							final double xpp = xp;
-							final double badcoinss = badcoins;
-							final String oo = o;
-							if (hasBoosterEnabled) {
-								GameAPI.getAPI().getOnlinePlayers().forEach(pob ->{
-									pob.sendTranslatedMessage("booster.load", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
-									pob.playSound(Sound.LEVEL_UP);
-								});
+							String o = "[" + StringUtils.join(players, ", ") + "]";
+							
+							if (p.getPlayerData().getActiveBooster() != null) {
+								for(BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()){
+									player.sendTranslatedMessage("booster.load", Double.toString(xp), Double.toString(badcoins), p.getName(), o);
+									player.playSound(Sound.LEVEL_UP);
+								}
 							} else{
-								p.sendTranslatedMessage("booster.resume", Double.toString(xpp), Double.toString(badcoinss), p.getName(), oo);
+								p.sendTranslatedMessage("booster.resume", Double.toString(xp), Double.toString(badcoins), p.getName(), o);
 								p.playSound(Sound.LEVEL_UP);
 							}
 						}
 					}
 				}
-
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
 	}

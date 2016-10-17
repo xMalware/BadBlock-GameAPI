@@ -27,7 +27,7 @@ import lombok.ToString;
 
 @Getter@ToString
 public class GamePlayerData implements PlayerData {
-	public static final transient Locale DEFAULT_LANGUAGE = Locale.ENGLISH_US;
+	public static final transient Locale DEFAULT_LANGUAGE = Locale.FRENCH_FRANCE;
 	
 	public Locale								  		  locale	       = DEFAULT_LANGUAGE;
 
