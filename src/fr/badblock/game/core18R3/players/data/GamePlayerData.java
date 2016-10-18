@@ -28,7 +28,7 @@ import lombok.ToString;
 @Getter@ToString
 public class GamePlayerData implements PlayerData {
 	public static final transient Locale DEFAULT_LANGUAGE = Locale.FRENCH_FRANCE;
-	
+
 	public Locale								  		  locale	       = DEFAULT_LANGUAGE;
 
 	private int  				 						  badcoins     	   = 0;
@@ -49,7 +49,7 @@ public class GamePlayerData implements PlayerData {
 	private transient JsonObject 						  object		   = new JsonObject();
 
 	private transient BadblockPlayer					  badblockPlayer;
-	
+
 	// temporary values
 	private transient int 								  addedBadcoins	   = 0;
 	private transient int								  addedShopPoints  = 0;
@@ -70,9 +70,7 @@ public class GamePlayerData implements PlayerData {
 			double playerBonus = 0;
 			for (Player playerz : Bukkit.getOnlinePlayers()) {
 				BadblockPlayer bbPlayer = (BadblockPlayer) playerz;
-				PlayerBooster playerBooster = null;
-				for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
-					if (playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) playerBooster = playerBoosterr;
+				PlayerBooster playerBooster = bbPlayer.getPlayerData().getActiveBooster();
 				if (playerBooster != null) {
 					playerBonus += playerBooster.getBooster().getCoinsMultiplier();
 				}
@@ -106,11 +104,11 @@ public class GamePlayerData implements PlayerData {
 			for (Player playerz : Bukkit.getOnlinePlayers()) {
 				BadblockPlayer bbPlayer = (BadblockPlayer) playerz;
 				if (bbPlayer.getPlayerData().getBoosters() != null) {
-					for (PlayerBooster playerBoosterr : bbPlayer.getPlayerData().getBoosters())
-						if (playerBoosterr.getBooster() != null && playerBoosterr.isEnabled() && !playerBoosterr.isExpired()) {
-							playerBonus += playerBoosterr.getBooster().getXpMultiplier();
-							break;
-						}
+					PlayerBooster playerBooster = bbPlayer.getPlayerData().getActiveBooster();
+					if (playerBooster != null) {
+						playerBonus += playerBooster.getBooster().getXpMultiplier();
+						break;
+					}
 				}
 			}
 			if (playerBonus == 0) playerBonus = 1;
