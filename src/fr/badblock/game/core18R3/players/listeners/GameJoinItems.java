@@ -121,6 +121,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 					try {
 						game.getGameData().getAchievements().openInventory(player);
 					} catch(Exception e){
+						e.printStackTrace();
 						player.sendMessage(ChatColor.RED + "error: badblock/bad-achievement-configuration");
 					}
 					return true;
