@@ -3,17 +3,11 @@ package fr.badblock.game.core18R3.listeners.packets;
 import org.bukkit.Bukkit;
 
 import fr.badblock.game.core18R3.fakeentities.FakeEntities;
-import fr.badblock.game.core18R3.packets.GameBadblockInPacket;
-import fr.badblock.game.core18R3.players.GameBadblockPlayer;
-import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.events.PlayerFakeEntityInteractEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.packets.InPacketListener;
 import fr.badblock.gameapi.packets.in.play.PlayInUseEntity;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.utils.reflection.Reflector;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 
 public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 
@@ -21,7 +15,7 @@ public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 	public void listen(BadblockPlayer player, PlayInUseEntity packet) {
 		FakeEntity<?> entity = FakeEntities.retrieveFakeEntity(packet.getEntityId());
 		
-		if(entity != null){
+		/*if(entity != null){
 			for(BadblockPlayer pl : GameAPI.getAPI().getOnlinePlayers()){
 				if(!pl.isDisguised() || pl.getUniqueId().equals(player.getUniqueId()))
 					continue;
@@ -48,7 +42,7 @@ public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 					return;
 				}
 			}
-		}
+		}*/
 		
 		if (entity != null && player.getLastFakeEntityUsedTime() < System.currentTimeMillis()) {
 			packet.setCancelled(true);
