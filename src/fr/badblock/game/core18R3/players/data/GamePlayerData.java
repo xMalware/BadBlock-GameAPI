@@ -107,13 +107,13 @@ public class GamePlayerData implements PlayerData {
 	@Override
 	public long addXp(long xp, boolean applyBonus) {
 		xp = Math.abs(xp);
+		
 		if (applyBonus) {
-			GameAPI api = GameAPI.getAPI();
 			double playerBonus = 0;
-			for (Player playerz : Bukkit.getOnlinePlayers()) {
-				BadblockPlayer bbPlayer = (BadblockPlayer) playerz;
-				if (bbPlayer.getPlayerData().getBoosters() != null) {
-					PlayerBooster playerBooster = bbPlayer.getPlayerData().getActiveBooster();
+			
+			for(BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()) {
+				if (player != null && player.getPlayerData() != null && player.getPlayerData().getBoosters() != null) {
+					PlayerBooster playerBooster = player.getPlayerData().getActiveBooster();
 					if (playerBooster != null) {
 						playerBonus += playerBooster.getBooster().getXpMultiplier();
 						break;
@@ -121,9 +121,10 @@ public class GamePlayerData implements PlayerData {
 				}
 			}
 			if (playerBonus == 0) playerBonus = 1;
-			double serverBonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
+			double serverBonus = GameAPI.getAPI().getServerXpBonus() <= 0 ? 1 : GameAPI.getAPI().getServerXpBonus();
 			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
 		}
+		
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
 		addedXP += xp;
 		// pas de passage de niveau
@@ -134,8 +135,10 @@ public class GamePlayerData implements PlayerData {
 			level++;
 			addedLevels++;
 		}
+		
 		badblockPlayer.sendTranslatedMessage("game.level", level);
 		badblockPlayer.playSound(Sound.LEVEL_UP);
+		
 		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
 	}
 
