@@ -2,9 +2,12 @@ package fr.badblock.game.core18R3.players.listeners;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -90,7 +93,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	public void onDataReceive(PlayerLoadedEvent e){
 		if(!doGroupsPrefix) return;
 
-		getHandler().getTeam(e.getPlayer().getMainGroup()).addEntry(e.getPlayer().getName());
+		getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
 
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
@@ -108,7 +111,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 		if(!team.getName().equals(e.getPlayer().getMainGroup())){
 			team.removeEntry(e.getPlayer().getName());
-			getHandler().getTeam(e.getPlayer().getMainGroup()).addEntry(e.getPlayer().getName());
+			getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
 		}
 
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
@@ -228,9 +231,11 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 	protected void sendTeams(BadblockPlayer player){
 		for(PermissibleGroup group : PermissionManager.getInstance().getGroups()){
-			sendTeamData(group.getName(), new TranslatableString("permissions.tab." + group.getName()).getAsLine(player), player);
+			sendTeamData(groups.get( group.getName() ), new TranslatableString("permissions.tab." + group.getName()).getAsLine(player), player);
 		}
 	}
+	
+	private Map<String, String> groups = new HashMap<>();
 
 	/*
 	 * Envoit le nouveau pr�fixe via packet, pour l'avoir custom sans le d�clarer dans un scoreboard personnel (opti)
@@ -261,17 +266,41 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 		doGroupsPrefix = true;
 
-		PermissionManager.getInstance().getGroups().forEach((group) -> {
+		Set<PermissibleGroup> groups = PermissionManager.getInstance().getGroups().stream().sorted((a, b) -> {
+			return Integer.compare(b.getPower(), a.getPower());
+		}).collect(Collectors.toSet());
+		
+		int i = 1;
+		
+		for(PermissibleGroup group : groups){
 
-			if(getHandler().getTeam(group.getName()) == null){
-				getHandler().registerNewTeam(group.getName());
+			String id = generateForId(i) + "";
+			
+			this.groups.put(group.getName(), id);
+			
+			if(getHandler().getTeam(id) == null){
+				getHandler().registerNewTeam(id);
 			}
 
-			Team teamHandler = getHandler().getTeam(group.getName());
-
+			Team teamHandler = getHandler().getTeam(id);
+			
 			// On ne d�finit pas le pr�fixe car il faut le faire pour chaque joueur (pr�fixe alli� / ennemi)
 			teamHandler.setAllowFriendlyFire(true);
-		});
+			i++;
+		};
+	}
+	
+	private char generateForId(int id){
+		int A = 'A';
+		
+		if(id > 26){
+			A   = 'a';
+			id -= 26;
+			
+			return (char) (A + id);
+		} else {
+			return (char) (A + id);
+		}
 	}
 
 	@Override
