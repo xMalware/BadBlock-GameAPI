@@ -51,9 +51,8 @@ public class NMSSheep extends EntitySheep implements NMSCustomCreature {
 	
 	@Override
 	public boolean isInvulnerable(DamageSource damageSource){
-		if(hasCreatureFlag(CreatureFlag.INVINCIBLE))
-			return true;
-		else return super.isInvulnerable(damageSource);
+		System.out.println(hasCreatureFlag(CreatureFlag.INVINCIBLE) || super.isInvulnerable(damageSource));
+		return hasCreatureFlag(CreatureFlag.INVINCIBLE) || super.isInvulnerable(damageSource);
 	}
 
 	@Override

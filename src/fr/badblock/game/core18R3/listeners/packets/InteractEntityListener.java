@@ -11,6 +11,7 @@ import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.packets.InPacketListener;
 import fr.badblock.gameapi.packets.in.play.PlayInUseEntity;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 
@@ -34,9 +35,15 @@ public class InteractEntityListener extends InPacketListener<PlayInUseEntity> {
 						e.printStackTrace();
 					}
 					
-					packet.setEntityId(pl.getEntityId());
-					
 					PacketPlayInUseEntity p = (PacketPlayInUseEntity) (((GameBadblockInPacket) packet).toNms());
+					Reflector reflec = new Reflector(p);
+					
+					try {
+						reflec.setFieldValue("a", pl.getEntityId());
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					
 					gpl.getHandle().playerConnection.a(p);
 					return;
 				}
