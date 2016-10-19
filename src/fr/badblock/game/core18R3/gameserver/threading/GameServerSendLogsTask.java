@@ -48,21 +48,8 @@ public class GameServerSendLogsTask extends GameServerTask {
 				ftpClient.connect(config.ftpHostname, config.ftpPort);
 				ftpClient.login(config.ftpUsername, config.ftpPassword);
 				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-				//ftpClient.execPBSZ(0);
-				//ftpClient.execPROT("P");
-				// ServerConfigurationFactory serverConfigurationFactory =
-				// GamePlugin.getInstance().getGameServerManager().getServerConfigurationFactory();
-
-				/*
-				 * String[] splitt =
-				 * GameAPI.getAPI().getServer().getServerName().split("_");
-				 * String af; if (splitt.length < 2) af = "1"; else af =
-				 * GameAPI.getAPI().getServer().getServerName().split("_")[1];
-				 * String prefix =
-				 * GameAPI.getAPI().getServer().getServerName().split("_")[0];
-				 * long serverId = Integer.parseInt(af);
-				 */
-
+				ftpClient.enterLocalActiveMode();
+				
 				String logFile = "/logs/" + this.logFile;
 				String[] splitter = logFile.split("/");
 				String old = "";
