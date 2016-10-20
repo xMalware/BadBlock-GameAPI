@@ -78,6 +78,8 @@ public class GamePlayerData implements PlayerData {
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
 			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
+			double o = this.getBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
+			badcoins *= o < 1 ? 1 : o;
 		}
 		addedBadcoins += badcoins;
 		return this.badcoins += badcoins;
