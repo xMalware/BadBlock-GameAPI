@@ -33,6 +33,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import fr.badblock.game.core18R3.GamePlugin;
@@ -1107,5 +1108,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public int getProtocolVersion() {
 		return ViaVersion.getInstance().getPlayerVersion(this);
+	}
+
+	@Override
+	public <T> T getPermissionValue(String key, Class<T> clazz) {
+		JsonElement el = permissions.getValue(key);
+		
+		return el == null ? null : GameAPI.getGson().fromJson(permissions.getValue(key), clazz);
 	}
 }
