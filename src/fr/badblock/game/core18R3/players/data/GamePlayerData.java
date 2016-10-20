@@ -85,7 +85,8 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public void removeBadcoins(int badcoins) {
-		addedBadcoins -= Math.abs(badcoins);
+		// removing badcoins is only for buy, so must not be count in addedBadcoins
+		//addedBadcoins -= Math.abs(badcoins);
 		this.badcoins -= Math.abs(badcoins);
 	}
 

@@ -343,7 +343,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		long   party    = GamePlugin.getInstance().getGameServer().getGameId();
 		String player   = getName().toLowerCase();
 		UUID   playerId = getUniqueId();
-		String gameType = "todo";
+		String gameType = GameAPI.getGameName();
 		String server   = Bukkit.getServerName();
 		String result   = GameAPI.getGson().toJson(toPost);
 
