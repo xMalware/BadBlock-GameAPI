@@ -393,14 +393,16 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 					VoteInGameData data = player.inGameData(VoteInGameData.class);
 
+					int o = player.getPermissionValue("votesCountAs", Integer.class);
+					o = o < 1 ? 1 : o;
 					if(data.getElement() != null && votes.containsKey(data.getElement())){
-						votes.put(data.getElement(), votes.get(data.getElement()) - 1);
+						votes.put(data.getElement(), votes.get(data.getElement()) - o);
 						voteObjective.getScore(i18n.replaceColors(data.getElement().getDisplayName())).setScore(votes.get(data.getElement()));
 					}
 
 					data.setElement(element);
 
-					votes.put(data.getElement(), votes.get(data.getElement()) + 1);
+					votes.put(data.getElement(), votes.get(data.getElement()) + o);
 					voteObjective.getScore(i18n.replaceColors(data.getElement().getDisplayName())).setScore(votes.get(data.getElement()));
 
 					player.closeInventory();
@@ -423,7 +425,9 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		VoteInGameData data = player.inGameData(VoteInGameData.class);
 
 		if(data.getElement() != null && votes.containsKey(data.getElement()) && voteObjective != null){
-			votes.put(data.getElement(), votes.get(data.getElement()) - 1);
+			int o = player.getPermissionValue("votesCountAs", Integer.class);
+			o = o < 1 ? 1 : o;
+			votes.put(data.getElement(), votes.get(data.getElement()) - o);
 			voteObjective.getScore(GameAPI.i18n().replaceColors(data.getElement().getDisplayName())).setScore(votes.get(data.getElement()));
 		}
 
