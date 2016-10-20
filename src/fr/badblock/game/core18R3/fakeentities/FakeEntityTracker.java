@@ -15,6 +15,7 @@ import com.google.common.collect.Queues;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import us.myles.ViaVersion.api.ViaVersion;
 
 public class FakeEntityTracker {
 	public static final double TRACKING_RANGE = 48.0d;
@@ -112,7 +113,7 @@ public class FakeEntityTracker {
 			players.add(player);
 			
 			new BukkitRunnable(){
-				private int count = 5;
+				private int count = ViaVersion.getInstance().getPlayerVersion(player) > 47 ? 5 : 1;
 				
 				@Override
 				public void run(){
