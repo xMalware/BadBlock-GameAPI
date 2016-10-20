@@ -57,7 +57,7 @@ public class ChatListener extends BadListener {
 			if(player.getTeam() != null)
 				team = player.getTeam().getChatPrefix();
 
-			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), team, e.getMessage(), player.getPlayerData().getLevel());
+			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), team, e.getMessage(), player.getPlayerData().getLevel(), player.getGroupSuffix());
 			for(Player pl : e.getRecipients())
 				s.send(pl);
 		}

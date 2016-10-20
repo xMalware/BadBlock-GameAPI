@@ -751,6 +751,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public TranslatableString getGroupPrefix() {
 		return new TranslatableString("permissions.chat." + permissions.getParent().getName());
 	}
+	
+	@Override
+	public TranslatableString getGroupSuffix() {
+		return new TranslatableString("permissions.chat_suffix." + permissions.getParent().getName());
+	}
 
 	@Override
 	public TranslatableString getTabGroupPrefix() {

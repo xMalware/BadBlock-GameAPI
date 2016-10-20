@@ -19,6 +19,7 @@ public class GameBadblockPlayerData implements BadblockPlayerData {
 	@Getter private PlayerData   		 playerData;
 	@Getter@Setter private BadblockTeam  team;
 	@Getter private TranslatableString   groupPrefix;
+	@Getter private TranslatableString   groupSuffix;
 	@Getter private TranslatableString   tabGroupPrefix;
 	private Map<Class<?>, InGameData> 	 inGameData;
 	
@@ -28,6 +29,7 @@ public class GameBadblockPlayerData implements BadblockPlayerData {
 		this.playerData  	= player.getPlayerData();
 		this.team        	= player.getTeam();
 		this.groupPrefix 	= player.getGroupPrefix();
+		this.groupSuffix 	= player.getGroupSuffix();
 		this.tabGroupPrefix = player.getTabGroupPrefix();
 		this.inGameData  	= player.getInGameData();
 	}

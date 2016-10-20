@@ -29,6 +29,7 @@ public class GameOfflinePlayer implements BadblockOfflinePlayer {
 	private GamePlayerData 				 playerData 		  = null;
 	private JsonObject					 object				  = null;
 	private TranslatableString			 groupPrefix		  = null;
+	private TranslatableString			 groupSuffix		  = null;
 	private TranslatableString			 tabGroupPrefix		  = null;
 
 	public GameOfflinePlayer(GameBadblockPlayer player){
@@ -41,6 +42,7 @@ public class GameOfflinePlayer implements BadblockOfflinePlayer {
 		this.playerData		 = player.getPlayerData();
 		this.object			 = player.getObject();
 		this.groupPrefix     = player.getGroupPrefix();
+		this.groupSuffix	 = player.getGroupSuffix();
 	}
 	
 	@Override
