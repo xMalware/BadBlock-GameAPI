@@ -394,8 +394,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 					VoteInGameData data = player.inGameData(VoteInGameData.class);
 
 					Integer o = player.getPermissionValue("votesCountAs", Integer.class);
-					if(o == null) o = 0;
-					o = o < 1 ? 1 : o;
+					o = o == null || o < 1 ? 1 : o;
 					if(data.getElement() != null && votes.containsKey(data.getElement())){
 						votes.put(data.getElement(), votes.get(data.getElement()) - o);
 						voteObjective.getScore(i18n.replaceColors(data.getElement().getDisplayName())).setScore(votes.get(data.getElement()));
