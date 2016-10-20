@@ -30,7 +30,15 @@ public class ChatListener extends BadListener {
 			String temp = ChatColor.translateAlternateColorCodes('&', e.getMessage());
 			temp		= ChatColor.stripColor(temp);
 
-			e.setMessage(temp);
+			String res = "";
+			
+			for(int i=0;i<temp.length();i++){
+				if(temp.charAt(i) == ChatColor.COLOR_CHAR){
+					i++;
+				} else res += temp.charAt(i);
+			}
+			
+			e.setMessage(res);
 
 		}
 
