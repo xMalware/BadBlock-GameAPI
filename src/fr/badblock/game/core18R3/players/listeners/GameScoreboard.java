@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -258,6 +256,8 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		.send(p);
 	}
 
+	private int i = 0;
+	
 	@Override
 	public void doGroupsPrefix(){
 		if(doTeamsPrefix){
@@ -266,14 +266,9 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 		doGroupsPrefix = true;
 
-		Set<PermissibleGroup> groups = PermissionManager.getInstance().getGroups().stream().sorted((a, b) -> {
+		PermissionManager.getInstance().getGroups().stream().sorted((a, b) -> {
 			return Integer.compare(b.getPower(), a.getPower());
-		}).collect(Collectors.toSet());
-		
-		int i = 1;
-		
-		for(PermissibleGroup group : groups){
-
+		}).forEach(group -> {
 			String id = generateForId(i) + "";
 			
 			this.groups.put(group.getName(), id);
@@ -284,10 +279,9 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 			Team teamHandler = getHandler().getTeam(id);
 			
-			// On ne d�finit pas le pr�fixe car il faut le faire pour chaque joueur (pr�fixe alli� / ennemi)
 			teamHandler.setAllowFriendlyFire(true);
 			i++;
-		};
+		});
 	}
 	
 	private char generateForId(int id){
