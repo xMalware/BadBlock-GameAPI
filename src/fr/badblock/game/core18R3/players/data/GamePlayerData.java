@@ -78,7 +78,9 @@ public class GamePlayerData implements PlayerData {
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
 			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
-			double o = this.getBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
+			Double o = this.getBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
+			if(o == null) o = 0.0d;
+			
 			badcoins *= o < 1 ? 1 : o;
 		}
 		addedBadcoins += badcoins;
@@ -126,7 +128,8 @@ public class GamePlayerData implements PlayerData {
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = GameAPI.getAPI().getServerXpBonus() <= 0 ? 1 : GameAPI.getAPI().getServerXpBonus();
 			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
-			double o = this.getBadblockPlayer().getPermissionValue("xpboost", Double.class);
+			Double o = this.getBadblockPlayer().getPermissionValue("xpboost", Double.class);
+			if(o == null) o = 0.0d;
 			xp *= o < 1 ? 1 : o;
 		}
 		
