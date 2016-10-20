@@ -32,9 +32,9 @@ import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.VoteInGameData;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
-import fr.badblock.gameapi.events.api.PlayerReloadedEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.packets.out.play.PlayScoreboardTeam;
 import fr.badblock.gameapi.packets.out.play.PlayScoreboardTeam.TeamFriendlyFire;
@@ -102,14 +102,20 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	}
 
 	@EventHandler
-	public void onDataReload(PlayerReloadedEvent e){
+	public void onDataReload(PlayerDataChangedEvent e){
 		if(!doGroupsPrefix) return;
 
 		Team team = getHandler().getEntryTeam(e.getPlayer().getName());
 
 		if(!team.getName().equals(e.getPlayer().getMainGroup())){
 			team.removeEntry(e.getPlayer().getName());
-			getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
+		
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
+				}
+			}.runTaskLater(GameAPI.getAPI(), 5L);
 		}
 
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
