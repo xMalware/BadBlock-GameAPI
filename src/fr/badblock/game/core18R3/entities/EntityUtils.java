@@ -257,7 +257,7 @@ public class EntityUtils {
 		
 		if(creature.callSuperDamageEntity(damagesource, f)){
 			Entity entity = damagesource.getEntity();
-			return (entity.passenger != entity) && (entity.vehicle != entity);
+			return entity != null && (entity.passenger != entity) && (entity.vehicle != entity);
 		}
 		
 		return false;
