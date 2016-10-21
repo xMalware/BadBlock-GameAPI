@@ -61,7 +61,7 @@ public class GamePlayerData implements PlayerData {
 			this.data = data.get("other").getAsJsonObject();
 		}
 	}
-	
+
 
 	@Override
 	public int addBadcoins(int badcoins, boolean applyBonus) {
@@ -79,9 +79,15 @@ public class GamePlayerData implements PlayerData {
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
 			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
-			Double o = this.getBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
-			if (o == null) o = 1.0d;
-			badcoins *= o < 1.0d ? 1.0d : o;
+			double v = 1;
+			try {
+				Double o = this.getBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
+				if (o == null) o = 1.0d;
+				v = o;
+			}catch(Exception error) {
+				v = 1;
+			}
+			badcoins *= v < 1.0d ? 1.0d : v;
 		}
 		addedBadcoins += badcoins;
 		return this.badcoins += badcoins;
@@ -98,12 +104,12 @@ public class GamePlayerData implements PlayerData {
 	public long getXpUntilNextLevel() {
 		long base = 200;
 		long add  = 50;
-		
+
 		for(int i=1;i<level;i++){
 			base += add;
 			add  += 20;
 		}
-		
+
 		//Double doublet = Math.pow(1.2d, level + 1) * 100;
 		//return doublet.longValue();
 		return base;
@@ -112,10 +118,10 @@ public class GamePlayerData implements PlayerData {
 	@Override
 	public long addXp(long xp, boolean applyBonus) {
 		xp = Math.abs(xp);
-		
+
 		if (applyBonus) {
 			double playerBonus = 0;
-			
+
 			for(BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()) {
 				if (player != null && player.getPlayerData() != null && player.getPlayerData().getBoosters() != null) {
 					PlayerBooster playerBooster = player.getPlayerData().getActiveBooster();
@@ -128,11 +134,17 @@ public class GamePlayerData implements PlayerData {
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = GameAPI.getAPI().getServerXpBonus() <= 0 ? 1 : GameAPI.getAPI().getServerXpBonus();
 			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
-			Double o = this.getBadblockPlayer().getPermissionValue("xpboost", Double.class);
-			if (o == null) o = 1.0d;
-			xp *= o < 1.0d ? 1.0d : o;
+			double v = 1;
+			try {
+				Double o = this.getBadblockPlayer().getPermissionValue("xpboost", Double.class);
+				if (o == null) o = 1.0d;
+				v = o;
+			}catch(Exception error) {
+				v = 1;
+			}
+			xp *= v < 1.0d ? 1.0d : v;
 		}
-		
+
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
 		addedXP += xp;
 		// pas de passage de niveau
@@ -143,10 +155,10 @@ public class GamePlayerData implements PlayerData {
 			level++;
 			addedLevels++;
 		}
-		
+
 		badblockPlayer.sendTranslatedMessage("game.level", level);
 		badblockPlayer.playSound(Sound.LEVEL_UP);
-		
+
 		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
 	}
 
