@@ -28,6 +28,7 @@ import fr.badblock.gameapi.players.BadblockPlayerData;
 import fr.badblock.gameapi.players.BadblockTeam;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 /**
  * Overrided GameServer interface
@@ -129,5 +130,24 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 
 		if (type == WhileRunningConnectionTypes.SPECTATOR)
 			cancelReconnectionInvitations();
+	}
+
+	@Override
+	public double getPassmarkTps() {
+		double[] original = MinecraftServer.getServer().recentTps;
+		double[] tps = new double[original.length];
+		double total = 0.0D;
+		for (int x = 0; x < original.length; x++) {
+			double value = original[x];
+			if (value > 20.0D) {
+				value = 20.0D;
+			} else if (value < 0.0D) {
+				value = 0.0D;
+			}
+			tps[x] = value;
+			total += value;
+		}
+		total /= original.length;
+		return total;
 	}
 }

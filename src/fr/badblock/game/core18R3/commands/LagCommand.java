@@ -12,7 +12,6 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
 
 public class LagCommand extends AbstractCommand {
 	public LagCommand() {
@@ -22,7 +21,7 @@ public class LagCommand extends AbstractCommand {
 	private static SimpleDateFormat		simpleDateFormat			= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	public static void send(CommandSender sender) {
-		double lagPercent = (getPassMarkTps() / 20.0D * 100.0D);
+		double lagPercent = (GameAPI.getAPI().getGameServer().getPassmarkTps() / 20.0D * 100.0D);
 		double speed = MathsUtils.round(lagPercent, 2);
 		String rapidity = speed >= 90 ? "&a" + speed : speed >= 80 ? "&b" + speed : speed >= 50 ? "&e" + speed : speed >= 30 ? "&c" + speed : speed >= 20 ? "&4" + speed : "&4&l" + speed;
 		String ms = "0";
@@ -48,24 +47,6 @@ public class LagCommand extends AbstractCommand {
 			sender.sendMessage("&c> &7Ping: " + ms + " &7ms");
 		}
 		sender.sendMessage("&8&l«&b&l-&8&l»&m----------------------&f&8&l«&b&l-&8&l»&b");*/
-	}
-	
-	static double getPassMarkTps() {
-		double[] original = MinecraftServer.getServer().recentTps;
-		double[] tps = new double[original.length];
-		double total = 0.0D;
-		for (int x = 0; x < original.length; x++) {
-			double value = original[x];
-			if (value > 20.0D) {
-				value = 20.0D;
-			} else if (value < 0.0D) {
-				value = 0.0D;
-			}
-			tps[x] = value;
-			total += value;
-		}
-		total /= original.length;
-		return total;
 	}
 
 	@Override
