@@ -271,7 +271,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		}
 
 		doGroupsPrefix = true;
-
+		i = 0;
 		PermissionManager.getInstance().getGroups().stream().sorted((a, b) -> {
 			return Integer.compare(b.getPower(), a.getPower());
 		}).forEach(group -> {
