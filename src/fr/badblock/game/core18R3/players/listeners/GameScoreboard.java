@@ -180,8 +180,6 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	@EventHandler
 	public void onPlayerJoinTeam(PlayerJoinTeamEvent e){
 		if(doTeamsPrefix){
-			joinTeam(e.getPlayer(), e.getPreviousTeam(), e.getNewTeam());
-		
 			new BukkitRunnable(){
 				@Override
 				public void run(){

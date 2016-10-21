@@ -1,3 +1,5 @@
+
+
 package fr.badblock.game.core18R3.players.data;
 
 import java.util.ArrayList;
@@ -351,3 +353,4 @@ public class GamePlayerData implements PlayerData {
 	}
 
 }
+
