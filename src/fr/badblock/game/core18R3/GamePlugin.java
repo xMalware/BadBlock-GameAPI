@@ -73,6 +73,7 @@ import fr.badblock.game.core18R3.commands.WorldCommand;
 import fr.badblock.game.core18R3.commands.WorldsCommand;
 import fr.badblock.game.core18R3.configuration.GameConfiguration;
 import fr.badblock.game.core18R3.entities.CustomCreatures;
+import fr.badblock.game.core18R3.entities.CustomEntities;
 import fr.badblock.game.core18R3.fakeentities.FakeEntities;
 import fr.badblock.game.core18R3.gameserver.GameServer;
 import fr.badblock.game.core18R3.gameserver.GameServerManager;
@@ -330,7 +331,8 @@ public class GamePlugin extends GameAPI {
 			 * Chargement des classes NMS
 			 */
 			CustomCreatures.registerEntities();
-
+			CustomEntities.registerEntities();
+			
 			GameAPI.logColor("&b[GameAPI] &aRegistering listeners...");
 			/**
 			 * Chargement des Listeners
