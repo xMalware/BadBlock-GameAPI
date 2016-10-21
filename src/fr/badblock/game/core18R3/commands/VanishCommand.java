@@ -50,7 +50,7 @@ public class VanishCommand extends AbstractCommand {
         } else concerned.removePotionEffect(PotionEffectType.INVISIBILITY);
         
         
-        concerned.setVisible(vanish, player -> player.hasPermission(GamePermission.BMODERATOR));
+        concerned.setVisible(vanish, player -> !player.hasPermission(GamePermission.BMODERATOR));
        /* 
 		for(Player player : Bukkit.getOnlinePlayers()){
 			BadblockPlayer p = (BadblockPlayer) player;
