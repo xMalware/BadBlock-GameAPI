@@ -6,9 +6,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 
+import org.apache.commons.net.PrintCommandListener;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
@@ -45,6 +47,7 @@ public class GameServerSendLogsTask extends GameServerTask {
 		if (file.exists()) {
 			FTPClient ftpClient = new FTPClient();
 			try {
+				ftpClient.addProtocolCommandListener(new PrintCommandListener(new PrintWriter(System.out), true));
 				ftpClient.connect(config.ftpHostname, config.ftpPort);
 				ftpClient.login(config.ftpUsername, config.ftpPassword);
 				ftpClient.setBufferSize(0);
