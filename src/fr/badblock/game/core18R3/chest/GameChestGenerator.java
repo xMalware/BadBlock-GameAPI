@@ -163,7 +163,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 			if (!humanEntity.getType().equals(EntityType.PLAYER)) return;
 			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 			if (!player.getBadblockMode().equals(BadblockMode.PLAYER)) return;
-			if (!player.getGameMode().equals(GameMode.SPECTATOR)) return;
+			if (player.getGameMode().equals(GameMode.SPECTATOR)) return;
 			if(e.getInventory().getHolder() instanceof Chest){
 				Chest c = (Chest) e.getInventory().getHolder();
 
