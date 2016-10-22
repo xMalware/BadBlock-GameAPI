@@ -54,7 +54,7 @@ public class GameServerSendLogsTask extends GameServerTask {
 				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 				ftpClient.setAutodetectUTF8(true);
 				ftpClient.setListHiddenFiles(true);
-				ftpClient.enterLocalActiveMode();
+				ftpClient.enterLocalPassiveMode();
 				
 				String logFile = "/logs/" + this.logFile;
 				String[] splitter = logFile.split("/");
