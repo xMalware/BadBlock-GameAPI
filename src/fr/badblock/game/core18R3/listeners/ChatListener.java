@@ -25,22 +25,6 @@ public class ChatListener extends BadListener {
 
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
-		if(!player.hasPermission(GamePermission.ADMIN)){
-
-			String temp = ChatColor.translateAlternateColorCodes('&', e.getMessage());
-			temp		= ChatColor.stripColor(temp);
-
-			String res = "";
-			
-			for(int i=0;i<temp.length();i++){
-				if(temp.charAt(i) == ChatColor.COLOR_CHAR){
-					i++;
-				} else res += temp.charAt(i);
-			}
-			
-			e.setMessage(res);
-
-		}
 
 		if(player.getBadblockMode() == BadblockMode.SPECTATOR){
 			TranslatableString result = new TranslatableString("chat.spectator" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), e.getMessage(), player.getPlayerData().getLevel());
@@ -71,4 +55,24 @@ public class ChatListener extends BadListener {
 		}
 
 	}
+	
+	public static void protectColor(BadblockPlayer player, AsyncPlayerChatEvent event) {
+		if(!player.hasPermission(GamePermission.ADMIN)){
+
+			String temp = ChatColor.translateAlternateColorCodes('&', event.getMessage());
+			temp		= ChatColor.stripColor(temp);
+
+			String res = "";
+			
+			for(int i=0;i<temp.length();i++){
+				if(temp.charAt(i) == ChatColor.COLOR_CHAR){
+					i++;
+				} else res += temp.charAt(i);
+			}
+			
+			event.setMessage(res);
+
+		}
+	}
+	
 }
