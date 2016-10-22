@@ -47,7 +47,10 @@ public class GameServerSendLogsTask extends GameServerTask {
 			try {
 				ftpClient.connect(config.ftpHostname, config.ftpPort);
 				ftpClient.login(config.ftpUsername, config.ftpPassword);
+				ftpClient.setBufferSize(0);
 				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+				ftpClient.setAutodetectUTF8(true);
+				ftpClient.setListHiddenFiles(true);
 				ftpClient.enterLocalActiveMode();
 				
 				String logFile = "/logs/" + this.logFile;
@@ -75,7 +78,7 @@ public class GameServerSendLogsTask extends GameServerTask {
 				fis.close();
 				InputStream stream = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
 				boolean result = ftpClient.storeFile(logFile, stream);
-				System.out.println(result + " / " + ftpClient.getReplyCode());
+				System.out.println(logFile + " / " + result + " / " + ftpClient.getReplyCode() + " / " + ftpClient.getReplyString());
 				stream.close();
 				ftpClient.disconnect();
 			} catch (Exception error) {
