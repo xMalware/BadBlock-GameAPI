@@ -41,7 +41,7 @@ public class GameServerSendLogsTask extends GameServerTask {
 	}
 
 	public void doLog() {
-		File file = new File("logs/latest.log");
+		File file = new File("./logs/latest.log");
 		if (file.exists()) {
 			FTPClient ftpClient = new FTPClient();
 			try {
@@ -74,7 +74,8 @@ public class GameServerSendLogsTask extends GameServerTask {
 				br.close();
 				fis.close();
 				InputStream stream = new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
-				ftpClient.storeFile(logFile, stream);
+				boolean result = ftpClient.storeFile(logFile, stream);
+				System.out.println(result + " / " + ftpClient.getReplyCode());
 				stream.close();
 				ftpClient.disconnect();
 			} catch (Exception error) {
