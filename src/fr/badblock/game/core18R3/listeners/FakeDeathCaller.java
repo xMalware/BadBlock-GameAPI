@@ -193,7 +193,7 @@ public class FakeDeathCaller extends BadListener {
 				bKiller.setHealth(1.0d);
 			}
 
-			if(fData.alert == 4 && changed){
+			if(fData.alert >= 10 && changed){
 				cantReconnect.add(bKiller.getUniqueId());
 				bKiller.kickPlayer(new TranslatableString("antispawnkill.kick").getAsLine(bKiller));
 
