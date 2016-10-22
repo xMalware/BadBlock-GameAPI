@@ -211,8 +211,16 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	
 	private void generate0(Chest chest){
 		Inventory inv = chest.getBlockInventory();
-
+		if (!empty(inv)) return;
 		inv.setContents(generateChest(3));
+	}
+	
+	private boolean empty(Inventory inventory) {
+		for(ItemStack item : inventory.getContents()) {
+		    if(item != null && !item.getType().equals(Material.AIR))
+		      return false;
+		}
+		return true;
 	}
 
 	private Block getNearbyChest(Block block){
