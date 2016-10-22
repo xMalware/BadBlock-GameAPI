@@ -241,6 +241,28 @@ public class GameKit implements PlayerKit {
 	}
 
 	@Override
+	public void giveKit(BadblockPlayer player) {
+		int level = 1;
+		
+		if(VIP){
+			if(!player.hasPermission(GamePermission.VIP))
+				return;
+		} else {
+			level = player.getPlayerData().getUnlockedKitLevel(this);
+
+			if(level == 0) return; // le joueur n'a pas d�bloqu� le kit :o
+
+	
+			if(level <= 0 || level > getMaxLevel()){
+				throw new IllegalArgumentException("Level must be between 1 and " + getMaxLevel() + ", not " + level);
+			}
+		}
+		
+		KitLevel kitLevel = levels[level - 1];
+		GameAPI.getAPI().getKitContentManager().give(kitLevel.getStuff(), player);
+	}
+
+	@Override
 	public void giveKit(BadblockPlayer player, Material... withoutMaterials) {
 		int level = 1;
 		
