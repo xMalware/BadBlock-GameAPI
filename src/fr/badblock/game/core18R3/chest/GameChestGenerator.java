@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -162,6 +163,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 			if (!humanEntity.getType().equals(EntityType.PLAYER)) return;
 			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 			if (!player.getBadblockMode().equals(BadblockMode.PLAYER)) return;
+			if (!player.getGameMode().equals(GameMode.SPECTATOR)) return;
 			if(e.getInventory().getHolder() instanceof Chest){
 				Chest c = (Chest) e.getInventory().getHolder();
 
