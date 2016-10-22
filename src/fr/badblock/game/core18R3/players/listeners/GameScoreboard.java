@@ -93,7 +93,13 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if(!doGroupsPrefix) return;
 
 		getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
-		e.getPlayer().setVisible(true);
+		
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				e.getPlayer().setVisible(true);
+			}
+		}.runTask(GameAPI.getAPI());
 		
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
