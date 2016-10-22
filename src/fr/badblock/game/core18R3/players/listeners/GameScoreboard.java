@@ -74,9 +74,10 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 		BadblockPlayer p = (BadblockPlayer) e.getPlayer();
 
-		if(doGroupsPrefix)
+		if(doGroupsPrefix){
+			p.setVisible(false, player -> true);
 			sendTeams(p);
-		if(doTeamsPrefix){
+		} else if(doTeamsPrefix){
 			if(p.getTeam() != null){
 				joinTeam(p, null, p.getTeam());
 			} else {
@@ -92,7 +93,8 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if(!doGroupsPrefix) return;
 
 		getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
-
+		e.getPlayer().setVisible(true);
+		
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
 		if(player.isDisguised()){
