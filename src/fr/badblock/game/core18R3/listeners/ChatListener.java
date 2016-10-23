@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -55,7 +56,23 @@ public class ChatListener extends BadListener {
 		}
 
 	}
-	
+
+	@SuppressWarnings("deprecation")
+	@EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent e){
+		if(!enabled) return;
+		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+		if(team && player.getTeam() != null && e.getMessage().startsWith("/t")){
+			e.setCancelled(true);
+			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace("/t", ""), player.getPlayerData().getLevel());
+			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
+				if (e.getRecipients().contains(p))
+					result.send(p);
+			}
+		}
+
+	}
+
 	public static void protectColor(BadblockPlayer player, AsyncPlayerChatEvent event) {
 		if(!player.hasPermission(GamePermission.ADMIN)){
 
@@ -63,16 +80,16 @@ public class ChatListener extends BadListener {
 			temp		= ChatColor.stripColor(temp);
 
 			String res = "";
-			
+
 			for(int i=0;i<temp.length();i++){
 				if(temp.charAt(i) == ChatColor.COLOR_CHAR){
 					i++;
 				} else res += temp.charAt(i);
 			}
-			
+
 			event.setMessage(res);
 
 		}
 	}
-	
+
 }
