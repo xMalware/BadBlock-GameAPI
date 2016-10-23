@@ -2,6 +2,7 @@ package fr.badblock.game.core18R3.players.utils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Set;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.packets.GameBadblockInPacket;
@@ -34,10 +35,11 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				// Le packet recherch� dans la boucle est pas celui qui est re�u
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
 				
+				Set<InPacketListener<?>> listeners = GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz());
+				
 				// Aucun listener pour ce packet
-				if (GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()) == null) {
-					break;
-				}
+				if(listeners == null || listeners.isEmpty()) break;
+				
 				// Cr�ation de notre packet sp�cial
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
@@ -46,7 +48,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				
 				Method method = InPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockInPacket.class);
 				
-				GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz()).forEach(listener -> {
+				listeners.forEach(listener -> {
 					try {
 						method.invoke(listener, player, (BadblockInPacket) inPacket);
 					} catch (Exception e) {
@@ -74,16 +76,17 @@ public class BadblockInjector extends ChannelDuplexHandler {
 			try {
 				// Le packet recherch� dans la boucle est pas celui qui est re�u
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
+				Set<OutPacketListener<?>> listeners = GamePlugin.getInstance().getPacketOutListeners().get(packet.getClazz());
+				
 				// Aucun listener pour ce packet
-				if (!GamePlugin.getInstance().getPacketOutListeners().containsKey(packet.getClazz())) break;
-				// Cr�ation de notre packet sp�cial
+				if(listeners == null || listeners.isEmpty()) break;
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
 				GameBadblockOutPacket outPacket = (GameBadblockOutPacket) constructor.newInstance(pack);
 				
 				Method method = OutPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockOutPacket.class);
 				
-				GamePlugin.getInstance().getPacketOutListeners().get(packet.getClazz()).forEach(listener -> {
+				listeners.forEach(listener -> {
 					try {
 						method.invoke(listener, player, (BadblockOutPacket) outPacket);
 					} catch (Exception e) {
