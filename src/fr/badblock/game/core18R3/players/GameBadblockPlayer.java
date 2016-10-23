@@ -279,7 +279,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void feed() {
 		setFoodLevel(20);
-		setSaturation(20);
+		setSaturation(10);
 	}
 
 	@Override

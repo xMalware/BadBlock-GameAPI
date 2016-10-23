@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -166,6 +167,8 @@ import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
 import fr.badblock.gameapi.utils.merchants.CustomMerchantInventory;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
+import fr.badblock.gameapi.utils.reflection.Reflector;
+import fr.badblock.gameapi.utils.selections.CuboidSelection;
 import fr.badblock.permissions.PermissionManager;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
@@ -177,7 +180,7 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.World;
 
 public class GamePlugin extends GameAPI {
-	
+
 	public static final boolean EMPTY_VERSION = false;
 
 	public static final String
@@ -332,7 +335,7 @@ public class GamePlugin extends GameAPI {
 			 */
 			CustomCreatures.registerEntities();
 			CustomEntities.registerEntities();
-			
+
 			GameAPI.logColor("&b[GameAPI] &aRegistering listeners...");
 			/**
 			 * Chargement des Listeners
@@ -582,7 +585,7 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public void unregisterTeam(@NonNull BadblockTeam team) {
 		teams.values().remove(team);
-	
+
 		getOnlinePlayers().stream().filter(player -> player.getCustomObjective() != null).forEach(player -> player.getCustomObjective().generate());
 	}
 
@@ -614,7 +617,7 @@ public class GamePlugin extends GameAPI {
 				}
 			}
 		}
-		
+
 		Set<BadblockTeam> toRemove = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() == 0; }).collect(Collectors.toSet());
 		toRemove.forEach(this::unregisterTeam);
 	}
@@ -910,5 +913,38 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public Location getSafeLocation(Location location) {
 		return TeleportUtils.getSafeDestination(location);
+	}
+
+	@Override
+	public void setEmptyChunks(CuboidSelection selection, boolean exclusion) {
+		setPredicate(selection, exclusion, "empty");
+	}
+
+	@Override
+	public void setLightChunks(CuboidSelection selection, boolean exclusion) {
+		setPredicate(selection, exclusion, "light");
+	}
+	
+	private void setPredicate(CuboidSelection selection, boolean exclusion, String fieldName){
+		BiPredicate<Integer, Integer> predicate;
+
+		if(selection == null){
+			predicate = (i, j) -> false;
+		} else {
+			int minChunkX = ((int) selection.getMinX()) >> 4;
+			int minChunkZ = ((int) selection.getMinZ()) >> 4;
+
+			int maxChunkX = ((int) selection.getMaxX()) >> 4;
+			int maxChunkZ = ((int) selection.getMaxZ()) >> 4;
+
+			predicate = (i, j) -> (i >= minChunkX && i <= maxChunkX && j >= minChunkZ && j <= maxChunkZ) ? !exclusion : exclusion;
+		}
+
+		try {
+			Class<?> clazz = Class.forName("fr.badblock.minecraftserver.BadblockEmptyChunk");
+			Reflector reflec = new Reflector(null, clazz);
+			
+			reflec.setStaticFieldValue(fieldName, predicate);
+		} catch(Exception e){}
 	}
 }
