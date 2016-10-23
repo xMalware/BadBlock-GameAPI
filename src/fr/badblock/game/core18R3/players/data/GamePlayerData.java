@@ -83,9 +83,11 @@ public class GamePlayerData implements PlayerData {
 			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
 			double v = 1;
 			try {
-				Double o = this.getBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
-				if (o == null) o = 1.0d;
-				v = o;
+				if (this.getBadblockPlayer() != null) {
+					Double o = this.getBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
+					if (o == null) o = 1.0d;
+					v = o;
+				}
 			}catch(Exception error) {
 				v = 1;
 			}
@@ -138,9 +140,11 @@ public class GamePlayerData implements PlayerData {
 			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
 			double v = 1;
 			try {
-				Double o = this.getBadblockPlayer().getPermissionValue("xpboost", Double.class);
-				if (o == null) o = 1.0d;
-				v = o;
+				if (this.getBadblockPlayer() != null) {
+					Double o = this.getBadblockPlayer().getPermissionValue("xpboost", Double.class);
+					if (o == null) o = 1.0d;
+					v = o;
+				}
 			}catch(Exception error) {
 				v = 1;
 			}
@@ -158,8 +162,10 @@ public class GamePlayerData implements PlayerData {
 			addedLevels++;
 		}
 
-		badblockPlayer.sendTranslatedMessage("game.level", level);
-		badblockPlayer.playSound(Sound.LEVEL_UP);
+		if (this.getBadblockPlayer() != null) {
+			this.getBadblockPlayer().sendTranslatedMessage("game.level", level);
+			this.getBadblockPlayer().playSound(Sound.LEVEL_UP);
+		}
 
 		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
 	}
