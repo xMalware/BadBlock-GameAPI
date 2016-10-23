@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
@@ -17,9 +20,12 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.util.LongHash;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -174,10 +180,14 @@ import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import net.minecraft.server.v1_8_R3.Chunk;
+import net.minecraft.server.v1_8_R3.ChunkCoordIntPair;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.IChunkLoader;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_8_R3.WorldServer;
 
 public class GamePlugin extends GameAPI {
 
@@ -924,7 +934,7 @@ public class GamePlugin extends GameAPI {
 	public void setLightChunks(CuboidSelection selection, boolean exclusion) {
 		setPredicate(selection, exclusion, "light");
 	}
-	
+
 	private void setPredicate(CuboidSelection selection, boolean exclusion, String fieldName){
 		BiPredicate<Integer, Integer> predicate;
 
@@ -943,8 +953,88 @@ public class GamePlugin extends GameAPI {
 		try {
 			Class<?> clazz = Class.forName("fr.badblock.minecraftserver.BadblockEmptyChunk");
 			Reflector reflec = new Reflector(null, clazz);
-			
+
 			reflec.setStaticFieldValue(fieldName, predicate);
 		} catch(Exception e){}
+	}
+
+	@Override
+	public void loadChunks(CuboidSelection selection, int ticks){
+		try {
+			int minChunkX = ((int) selection.getMinX()) >> 4;
+			int minChunkZ = ((int) selection.getMinZ()) >> 4;
+
+			int maxChunkX = ((int) selection.getMaxX()) >> 4;
+			int maxChunkZ = ((int) selection.getMaxZ()) >> 4;
+
+			Queue<ChunkCoordIntPair> toLoad = new LinkedBlockingDeque<>();
+
+			for(int x=minChunkX;x<=maxChunkX;x++){
+				for(int z=minChunkZ;z<=maxChunkZ;z++){
+					toLoad.add(new ChunkCoordIntPair(x, z));
+				}
+			}
+
+			Map<ChunkCoordIntPair, Chunk> chunks = new HashMap<>();
+			WorldServer worldServer 		     = ((CraftWorld) getServer().getWorld(selection.getWorldName())).getHandle();
+			IChunkLoader loader     			 = (IChunkLoader) new Reflector(worldServer.chunkProviderServer).getFieldValue("chunkLoader");
+
+			new BukkitRunnable() {
+				int t = ticks;
+
+				@Override
+				public void run() {
+					if(t == 0){
+						cancel();
+						
+						chunks.forEach((coords, chunk) -> {
+							worldServer.chunkProviderServer.chunks.put( LongHash.toLong(coords.x, coords.z), chunk );
+							chunk.addEntities();
+						});
+						
+						return;
+					}
+					
+					int toLoadThisTick = toLoad.size() / t;					
+
+					for(int i=0;i<toLoadThisTick;i++){
+						try {
+
+							ChunkCoordIntPair coord = toLoad.poll();
+
+							if(coord != null){
+								Chunk chunk = loader.a(worldServer, coord.x, coord.z);
+								
+								for (int x = -2; x < 3; x++) {
+					                for (int z = -2; z < 3; z++) {
+					                    if (x == 0 && z == 0) {
+					                        continue;
+					                    }
+					                    
+					                    ChunkCoordIntPair neighCoord = new ChunkCoordIntPair(x + coord.x, z + coord.z);
+					                    
+					                    Chunk neighbor = chunks.get(neighCoord);
+					                    
+					                    if(neighbor != null){
+					                    	neighbor.setNeighborLoaded(-x, -z);
+					                        chunk.setNeighborLoaded(x, z);
+					                    }
+					                }
+					            }
+								
+								chunks.put(coord, loader.a(worldServer, coord.x, coord.z));
+							}
+						} catch(Exception e){
+							e.printStackTrace();
+						}
+
+					}
+					
+					t--;
+				}
+			}.runTaskTimer(this, 0, 1L);
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 }
