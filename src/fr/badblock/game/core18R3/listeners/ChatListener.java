@@ -62,15 +62,14 @@ public class ChatListener extends BadListener {
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent e){
 		if(!enabled) return;
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-		if(team && player.getTeam() != null && e.getMessage().startsWith("/t")){
+		if(team && player.getTeam() != null && (e.getMessage().startsWith("/t ") || e.getMessage().startsWith("/team "))){
 			e.setCancelled(true);
-			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace("/t", ""), player.getPlayerData().getLevel());
+			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace(e.getMessage().split(" ")[0], ""), player.getPlayerData().getLevel());
 			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 				if (e.getRecipients().contains(p))
 					result.send(p);
 			}
 		}
-
 	}
 
 	public static void protectColor(BadblockPlayer player, AsyncPlayerChatEvent event) {
