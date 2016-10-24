@@ -125,6 +125,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private BadblockMode 				 badblockMode 		  = BadblockMode.PLAYER;
 	@Setter
 	private boolean 					 hasJoined 			  = false;
+	@Setter@Getter
+	private boolean 					 dataFetch			  = false;
 	@Getter@Setter
 	private Environment 				 customEnvironment 	  = null;
 	@Getter@Setter
@@ -177,6 +179,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						Thread.sleep(10L);
 					} catch (InterruptedException unused) {}
 
+				dataFetch = true;
 				synchronized (Bukkit.getServer()) {
 					Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
 				}
@@ -202,7 +205,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
 		}
-		
+
 		if (object.has("shoppoints")) {
 			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
 		}
@@ -335,7 +338,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void saveGameData() {
-		GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, getPlayerData().saveData());
+		if (isDataFetch())
+			GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, getPlayerData().saveData());
 	}
 
 	@Override
@@ -407,27 +411,27 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendTranslatedActionBar(String key, Object... args) {
 		sendActionBar(getTranslatedMessage(key, args)[0]);
 	}
-	
+
 	private Map<String, BossBar> bossBars    = new HashMap<>();
 	private BossBar	             lastBossBar = null;
-	
+
 	@Override
 	public void addBossBar(String key, String message, float life, BossBarColor color, BossBarStyle style) {
 		message = getI18n().replaceColors(message);
-		
+
 		if(bossBars.containsKey(key.toLowerCase())){
 			changeBossBar(key, message);
 			changeBossBarStyle(key, life, color, style);
-			
+
 			return;
 		}
-		
+
 		BossBar bar = ViaVersion.getInstance().createBossBar(message, life, BossColor.valueOf(color.name()), BossStyle.valueOf(style.name()));
 		bar.addPlayer(this);
-		
+
 		bossBars.put(key.toLowerCase(), bar);
 		lastBossBar = bar;
-		
+
 		if (enderdragon == null && getProtocolVersion() < BadblockPlayer.VERSION_1_9){
 			Location loc = getLocation().clone();
 			loc.add(loc.getDirection().multiply(50.0D));
@@ -444,24 +448,24 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void changeBossBar(String key, String message) {
 		BossBar bar = bossBars.get(key.toLowerCase());
-		
+
 		if(bar != null){
 			message = getI18n().replaceColors(message);
 			bar.setTitle(message);
-			
+
 			lastBossBar = bar;
 		}
 	}
-	
+
 	@Override
 	public void changeBossBarStyle(String key, float life, BossBarColor color, BossBarStyle style) {
 		BossBar bar = bossBars.get(key.toLowerCase());
-		
+
 		if(bar != null){
 			bar.setHealth(life);
 			bar.setColor(BossColor.valueOf(color.name()));
 			bar.setStyle(BossStyle.valueOf(style.name()));
-			
+
 			lastBossBar = bar;
 		}
 	}
@@ -469,12 +473,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void removeBossBar(String key) {
 		BossBar bar = bossBars.get(key.toLowerCase());
-		
+
 		if(bar != null){
 			bar.removePlayer(this);
 			bossBars.remove(key.toLowerCase());
-			
-			
+
+
 			if(!bossBars.isEmpty()){
 				lastBossBar = bossBars.values().iterator().next();
 			} else {
@@ -483,17 +487,17 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			}
 		}
 	}
-	
+
 	@Override
 	public void removeBossBars() {
 		bossBars.values().forEach(bar -> bar.removePlayer(this));
-		
+
 		bossBars.clear();
-		
+
 		lastBossBar = null;
 		enderdragon = null;
 	}
-	
+
 	@Override
 	public void sendTranslatedBossBar(String key, Object... args) {
 		sendBossBar(getTranslatedMessage(key, args)[0]);
@@ -663,7 +667,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		customEnvironment = world;
 
 		getAPI().createPacket(PlayRespawn.class).setDimension(world).setDifficulty(getWorld().getDifficulty())
-				.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
+		.setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
 
 		setMaxHealth(getMaxHealth());
 
@@ -752,7 +756,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public TranslatableString getGroupPrefix() {
 		return new TranslatableString("permissions.chat." + permissions.getParent().getName());
 	}
-	
+
 	@Override
 	public TranslatableString getGroupSuffix() {
 		return new TranslatableString("permissions.chat_suffix." + permissions.getParent().getName());
@@ -845,13 +849,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				if(able(player))
 					return player;
 			}
-			
+
 			return null;
 		}
-		
+
 		public boolean able(BadblockPlayer player){
 			return !player.getUniqueId().equals(getUniqueId()) && player.getGameMode() != GameMode.SPECTATOR && player.getBadblockMode() == BadblockMode.PLAYER
-				&& !player.getLocation().getWorld().equals(getLocation().getWorld());
+					&& !player.getLocation().getWorld().equals(getLocation().getWorld());
 		}
 	}
 
@@ -886,7 +890,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				}
 
 				String title = lastBossBar.getTitle();
-				
+
 				if(!title.equals(lastMessage)){
 					enderdragon.getWatchers().setCustomName(title);
 					enderdragon.updateWatchers();
@@ -923,7 +927,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		disguiseEntity = disguise.createEntity(this);
 
 		getHandle().setInvisible(true);
-		
+
 		if(!disguise.isCanSeeHimself())
 			disguiseEntity.addPlayer(EntityViewList.BLACKLIST, this);
 
@@ -966,13 +970,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public int countItems(Material type, byte data) {
 		int result = 0;
-		
+
 		for(ItemStack item : getInventory().getContents()){
 			if(ItemStackUtils.isValid(item) && item.getType() == type && item.getDurability() == data){
 				result += item.getAmount();
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -981,96 +985,96 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		for(int i=0;i<getInventory().getContents().length;i++){
 			ItemStack item = getInventory().getContents()[i];
-			
+
 			if(ItemStackUtils.isValid(item) && item.getType() == type && item.getDurability() == data){
-				
+
 				if(amount != -1){
-					
+
 					int to = 0;
-					
+
 					if(amount < item.getAmount()){
 						to = item.getAmount() - amount;
 						amount = 0;
 					} else amount -= item.getAmount();
-					
+
 					if(to <= 0)
 						getInventory().setItem(i, null);
 					else item.setAmount(to);
 				} else getInventory().setItem(i, null);
-				
+
 				if(amount == 0)
 					break;
 			}
 		}
-		
+
 		updateInventory();
-		
+
 		return amount;
 	}
 
 	@Override
 	public <T extends Projectile> T launchProjectile(Class<T> projectile, BiConsumer<Block, Entity> action) {
 		T proj = launchProjectile(projectile);
-		
+
 		proj.setMetadata(CustomProjectileListener.metadataKey, new ProjectileMetadata(action));
-		
+
 		return proj;
 	}
-	
+
 	@AllArgsConstructor
 	public static class ProjectileMetadata implements MetadataValue {
 		private BiConsumer<Block, Entity> value;
-		
+
 		@Override
 		public BiConsumer<Block, Entity> value() {
 			return value;
 		}
-		
+
 		@Override
 		public void invalidate() {
 			value = null;
 		}
-		
+
 		@Override
 		public Plugin getOwningPlugin() {
 			return GameAPI.getAPI();
 		}
-		
+
 		@Override
 		public String asString() {
 			return "";
 		}
-		
+
 		@Override
 		public short asShort() {
 			return 0;
 		}
-		
+
 		@Override
 		public long asLong() {
 			return 0;
 		}
-		
+
 		@Override
 		public int asInt() {
 			return 0;
 		}
-		
+
 		@Override
 		public float asFloat() {
 			return 0;
 		}
-		
+
 		@Override
 		public double asDouble() {
 			return 0;
 		}
-		
+
 		@Override
 		public byte asByte() {
 			return 0;
 		}
-		
+
 		@Override
 		public boolean asBoolean() {
 			return false;
@@ -1091,14 +1095,14 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void setVisible(boolean visible, Predicate<BadblockPlayer> visiblePredicate) {
 		this.visible		  = visible;
 		this.visiblePredicate = visiblePredicate;
-		
+
 		if(visible){
 			GameAPI.getAPI().getOnlinePlayers().forEach(player -> player.showPlayer(this));
 		} else {
 			GameAPI.getAPI().getOnlinePlayers().stream().filter(visiblePredicate).forEach(player -> player.hidePlayer(this));
 		}
 	}
-	
+
 	public Predicate<BadblockPlayer> getVisiblePredicate(){
 		if(visiblePredicate == null)
 			return (p -> false);
@@ -1113,7 +1117,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public <T> T getPermissionValue(String key, Class<T> clazz) {
 		JsonElement el = permissions.getValue(key);
-		
+
 		return el == null ? null : GameAPI.getGson().fromJson(permissions.getValue(key), clazz);
 	}
 }

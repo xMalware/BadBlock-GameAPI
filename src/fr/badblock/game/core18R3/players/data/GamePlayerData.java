@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 
+import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -50,7 +51,7 @@ public class GamePlayerData implements PlayerData {
 	private transient JsonObject 						  data		 	   = new JsonObject();
 	private transient JsonObject 						  object		   = new JsonObject();
 
-	private transient BadblockPlayer					  badblockPlayer;
+	private transient GameBadblockPlayer				  gameBadblockPlayer;
 
 	// temporary values
 	private transient int 								  addedBadcoins	   = 0;
@@ -83,8 +84,8 @@ public class GamePlayerData implements PlayerData {
 			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
 			double v = 1;
 			try {
-				if (this.getBadblockPlayer() != null) {
-					Double o = this.getBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
+				if (this.getGameBadblockPlayer() != null) {
+					Double o = this.getGameBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
 					if (o == null) o = 1.0d;
 					v = o;
 				}
@@ -140,8 +141,8 @@ public class GamePlayerData implements PlayerData {
 			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
 			double v = 1;
 			try {
-				if (this.getBadblockPlayer() != null) {
-					Double o = this.getBadblockPlayer().getPermissionValue("xpboost", Double.class);
+				if (this.getGameBadblockPlayer() != null) {
+					Double o = this.getGameBadblockPlayer().getPermissionValue("xpboost", Double.class);
 					if (o == null) o = 1.0d;
 					v = o;
 				}
@@ -162,9 +163,9 @@ public class GamePlayerData implements PlayerData {
 			addedLevels++;
 		}
 
-		if (this.getBadblockPlayer() != null) {
-			this.getBadblockPlayer().sendTranslatedMessage("game.level", level);
-			this.getBadblockPlayer().playSound(Sound.LEVEL_UP);
+		if (this.getGameBadblockPlayer() != null) {
+			this.getGameBadblockPlayer().sendTranslatedMessage("game.level", level);
+			this.getGameBadblockPlayer().playSound(Sound.LEVEL_UP);
 		}
 
 		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
@@ -345,7 +346,8 @@ public class GamePlayerData implements PlayerData {
 		this.shopPoints += shopPoints;
 		addedBadcoins += shopPoints;
 		// envoi du packet d'update
-		GameAPI.getAPI().getLadderDatabase().updatePlayerData(getBadblockPlayer(), this.getObject());
+		if (getGameBadblockPlayer().isDataFetch())
+			GameAPI.getAPI().getLadderDatabase().updatePlayerData(getGameBadblockPlayer(), this.getObject());
 		return this.shopPoints;
 	}
 
@@ -354,7 +356,8 @@ public class GamePlayerData implements PlayerData {
 		this.shopPoints -= shopPoints;
 		addedShopPoints -= shopPoints;
 		// envoi du packet d'update
-		GameAPI.getAPI().getLadderDatabase().updatePlayerData(getBadblockPlayer(), this.getObject());
+		if (getGameBadblockPlayer().isDataFetch())
+			GameAPI.getAPI().getLadderDatabase().updatePlayerData(getGameBadblockPlayer(), this.getObject());
 		return this.shopPoints;
 	}
 
