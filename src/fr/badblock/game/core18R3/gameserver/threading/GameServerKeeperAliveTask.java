@@ -66,7 +66,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		// gameServerManager.getServerConfigurationFactory();
 		GameServer gameServer = gameApi.getGameServer();
 		GameAliveFactory gameAliveFactory = new GameAliveFactory(gameApi.getServer().getServerName(), isJoinable(),	Bukkit.getOnlinePlayers().size(), gameServer.getMaxPlayers());
-		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.keepalive", gameServerManager.getGson().toJson(gameAliveFactory), 5000, false);
+		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.instance.keepalive", gameServerManager.getGson().toJson(gameAliveFactory), 5000, false);
 	}
 
 	public void sendStopPacket() {
