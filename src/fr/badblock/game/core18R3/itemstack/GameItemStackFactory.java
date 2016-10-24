@@ -7,7 +7,6 @@ import java.util.Map;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -21,8 +20,7 @@ import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagList;
+import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 
 /**
  * A simple {@link fr.badblock.gameapi.ItemStackFactory} implementation.
@@ -158,18 +156,7 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 			meta.spigot().setUnbreakable(unbreakable);
 
 		if (fakeEnchantment) {
-			net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-			NBTTagCompound tag = null;
-			if (!nmsStack.hasTag()){
-				tag = new NBTTagCompound();
-				nmsStack.setTag(tag);
-			}
-			if (tag == null)
-				tag = nmsStack.getTag();
-			NBTTagList ench = new NBTTagList();
-			tag.set("ench", ench);
-			nmsStack.setTag(tag);
-			item = CraftItemStack.asBukkitCopy(nmsStack);
+			item = ItemStackUtils.fakeEnchant(item);
 		}
 
 		I18n i18n = GameAPI.i18n();
