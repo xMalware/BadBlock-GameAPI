@@ -7,6 +7,7 @@ import java.util.Map;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,6 +21,8 @@ import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagList;
 
 /**
  * A simple {@link fr.badblock.gameapi.ItemStackFactory} implementation.
@@ -28,6 +31,7 @@ import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
 public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	private boolean 				  unbreakable;
 	private Map<Enchantment, Integer> enchants;
+	private boolean					  fakeEnchantment;
 	private String[]				  lore;
 	private String					  displayName;
 	private TranslatableString		  tLore;
@@ -35,12 +39,12 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	private short					  durability;
 	private Material				  type;
 	private Locale					  locale;
-	
+
 	public GameItemStackFactory(){
 		this.enchants 	 = new HashMap<>();
 		this.type		 = Material.AIR;
 	}
-	
+
 	public GameItemStackFactory(ItemStack item){
 		this.enchants 	 = item.getEnchantments();
 		this.unbreakable = item.getItemMeta().spigot().isUnbreakable();
@@ -50,7 +54,7 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 		this.type		 = item.getType();
 		this.locale		 = null;
 	}
-	
+
 	@Override
 	public ItemStackFactory unbreakable(boolean unbreakable) {
 		this.unbreakable = unbreakable;
@@ -74,7 +78,7 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 		this.displayName = displayName;
 		return this;
 	}
-	
+
 	@Override
 	public ItemStackFactory lore(TranslatableString lore) {
 		this.tLore = lore;
@@ -102,39 +106,39 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	@Override
 	public ItemStack asWool(int amount, DyeColor color) {
 		ItemStack colored = create(amount);
-		
+
 		if(colored.getData() instanceof Wool){
 			Wool meta = (Wool) colored.getItemMeta();
 			meta.setColor(color);
 			colored.setData(meta);
 		}
-		
+
 		return colored;
 	}
 
 	@Override
 	public ItemStack asLeatheredArmor(int amount, Color color) {
 		ItemStack leather = create(amount);
-		
+
 		if(leather.getItemMeta() instanceof LeatherArmorMeta){
 			LeatherArmorMeta meta = (LeatherArmorMeta) leather.getItemMeta();
 			meta.setColor(color);
 			leather.setItemMeta(meta);
 		}
-		
+
 		return leather;
 	}
 
 	@Override
 	public ItemStack asSkull(int amount, String owner) {
 		ItemStack skull = create(amount);
-		
+
 		if(skull.getItemMeta() instanceof SkullMeta){
 			SkullMeta meta = (SkullMeta) skull.getItemMeta();
 			meta.setOwner(owner);
 			skull.setItemMeta(meta);
 		}
-		
+
 		return skull;
 	}
 
@@ -142,13 +146,28 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	public ItemStack create(int amount) {
 		ItemStack item = new ItemStack(type, amount, durability);
 		item.addUnsafeEnchantments(enchants);
-		
+
 		ItemMeta meta = item.getItemMeta();
 		if(meta != null)
 			meta.spigot().setUnbreakable(unbreakable);
-		
+
+		if (fakeEnchantment) {
+			net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+			NBTTagCompound tag = null;
+			if (!nmsStack.hasTag()){
+				tag = new NBTTagCompound();
+				nmsStack.setTag(tag);
+			}
+			if (tag == null)
+				tag = nmsStack.getTag();
+			NBTTagList ench = new NBTTagList();
+			tag.set("ench", ench);
+			nmsStack.setTag(tag);
+			item = CraftItemStack.asBukkitCopy(nmsStack);
+		}
+
 		I18n i18n = GameAPI.i18n();
-		
+
 		if(meta != null && tDisplayName != null && locale != null){
 			meta.setDisplayName(tDisplayName.getAsLine(locale));
 		} else if(meta != null && displayName != null){
@@ -156,7 +175,7 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 				meta.setDisplayName(i18n.get(locale, displayName)[0]);
 			} else meta.setDisplayName(i18n.replaceColors(displayName));
 		}
-		
+
 		if(meta != null && tLore != null && locale != null){
 			meta.setLore(Arrays.asList(tLore.get(locale)));
 		} else if(meta != null && lore != null){
@@ -165,9 +184,9 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 					meta.setLore(Arrays.asList(i18n.get(locale, lore[0])));
 			} else meta.setLore(i18n.replaceColors(Arrays.asList(lore)));
 		}
-		
+
 		item.setItemMeta(meta);
-		
+
 		return item;
 	}
 
@@ -179,10 +198,10 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	@Override
 	public ItemStackFactory doWithI18n(Locale locale) {
 		this.locale = locale;
-		
+
 		return this;
 	}
-	
+
 	@Override
 	public ItemStackFactory clone(){
 		try {
@@ -190,7 +209,7 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
-		
+
 		return null;
 	}
 }
