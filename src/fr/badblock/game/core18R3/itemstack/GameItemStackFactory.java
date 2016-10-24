@@ -80,6 +80,12 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	}
 
 	@Override
+	public ItemStackFactory fakeEnchantment() {
+		this.fakeEnchantment = true;
+		return this;
+	}
+
+	@Override
 	public ItemStackFactory lore(TranslatableString lore) {
 		this.tLore = lore;
 		return this;
