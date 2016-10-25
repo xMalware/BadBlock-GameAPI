@@ -35,6 +35,7 @@ import fr.badblock.protocol.packets.PacketPlayerData.DataAction;
 import fr.badblock.protocol.packets.PacketPlayerData.DataType;
 import fr.badblock.protocol.packets.PacketPlayerJoin;
 import fr.badblock.protocol.packets.PacketPlayerLogin;
+import fr.badblock.protocol.packets.PacketPlayerNickSet;
 //import fr.badblock.protocol.packets.PacketPlayerLogin;
 import fr.badblock.protocol.packets.PacketPlayerPlace;
 import fr.badblock.protocol.packets.PacketPlayerQuit;
@@ -274,5 +275,9 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	}
 
 	@Override public void handle(PacketSimpleCommand packet) {
+	}
+
+	@Override
+	public void handle(PacketPlayerNickSet packet) {
 	}
 }
