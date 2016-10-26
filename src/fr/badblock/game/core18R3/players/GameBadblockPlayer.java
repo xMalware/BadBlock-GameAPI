@@ -137,17 +137,17 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private JsonObject					 object				  = null;
 
 	@Getter@Setter
-	private Vector3f					 firstVector,
-	secondVector;
-	private Disguise 	  disguise;
+	private Vector3f					 firstVector, secondVector;
+	private Disguise 	  				disguise;
 	@Getter
-	private FakeEntity<?> disguiseEntity;
+	private FakeEntity<?> 				disguiseEntity;
 	@Getter
-	private long lastFakeEntityUsedTime;
+	private long 						lastFakeEntityUsedTime;
 	@Getter
-	private boolean visible = true;
-	private Predicate<BadblockPlayer> visiblePredicate;
-
+	private boolean 					visible 				= true;
+	private Predicate<BadblockPlayer> 	visiblePredicate;
+	@Getter@Setter
+	private String						nickName;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -781,7 +781,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPlayer(String server) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("ConnectOther");
-		out.writeUTF(getName());
+		out.writeUTF(getNickName() != null && !getNickName().isEmpty() ? getNickName() : getName());
 		out.writeUTF(server);
 		sendPluginMessage(GameAPI.getAPI(), "BungeeCord", out.toByteArray());
 	}
