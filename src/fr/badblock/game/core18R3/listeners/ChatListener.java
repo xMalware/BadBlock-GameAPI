@@ -32,10 +32,8 @@ public class ChatListener extends BadListener {
 
 			for(Player p : e.getRecipients()){
 				BadblockPlayer bPlayer = (BadblockPlayer) p;
-
-				if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR){
-					result.send(bPlayer);
-				}
+				if (player.hasPermission("bypass_spectator_chat")) result.send(p);
+				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR) result.send(bPlayer);
 			}
 		} else if(team && player.getTeam() != null && e.getMessage().startsWith("$")){
 			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().substring(1), player.getPlayerData().getLevel());
@@ -62,12 +60,22 @@ public class ChatListener extends BadListener {
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent e){
 		if(!enabled) return;
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-		if(team && player.getTeam() != null && (e.getMessage().startsWith("/t ") || e.getMessage().startsWith("/team "))){
+		if((e.getMessage().startsWith("/t") || e.getMessage().startsWith("/team"))){
 			e.setCancelled(true);
-			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace(e.getMessage().split(" ")[0], ""), player.getPlayerData().getLevel());
-			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
-				if (e.getRecipients().contains(p))
-					result.send(p);
+			if (!team) {
+				player.sendTranslatedMessage("game.doesntexisthaveteams");
+			}else if (player.getTeam() == null) {
+				player.sendTranslatedMessage("game.youdonthaveteam");
+			}else{
+				if(!e.getMessage().contains(" ")) {
+					player.sendTranslatedMessage("game.pleasespecifyamessage");
+				}else{
+					TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace(e.getMessage().split(" ")[0], ""), player.getPlayerData().getLevel());
+					for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
+						if (e.getRecipients().contains(p))
+							result.send(p);
+					}
+				}
 			}
 		}
 	}

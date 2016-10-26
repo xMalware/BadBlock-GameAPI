@@ -103,7 +103,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 			}
 
 			trying = true;
-			new Thread(){
+			new Thread("BadBlockAPI/gameLadderSpeaker") {
 				@Override
 				public void run(){
 					try {
