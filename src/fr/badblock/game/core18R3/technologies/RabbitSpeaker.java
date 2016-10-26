@@ -26,12 +26,12 @@ public class RabbitSpeaker implements fr.badblock.gameapi.technologies.RabbitSpe
 
 	@Override
 	public void sendAsyncUTF8Message(String queueName, String content, long ttl, boolean debug) {
-		this.getRabbitService().sendPacket(queueName, content, Encodage.UTF8, RabbitPacketType.MESSAGE_BROKER, ttl, debug);
+		this.getRabbitService().sendAsyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.MESSAGE_BROKER, ttl, debug);
 	}
 
 	@Override
 	public void sendAsyncUTF8Publisher(String queueName, String content, long ttl, boolean debug) {
-		this.getRabbitService().sendPacket(queueName, content, Encodage.UTF8, RabbitPacketType.PUBLISHER, ttl, debug);
+		this.getRabbitService().sendAsyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.PUBLISHER, ttl, debug);
 	}
 
 	@Override
