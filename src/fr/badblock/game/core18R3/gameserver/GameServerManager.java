@@ -43,13 +43,13 @@ public class GameServerManager {
 		this.setConsole(Bukkit.getConsoleSender());
 	}
 
-	private void forceCommand(String message) {
+/*	private void forceCommand(String message) {
 		Bukkit.dispatchCommand(console, message);
-	}
+	}*/
 
 	public void start() {
 		// Activation du timing
-		forceCommand("timings on");
+		//forceCommand("timings on");
 
 		if (!GameAPI.TEST_MODE) {
 			File gameServerFile = new File(GameServerUtils.getFileName());
@@ -78,7 +78,7 @@ public class GameServerManager {
 	public void stop() {
 		GameServerMessages.UNLOADING.log();
 
-		this.forceCommand("timings paste");
+		//this.forceCommand("timings paste");
 		if (this.isLoaded() && !GameAPI.TEST_MODE) {
 			getGameServerSendLogsTask().doLog();
 			this.getGameServerKeeperAliveTask().sendStopPacket();
