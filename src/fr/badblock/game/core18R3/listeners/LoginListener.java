@@ -76,6 +76,7 @@ public class LoginListener extends BadListener {
 			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getName().toLowerCase());
 
 		} else if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
+			p.setVisible(false);
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
