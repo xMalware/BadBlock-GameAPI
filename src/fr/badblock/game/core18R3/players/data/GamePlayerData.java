@@ -65,7 +65,6 @@ public class GamePlayerData implements PlayerData {
 		}
 	}
 
-
 	@Override
 	public int addBadcoins(int badcoins, boolean applyBonus) {
 		badcoins = Math.abs(badcoins);

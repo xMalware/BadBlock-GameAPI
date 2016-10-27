@@ -150,6 +150,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void updatePlayerData(BadblockPlayer player, JsonObject toUpdate) {
+		if (!player.isDataFetch()) return;
 		updatePlayerData(player.getName(), toUpdate);
 	}
 
@@ -169,6 +170,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void updateIpPlayerData(BadblockPlayer player, JsonObject toUpdate) {
+		if (!player.isDataFetch()) return;
 		String ip = player.getAddress().getAddress().getHostAddress();
 		if(toUpdate != null)
 			sendPacket(new PacketPlayerData(DataType.IP, DataAction.MODIFICATION, ip, toUpdate.toString()));
