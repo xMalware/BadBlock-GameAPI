@@ -21,7 +21,6 @@ import fr.badblock.gameapi.databases.LadderSpeaker;
 import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.permissions.PermissionManager;
 import fr.badblock.protocol.PacketHandler;
@@ -285,10 +284,5 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void handle(PacketPlayerNickSet packet) {
-		BadblockPlayer player = BukkitUtils.getPlayer(packet.getNickName());
-		System.out.println("PacketPlayerNickSet / " + player + " / " + packet.getNickName() + " / " + packet.getPlayerName());
-		if (player == null) return;
-
-		((GameBadblockPlayer) player).setRealName(packet.getPlayerName());
 	}
 }
