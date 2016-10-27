@@ -285,8 +285,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void handle(PacketPlayerNickSet packet) {
-		BadblockPlayer player = BukkitUtils.getPlayer(packet.getPlayerName());
+		BadblockPlayer player = BukkitUtils.getPlayer(packet.getNickName());
 		if (player == null) return;
-		((GameBadblockPlayer) player).setNickName(packet.getNickName());
+		((GameBadblockPlayer) player).setRealName(packet.getNickName());
 	}
 }

@@ -147,7 +147,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private boolean 					visible 				= true;
 	private Predicate<BadblockPlayer> 	visiblePredicate;
 	@Getter@Setter
-	private String						nickName;
+	private String						realName;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -787,7 +787,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPlayer(String server) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("ConnectOther");
-		out.writeUTF(getNickName() != null && !getNickName().isEmpty() ? getNickName() : getName());
+		System.out.println(getRealName() + " / " + server);
+		out.writeUTF(getRealName() != null && !getRealName().isEmpty() ? getRealName() : getName());
 		out.writeUTF(server);
 		sendPluginMessage(GameAPI.getAPI(), "BungeeCord", out.toByteArray());
 	}
