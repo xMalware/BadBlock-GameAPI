@@ -60,7 +60,7 @@ public class ChatListener extends BadListener {
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent e){
 		if(!enabled) return;
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-		if((e.getMessage().startsWith("/t") || e.getMessage().startsWith("/team"))){
+		if((e.getMessage().startsWith("/t ") || e.getMessage().equalsIgnoreCase("/t") || e.getMessage().startsWith("/team ") || e.getMessage().equalsIgnoreCase("/team"))){
 			e.setCancelled(true);
 			if (!team) {
 				player.sendTranslatedMessage("game.doesntexisthaveteams");
