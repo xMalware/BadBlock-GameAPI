@@ -32,7 +32,7 @@ public class ChatListener extends BadListener {
 
 			for(Player p : e.getRecipients()){
 				BadblockPlayer bPlayer = (BadblockPlayer) p;
-				if (player.hasPermission("bypass_spectator_chat")) result.send(p);
+				if (player.hasPermission(GamePermission.MODERATOR)) result.send(p);
 				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR) result.send(bPlayer);
 			}
 		} else if(team && player.getTeam() != null && e.getMessage().startsWith("$")){
