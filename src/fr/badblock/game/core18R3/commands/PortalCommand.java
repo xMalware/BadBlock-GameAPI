@@ -14,7 +14,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class PortalCommand extends AbstractCommand {
 	public PortalCommand() {
-		super("portal", new TranslatableString("portals.command.usage"), GamePermission.ADMIN);
+		super("portal", new TranslatableString("portals.command.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

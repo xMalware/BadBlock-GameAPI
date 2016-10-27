@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class SudoCommand extends AbstractCommand {
 	public SudoCommand() {
-		super("sudo", new TranslatableString("commands.sudo.usage"), GamePermission.ADMIN);
+		super("sudo", new TranslatableString("commands.sudo.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

@@ -18,7 +18,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class ListCommand extends AbstractCommand {
 	public ListCommand() {
-		super("list", new TranslatableString("commands.list.usage"), GamePermission.BMODERATOR);
+		super("list", new TranslatableString("commands.list.usage"), GamePermission.MODERATOR, GamePermission.MODERATOR, GamePermission.BMODERATOR);
 		allowConsole(false);
 	}
 

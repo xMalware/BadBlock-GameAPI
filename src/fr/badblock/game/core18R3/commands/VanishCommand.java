@@ -15,7 +15,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class VanishCommand extends AbstractCommand {
 	public VanishCommand() {
-		super("vanish", new TranslatableString("commands.vanish.usage"), GamePermission.BMODERATOR, "v");
+		super("vanish", new TranslatableString("commands.vanish.usage"), GamePermission.MODERATOR, GamePermission.MODERATOR, GamePermission.ADMIN, "v");
 	}
 
 	@Override

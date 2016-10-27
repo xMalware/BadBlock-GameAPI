@@ -12,7 +12,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class WorldCommand extends AbstractCommand {
 	public WorldCommand() {
-		super("world", new TranslatableString("commands.world.usage"), GamePermission.ADMIN);
+		super("world", new TranslatableString("commands.world.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

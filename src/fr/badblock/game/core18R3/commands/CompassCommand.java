@@ -12,7 +12,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class CompassCommand extends AbstractCommand {
 	public CompassCommand() {
-		super("/compass", new TranslatableString("commands.compass.usage"), GamePermission.ADMIN);
+		super("/compass", new TranslatableString("commands.compass.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

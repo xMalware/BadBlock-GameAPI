@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 
 public class MoreCommand extends AbstractCommand {
 	public MoreCommand() {
-		super("more", new TranslatableString("commands.more.usage"), GamePermission.ADMIN);
+		super("more", new TranslatableString("commands.more.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class EnderchestCommand extends AbstractCommand {
 	public EnderchestCommand() {
-		super("enderchest", new TranslatableString("commands.enderchest.usage"), GamePermission.BMODERATOR, "ec");
+		super("enderchest", new TranslatableString("commands.enderchest.usage"), GamePermission.BMODERATOR, GamePermission.BMODERATOR, GamePermission.BMODERATOR, "ec");
 		allowConsole(false);
 	}
 

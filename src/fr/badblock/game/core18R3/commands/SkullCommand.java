@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class SkullCommand extends AbstractCommand {
 	public SkullCommand() {
-		super("skull", new TranslatableString("commands.skull.usage"), GamePermission.ADMIN);
+		super("skull", new TranslatableString("commands.skull.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

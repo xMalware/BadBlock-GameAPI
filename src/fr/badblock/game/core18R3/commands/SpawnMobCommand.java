@@ -23,7 +23,7 @@ import fr.badblock.gameapi.utils.i18n.Word.WordDeterminant;
 
 public class SpawnMobCommand extends AbstractCommand {
 	public SpawnMobCommand() {
-		super("spawnmob", new TranslatableString("commands.spawnmob.usage"), GamePermission.ADMIN, "spawnentity");
+		super("spawnmob", new TranslatableString("commands.spawnmob.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "spawnentity");
 	}
 
 	@Override

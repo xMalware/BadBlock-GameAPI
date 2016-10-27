@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class WhitelistCommand extends AbstractCommand {
 	public WhitelistCommand() {
-		super("whitelist", new TranslatableString("commands.whitelist.usage"), GamePermission.BMODERATOR);
+		super("whitelist", new TranslatableString("commands.whitelist.usage"), GamePermission.BMODERATOR, GamePermission.BMODERATOR, GamePermission.ADMIN);
 	}
 
 	@Override

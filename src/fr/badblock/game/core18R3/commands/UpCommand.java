@@ -14,7 +14,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class UpCommand extends AbstractCommand {
 	public UpCommand() {
-		super("up", new TranslatableString("commands.up.usage"), GamePermission.ADMIN);
+		super("up", new TranslatableString("commands.up.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

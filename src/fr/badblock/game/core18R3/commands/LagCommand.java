@@ -15,7 +15,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class LagCommand extends AbstractCommand {
 	public LagCommand() {
-		super("lag", new TranslatableString("commands.lag.usage"), GamePermission.PLAYER, "tps", "gc", "bug");
+		super("lag", new TranslatableString("commands.lag.usage"), GamePermission.PLAYER, GamePermission.PLAYER, GamePermission.PLAYER, "tps", "gc", "bug");
 	}
 
 	private static SimpleDateFormat		simpleDateFormat			= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

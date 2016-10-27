@@ -20,7 +20,7 @@ import net.minecraft.server.v1_8_R3.MinecraftKey;
 
 public class GiveCommand extends AbstractCommand {
 	public GiveCommand() {
-		super("give", new TranslatableString("commands.give.usage"), GamePermission.ADMIN);
+		super("give", new TranslatableString("commands.give.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class SuicideCommand extends AbstractCommand {
 	public SuicideCommand() {
-		super("suicide", new TranslatableString("commands.suicide.usage"), GamePermission.ADMIN);
+		super("suicide", new TranslatableString("commands.suicide.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

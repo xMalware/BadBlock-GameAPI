@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class LocCommand extends AbstractCommand {
 
 	public LocCommand() {
-		super("loc", new TranslatableString("hub.loc"), GamePermission.ADMIN);
+		super("loc", new TranslatableString("hub.loc"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

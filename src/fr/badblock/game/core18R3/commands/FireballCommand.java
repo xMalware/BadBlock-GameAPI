@@ -21,7 +21,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class FireballCommand extends AbstractCommand {
 
 	public FireballCommand() {
-		super("fireball", new TranslatableString("commands.fireball.usage"), GamePermission.ADMIN);
+		super("fireball", new TranslatableString("commands.fireball.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		this.allowConsole(false);
 	}
 

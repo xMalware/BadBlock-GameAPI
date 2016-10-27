@@ -13,7 +13,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class GodmodeCommand extends AbstractCommand {
 	public GodmodeCommand() {
-		super("godmode", new TranslatableString("commands.godmode.usage"), GamePermission.ADMIN, "god");
+		super("godmode", new TranslatableString("commands.godmode.usage"), GamePermission.ADMIN, GamePermission.MODERATOR, GamePermission.ADMIN, "god");
 	}
 
 	@Override

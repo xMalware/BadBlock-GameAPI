@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class SpeedCommand extends AbstractCommand {
 	public SpeedCommand() {
-		super("speed", new TranslatableString("commands.speed.usage"), GamePermission.ADMIN);
+		super("speed", new TranslatableString("commands.speed.usage"), GamePermission.ADMIN, GamePermission.MODERATOR, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

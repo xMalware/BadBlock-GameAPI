@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class PingCommand extends AbstractCommand {
 	public PingCommand() {
-		super("ping", new TranslatableString("commands.ping.usage"), GamePermission.PLAYER, "pong", "echo");
+		super("ping", new TranslatableString("commands.ping.usage"), GamePermission.PLAYER, GamePermission.PLAYER, GamePermission.PLAYER, "pong", "echo");
 	}
 
 	@Override

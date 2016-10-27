@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class ClearChatCommand extends AbstractCommand {
 	public ClearChatCommand() {
-		super("clearchat", new TranslatableString("commands.clearchat.usage"), GamePermission.BMODERATOR, "cc", "clearc");
+		super("clearchat", new TranslatableString("commands.clearchat.usage"), GamePermission.BMODERATOR, GamePermission.BMODERATOR, GamePermission.BMODERATOR, "cc", "clearc");
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class FeedCommand extends AbstractCommand {
 	public FeedCommand() {
-		super("feed", new TranslatableString("commands.feed.usage"), GamePermission.ADMIN);
+		super("feed", new TranslatableString("commands.feed.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class FlyCommand extends AbstractCommand {
 	public FlyCommand() {
-		super("fly", new TranslatableString("commands.fly.usage"), GamePermission.ADMIN);
+		super("fly", new TranslatableString("commands.fly.usage"), GamePermission.BMODERATOR, GamePermission.MODERATOR, GamePermission.ADMIN);
 	}
 
 	@Override

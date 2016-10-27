@@ -12,7 +12,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class WeatherCommand extends AbstractCommand {
 
 	public WeatherCommand() {
-		super("weather", new TranslatableString("commands.weather.usage"), GamePermission.ADMIN);
+		super("weather", new TranslatableString("commands.weather.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

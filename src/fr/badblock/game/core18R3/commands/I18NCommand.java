@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class I18NCommand extends AbstractCommand {
 	public I18NCommand() {
-		super("i18n", new TranslatableString("commands.i18n.usage"), GamePermission.ADMIN);
+		super("i18n", new TranslatableString("commands.i18n.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

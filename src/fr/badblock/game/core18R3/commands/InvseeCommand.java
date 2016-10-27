@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class InvseeCommand extends AbstractCommand {
 	public InvseeCommand() {
-		super("invsee", new TranslatableString("commands.invsee.usage"), GamePermission.BMODERATOR);
+		super("invsee", new TranslatableString("commands.invsee.usage"), GamePermission.BMODERATOR, GamePermission.MODERATOR, GamePermission.BMODERATOR);
 		allowConsole(false);
 	}
 

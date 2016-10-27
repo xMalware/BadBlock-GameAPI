@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class KillCommand extends AbstractCommand {
 	public KillCommand() {
-		super("kill", new TranslatableString("commands.kill.usage"), GamePermission.ADMIN);
+		super("kill", new TranslatableString("commands.kill.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

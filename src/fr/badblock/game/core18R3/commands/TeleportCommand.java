@@ -18,7 +18,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class TeleportCommand extends AbstractCommand {
 	public TeleportCommand() {
-		super("teleport", new TranslatableString("commands.teleport.usage"), GamePermission.ADMIN, "tp");
+		super("teleport", new TranslatableString("commands.teleport.usage"), GamePermission.MODERATOR, GamePermission.MODERATOR, GamePermission.ADMIN, "tp");
 	}
 
 	@Override

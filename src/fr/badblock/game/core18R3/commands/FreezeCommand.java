@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class FreezeCommand extends AbstractCommand {
 	public FreezeCommand() {
-		super("freeze", new TranslatableString("commands.freeze.usage"), GamePermission.BMODERATOR);
+		super("freeze", new TranslatableString("commands.freeze.usage"), GamePermission.MODERATOR, GamePermission.MODERATOR, GamePermission.MODERATOR);
 	}
 
 	@Override

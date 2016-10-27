@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class BackCommand extends AbstractCommand {
 	public BackCommand() {
-		super("back", new TranslatableString("commands.back.usage"), GamePermission.ADMIN, "bk");
+		super("back", new TranslatableString("commands.back.usage"), GamePermission.MODERATOR, GamePermission.MODERATOR, GamePermission.ADMIN, "bk");
 		this.allowConsole(false);
 	}
 

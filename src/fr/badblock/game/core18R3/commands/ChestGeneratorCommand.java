@@ -13,7 +13,7 @@ public class ChestGeneratorCommand extends AbstractCommand {
 	private ChestGenerator generator;
 	
 	public ChestGeneratorCommand(ChestGenerator generator) {
-		super("chestgenerator", new TranslatableString("commands.chestg.usage"), GamePermission.ADMIN, "chestg");
+		super("chestgenerator", new TranslatableString("commands.chestg.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "chestg");
 		allowConsole(false);
 	
 		this.generator = generator;

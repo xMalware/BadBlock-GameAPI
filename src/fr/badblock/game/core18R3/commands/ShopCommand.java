@@ -22,7 +22,7 @@ import fr.badblock.gameapi.utils.merchants.CustomMerchantRecipe;
 
 public class ShopCommand extends AbstractCommand {
 	public ShopCommand() {
-		super("badshops", new TranslatableString("commands.badshops.usage"), GamePermission.ADMIN, "shop", "sh");
+		super("badshops", new TranslatableString("commands.badshops.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "shop", "sh");
 		allowConsole(false);
 	}
 

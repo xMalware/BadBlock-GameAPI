@@ -33,7 +33,7 @@ public class KillallCommand extends AbstractCommand {
 	}
 
 	public KillallCommand() {
-		super("killall", new TranslatableString("commands.killall.usage", StringUtils.join(values(), ", ")), GamePermission.ADMIN);
+		super("killall", new TranslatableString("commands.killall.usage", StringUtils.join(values(), ", ")), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

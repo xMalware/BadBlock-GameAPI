@@ -21,7 +21,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class KitsCommand extends AbstractCommand {
 	public KitsCommand() {
-		super("kits", new TranslatableString("commands.kits.usage"), GamePermission.ADMIN);
+		super("kits", new TranslatableString("commands.kits.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 		allowConsole(false);
 	}
 

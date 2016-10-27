@@ -18,7 +18,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class JumpToCommand extends AbstractCommand {
 	
 	public JumpToCommand() {
-		super("jumpto", new TranslatableString("commands.jumpto.usage"), GamePermission.ADMIN, "j");
+		super("jumpto", new TranslatableString("commands.jumpto.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "j");
 		allowConsole(false);
 	}
 

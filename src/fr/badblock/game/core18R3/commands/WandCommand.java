@@ -12,7 +12,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class WandCommand extends AbstractCommand {
 	public WandCommand() {
-		super("/wand", new TranslatableString("commands.wand.usage"), GamePermission.ADMIN, "/batondeblaze");
+		super("/wand", new TranslatableString("commands.wand.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "/batondeblaze");
 		allowConsole(false);
 	}
 

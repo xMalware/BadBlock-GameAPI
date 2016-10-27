@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class HealCommand extends AbstractCommand {
 	public HealCommand() {
-		super("heal", new TranslatableString("commands.heal.usage"), GamePermission.ADMIN);
+		super("heal", new TranslatableString("commands.heal.usage"), GamePermission.ADMIN, GamePermission.MODERATOR, GamePermission.ADMIN);
 	}
 
 	@Override

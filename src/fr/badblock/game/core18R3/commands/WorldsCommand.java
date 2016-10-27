@@ -14,7 +14,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class WorldsCommand extends AbstractCommand {
 	public WorldsCommand() {
-		super("worlds", new TranslatableString("commands.worlds.usage"), GamePermission.ADMIN);
+		super("worlds", new TranslatableString("commands.worlds.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

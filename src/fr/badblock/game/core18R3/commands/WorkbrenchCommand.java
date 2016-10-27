@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class WorkbrenchCommand extends AbstractCommand {
 	public WorkbrenchCommand() {
-		super("workbrench", new TranslatableString("commands.workbrench.usage"), GamePermission.ADMIN, "wb", "craft");
+		super("workbrench", new TranslatableString("commands.workbrench.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "wb", "craft");
 		allowConsole(false);
 	}
 

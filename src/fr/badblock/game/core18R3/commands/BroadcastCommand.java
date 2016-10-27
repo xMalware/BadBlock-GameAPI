@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class BroadcastCommand extends AbstractCommand {
 	public BroadcastCommand() {
-		super("broadcast", new TranslatableString("commands.broadcast.usage"), GamePermission.BMODERATOR, "bc");
+		super("broadcast", new TranslatableString("commands.broadcast.usage"), GamePermission.BMODERATOR, GamePermission.BMODERATOR, GamePermission.BMODERATOR, "bc");
 	}
 
 	@Override

@@ -19,7 +19,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class GameModeCommand extends AbstractCommand {
 	
 	public GameModeCommand() {
-		super("gamemode", new TranslatableString("commands.gamemode.usage"), GamePermission.ADMIN, "gm");
+		super("gamemode", new TranslatableString("commands.gamemode.usage"), GamePermission.BMODERATOR, GamePermission.MODERATOR, GamePermission.ADMIN, "gm");
 	}
 
 	@Override

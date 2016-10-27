@@ -13,7 +13,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class KickallCommand extends AbstractCommand {
 	public KickallCommand() {
-		super("kickall", new TranslatableString("commands.kickall.usage"), GamePermission.ADMIN);
+		super("kickall", new TranslatableString("commands.kickall.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
 
 	@Override

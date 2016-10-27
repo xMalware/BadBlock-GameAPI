@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class ClearInventoryCommand extends AbstractCommand {
 	public ClearInventoryCommand() {
-		super("clearinventory", new TranslatableString("commands.clearinventory.usage"), GamePermission.BMODERATOR, "ci", "clear");
+		super("clearinventory", new TranslatableString("commands.clearinventory.usage"), GamePermission.BMODERATOR, GamePermission.BMODERATOR, GamePermission.BMODERATOR, "ci", "clear");
 	}
 
 	@Override

@@ -17,7 +17,7 @@ public class TimeCommand extends AbstractCommand {
 	public static final long NIGHT = 14_000L;
 	
 	public TimeCommand() {
-		super("time", new TranslatableString("commands.time.usage"), GamePermission.BMODERATOR);
+		super("time", new TranslatableString("commands.time.usage"), GamePermission.BMODERATOR, GamePermission.BMODERATOR, GamePermission.ADMIN);
 	}
 
 	@Override
