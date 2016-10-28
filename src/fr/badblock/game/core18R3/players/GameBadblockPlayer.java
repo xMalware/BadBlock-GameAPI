@@ -791,7 +791,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPlayer(String server) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("ConnectOther");
-		System.out.println(getRealName() + " / " + server);
+		System.out.println("> " + getRealName() + " / " + server);
 		out.writeUTF(getRealName() != null && !getRealName().isEmpty() ? getRealName() : getName());
 		out.writeUTF(server);
 		sendPluginMessage(GameAPI.getAPI(), "BungeeCord", out.toByteArray());
