@@ -1,3 +1,5 @@
+
+
 package fr.badblock.game.core18R3.ladder;
 
 import java.io.IOException;
@@ -286,3 +288,4 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	public void handle(PacketPlayerNickSet packet) {
 	}
 }
+
