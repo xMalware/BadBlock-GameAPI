@@ -205,9 +205,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	public void updateData(JsonObject object) {
-		System.out.println(object.toString());
-		if (object.has("name")) {
-			this.realName = object.get("name").getAsString();
+		if (object.has("realName")) {
+			this.realName = object.get("realName").getAsString();
 		}
 		if (object.has("game")) {
 			JsonObject game = object.get("game").getAsJsonObject();
