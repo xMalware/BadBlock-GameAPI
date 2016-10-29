@@ -27,7 +27,7 @@ public class FakeEntities {
 		if(!trackers.containsKey(world.getName())){
 			FakeEntityTracker tracker = new FakeEntityTracker(world);
 			
-			Bukkit.getScheduler().runTaskTimer(GameAPI.getAPI(), tracker::doTick, 1L, 20L);
+			Bukkit.getScheduler().runTaskTimer(GameAPI.getAPI(), tracker::doTick, 1L, 20 * 5L);
 			trackers.put(world.getName(), tracker);
 		}
 		
