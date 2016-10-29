@@ -174,7 +174,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		if (GamePlugin.EMPTY_VERSION) return;
 		boolean full = Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers();
-
+		System.out.println("b");
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
