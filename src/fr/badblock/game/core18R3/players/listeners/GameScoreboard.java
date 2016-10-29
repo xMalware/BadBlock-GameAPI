@@ -390,7 +390,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			inventory.addClickableItem(slot, GameAPI.getAPI().createItemStackFactory()
 					.type(Material.PAPER)
 					.displayName(entry.getKey().getDisplayName())
-					.lore(i18n.get(locale, "maps." + entry.getKey().getInternalName(), entry.getValue()))
+					.lore(i18n.get(locale, "maps.infovip"))
 					.create(1)
 					, new ItemEvent(){
 				@Override
