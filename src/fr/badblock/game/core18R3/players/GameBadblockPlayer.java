@@ -1,10 +1,12 @@
 package fr.badblock.game.core18R3.players;
 
+import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
@@ -35,6 +37,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.internalutils.Base64Url;
@@ -106,6 +109,7 @@ import us.myles.ViaVersion.api.boss.BossColor;
 import us.myles.ViaVersion.api.boss.BossStyle;
 
 public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
+	public static final Type collectionType = new TypeToken<List<UUID>>() {}.getType();
 	@Getter@Setter
 	private CustomObjective 			 customObjective 	  = null;
 	@Getter
@@ -148,6 +152,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private Predicate<BadblockPlayer> 	visiblePredicate;
 	@Getter@Setter
 	private String						realName;
+	@Getter@Setter
+	private List<String>				playersWithHim;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -209,6 +215,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			playerData = GameAPI.getGson().fromJson(game, GamePlayerData.class);
 			playerData.setData(game);
+		}
+		if (object.has("playersWithHim")) {
+			JsonObject obj = object.get("playersWithHim").getAsJsonObject();
+			this.playersWithHim = GameAPI.getGson().fromJson(obj, collectionType);
 		}
 
 		if (object.has("permissions")) {
