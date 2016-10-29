@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 
 public class RepairCommand extends AbstractCommand {
 	public RepairCommand() {
-		super("repair", new TranslatableString("commands.repair.usage"), "api.repair", "api.repair", "api.repair");
+		super("repair", new TranslatableString("commands.repair.usage"), "api.repair");
 		allowConsole(false);
 	}
 
