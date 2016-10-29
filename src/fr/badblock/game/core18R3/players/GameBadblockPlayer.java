@@ -205,6 +205,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	public void updateData(JsonObject object) {
+		System.out.println(object.toString());
 		if (object.has("realName")) {
 			this.realName = object.get("realName").getAsString();
 		}
@@ -216,8 +217,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			playerData.setData(game);
 		}
 		if (object.has("playersWithHim")) {
-			JsonObject obj = object.get("playersWithHim").getAsJsonObject();
-			this.playersWithHim = GameAPI.getGson().fromJson(obj, collectionType);
+			try {
+				this.playersWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim"), collectionType);
+			} catch(Exception e){}
 		}
 
 		if (object.has("permissions")) {
