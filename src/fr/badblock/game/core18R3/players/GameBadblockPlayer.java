@@ -217,7 +217,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			playerData.setData(game);
 		}
 		if (object.has("playersWithHim")) {
-			this.playersWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim"), collectionType);
+			try {
+				this.playersWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim"), collectionType);
+			} catch(Exception e){}
 		}
 
 		if (object.has("permissions")) {
