@@ -49,6 +49,7 @@ import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive.Serve
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingPing;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingPong;
 import fr.badblock.protocol.socket.SocketHandler;
+import fr.badblock.utils.CommonFilter;
 
 public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	private final Map<String,  Callback<JsonObject>> requestedPlayers = new HashMap<>();
@@ -139,12 +140,12 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void getPlayerData(BadblockPlayer player, Callback<JsonObject> callback) {
-		requestedPlayers.put(player.getName().toLowerCase(), callback);
-		sendPacket(new PacketPlayerData(DataType.PLAYER, DataAction.REQUEST, player.getName(), "*"));
+		getPlayerData(player.getName(), callback);
 	}
 
 	@Override
 	public void getPlayerData(String player, Callback<JsonObject> callback) {
+		player = CommonFilter.reverseFilterNames(player);
 		requestedPlayers.put(player.toLowerCase(), callback);
 		sendPacket(new PacketPlayerData(DataType.PLAYER, DataAction.REQUEST, player, "*"));
 	}
