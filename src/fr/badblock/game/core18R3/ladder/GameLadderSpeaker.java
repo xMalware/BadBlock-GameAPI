@@ -157,9 +157,9 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void updatePlayerData(String player, JsonObject toUpdate) {
-		System.out.println("updatePlayerData / " + player + " / " + toUpdate.toString());
-		for (StackTraceElement stackTrace : Thread.currentThread().getStackTrace())
-			System.out.println(stackTrace.toString());
+		//System.out.println("updatePlayerData / " + player + " / " + toUpdate.toString());
+		//for (StackTraceElement stackTrace : Thread.currentThread().getStackTrace())
+		//	System.out.println(stackTrace.toString());
 		if(toUpdate != null)
 			sendPacket(new PacketPlayerData(DataType.PLAYER, DataAction.MODIFICATION, player, toUpdate.toString()));
 	}
