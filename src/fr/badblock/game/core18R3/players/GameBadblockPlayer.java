@@ -94,6 +94,7 @@ import fr.badblock.gameapi.utils.selections.CuboidSelection;
 import fr.badblock.gameapi.utils.selections.Vector3f;
 import fr.badblock.permissions.PermissiblePlayer;
 import fr.badblock.permissions.PermissionManager;
+import fr.badblock.utils.CommonFilter;
 import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -174,7 +175,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		if (GamePlugin.EMPTY_VERSION) return;
 		boolean full = Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers();
-		System.out.println("b");
+		if (getRealName() == null) setRealName(CommonFilter.reverseFilterNames(this.getName()));
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
@@ -802,7 +803,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPlayer(String server) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("ConnectOther");
-		System.out.println("> " + getRealName() + " / " + server);
 		out.writeUTF(getRealName() != null && !getRealName().isEmpty() ? getRealName() : getName());
 		out.writeUTF(server);
 		sendPluginMessage(GameAPI.getAPI(), "BungeeCord", out.toByteArray());
