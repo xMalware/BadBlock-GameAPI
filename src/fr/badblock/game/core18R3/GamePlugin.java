@@ -217,7 +217,8 @@ public class GamePlugin extends GameAPI {
 	private PlayerKitContentManager     kitContentManager	= new DefaultKitContentManager(true);
 	@Getter
 	private JoinItems					joinItems;
-
+	@Getter@Setter
+	private boolean						leaverBusterEnabled = false;
 
 	@Getter
 	private GameScoreboard				badblockScoreboard;

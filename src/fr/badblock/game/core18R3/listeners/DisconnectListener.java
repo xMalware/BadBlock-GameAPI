@@ -20,6 +20,7 @@ import fr.badblock.gameapi.events.api.PlayerReconnectionPropositionEvent;
 import fr.badblock.gameapi.game.GameServer.WhileRunningConnectionTypes;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.run.RunType;
 
@@ -31,7 +32,12 @@ public class DisconnectListener extends BadListener {
 		player.removeBossBars();
 		player.undisguise();
 		
-		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
+		if (GameAPI.getAPI().getRunType().equals(RunType.GAME) && !afterGame()) {
+			if(GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
+				player.getPlayerData().getLeaves().add(System.currentTimeMillis());
+				player.saveData();
+			}
+			
 			// Booster
 			PlayerBooster playerBoosterZ = null;
 			for (PlayerBooster playerBoosterr : player.getPlayerData().getBoosters())

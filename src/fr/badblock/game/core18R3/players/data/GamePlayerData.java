@@ -45,6 +45,8 @@ public class GamePlayerData implements PlayerData {
 
 	private Map<String, Map<String, Double>> 			  stats   	 	   = Maps.newConcurrentMap();
 
+	private List<Long>									  leaves		   = new ArrayList<>();
+	
 	private transient List<String>						  achloadeds	   = new ArrayList<>();
 
 	private transient Map<String, GameData> 			  datas 		   = Maps.newConcurrentMap();
@@ -58,7 +60,7 @@ public class GamePlayerData implements PlayerData {
 	private transient int								  addedShopPoints  = 0;
 	private transient int								  addedLevels      = 0;
 	private transient long								  addedXP		   = 0;
-
+	
 	public void setData(JsonObject data){
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
