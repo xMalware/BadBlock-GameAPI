@@ -1047,7 +1047,7 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public void balancePlayers(BadblockPlayer leader, List<UUID> slaves) {
 		if (!runType.equals(RunType.GAME)) return;
-		TaskManager.runTaskLater(new Runnable() {
+		TaskManager.runAsyncTaskLater(new Runnable() {
 			@Override
 			public void run() {
 				// Aucune team, alors aucun balance
@@ -1065,9 +1065,18 @@ public class GamePlugin extends GameAPI {
 				for (BadblockTeam team : teams) {
 					while (!players.isEmpty()) {
 						if (team.getOnlinePlayers().size() >= playersByTeam) break;
-						UUID uuid = players.poll();
+						UUID uuid = players.peek();
 						BadblockPlayer player = BukkitUtils.getPlayer(uuid);
-						if (player == null) continue;
+						System.out.println(uuid + " / " + player);
+						if (player == null) {
+							try {
+								Thread.sleep(100L);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							continue;
+						}
+						players.remove(uuid);
 						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 						team.joinTeam(player, JoinReason.REBALANCING);
 					}
