@@ -223,7 +223,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 		if (object.has("playersWithHim")) {
 			try {
-				List<String> playersStringWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim").getAsJsonObject(), collectionType);
+				List<String> playersStringWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim").getAsString(), collectionType);
 				if (playersWithHim == null) {
 					playersWithHim = new ArrayList<>();
 				}else playersWithHim.clear();
