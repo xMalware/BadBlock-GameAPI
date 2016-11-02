@@ -1046,7 +1046,7 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public void balancePlayers(BadblockPlayer leader, List<UUID> slaves) {
 		// Aucune team, alors aucun balance
-		if (getTeams().size() == 0) return;
+		if (getTeams().isEmpty()) return;
 		int playersByTeam = getOnlinePlayers().size() / getTeams().size() + 1;
 		// Récupération dans l'ordre des teams où il y a le moins de joueurs dedans
 		List<BadblockTeam> teams = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() < playersByTeam; }).collect(Collectors.toList());
