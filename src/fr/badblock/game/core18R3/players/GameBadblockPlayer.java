@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -50,6 +52,7 @@ import fr.badblock.game.core18R3.players.utils.OtherPermissions;
 import fr.badblock.game.core18R3.watchers.MetadataIndex;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.disguise.Disguise;
+import fr.badblock.gameapi.events.PartyJoinEvent;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.fakeentities.FakeEntity.EntityViewList;
@@ -110,7 +113,7 @@ import us.myles.ViaVersion.api.boss.BossColor;
 import us.myles.ViaVersion.api.boss.BossStyle;
 
 public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
-	public static final Type collectionType = new TypeToken<List<UUID>>() {}.getType();
+	public static final Type collectionType = new TypeToken<List<String>>() {}.getType();
 	@Getter@Setter
 	private CustomObjective 			 customObjective 	  = null;
 	@Getter
@@ -181,7 +184,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			public void done(JsonObject result, Throwable error) {
 				object = result;
 				updateData(result);
-
+				System.out.println("UpdateData: " + getName() + " / " + new Gson().toJson(getPlayersWithHim()));
+				if (playersWithHim != null && !playersWithHim.isEmpty())
+					Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));	
 				while (!hasJoined)
 					try {
 						Thread.sleep(10L);
@@ -218,8 +223,14 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 		if (object.has("playersWithHim")) {
 			try {
-				this.playersWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim"), collectionType);
-			} catch(Exception e){}
+				List<String> playersStringWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim"), collectionType);
+				if (playersWithHim == null) {
+					playersWithHim = new ArrayList<>();
+				}else playersWithHim.clear();
+				playersStringWithHim.forEach(playerString -> playersWithHim.add(UUID.fromString(playerString)));
+			} catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 
 		if (object.has("permissions")) {

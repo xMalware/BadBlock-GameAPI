@@ -238,7 +238,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 				System.out.println(player.getPlayersWithHim() + " / " + packet.getData() + " / " + oki);
 				player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
 				System.out.println("AFTER > " + player.getPlayersWithHim() + " / " + oki);
-				if (oki && player.getPlayersWithHim() != null) {
+				if (oki && player.getPlayersWithHim() != null && player.getPlayersWithHim().size() != 0) {
 					// TODO remove debug
 					System.out.println("PartyJoinEvent: " + player.getName() + " / " + new Gson().toJson(player.getPlayersWithHim()));
 					Bukkit.getPluginManager().callEvent(new PartyJoinEvent(player, player.getPlayersWithHim()));	
