@@ -179,6 +179,7 @@ import fr.badblock.gameapi.utils.merchants.CustomMerchantInventory;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import fr.badblock.gameapi.utils.selections.CuboidSelection;
+import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.permissions.PermissionManager;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
@@ -991,15 +992,15 @@ public class GamePlugin extends GameAPI {
 				public void run() {
 					if(t == 0){
 						cancel();
-						
+
 						chunks.forEach((coords, chunk) -> {
 							worldServer.chunkProviderServer.chunks.put( LongHash.toLong(coords.x, coords.z), chunk );
 							chunk.addEntities();
 						});
-						
+
 						return;
 					}
-					
+
 					int toLoadThisTick = toLoad.size() / t;					
 
 					for(int i=0;i<toLoadThisTick;i++){
@@ -1009,24 +1010,24 @@ public class GamePlugin extends GameAPI {
 
 							if(coord != null){
 								Chunk chunk = loader.a(worldServer, coord.x, coord.z);
-								
+
 								for (int x = -2; x < 3; x++) {
-					                for (int z = -2; z < 3; z++) {
-					                    if (x == 0 && z == 0) {
-					                        continue;
-					                    }
-					                    
-					                    ChunkCoordIntPair neighCoord = new ChunkCoordIntPair(x + coord.x, z + coord.z);
-					                    
-					                    Chunk neighbor = chunks.get(neighCoord);
-					                    
-					                    if(neighbor != null){
-					                    	neighbor.setNeighborLoaded(-x, -z);
-					                        chunk.setNeighborLoaded(x, z);
-					                    }
-					                }
-					            }
-								
+									for (int z = -2; z < 3; z++) {
+										if (x == 0 && z == 0) {
+											continue;
+										}
+
+										ChunkCoordIntPair neighCoord = new ChunkCoordIntPair(x + coord.x, z + coord.z);
+
+										Chunk neighbor = chunks.get(neighCoord);
+
+										if(neighbor != null){
+											neighbor.setNeighborLoaded(-x, -z);
+											chunk.setNeighborLoaded(x, z);
+										}
+									}
+								}
+
 								chunks.put(coord, loader.a(worldServer, coord.x, coord.z));
 							}
 						} catch(Exception e){
@@ -1034,7 +1035,7 @@ public class GamePlugin extends GameAPI {
 						}
 
 					}
-					
+
 					t--;
 				}
 			}.runTaskTimer(this, 0, 1L);
@@ -1045,26 +1046,36 @@ public class GamePlugin extends GameAPI {
 
 	@Override
 	public void balancePlayers(BadblockPlayer leader, List<UUID> slaves) {
-		// Aucune team, alors aucun balance
-		if (getTeams().isEmpty()) return;
-		int playersByTeam = getOnlinePlayers().size() / getTeams().size() + 1;
-		// Récupération dans l'ordre des teams où il y a le moins de joueurs dedans
-		List<BadblockTeam> teams = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() < playersByTeam; }).collect(Collectors.toList());
-		Collections.sort(teams, new Comparator<BadblockTeam>() {
-			public int compare(BadblockTeam badblockTeam1, BadblockTeam badblockTeam2) {
-				return ((Integer) badblockTeam1.getOnlinePlayers().size()).compareTo(badblockTeam2.playersCurrentlyOnline());
+		if (!runType.equals(RunType.GAME)) return;
+		TaskManager.runTaskLater(new Runnable() {
+			@Override
+			public void run() {
+				// Aucune team, alors aucun balance
+				if (getTeams().isEmpty()) return;
+				int playersByTeam = getOnlinePlayers().size() / getTeams().size() + 1;
+				// Récupération dans l'ordre des teams où il y a le moins de joueurs dedans
+				List<BadblockTeam> teams = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() < playersByTeam; }).collect(Collectors.toList());
+				Collections.sort(teams, new Comparator<BadblockTeam>() {
+					public int compare(BadblockTeam badblockTeam1, BadblockTeam badblockTeam2) {
+						return ((Integer) badblockTeam1.getOnlinePlayers().size()).compareTo(badblockTeam2.playersCurrentlyOnline());
+					}
+				});
+				Queue<UUID> players = Queues.newLinkedBlockingDeque(slaves);
+				players.add(leader.getUniqueId());
+				for (BadblockTeam team : teams) {
+					while (!players.isEmpty()) {
+						if (team.getOnlinePlayers().size() >= playersByTeam) break;
+						UUID uuid = players.poll();
+						System.out.println("Fetch " + uuid.toString());
+						BadblockPlayer player = BukkitUtils.getPlayer(players.poll());
+						System.out.println("Fetch " + uuid.toString() + " : " + player);
+						if (player == null) continue;
+						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
+						team.joinTeam(player, JoinReason.REBALANCING);
+					}
+				}
 			}
-		});
-		Queue<UUID> players = Queues.newLinkedBlockingDeque(slaves);
-		players.add(leader.getUniqueId());
-		for (BadblockTeam team : teams) {
-			while (!players.isEmpty()) {
-				if (team.getOnlinePlayers().size() >= playersByTeam) break;
-				BadblockPlayer player = BukkitUtils.getPlayer(players.poll());
-				player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
-				team.joinTeam(player, JoinReason.REBALANCING);
-			}
-		}
+		}, 20);
 	}
-	
+
 }
