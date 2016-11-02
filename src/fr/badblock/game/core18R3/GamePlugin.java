@@ -1061,6 +1061,7 @@ public class GamePlugin extends GameAPI {
 			while (!players.isEmpty()) {
 				if (team.getOnlinePlayers().size() >= playersByTeam) break;
 				BadblockPlayer player = BukkitUtils.getPlayer(players.poll());
+				player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 				team.joinTeam(player, JoinReason.REBALANCING);
 			}
 		}
