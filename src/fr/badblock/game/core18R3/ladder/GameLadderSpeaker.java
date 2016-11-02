@@ -15,13 +15,11 @@ import java.util.Queue;
 import org.bukkit.Bukkit;
 
 import com.google.common.collect.Queues;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.databases.LadderSpeaker;
-import fr.badblock.gameapi.events.PartyJoinEvent;
 import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -234,15 +232,6 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 			GameBadblockPlayer player = (GameBadblockPlayer) Bukkit.getPlayer(packet.getKey());
 
 			if(player != null){
-				boolean oki = player.getPlayersWithHim() == null && packet.getData().startsWith("{\"playersWithHim\":");
-				System.out.println(player.getPlayersWithHim() + " / " + packet.getData() + " / " + oki);
-				player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
-				System.out.println("AFTER > " + player.getPlayersWithHim() + " / " + oki);
-				if (oki && player.getPlayersWithHim() != null && player.getPlayersWithHim().size() != 0) {
-					// TODO remove debug
-					System.out.println("PartyJoinEvent: " + player.getName() + " / " + new Gson().toJson(player.getPlayersWithHim()));
-					Bukkit.getPluginManager().callEvent(new PartyJoinEvent(player, player.getPlayersWithHim()));	
-				}
 				Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
 				/*if (packet.getData().startsWith("{\"permissions\":")) {
 					GameAPI gameAPI = GamePlugin.getAPI();

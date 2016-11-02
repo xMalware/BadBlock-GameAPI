@@ -36,7 +36,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -184,7 +183,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			public void done(JsonObject result, Throwable error) {
 				object = result;
 				updateData(result);
-				System.out.println("UpdateData: " + getName() + " / " + new Gson().toJson(getPlayersWithHim()));
 				if (playersWithHim != null && !playersWithHim.isEmpty())
 					Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));	
 				while (!hasJoined)
