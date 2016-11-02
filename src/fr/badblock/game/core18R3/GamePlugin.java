@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -165,6 +168,7 @@ import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.servers.MapProtector;
 import fr.badblock.gameapi.signs.SignManager;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.general.MathsUtils;
@@ -1038,4 +1042,28 @@ public class GamePlugin extends GameAPI {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public void balancePlayers(BadblockPlayer leader, List<UUID> slaves) {
+		// Aucune team, alors aucun balance
+		if (getTeams().size() == 0) return;
+		int playersByTeam = getOnlinePlayers().size() / getTeams().size() + 1;
+		// Récupération dans l'ordre des teams où il y a le moins de joueurs dedans
+		List<BadblockTeam> teams = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() < playersByTeam; }).collect(Collectors.toList());
+		Collections.sort(teams, new Comparator<BadblockTeam>() {
+			public int compare(BadblockTeam badblockTeam1, BadblockTeam badblockTeam2) {
+				return ((Integer) badblockTeam1.getOnlinePlayers().size()).compareTo(badblockTeam2.playersCurrentlyOnline());
+			}
+		});
+		Queue<UUID> players = Queues.newLinkedBlockingDeque(slaves);
+		players.add(leader.getUniqueId());
+		for (BadblockTeam team : teams) {
+			while (!players.isEmpty()) {
+				if (team.getOnlinePlayers().size() >= playersByTeam) break;
+				BadblockPlayer player = BukkitUtils.getPlayer(players.poll());
+				team.joinTeam(player, JoinReason.REBALANCING);
+			}
+		}
+	}
+	
 }

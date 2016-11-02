@@ -154,7 +154,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Getter@Setter
 	private String						realName;
 	@Getter@Setter
-	private List<String>				playersWithHim;
+	private List<UUID>					playersWithHim;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
