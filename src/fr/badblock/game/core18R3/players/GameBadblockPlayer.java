@@ -183,8 +183,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			public void done(JsonObject result, Throwable error) {
 				object = result;
 				updateData(result);
-				if (playersWithHim != null && !playersWithHim.isEmpty())
-					Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));	
 				while (!hasJoined)
 					try {
 						Thread.sleep(10L);
@@ -197,6 +195,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 							sendMessage("§cCe serveur est plein.");
 							sendPlayer("lobby");
 						}
+					if (playersWithHim != null && !playersWithHim.isEmpty())
+						Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));	
 					Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
 				}
 			}

@@ -1066,9 +1066,7 @@ public class GamePlugin extends GameAPI {
 					while (!players.isEmpty()) {
 						if (team.getOnlinePlayers().size() >= playersByTeam) break;
 						UUID uuid = players.poll();
-						System.out.println("Fetch " + uuid.toString());
-						BadblockPlayer player = BukkitUtils.getPlayer(players.poll());
-						System.out.println("Fetch " + uuid.toString() + " : " + player);
+						BadblockPlayer player = BukkitUtils.getPlayer(uuid);
 						if (player == null) continue;
 						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 						team.joinTeam(player, JoinReason.REBALANCING);
