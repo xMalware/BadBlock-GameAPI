@@ -93,14 +93,14 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if(!doGroupsPrefix) return;
 
 		getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
-		
+
 		new BukkitRunnable() {
 			@Override
 			public void run() {
 				e.getPlayer().setVisible(true);
 			}
 		}.runTask(GameAPI.getAPI());
-		
+
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
 		if(player.isDisguised()){
@@ -115,15 +115,17 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 		Team team = getHandler().getEntryTeam(e.getPlayer().getName());
 
-		if(!team.getName().equals(e.getPlayer().getMainGroup())){
-			team.removeEntry(e.getPlayer().getName());
-		
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
-				}
-			}.runTaskLater(GameAPI.getAPI(), 5L);
+		if (team != null) {
+			if(!team.getName().equals(e.getPlayer().getMainGroup())){
+				team.removeEntry(e.getPlayer().getName());
+
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
+					}
+				}.runTaskLater(GameAPI.getAPI(), 5L);
+			}
 		}
 
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
@@ -244,7 +246,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			sendTeamData(groups.get( group.getName() ), new TranslatableString("permissions.tab." + group.getName()).getAsLine(player), player);
 		}
 	}
-	
+
 	private Map<String, String> groups = new HashMap<>();
 
 	/*
@@ -269,7 +271,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	}
 
 	private int i = 0;
-	
+
 	@Override
 	public void doGroupsPrefix(){
 		if(doTeamsPrefix){
@@ -282,27 +284,27 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			return Integer.compare(b.getPower(), a.getPower());
 		}).forEach(group -> {
 			String id = generateForId(i) + "";
-			
+
 			this.groups.put(group.getName(), id);
-			
+
 			if(getHandler().getTeam(id) == null){
 				getHandler().registerNewTeam(id);
 			}
 
 			Team teamHandler = getHandler().getTeam(id);
-			
+
 			teamHandler.setAllowFriendlyFire(true);
 			i++;
 		});
 	}
-	
+
 	private char generateForId(int id){
 		int A = 'A';
-		
+
 		if(id > 26){
 			A   = 'a';
 			id -= 26;
-			
+
 			return (char) (A + id);
 		} else {
 			return (char) (A + id);
