@@ -33,6 +33,8 @@ import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra.ItemPlaces;
+import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;
 
@@ -49,7 +51,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	private boolean				   voteInGroup   = false;
 	private boolean				   achieInGroup  = false;
 	
-	private Map<Integer, ItemStackExtra> customItems = new HashMap<>();
+	private Map<Integer, ItemStackInfo> customItems = new HashMap<>();
 	
 	private String 			       fallbackServer = "lobby";
 	private List<PlayerKit>        kits;
@@ -171,7 +173,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 			e.getPlayer().getInventory().setItem(groupItemSlot, item);
 		}
 		
-		customItems.forEach((slot, item) -> e.getPlayer().getInventory().setItem(slot, item.getHandler()));
+		customItems.forEach((slot, item) -> e.getPlayer().getInventory().setItem(slot, item.factory.doWithI18n(locale).asExtra(1).listenAs(item.event, ItemPlaces.HOTBAR_CLICKABLE).getHandler()));
 		e.getPlayer().updateInventory();
 	}
 	
@@ -280,8 +282,8 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	}
 
 	@Override
-	public void registerCustomItem(int slot, ItemStackExtra extra) {
-		this.customItems.put(slot, extra);
+	public void registerCustomItem(int slot, ItemStackFactory factory, ItemEvent event) {
+		this.customItems.put(slot, new ItemStackInfo(event, factory));
 	}
 	
 	@Override
@@ -410,5 +412,11 @@ public class GameJoinItems extends BadListener implements JoinItems {
 												 .lore("joinitems.vote.lore")
 												 .asExtra(1)
 												 .listenAs(event, place);
+	}
+	
+	@AllArgsConstructor
+	public class ItemStackInfo {
+		ItemEvent event;
+		ItemStackFactory factory;
 	}
 }
