@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,10 +43,13 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	private int 			       leaveItemSlot = -1;
 	private int 			       achieItemSlot = -1;
 	private int					   groupItemSlot = -1;
+	private int					   vipItemSlot   = -1;
 	private boolean				   kitInGroup    = false;
 	private boolean				   teamInGroup	 = false;
 	private boolean				   voteInGroup   = false;
 	private boolean				   achieInGroup  = false;
+	
+	private Map<Integer, ItemStackExtra> customItems = new HashMap<>();
 	
 	private String 			       fallbackServer = "lobby";
 	private List<PlayerKit>        kits;
@@ -56,10 +60,6 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	
 	private boolean				   clear = true,
 								   ended = false;
-	
-	public GameJoinItems(){
-
-	}
 	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
@@ -109,6 +109,26 @@ public class GameJoinItems extends BadListener implements JoinItems {
 			} else e.getPlayer().getInventory().setItem(voteItemSlot, item.getHandler());
 
 		}
+
+		if(vipItemSlot != -1){
+			ItemEvent event = new ItemEvent(){
+				@Override
+				public boolean call(ItemAction action, BadblockPlayer player) {
+					// e.getPlayer().sendPlayer(fallbackServer);
+					return true;
+				}
+			};
+			
+			ItemStack item = GameAPI.getAPI().createItemStackFactory().type(Material.GOLD_INGOT)
+													 .doWithI18n(locale)
+													 .displayName(new TranslatableString("joinitems.vip.displayname", GameAPI.getInternalGameName()))
+													 .lore("joinitems.vip.lore")
+													 .asExtra(1)
+													 .listenAs(event, ItemPlaces.HOTBAR_CLICKABLE)
+													 .getHandler();
+			
+			e.getPlayer().getInventory().setItem(vipItemSlot, item);
+		}
 		
 		if(leaveItemSlot != -1){
 			ItemEvent event = new ItemEvent(){
@@ -151,6 +171,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 			e.getPlayer().getInventory().setItem(groupItemSlot, item);
 		}
 		
+		customItems.forEach((slot, item) -> e.getPlayer().getInventory().setItem(slot, item.getHandler()));
 		e.getPlayer().updateInventory();
 	}
 	
@@ -251,6 +272,16 @@ public class GameJoinItems extends BadListener implements JoinItems {
 		this.teamInGroup   = doTeam;
 		this.kitInGroup    = doKit;
 		this.achieInGroup  = doAchiev;
+	}
+	
+	@Override
+	public void registerVipItem(int slot) {
+		this.vipItemSlot = slot;
+	}
+
+	@Override
+	public void registerCustomItem(int slot, ItemStackExtra extra) {
+		this.customItems.put(slot, extra);
 	}
 	
 	@Override
