@@ -1150,4 +1150,21 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		return el == null ? null : GameAPI.getGson().fromJson(permissions.getValue(key), clazz);
 	}
+
+	@Override
+	public int getVipLevel() {
+		Integer res = getPermissionValue("badblock.viplevel", Integer.class);
+		return res == null ? 0 : (int) res;
+	}
+
+	@Override
+	public boolean hasVipLevel(int level, boolean showErrorMessage) {
+		boolean have = getVipLevel() >= level;
+		
+		if(!have && showErrorMessage){
+			sendTranslatedMessage("game.vip.needlevel." + level);
+		}
+		
+		return have;
+	}
 }
