@@ -10,6 +10,7 @@ import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
@@ -25,9 +26,11 @@ import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.run.BadblockGame;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.utils.i18n.Locale;
+import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
+import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra.ItemPlaces;
 import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;
@@ -38,7 +41,11 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	private int 			       voteItemSlot  = -1;
 	private int 			       leaveItemSlot = -1;
 	private int 			       achieItemSlot = -1;
-	
+	private int					   groupItemSlot = -1;
+	private boolean				   kitInGroup    = false;
+	private boolean				   teamInGroup	 = false;
+	private boolean				   voteInGroup   = false;
+	private boolean				   achieInGroup  = false;
 	
 	private String 			       fallbackServer = "lobby";
 	private List<PlayerKit>        kits;
@@ -67,129 +74,40 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	public void onPlayerDataLoaded(PlayerLoadedEvent e){
 		if(ended) return;
 		
-		Locale locale = e.getPlayer().getPlayerData().getLocale();
+		Locale         locale = e.getPlayer().getPlayerData().getLocale();
+		CustomInventory inv   = GameAPI.getAPI().createCustomInventory(1, new TranslatableString("joinitems.groupinv", GameAPI.getGameName()).getAsLine(locale));
 		
 		if(kitItemSlot != -1){
-			String lastUsedKit = e.getPlayer().getPlayerData().getLastUsedKit(GameAPI.getInternalGameName());
+			ItemStackExtra item = createKitItem(e.getPlayer(), locale, groupItemSlot != -1 && kitInGroup ? ItemPlaces.INVENTORY_CLICKABLE : ItemPlaces.HOTBAR_CLICKABLE);
 			
-			if(lastUsedKit != null && knowKits.containsKey(lastUsedKit)){
-				PlayerKit kit = knowKits.get(lastUsedKit);
-				if(!kit.isVIP() || e.getPlayer().hasPermission(GamePermission.VIP)){
-					e.getPlayer().inGameData(InGameKitData.class).setChoosedKit(knowKits.get(lastUsedKit));					
-				}
-			}
-			
-			ItemEvent event = new ItemEvent(){
-				@Override
-				public boolean call(ItemAction action, BadblockPlayer player) {
-					if (kits.isEmpty()) {
-						player.sendTranslatedMessage("game.nokit");
-						return true;
-					}
-					CustomInventory inventory = GameAPI.getAPI().createCustomInventory(kits.size() / 9, GameAPI.i18n().get(locale, "joinitems.kit.inventoryName")[0]);
-					
-					int slot = 0;
-					
-					for(PlayerKit kit : kits){
-						if(kit != null){
-							inventory.addClickableItem(slot, kit.getKitItem(player));
-						}
-						slot++;
-					}
-					
-					inventory.openInventory(player);
-					
-					return true;
-				}
-			};
-			
-			ItemStack item = GameAPI.getAPI().createItemStackFactory().type(Material.DIAMOND_SWORD)
-													 .doWithI18n(locale)
-													 .displayName("joinitems.kit.displayname")
-													 .lore("joinitems.kit.lore")
-													 .asExtra(1)
-													 .listenAs(event, ItemPlaces.HOTBAR_CLICKABLE)
-													 .getHandler();
-			
-			e.getPlayer().getInventory().setItem(kitItemSlot, item);
+			if(groupItemSlot != -1 && kitInGroup){
+				inv.addClickableItem(kitItemSlot, item);
+			} else e.getPlayer().getInventory().setItem(kitItemSlot, item.getHandler());
 		}
 		
 		if(achieItemSlot != -1){
-			ItemEvent event = new ItemEvent(){
-				@Override
-				public boolean call(ItemAction action, BadblockPlayer player) {
-					try {
-						game.getGameData().getAchievements().openInventory(player);
-					} catch(Exception e){
-						e.printStackTrace();
-						player.sendMessage(ChatColor.RED + "error: badblock/bad-achievement-configuration");
-					}
-					return true;
-				}
-			};
+			ItemStackExtra item = createAchievItem(locale, groupItemSlot != -1 && achieInGroup ? ItemPlaces.INVENTORY_CLICKABLE : ItemPlaces.HOTBAR_CLICKABLE);
 			
-			ItemStack item = GameAPI.getAPI().createItemStackFactory().type(Material.NETHER_STAR)
-													 .doWithI18n(locale)
-													 .displayName("joinitems.achievements.displayname")
-													 .lore("joinitems.achievements.lore")
-													 .asExtra(1)
-													 .listenAs(event, ItemPlaces.HOTBAR_CLICKABLE)
-													 .getHandler();
-			
-			e.getPlayer().getInventory().setItem(achieItemSlot, item);
+			if(groupItemSlot != -1 && achieInGroup){
+				inv.addClickableItem(achieItemSlot, item);
+			} else e.getPlayer().getInventory().setItem(achieItemSlot, item.getHandler());
 		}
 		
 		if(teamItemSlot != -1){
-			ItemEvent event = new ItemEvent(){
-				@Override
-				public boolean call(ItemAction action, BadblockPlayer player) {
-					CustomInventory inventory = GameAPI.getAPI().createCustomInventory(teams.size() / 9, GameAPI.i18n().get(locale, "joinitems.team.inventoryName")[0]);
-					
-					int slot = 0;
-					
-					for(BadblockTeam team : teams){
-						if(team != null){
-							inventory.addClickableItem(slot, team.createJoinItem(locale));
-						}
-						
-						slot++;
-					}
-					
-					inventory.openInventory(player);
-					
-					return true;
-				}
-			};
+			ItemStackExtra item = createTeamItem(locale, groupItemSlot != -1 && teamInGroup ? ItemPlaces.INVENTORY_CLICKABLE : ItemPlaces.HOTBAR_CLICKABLE);
 			
-			ItemStack item = GameAPI.getAPI().createItemStackFactory().type(Material.WOOL)
-													 .doWithI18n(locale)
-													 .displayName("joinitems.team.displayname")
-													 .lore("joinitems.team.lore")
-													 .asExtra(1)
-													 .listenAs(event, ItemPlaces.HOTBAR_CLICKABLE)
-													 .getHandler();
-			
-			e.getPlayer().getInventory().setItem(teamItemSlot, item);
+			if(groupItemSlot != -1 && teamInGroup){
+				inv.addClickableItem(teamItemSlot, item);
+			} else e.getPlayer().getInventory().setItem(teamItemSlot, item.getHandler());
 		}
 		
 		if(voteItemSlot != -1){
-			ItemEvent event = new ItemEvent(){
-				@Override
-				public boolean call(ItemAction action, BadblockPlayer player) {
-					GameAPI.getAPI().getBadblockScoreboard().openVoteInventory(player);
-					return true;
-				}
-			};
+			ItemStackExtra item = createVoteItem(locale, groupItemSlot != -1 && voteInGroup ? ItemPlaces.INVENTORY_CLICKABLE : ItemPlaces.HOTBAR_CLICKABLE);
 			
-			ItemStack item = GameAPI.getAPI().createItemStackFactory().type(Material.PAPER)
-													 .doWithI18n(locale)
-													 .displayName("joinitems.vote.displayname")
-													 .lore("joinitems.vote.lore")
-													 .asExtra(1)
-													 .listenAs(event, ItemPlaces.HOTBAR_CLICKABLE)
-													 .getHandler();
-			
-			e.getPlayer().getInventory().setItem(voteItemSlot, item);
+			if(groupItemSlot != -1 && voteInGroup){
+				inv.addClickableItem(voteItemSlot, item);
+			} else e.getPlayer().getInventory().setItem(voteItemSlot, item.getHandler());
+
 		}
 		
 		if(leaveItemSlot != -1){
@@ -210,6 +128,27 @@ public class GameJoinItems extends BadListener implements JoinItems {
 													 .getHandler();
 			
 			e.getPlayer().getInventory().setItem(leaveItemSlot, item);
+		}
+		
+		if(groupItemSlot != -1){
+			ItemEvent event = new ItemEvent(){
+				@Override
+				public boolean call(ItemAction action, BadblockPlayer player) {
+					inv.openInventory(player);
+					return true;
+				}
+			};
+			
+			ItemStack item = GameAPI.getAPI().createItemStackFactory().type(Material.SLIME_BALL)
+					 .doWithI18n(locale)
+					 .enchant(Enchantment.DURABILITY, 0)
+					 .displayName("joinitems.group.displayname")
+					 .lore("joinitems.group.lore")
+					 .asExtra(1)
+					 .listenAs(event, ItemPlaces.HOTBAR_CLICKABLE)
+					 .getHandler();
+			
+			e.getPlayer().getInventory().setItem(groupItemSlot, item);
 		}
 		
 		e.getPlayer().updateInventory();
@@ -306,6 +245,15 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	}
 
 	@Override
+	public void registerGroupItem(int slot, boolean doVote, boolean doTeam, boolean doKit, boolean doAchiev) {
+		this.groupItemSlot = slot;
+		this.voteInGroup   = doVote;
+		this.teamInGroup   = doTeam;
+		this.kitInGroup    = doKit;
+		this.achieInGroup  = doAchiev;
+	}
+	
+	@Override
 	public void doClearInventory(boolean clear) {
 		this.clear = clear;
 	}
@@ -313,5 +261,123 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	@Override
 	public void end() {
 		this.ended = true;
+	}
+	
+	public ItemStackExtra createAchievItem(Locale locale, ItemPlaces place){
+		ItemEvent event = new ItemEvent(){
+			@Override
+			public boolean call(ItemAction action, BadblockPlayer player) {
+				try {
+					game.getGameData().getAchievements().openInventory(player);
+				} catch(Exception e){
+					e.printStackTrace();
+					player.sendMessage(ChatColor.RED + "error: badblock/bad-achievement-configuration");
+				}
+				return true;
+			}
+		};
+		
+		return GameAPI.getAPI().createItemStackFactory().type(Material.NETHER_STAR)
+												 .doWithI18n(locale)
+												 .displayName("joinitems.achievements.displayname")
+												 .lore("joinitems.achievements.lore")
+												 .asExtra(1)
+												 .listenAs(event, place);
+	}
+	
+	public ItemStackExtra createKitItem(BadblockPlayer player, Locale locale, ItemPlaces place){
+		String lastUsedKit = player.getPlayerData().getLastUsedKit(GameAPI.getInternalGameName());
+		
+		if(lastUsedKit != null && knowKits.containsKey(lastUsedKit)){
+			PlayerKit kit = knowKits.get(lastUsedKit);
+			if(!kit.isVIP() || player.hasPermission(GamePermission.VIP)){
+				player.inGameData(InGameKitData.class).setChoosedKit(knowKits.get(lastUsedKit));					
+			}
+		}
+		
+		if(lastUsedKit != null && knowKits.containsKey(lastUsedKit)){
+			PlayerKit kit = knowKits.get(lastUsedKit);
+			if(!kit.isVIP() || player.hasPermission(GamePermission.VIP)){
+				player.inGameData(InGameKitData.class).setChoosedKit(knowKits.get(lastUsedKit));					
+			}
+		}
+		
+		ItemEvent event = new ItemEvent(){
+			@Override
+			public boolean call(ItemAction action, BadblockPlayer player) {
+				if (kits.isEmpty()) {
+					player.sendTranslatedMessage("game.nokit");
+					return true;
+				}
+				CustomInventory inventory = GameAPI.getAPI().createCustomInventory(kits.size() / 9, GameAPI.i18n().get(locale, "joinitems.kit.inventoryName")[0]);
+				
+				int slot = 0;
+				
+				for(PlayerKit kit : kits){
+					if(kit != null){
+						inventory.addClickableItem(slot, kit.getKitItem(player));
+					}
+					slot++;
+				}
+				
+				inventory.openInventory(player);
+				
+				return true;
+			}
+		};
+		
+		return GameAPI.getAPI().createItemStackFactory().type(Material.DIAMOND_SWORD)
+												 .doWithI18n(locale)
+												 .displayName("joinitems.kit.displayname")
+												 .lore("joinitems.kit.lore")
+												 .asExtra(1)
+												 .listenAs(event, place);
+	}
+	
+	public ItemStackExtra createTeamItem(Locale locale, ItemPlaces place){
+		ItemEvent event = new ItemEvent(){
+			@Override
+			public boolean call(ItemAction action, BadblockPlayer player) {
+				CustomInventory inventory = GameAPI.getAPI().createCustomInventory(teams.size() / 9, GameAPI.i18n().get(locale, "joinitems.team.inventoryName")[0]);
+				
+				int slot = 0;
+				
+				for(BadblockTeam team : teams){
+					if(team != null){
+						inventory.addClickableItem(slot, team.createJoinItem(locale));
+					}
+					
+					slot++;
+				}
+				
+				inventory.openInventory(player);
+				
+				return true;
+			}
+		};
+		
+		return GameAPI.getAPI().createItemStackFactory().type(Material.WOOL)
+												 .doWithI18n(locale)
+												 .displayName("joinitems.team.displayname")
+												 .lore("joinitems.team.lore")
+												 .asExtra(1)
+												 .listenAs(event, place);
+	}
+	
+	public ItemStackExtra createVoteItem(Locale locale, ItemPlaces place){
+		ItemEvent event = new ItemEvent(){
+			@Override
+			public boolean call(ItemAction action, BadblockPlayer player) {
+				GameAPI.getAPI().getBadblockScoreboard().openVoteInventory(player);
+				return true;
+			}
+		};
+		
+		return GameAPI.getAPI().createItemStackFactory().type(Material.PAPER)
+												 .doWithI18n(locale)
+												 .displayName("joinitems.vote.displayname")
+												 .lore("joinitems.vote.lore")
+												 .asExtra(1)
+												 .listenAs(event, place);
 	}
 }
