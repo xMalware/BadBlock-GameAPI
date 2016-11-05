@@ -1,7 +1,5 @@
 package fr.badblock.game.core18R3.gameserver.threading;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.reflect.Method;
@@ -31,30 +29,6 @@ public class GameServerMonitoringTask extends GameServerTask {
 		return null;
 	}
 
-	public int getOpenedServers() {
-		int openServers = 0;
-		try {
-			Runtime runtime = Runtime.getRuntime();
-			Process process = runtime.exec("screen -ls");
-			try {
-				process.waitFor();
-			} catch (InterruptedException exception) {
-				exception.printStackTrace();
-			}
-
-			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String line = "";
-
-			while ((line = reader.readLine()) != null) {
-				if (line.contains("("))
-					openServers++;
-			}
-		} catch (Exception e) {
-			return 0;
-		}
-		return openServers;
-	}
-
 	@Override
 	public void run() {
 
@@ -62,8 +36,7 @@ public class GameServerMonitoringTask extends GameServerTask {
 		double cpuLoad = (getMXBean("getProcessCpuLoad").doubleValue() + getMXBean("getSystemCpuLoad").doubleValue())
 				* 100.0D;
 
-		GameAPI.logColor("&b[GameServer &6DEDICATED&b] &7Instance" + (getOpenedServers() > 1 ? "s" : "") + ": "
-				+ getOpenedServers() + " | CPU: " + MathsUtils.round(cpuLoad, 2) + "% | FREEMEM: "
+		GameAPI.logColor("&b[GameServer &6DEDICATED&b] CPU: " + MathsUtils.round(cpuLoad, 2) + "% | FREEMEM: "
 				+ MathsUtils.round(freeMemory, 2) + "MB");
 	}
 
