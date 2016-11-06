@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class AdminCommand extends AbstractCommand {
 	
 	public AdminCommand() {
-		super("admin", new TranslatableString("commands.admin.usage"), GamePermission.ADMIN, GamePermission.MODERATOR, GamePermission.ADMIN, "adm");
+		super("admin", new TranslatableString("commands.admin.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "adm");
 	}
 
 	@Override
