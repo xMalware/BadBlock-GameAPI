@@ -43,13 +43,13 @@ public class GameServerManager {
 		this.setConsole(Bukkit.getConsoleSender());
 	}
 
-/*	private void forceCommand(String message) {
+	private void forceCommand(String message) {
 		Bukkit.dispatchCommand(console, message);
-	}*/
+	}
 
 	public void start() {
 		// Activation du timing
-		//forceCommand("timings on");
+		forceCommand("timings off");
 
 		if (!GameAPI.TEST_MODE) {
 			File gameServerFile = new File(GameServerUtils.getFileName());
