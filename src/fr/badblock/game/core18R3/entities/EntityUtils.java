@@ -147,6 +147,8 @@ public class EntityUtils {
 		}
 
 		sideMot *= 0.75F;
+		sideMot *= creature.getSpeed();
+		forMot *= creature.getSpeed();
 		
 		if(creature.getCreatureBehaviour() != CreatureBehaviour.FLYING){
 			Field jump = null; //Jumping
@@ -158,7 +160,7 @@ public class EntityUtils {
 
 			jump.setAccessible(true);
 
-			entity.S = (float) creature.getSpeed();
+			entity.S = 1;
 
 			entity.k(0.35F);
 			creature.callSuperMove(sideMot, forMot);
