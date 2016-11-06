@@ -13,6 +13,7 @@ import fr.badblock.game.core18R3.gameserver.threading.GameServerSendLogsTask;
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.utils.threading.TaskManager;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -73,6 +74,14 @@ public class GameServerManager {
 
 			this.setLoaded(true);
 		}
+		TaskManager.runTaskLater(new Runnable() {
+
+			@Override
+			public void run() {
+				forceCommand("timings off");
+			}
+			
+		}, 20);
 	}
 
 	public void stop() {
