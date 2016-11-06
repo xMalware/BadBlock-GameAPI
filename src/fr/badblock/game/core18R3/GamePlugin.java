@@ -37,6 +37,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import fr.badblock.game.core18R3.chest.GameChestGenerator;
+import fr.badblock.game.core18R3.commands.AdminCommand;
 import fr.badblock.game.core18R3.commands.AdminModeCommand;
 import fr.badblock.game.core18R3.commands.BackCommand;
 import fr.badblock.game.core18R3.commands.BroadcastCommand;
@@ -61,6 +62,7 @@ import fr.badblock.game.core18R3.commands.KillallCommand;
 import fr.badblock.game.core18R3.commands.KitsCommand;
 import fr.badblock.game.core18R3.commands.LagCommand;
 import fr.badblock.game.core18R3.commands.ListCommand;
+import fr.badblock.game.core18R3.commands.ModCommand;
 import fr.badblock.game.core18R3.commands.MoreCommand;
 import fr.badblock.game.core18R3.commands.PingCommand;
 import fr.badblock.game.core18R3.commands.PortalCommand;
@@ -425,6 +427,8 @@ public class GamePlugin extends GameAPI {
 				new KitsCommand();
 			}
 
+			new ModCommand();
+			new AdminCommand();
 			new FreezeCommand();
 			new JumpToCommand();
 			new SuicideCommand();
