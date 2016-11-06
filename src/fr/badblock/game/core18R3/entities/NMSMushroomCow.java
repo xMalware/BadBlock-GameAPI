@@ -39,6 +39,8 @@ public class NMSMushroomCow extends EntityMushroomCow implements NMSCustomCreatu
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSMushroomCow(World world) {
 		super(world);

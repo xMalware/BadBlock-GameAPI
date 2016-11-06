@@ -37,6 +37,8 @@ public class NMSSpider extends EntitySpider implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSSpider(World world) {
 		super(world);

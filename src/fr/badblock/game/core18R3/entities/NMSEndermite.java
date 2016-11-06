@@ -34,6 +34,8 @@ public class NMSEndermite extends EntityEndermite implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSEndermite(World world) {
 		super(world);

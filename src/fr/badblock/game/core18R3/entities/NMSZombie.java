@@ -40,6 +40,8 @@ public class NMSZombie extends EntityZombie implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSZombie(World world) {
 		super(world);

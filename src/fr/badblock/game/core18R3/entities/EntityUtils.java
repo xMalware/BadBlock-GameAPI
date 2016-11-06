@@ -38,7 +38,6 @@ public class EntityUtils {
 		if(creature.getEntityType().isHostile())
 			creature.addCreatureFlag(CreatureFlag.AGRESSIVE);
 		else entity.getAttributeMap().b(GenericAttributes.ATTACK_DAMAGE).setValue(3.0d);
-		
 		creature.setCreatureBehaviour(creature instanceof EntityBat ? CreatureBehaviour.FLYING : CreatureBehaviour.NORMAL);
 		creature.regenerateAttributes();
 	}
@@ -159,7 +158,7 @@ public class EntityUtils {
 
 			jump.setAccessible(true);
 
-			entity.S = 1.0F;
+			entity.S = (float) creature.getSpeed();
 
 			entity.k(0.35F);
 			creature.callSuperMove(sideMot, forMot);
@@ -177,7 +176,7 @@ public class EntityUtils {
 			return;
 		} else entity.motY = -entity.pitch/45;
 
-		entity.a(sideMot, forMot, (float) creature.getCreatureGenericAttribute(CreatureGenericAttribute.SPEED));
+		entity.a(sideMot, forMot, (float) creature.getSpeed());
 		
 		if(sideMot != 0 || forMot != 0) {
 			entity.move(entity.motX, entity.motY, entity.motZ);

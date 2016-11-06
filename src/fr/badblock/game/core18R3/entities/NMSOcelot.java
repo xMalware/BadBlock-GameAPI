@@ -39,6 +39,8 @@ public class NMSOcelot extends EntityOcelot  implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSOcelot(World world) {
 		super(world);

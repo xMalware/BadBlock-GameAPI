@@ -31,6 +31,8 @@ public class NMSBat extends EntityBat implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSBat(World world) {
 		super(world);

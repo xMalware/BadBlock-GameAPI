@@ -33,6 +33,8 @@ public class NMSSilverfish extends EntitySilverfish implements NMSCustomCreature
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSSilverfish(World world) {
 		super(world);

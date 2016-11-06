@@ -30,6 +30,8 @@ public class NMSSquid extends EntitySquid implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	private boolean callSuper = false;
 	

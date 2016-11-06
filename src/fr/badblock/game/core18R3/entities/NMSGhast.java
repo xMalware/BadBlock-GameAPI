@@ -28,6 +28,8 @@ public class NMSGhast extends EntityGhast implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSGhast(World world) {
 		super(world);

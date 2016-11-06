@@ -34,6 +34,8 @@ public class NMSBlaze extends EntityBlaze implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSBlaze(World world) {
 		super(world);

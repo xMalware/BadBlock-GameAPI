@@ -30,6 +30,8 @@ public class NMSSlime extends EntitySlime implements NMSCustomCreature {
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
+	@Getter@Setter
+	public double speed = 1;
 
 	public NMSSlime(World world) {
 		super(world);
