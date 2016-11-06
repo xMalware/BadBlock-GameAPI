@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Timer;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
@@ -17,6 +16,7 @@ import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.ServerProperties;
+import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class GameServerSendLogsTask extends GameServerTask {
 
@@ -25,7 +25,7 @@ public class GameServerSendLogsTask extends GameServerTask {
 
 	public GameServerSendLogsTask(GameServerConfig gameServerConfig, FTPConfig ftpConfig) {
 		this.config = ftpConfig;
-		new Timer().schedule(this, 0, gameServerConfig.timeBetweenLogs);
+		TaskManager.scheduleAsyncRepeatingTask("sendLogsTask", this, 0, gameServerConfig.timeBetweenLogs);
 		// Temporary
 		/*
 		List<String> lines = null;
