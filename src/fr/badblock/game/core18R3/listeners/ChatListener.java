@@ -84,7 +84,7 @@ public class ChatListener extends BadListener {
 		if(player.hasPermission(GamePermission.ADMIN)){
 			String temp = ChatColor.translateAlternateColorCodes('&', event.getMessage());
 			event.setMessage(temp);
-		}else event.setMessage(ChatColor.stripColor(event.getMessage()));
+		}else event.setMessage(event.getMessage().replace("&", ""));
 	}
 
 }
