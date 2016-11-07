@@ -62,6 +62,7 @@ import fr.badblock.game.core18R3.commands.KillallCommand;
 import fr.badblock.game.core18R3.commands.KitsCommand;
 import fr.badblock.game.core18R3.commands.LagCommand;
 import fr.badblock.game.core18R3.commands.ListCommand;
+import fr.badblock.game.core18R3.commands.LocCommand;
 import fr.badblock.game.core18R3.commands.ModCommand;
 import fr.badblock.game.core18R3.commands.MoreCommand;
 import fr.badblock.game.core18R3.commands.PingCommand;
@@ -439,6 +440,7 @@ public class GamePlugin extends GameAPI {
 			new KillallCommand();
 			new UpCommand();
 			new WandCommand();
+			new LocCommand();
 			new CompassCommand();
 			new RepairCommand();
 			new SpawnMobCommand();
