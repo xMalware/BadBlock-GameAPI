@@ -1080,8 +1080,8 @@ public class GamePlugin extends GameAPI {
 						plo.add(player);
 				}
 				for (BadblockPlayer player : plo) {
-					if (done.contains(player.getName())) continue;
-					done.add(player.getName());
+					if (done.contains(player.getName().toLowerCase())) continue;
+					done.add(player.getName().toLowerCase());
 					if (playersInTeam >= playersByTeam) {
 						id++;
 						team = teams.get(id);
