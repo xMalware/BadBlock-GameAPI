@@ -1072,7 +1072,10 @@ public class GamePlugin extends GameAPI {
 				int id = 0;
 				BadblockTeam team = teams.get(id);
 				if (team == null) return;
+				Set<String> done = new HashSet<>();
 				for (UUID uuid : players) {
+					if (done.contains(uuid.toString())) continue;
+					done.add(uuid.toString());
 					if (playersInTeam >= playersByTeam) {
 						id++;
 						team = teams.get(id);
