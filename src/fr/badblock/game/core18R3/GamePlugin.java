@@ -1080,18 +1080,19 @@ public class GamePlugin extends GameAPI {
 						plo.add(player);
 				}
 				for (BadblockPlayer player : plo) {
-					if (done.contains(player.getName().toLowerCase())) continue;
-					done.add(player.getName().toLowerCase());
-					if (playersInTeam >= playersByTeam) {
-						playersInTeam = 0;
-						id++;
-						team = teams.get(id);
-						if (team == null) return;
+					if (!done.contains(player.getName().toLowerCase())) {
+						done.add(player.getName().toLowerCase());
+						if (playersInTeam >= playersByTeam) {
+							playersInTeam = 0;
+							id++;
+							team = teams.get(id);
+							if (team == null) return;
+						}
+						System.out.println(player.getName() + " / remove");
+						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
+						team.joinTeam(player, JoinReason.REBALANCING);
+						playersInTeam++;
 					}
-					System.out.println(player.getName() + " / remove");
-					player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
-					team.joinTeam(player, JoinReason.REBALANCING);
-					playersInTeam++;
 				}
 			}
 		}, 1);
