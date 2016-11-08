@@ -1083,6 +1083,7 @@ public class GamePlugin extends GameAPI {
 					if (done.contains(player.getName().toLowerCase())) continue;
 					done.add(player.getName().toLowerCase());
 					if (playersInTeam >= playersByTeam) {
+						playersInTeam = 0;
 						id++;
 						team = teams.get(id);
 						if (team == null) return;
