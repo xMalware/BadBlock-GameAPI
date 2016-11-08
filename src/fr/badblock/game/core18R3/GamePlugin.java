@@ -1080,6 +1080,7 @@ public class GamePlugin extends GameAPI {
 						plo.add(player);
 				}
 				for (BadblockPlayer player : plo) {
+					if (player.getTeam() != null) continue;
 					if (!done.contains(player.getName().toLowerCase())) {
 						done.add(player.getName().toLowerCase());
 						if (playersInTeam >= playersByTeam) {
@@ -1088,7 +1089,6 @@ public class GamePlugin extends GameAPI {
 							team = teams.get(id);
 							if (team == null) return;
 						}
-						System.out.println(player.getName() + " / remove");
 						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 						team.joinTeam(player, JoinReason.REBALANCING);
 						playersInTeam++;
