@@ -1067,7 +1067,7 @@ public class GamePlugin extends GameAPI {
 					}
 				});
 				int playersInTeam = 0;
-				Queue<UUID> players = Queues.newLinkedBlockingDeque(slaves);
+				Queue<UUID> players = Queues.newConcurrentLinkedQueue(slaves);
 				players.add(leader.getUniqueId());
 				if (!teams.isEmpty()) {
 					int id = 0;
@@ -1082,13 +1082,15 @@ public class GamePlugin extends GameAPI {
 						UUID uuid = players.peek();
 						BadblockPlayer player = BukkitUtils.getPlayer(uuid);
 						if (player == null) {
+							System.out.println(uuid + " offline, waiting");
 							try {
-								Thread.sleep(50L);
+								Thread.sleep(100L);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
 							continue;
 						}
+						System.out.println(player.getName() + " / remove");
 						players.remove(uuid);
 						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 						team.joinTeam(player, JoinReason.REBALANCING);
