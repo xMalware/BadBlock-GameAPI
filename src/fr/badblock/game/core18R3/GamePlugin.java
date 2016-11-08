@@ -1053,9 +1053,10 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public void balancePlayers(BadblockPlayer leader, List<UUID> slaves) {
 		if (!runType.equals(RunType.GAME)) return;
-		TaskManager.runAsyncTaskLater(new Runnable() {
+		TaskManager.runTaskLater(new Runnable() {
 			@Override
 			public void run() {
+				if (leader.getTeam() != null) return;
 				// Aucune team, alors aucun balance
 				if (getTeams().isEmpty()) return;
 				int playersByTeam = Bukkit.getMaxPlayers() / getTeams().size();
