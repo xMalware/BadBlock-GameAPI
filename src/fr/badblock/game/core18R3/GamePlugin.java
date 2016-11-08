@@ -1058,7 +1058,7 @@ public class GamePlugin extends GameAPI {
 			public void run() {
 				// Aucune team, alors aucun balance
 				if (getTeams().isEmpty()) return;
-				int playersByTeam = getOnlinePlayers().size() / getTeams().size() + 1;
+				int playersByTeam = Bukkit.getMaxPlayers() / getTeams().size() + 1;
 				// Récupération dans l'ordre des teams où il y a le moins de joueurs dedans
 				List<BadblockTeam> teams = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() < playersByTeam; }).collect(Collectors.toList());
 				Collections.sort(teams, new Comparator<BadblockTeam>() {
