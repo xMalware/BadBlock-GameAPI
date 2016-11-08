@@ -1068,15 +1068,21 @@ public class GamePlugin extends GameAPI {
 				});
 				Queue<UUID> players = Queues.newLinkedBlockingDeque(slaves);
 				players.add(leader.getUniqueId());
-				for (BadblockTeam team : teams) {
+				if (!teams.isEmpty()) {
+					int id = 0;
+					BadblockTeam team = teams.get(id);
+					if (team == null) return;
 					while (!players.isEmpty()) {
-						if (team.getOnlinePlayers().size() >= playersByTeam) break;
+						if (team.getOnlinePlayers().size() >= playersByTeam) {
+							id++;
+							team = teams.get(id);
+							if (team == null) return;
+						}
 						UUID uuid = players.peek();
 						BadblockPlayer player = BukkitUtils.getPlayer(uuid);
-						System.out.println(uuid + " / " + player);
 						if (player == null) {
 							try {
-								Thread.sleep(100L);
+								Thread.sleep(50L);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -1088,7 +1094,7 @@ public class GamePlugin extends GameAPI {
 					}
 				}
 			}
-		}, 20);
+		}, 1);
 	}
 
 }
