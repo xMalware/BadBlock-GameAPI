@@ -1074,14 +1074,14 @@ public class GamePlugin extends GameAPI {
 				if (team == null) return;
 				Set<String> done = new HashSet<>();
 				for (UUID uuid : players) {
-					if (done.contains(uuid.toString())) continue;
-					done.add(uuid.toString());
 					if (playersInTeam >= playersByTeam) {
 						id++;
 						team = teams.get(id);
 						if (team == null) return;
 					}
 					BadblockPlayer player = BukkitUtils.getPlayer(uuid);
+					if (done.contains(player.getName())) continue;
+					done.add(player.getName());
 					System.out.println(player.getName() + " / remove");
 					player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 					team.joinTeam(player, JoinReason.REBALANCING);
