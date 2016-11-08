@@ -1066,6 +1066,7 @@ public class GamePlugin extends GameAPI {
 						return ((Integer) badblockTeam1.getOnlinePlayers().size()).compareTo(badblockTeam2.playersCurrentlyOnline());
 					}
 				});
+				int playersInTeam = 0;
 				Queue<UUID> players = Queues.newLinkedBlockingDeque(slaves);
 				players.add(leader.getUniqueId());
 				if (!teams.isEmpty()) {
@@ -1073,7 +1074,7 @@ public class GamePlugin extends GameAPI {
 					BadblockTeam team = teams.get(id);
 					if (team == null) return;
 					while (!players.isEmpty()) {
-						if (team.getOnlinePlayers().size() >= playersByTeam) {
+						if (playersInTeam >= playersByTeam) {
 							id++;
 							team = teams.get(id);
 							if (team == null) return;
@@ -1091,6 +1092,7 @@ public class GamePlugin extends GameAPI {
 						players.remove(uuid);
 						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 						team.joinTeam(player, JoinReason.REBALANCING);
+						playersInTeam++;
 					}
 				}
 			}
