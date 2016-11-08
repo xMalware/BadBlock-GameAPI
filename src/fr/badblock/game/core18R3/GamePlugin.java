@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -32,7 +33,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Queues;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -1067,9 +1067,9 @@ public class GamePlugin extends GameAPI {
 					}
 				});
 				int playersInTeam = 0;
-				Queue<UUID> players = Queues.newConcurrentLinkedQueue(slaves);
+				Set<UUID> players = new HashSet<>(slaves);
 				players.add(leader.getUniqueId());
-				if (!teams.isEmpty()) {
+				for (UUID uuid : players) {
 					int id = 0;
 					BadblockTeam team = teams.get(id);
 					if (team == null) return;
@@ -1079,7 +1079,6 @@ public class GamePlugin extends GameAPI {
 							team = teams.get(id);
 							if (team == null) return;
 						}
-						UUID uuid = players.poll();
 						BadblockPlayer player = BukkitUtils.getPlayer(uuid);
 						System.out.println(player.getName() + " / remove");
 						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
