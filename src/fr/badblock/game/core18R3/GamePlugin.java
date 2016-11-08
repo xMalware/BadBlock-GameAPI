@@ -1087,7 +1087,6 @@ public class GamePlugin extends GameAPI {
 						team = teams.get(id);
 						if (team == null) return;
 					}
-					done.add(player.getName());
 					System.out.println(player.getName() + " / remove");
 					player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 					team.joinTeam(player, JoinReason.REBALANCING);
