@@ -1079,19 +1079,9 @@ public class GamePlugin extends GameAPI {
 							team = teams.get(id);
 							if (team == null) return;
 						}
-						UUID uuid = players.peek();
+						UUID uuid = players.poll();
 						BadblockPlayer player = BukkitUtils.getPlayer(uuid);
-						if (player == null) {
-							System.out.println(uuid + " offline, waiting");
-							try {
-								Thread.sleep(100L);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-							continue;
-						}
 						System.out.println(player.getName() + " / remove");
-						players.remove(uuid);
 						player.sendTranslatedMessage("teams.joinTeamWithHisParty", team.getChatName());
 						team.joinTeam(player, JoinReason.REBALANCING);
 						playersInTeam++;
