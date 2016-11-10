@@ -11,7 +11,7 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.servers.MapProtector;
 
 /**
- * MapProtector très permissif (ne change rien)
+ * MapProtector trÃ¨s permissif (ne change rien)
  * @author LeLanN
  */
 public class DefaultMapProtector implements MapProtector {
@@ -189,4 +189,10 @@ public class DefaultMapProtector implements MapProtector {
 	public boolean healOnJoin(BadblockPlayer player) {
 		return true;
 	}
+
+	@Override
+	public boolean canEntityBeingDamaged(Entity entity, BadblockPlayer badblockPlayer) {
+		return true;
+	}
+	
 }
