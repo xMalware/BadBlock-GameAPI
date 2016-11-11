@@ -1,9 +1,10 @@
 package fr.badblock.game.core18R3.listeners;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
@@ -20,6 +21,7 @@ import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
@@ -27,6 +29,8 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.run.RunType;
+import fr.badblock.gameapi.utils.general.Callback;
+import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
@@ -76,7 +80,7 @@ public class LoginListener extends BadListener {
 			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getName().toLowerCase());
 
 		} else if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
-	        p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));
+			p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
@@ -93,32 +97,54 @@ public class LoginListener extends BadListener {
 					if(!bp.isVisible() && bp.getVisiblePredicate().test(p)){
 						p.hidePlayer(bp);
 					}
+					if (GamePlugin.getInstance().getGameServerManager().getGameServerConfig().isRanked()) {
+						GamePlugin.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM rankeds WHERE playerName = '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+							@Override
+							public void done(ResultSet result, Throwable error) {
+								try {
+									result.next();
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+								int count;
+								try {
+									count = result.getInt("count");
+									if (count == 0) {
+										GamePlugin.getAPI().getSqlDatabase().call("INSERT INTO ranked(playerName) VALUES('" + player.getName() + "')", SQLRequestType.UPDATE);
+									}
+								} catch (SQLException e) {
+									e.printStackTrace();
+								}
+							}
+						});
+					}
 					/*if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
 						p.hidePlayer(bp);
 					}*/
 				}
-				
+
 				if(GameAPI.getAPI().getGameServer().getGameState() == GameState.WAITING){
 					if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 						List<String> players = new ArrayList<String>();
 						double xp = 0;
 						double badcoins = 0;
-						
+
 						for (BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()) {
 							PlayerBooster playerBooster = player.getPlayerData().getActiveBooster();
-							
+
 							if (playerBooster != null) {
 								xp 		 += playerBooster.getBooster().getXpMultiplier();
 								badcoins += playerBooster.getBooster().getCoinsMultiplier();
 							}
 						}
-						
+
 						if (xp == 0) xp = 1;
 						if (badcoins == 0) badcoins = 1;
-						
+
 						if (xp > 1 || badcoins > 1) {
 							String o = "[" + StringUtils.join(players, ", ") + "]";
-							
+
 							if (p.getPlayerData().getActiveBooster() != null) {
 								for(BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()){
 									player.sendTranslatedMessage("booster.load", Double.toString(xp), Double.toString(badcoins), p.getName(), o);
