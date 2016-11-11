@@ -39,13 +39,6 @@ public class DisconnectListener extends BadListener {
 				player.getPlayerData().getLeaves().add(System.currentTimeMillis());
 				player.saveData();
 			}
-			GamePlayerData gpd = (GamePlayerData) player.getPlayerData();
-			if (gpd.getAddedRankedPoints() != 0 && GamePlugin.getInstance().getGameServerManager().getGameServerConfig().ranked) {
-				String name = GamePlugin.getInstance().getGameServerManager().getGameServerConfig().getRankedName();
-				if (name != null) {
-					GamePlugin.getAPI().getSqlDatabase().call("UPDATE rankeds SET " + name + "=" + name + (gpd.getAddedRankedPoints() > 0 ? "+" : "-") + Math.abs(gpd.getAddedRankedPoints()) + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.UPDATE);
-				}
-			}
 			// Booster
 			PlayerBooster playerBoosterZ = null;
 			for (PlayerBooster playerBoosterr : player.getPlayerData().getBoosters())
@@ -84,6 +77,17 @@ public class DisconnectListener extends BadListener {
 						pob.sendTranslatedMessage("booster.unload", Double.toString(xpp), Double.toString(badcoinss), player.getName(), oo);
 						pob.playSound(Sound.LEVEL_UP);
 					});
+				}
+			}
+		}
+		
+		if (afterGame()) {
+			GamePlayerData gpd = (GamePlayerData) player.getPlayerData();
+			if (gpd.getAddedRankedPoints() != 0 && GamePlugin.getInstance().getGameServerManager().getGameServerConfig().ranked) {
+				String name = GamePlugin.getInstance().getGameServerManager().getGameServerConfig().getRankedName();
+				if (name != null) {
+					System.out.println("UPDATE rankeds SET " + name + "=" + name + (gpd.getAddedRankedPoints() > 0 ? "+" : "-") + Math.abs(gpd.getAddedRankedPoints()) + " WHERE playerName = '" + player.getName() + "'");
+					GamePlugin.getAPI().getSqlDatabase().call("UPDATE rankeds SET " + name + "=" + name + (gpd.getAddedRankedPoints() > 0 ? "+" : "-") + Math.abs(gpd.getAddedRankedPoints()) + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.UPDATE);
 				}
 			}
 		}
