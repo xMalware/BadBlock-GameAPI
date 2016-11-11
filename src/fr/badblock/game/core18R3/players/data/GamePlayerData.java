@@ -367,7 +367,8 @@ public class GamePlayerData implements PlayerData {
 	@Override
 	public int addRankedPoints(int rankedPoints) {
 		if (!GamePlugin.getInstance().getGameServerManager().getRankedConfig().ranked) return addedRankedPoints;
-		addedRankedPoints += rankedPoints;
+		if (rankedPoints < 0) addedRankedPoints -= rankedPoints;
+		else addedRankedPoints += rankedPoints;
 		return addedRankedPoints;
 	}
 
