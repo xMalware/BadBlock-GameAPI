@@ -84,6 +84,32 @@ public class LoginListener extends BadListener {
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
+		System.out.println("a");
+		if (GamePlugin.getInstance().getGameServerManager().getGameServerConfig().isRanked()) {
+			System.out.println("b");
+			GamePlugin.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM rankeds WHERE playerName = '" + p.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+				@Override
+				public void done(ResultSet result, Throwable error) {
+					try {
+						result.next();
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+					System.out.println("c");
+					int count;
+					try {
+						count = result.getInt("count");
+						if (count == 0) {
+							System.out.println("d");
+							GamePlugin.getAPI().getSqlDatabase().call("INSERT INTO rankeds(playerName) VALUES('" + p.getName() + "')", SQLRequestType.UPDATE);
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
 
 		new BukkitRunnable(){
 			@Override
@@ -96,28 +122,6 @@ public class LoginListener extends BadListener {
 					} else */
 					if(!bp.isVisible() && bp.getVisiblePredicate().test(p)){
 						p.hidePlayer(bp);
-					}
-					if (GamePlugin.getInstance().getGameServerManager().getGameServerConfig().isRanked()) {
-						GamePlugin.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM rankeds WHERE playerName = '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
-
-							@Override
-							public void done(ResultSet result, Throwable error) {
-								try {
-									result.next();
-								} catch (SQLException e) {
-									e.printStackTrace();
-								}
-								int count;
-								try {
-									count = result.getInt("count");
-									if (count == 0) {
-										GamePlugin.getAPI().getSqlDatabase().call("INSERT INTO ranked(playerName) VALUES('" + player.getName() + "')", SQLRequestType.UPDATE);
-									}
-								} catch (SQLException e) {
-									e.printStackTrace();
-								}
-							}
-						});
 					}
 					/*if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
 						p.hidePlayer(bp);
