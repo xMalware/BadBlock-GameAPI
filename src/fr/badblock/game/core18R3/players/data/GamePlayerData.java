@@ -60,6 +60,7 @@ public class GamePlayerData implements PlayerData {
 	private transient int								  addedShopPoints  = 0;
 	private transient int								  addedLevels      = 0;
 	private transient long								  addedXP		   = 0;
+	private transient int 								  addedRankedPoints= 0;
 	
 	public void setData(JsonObject data){
 		if(data.has("other")){
@@ -360,6 +361,18 @@ public class GamePlayerData implements PlayerData {
 		if (getGameBadblockPlayer().isDataFetch())
 			GameAPI.getAPI().getLadderDatabase().updatePlayerData(getGameBadblockPlayer(), this.getObject());
 		return this.shopPoints;
+	}
+
+	@Override
+	public int addRankedPoints(int rankedPoints) {
+		addedRankedPoints += rankedPoints;
+		return addedRankedPoints;
+	}
+
+	@Override
+	public int removeRankedPoints(int rankedPoints) {
+		addedRankedPoints -= rankedPoints;
+		return addedRankedPoints;
 	}
 
 }
