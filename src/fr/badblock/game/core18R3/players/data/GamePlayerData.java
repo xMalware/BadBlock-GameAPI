@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 
+import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
@@ -365,12 +366,14 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public int addRankedPoints(int rankedPoints) {
+		if (!GamePlugin.getInstance().getGameServerManager().getGameServerConfig().ranked) return addedRankedPoints;
 		addedRankedPoints += rankedPoints;
 		return addedRankedPoints;
 	}
 
 	@Override
 	public int removeRankedPoints(int rankedPoints) {
+		if (!GamePlugin.getInstance().getGameServerManager().getGameServerConfig().ranked) return addedRankedPoints;
 		addedRankedPoints -= rankedPoints;
 		return addedRankedPoints;
 	}
