@@ -107,7 +107,6 @@ public class DisconnectListener extends BadListener {
 								if (count < 0) {
 									count = 0;
 								}
-								System.out.println(Math.abs(gpd.getAddedRankedPoints()) + " / " + count);
 								GamePlugin.getAPI().getSqlDatabase().call("UPDATE rankeds SET " + name + "=" + count + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.UPDATE);
 							} catch (SQLException e) {
 								e.printStackTrace();
