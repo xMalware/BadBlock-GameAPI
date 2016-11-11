@@ -84,9 +84,7 @@ public class LoginListener extends BadListener {
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
-		System.out.println("a");
 		if (GamePlugin.getInstance().getGameServerManager().getGameServerConfig().isRanked()) {
-			System.out.println("b");
 			GamePlugin.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM rankeds WHERE playerName = '" + p.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 				@Override
@@ -96,12 +94,10 @@ public class LoginListener extends BadListener {
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
-					System.out.println("c");
 					int count;
 					try {
 						count = result.getInt("count");
 						if (count == 0) {
-							System.out.println("d");
 							GamePlugin.getAPI().getSqlDatabase().call("INSERT INTO rankeds(playerName) VALUES('" + p.getName() + "')", SQLRequestType.UPDATE);
 						}
 					} catch (SQLException e) {
