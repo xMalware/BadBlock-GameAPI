@@ -86,7 +86,6 @@ public class DisconnectListener extends BadListener {
 			if (gpd.getAddedRankedPoints() != 0 && GamePlugin.getInstance().getGameServerManager().getGameServerConfig().ranked) {
 				String name = GamePlugin.getInstance().getGameServerManager().getGameServerConfig().getRankedName();
 				if (name != null) {
-					System.out.println("UPDATE rankeds SET " + name + "=" + name + (gpd.getAddedRankedPoints() > 0 ? "+" : "-") + Math.abs(gpd.getAddedRankedPoints()) + " WHERE playerName = '" + player.getName() + "'");
 					GamePlugin.getAPI().getSqlDatabase().call("UPDATE rankeds SET " + name + "=" + name + (gpd.getAddedRankedPoints() > 0 ? "+" : "-") + Math.abs(gpd.getAddedRankedPoints()) + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.UPDATE);
 				}
 			}
