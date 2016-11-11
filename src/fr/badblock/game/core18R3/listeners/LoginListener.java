@@ -84,7 +84,7 @@ public class LoginListener extends BadListener {
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
-		if (GamePlugin.getInstance().getGameServerManager().getGameServerConfig().isRanked()) {
+		if (GamePlugin.getInstance().getGameServerManager().getRankedConfig().isRanked()) {
 			GamePlugin.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM rankeds WHERE playerName = '" + p.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 				@Override

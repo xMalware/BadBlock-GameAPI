@@ -100,6 +100,7 @@ import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.LadderConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.RabbitMQConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.RankedConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.SQLConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.ServerConfig;
 import fr.badblock.game.core18R3.ladder.GameLadderSpeaker;
@@ -313,6 +314,7 @@ public class GamePlugin extends GameAPI {
 			if (!configFolder.exists()) configFolder.mkdirs();
 			FTPConfig ftpConfig = JsonUtils.load(new File(configFolder, "ftp.json"), FTPConfig.class);
 			GameServerConfig gameServerConfig = JsonUtils.load(new File(configFolder, "gameServer.json"), GameServerConfig.class);
+			RankedConfig rankedConfig = JsonUtils.load(new File(configFolder, "ranked.json"), RankedConfig.class);
 			LadderConfig ladderConfig = JsonUtils.load(new File(configFolder, "ladder.json"), LadderConfig.class);
 			RabbitMQConfig rabbitMQConfig = JsonUtils.load(new File(configFolder, "rabbitmq.json"), RabbitMQConfig.class);
 			ServerConfig serverConfig = JsonUtils.load(new File(configFolder, "server.json"), ServerConfig.class);
@@ -484,6 +486,7 @@ public class GamePlugin extends GameAPI {
 				// GameServer apr�s tout
 				this.gameServer 	   = new GameServer();
 				this.gameServerManager = new GameServerManager(gameServerConfig, ftpConfig);
+				this.gameServerManager.setRankedConfig(rankedConfig);
 				this.getGameServerManager().start();
 			}
 

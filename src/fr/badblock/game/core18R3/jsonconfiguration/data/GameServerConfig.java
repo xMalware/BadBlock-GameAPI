@@ -14,10 +14,6 @@ public class GameServerConfig {
 	public int ticksBetweenMonitoreLogs;
 	public int ticksBetweenKeepAlives;
 	public long uselessUntilTime;
-
-	// Ranked
-	public boolean ranked;
-	public String  rankedName;
 	
 	// Run type
 	public RunType runType = RunType.LOBBY;

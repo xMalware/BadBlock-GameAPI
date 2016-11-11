@@ -12,6 +12,7 @@ import fr.badblock.game.core18R3.gameserver.threading.GameServerMonitoringTask;
 import fr.badblock.game.core18R3.gameserver.threading.GameServerSendLogsTask;
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
+import fr.badblock.game.core18R3.jsonconfiguration.data.RankedConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class GameServerManager {
 	private FTPConfig ftpConfig;
 	private ConsoleCommandSender console;
 	private GameServerSendLogsTask gameServerSendLogsTask;
+	private RankedConfig rankedConfig;
 	private GameServerKeeperAliveTask gameServerKeeperAliveTask;
 	private GameServerMonitoringTask gameServerMonitoringTask;
 	private boolean loaded;
