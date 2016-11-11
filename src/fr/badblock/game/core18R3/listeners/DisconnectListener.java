@@ -1,5 +1,7 @@
 package fr.badblock.game.core18R3.listeners;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +27,7 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.run.RunType;
+import fr.badblock.gameapi.utils.general.Callback;
 
 public class DisconnectListener extends BadListener {
 	@EventHandler
@@ -80,13 +83,34 @@ public class DisconnectListener extends BadListener {
 				}
 			}
 		}
-		
+
 		if (afterGame()) {
 			GamePlayerData gpd = (GamePlayerData) player.getPlayerData();
 			if (gpd.getAddedRankedPoints() != 0 && GamePlugin.getInstance().getGameServerManager().getRankedConfig().ranked) {
 				String name = GamePlugin.getInstance().getGameServerManager().getRankedConfig().getRankedName();
 				if (name != null) {
-					GamePlugin.getAPI().getSqlDatabase().call("UPDATE rankeds SET " + name + "=" + name + (gpd.getAddedRankedPoints() > 0 ? "+" : "-") + Math.abs(gpd.getAddedRankedPoints()) + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.UPDATE);
+					GamePlugin.getAPI().getSqlDatabase().call("SELECT " + name + " FROM rankeds WHERE playerName = '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+						@Override
+						public void done(ResultSet result, Throwable error) {
+							try {
+								result.next();
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+							long count;
+							try {
+								count = result.getInt(name);
+								count += gpd.getAddedRankedPoints();
+								if (count < 0) {
+									count = 0;
+								}
+								GamePlugin.getAPI().getSqlDatabase().call("UPDATE rankeds SET " + name + "=" + count + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.UPDATE);
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+						}
+					});
 				}
 			}
 		}
