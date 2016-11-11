@@ -111,17 +111,22 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 	@EventHandler
 	public void onDataReload(PlayerDataChangedEvent e){
+		System.out.println("A");
 		if(!doGroupsPrefix) return;
+		System.out.println("B");
 
 		Team team = getHandler().getEntryTeam(e.getPlayer().getName());
 
 		if (team != null) {
-			if(!team.getName().equals(e.getPlayer().getMainGroup())){
+			System.out.println("C");
+			if(!team.getName().equals(groups.get(e.getPlayer().getMainGroup()))) {
+				System.out.println("D");
 				team.removeEntry(e.getPlayer().getName());
 
 				new BukkitRunnable() {
 					@Override
 					public void run() {
+						System.out.println("E / " + e.getPlayer().getMainGroup());
 						getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
 					}
 				}.runTaskLater(GameAPI.getAPI(), 5L);

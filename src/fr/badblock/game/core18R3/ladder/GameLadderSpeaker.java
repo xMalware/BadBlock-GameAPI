@@ -13,15 +13,12 @@ import java.util.Map;
 import java.util.Queue;
 
 import org.bukkit.Bukkit;
-import org.bukkit.scoreboard.Team;
 
 import com.google.common.collect.Queues;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
-import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.LadderSpeaker;
 import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.game.GameState;
@@ -236,13 +233,6 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 			if(player != null){
 				Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
-				if (packet.getData().startsWith("{\"permissions\":")) {
-					GameAPI gameAPI = GamePlugin.getAPI();
-					Team team = gameAPI.getBadblockScoreboard().getHandler().getEntryTeam(player.getName());
-					if (!team.getName().equals(player.getMainGroup())) team.removeEntry(player.getName());
-					gameAPI.getBadblockScoreboard().getHandler().getTeam(player.getMainGroup()).addEntry(player.getName());
-					//Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
-				}
 			}
 		} else if(packet.getType() == DataType.IP && packet.getAction() == DataAction.SEND){
 			Callback<JsonObject> callback = requestedIps.get(packet.getKey().toLowerCase());
