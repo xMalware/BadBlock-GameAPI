@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -13,15 +16,12 @@ import net.minecraft.server.v1_8_R3.ControllerMove;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.EntityIronGolem;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.EntityWolf;
 import net.minecraft.server.v1_8_R3.PathfinderGoalAvoidTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFleeSun;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRestrictSun;
@@ -40,10 +40,17 @@ public class NMSSkeleton extends EntitySkeleton implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSSkeleton(World world) {
 		super(world);
 
+		targets = new HashMap<>();
+		targetAllHurtingCreatures();
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
+		addTargetable(EntityType.IRON_GOLEM, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -94,9 +101,7 @@ public class NMSSkeleton extends EntitySkeleton implements NMSCustomCreature {
 		
 	    if(!hasCreatureFlag(CreatureFlag.AGRESSIVE)) return;
 
-	    this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false, new Class[0]));
-	    this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
-	    this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, EntityIronGolem.class, true));
+	    EntityUtils.doTargets(this);
 	}
 
 	@Override

@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -35,10 +38,15 @@ public class NMSPigZombie extends EntityPigZombie implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSPigZombie(World world) {
 		super(world);
 
+		targets = new HashMap<>();
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -89,8 +97,12 @@ public class NMSPigZombie extends EntityPigZombie implements NMSCustomCreature {
 
 	    this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
 
-	    buildTargetSelector(2, EntityPigZombie.class, "PathfinderGoalAngerOther", new Class<?>[]{EntityPigZombie.class}, this);
-	    buildTargetSelector(2, EntityPigZombie.class, "PathfinderGoalAnger", new Class<?>[]{EntityPigZombie.class}, this);
+	    if(targets.containsKey(EntityType.PLAYER)){
+	    	buildTargetSelector(2, EntityPigZombie.class, "PathfinderGoalAngerOther", new Class<?>[]{EntityPigZombie.class}, this);
+	    	buildTargetSelector(2, EntityPigZombie.class, "PathfinderGoalAnger", new Class<?>[]{EntityPigZombie.class}, this);
+	    }
+	    
+	    EntityUtils.doTargets(this, EntityType.PLAYER);
 	}
 
 	@Override

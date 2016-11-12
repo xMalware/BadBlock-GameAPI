@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Predicate;
@@ -32,21 +35,28 @@ public class NMSEnderman extends EntityEnderman implements NMSCustomCreature {
 	private ControllerMove    normalController;
 	@Getter@Setter
 	private Function<Random, List<ItemStack>> customLoots;
-	
+
 	@Getter@Setter
 	public CreatureBehaviour  creatureBehaviour;
 	@Getter
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
 
 	public NMSEnderman(World world) {
 		super(world);
 
+		targets = new HashMap<>();		
+		targetAllHurtingCreatures();
+		addTargetable(EntityType.PLAYER, TargetType.HURTED_BY);
+		addTargetable(EntityType.ENDERMITE, TargetType.NEAREST);
+
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
-	
+
 	@Override
 	public boolean isInvulnerable(DamageSource damageSource){
 		if(hasCreatureFlag(CreatureFlag.INVINCIBLE))
@@ -73,7 +83,7 @@ public class NMSEnderman extends EntityEnderman implements NMSCustomCreature {
 	public boolean damageEntity(DamageSource damagesource, float f){
 		return EntityUtils.damageEntity(this, damagesource, f);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void regenerateAttributes(){
@@ -89,30 +99,34 @@ public class NMSEnderman extends EntityEnderman implements NMSCustomCreature {
 		this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 		this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
 
-	    if(!hasCreatureFlag(CreatureFlag.AGRESSIVE)) return;
+		if(!hasCreatureFlag(CreatureFlag.AGRESSIVE)) return;
 
 		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 1.0D, false));
-		buildTargetSelector(2, EntityEnderman.class, "PathfinderGoalPlayerWhoLookedAtTarget", new Class<?>[]{EntityEnderman.class}, this);
+		if(targets.containsKey(EntityType.PLAYER))
+			buildTargetSelector(2, EntityEnderman.class, "PathfinderGoalPlayerWhoLookedAtTarget", new Class<?>[]{EntityEnderman.class}, this);
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false, new Class[0]));
 		buildTargetSelector(2, EntityEnderman.class, "PathfinderGoalEndermanPlaceBlock", new Class<?>[]{EntityEnderman.class}, this);
 		buildTargetSelector(2, EntityEnderman.class, "PathfinderGoalEndermanPickupBlock", new Class<?>[]{EntityEnderman.class}, this);
-		this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, EntityEndermite.class, 10, true, false, new Predicate() {
-			public boolean a(EntityEndermite entityendermite){
-				return entityendermite.n();
-			}
 
-			@Override
-			public boolean apply(Object object){
-				return a( (EntityEndermite) object );
-			}
-		}));
+		if(targets.containsKey(EntityType.ENDERMITE))
+			this.targetSelector.a(3, new PathfinderGoalNearestAttackableTarget<>(this, EntityEndermite.class, 10, true, false, new Predicate() {
+				public boolean a(EntityEndermite entityendermite){
+					return entityendermite.n();
+				}
+
+				@Override
+				public boolean apply(Object object){
+					return a( (EntityEndermite) object );
+				}
+			}));
+		EntityUtils.doTargets(this, EntityType.PLAYER, EntityType.ENDERMITE);
 	}
 
 	@Override
 	public EntityInsentient getNMSEntity() {
 		return this;
 	}
-	
+
 	@Override
 	public void callSuperMove(float f1, float f2) {
 		super.g(f1, f2);
@@ -132,7 +146,7 @@ public class NMSEnderman extends EntityEnderman implements NMSCustomCreature {
 	public boolean callSuperDamageEntity(DamageSource damagesource, float f) {
 		return super.damageEntity(damagesource, f);
 	}
-	
+
 	@Override
 	protected void dropDeathLoot(boolean flag, int i) {
 		if(customLoots == null)

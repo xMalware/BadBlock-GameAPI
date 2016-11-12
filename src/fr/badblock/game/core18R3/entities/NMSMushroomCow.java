@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -21,7 +24,6 @@ import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFollowParent;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalPanic;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
@@ -41,10 +43,16 @@ public class NMSMushroomCow extends EntityMushroomCow implements NMSCustomCreatu
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSMushroomCow(World world) {
 		super(world);
 
+		targets = new HashMap<>();		
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
+		addTargetable(EntityType.IRON_GOLEM, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -99,10 +107,8 @@ public class NMSMushroomCow extends EntityMushroomCow implements NMSCustomCreatu
 	    if(!hasCreatureFlag(CreatureFlag.AGRESSIVE)) return;
 
 		this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
-
 		this.goalSelector.a(4, new PathfinderGoalMeleeAttack(this, EntityIronGolem.class, 1.0D, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityIronGolem.class, true));
+		EntityUtils.doTargets(this);
 	}
 
 	@Override

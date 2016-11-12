@@ -2,11 +2,14 @@ package fr.badblock.game.core18R3.entities;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Predicate;
@@ -44,12 +47,17 @@ public class NMSGuardian extends EntityGuardian implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	private boolean callSuper = false;
 
 	public NMSGuardian(World world) {
 		super(world);
 
+		targets = new HashMap<>();		
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -330,7 +338,10 @@ public class NMSGuardian extends EntityGuardian implements NMSCustomCreature {
 		this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityGuardian.class, 12.0F, 0.01F));
 		this.goalSelector.a(9, new PathfinderGoalRandomLookaround(this));
 
-		this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityLiving.class, 10, true, false, getPrivatePredicate("EntitySelectorGuardianTargetHumanSquid", new Class<?>[]{EntityGuardian.class}, this)));
+		
+		if(targets.containsKey(EntityType.PLAYER))
+			this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget(this, EntityLiving.class, 10, true, false, getPrivatePredicate("EntitySelectorGuardianTargetHumanSquid", new Class<?>[]{EntityGuardian.class}, this)));
+		EntityUtils.doTargets(this, EntityType.PLAYER);
 	}
 
 	@Override

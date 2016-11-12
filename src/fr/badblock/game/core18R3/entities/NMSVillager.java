@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -14,10 +17,8 @@ import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityIronGolem;
-import net.minecraft.server.v1_8_R3.EntityPigZombie;
 import net.minecraft.server.v1_8_R3.EntityVillager;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
 import net.minecraft.server.v1_8_R3.PathfinderGoalMoveThroughVillage;
@@ -41,10 +42,17 @@ public class NMSVillager extends EntityVillager implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSVillager(World world) {
 		super(world);
 
+		targets = new HashMap<>();
+		addTargetable(EntityType.PIG_ZOMBIE, TargetType.HURTED_BY);
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
+		addTargetable(EntityType.IRON_GOLEM, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -106,9 +114,8 @@ public class NMSVillager extends EntityVillager implements NMSCustomCreature {
 			this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityVillager.class, false));
 		}
 		this.goalSelector.a(4, new PathfinderGoalMeleeAttack(this, EntityIronGolem.class, 1.0D, true));
-		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true, new Class[] { EntityPigZombie.class }));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityIronGolem.class, true));
+
+		EntityUtils.doTargets(this);
 	}
 
 	@Override

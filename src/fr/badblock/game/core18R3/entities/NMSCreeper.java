@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -17,10 +20,8 @@ import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityOcelot;
 import net.minecraft.server.v1_8_R3.PathfinderGoalAvoidTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
@@ -39,9 +40,15 @@ public class NMSCreeper extends EntityCreeper implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSCreeper(World world) {
 		super(world);
+
+		targets = new HashMap<>();		
+		targetAllHurtingCreatures();
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
 
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
@@ -93,8 +100,7 @@ public class NMSCreeper extends EntityCreeper implements NMSCustomCreature {
 	    if(!hasCreatureFlag(CreatureFlag.AGRESSIVE)) return;
 
 	    this.goalSelector.a(4, new PathfinderGoalMeleeAttack(this, 1.0D, false));
-	    this.targetSelector.a(1, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
-	    this.targetSelector.a(2, new PathfinderGoalHurtByTarget(this, false, new Class[0]));
+	    EntityUtils.doTargets(this);
 	}
 
 	@Override

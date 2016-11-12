@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -32,10 +35,15 @@ public class NMSMagmaCube extends EntityMagmaCube implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSMagmaCube(World world) {
 		super(world);
 
+		targets = new HashMap<>();		
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -79,6 +87,7 @@ public class NMSMagmaCube extends EntityMagmaCube implements NMSCustomCreature {
 		this.goalSelector.a(1, new PathfinderGoalFloat(this));
 	    this.goalSelector.a(6, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 	    this.goalSelector.a(6, new PathfinderGoalRandomLookaround(this));
+	    EntityUtils.doTargets(this);
 	}
 
 	@Override

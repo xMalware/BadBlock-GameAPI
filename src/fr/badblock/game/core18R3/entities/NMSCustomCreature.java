@@ -2,7 +2,10 @@ package fr.badblock.game.core18R3.entities;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
+import org.bukkit.entity.EntityType;
 
 import fr.badblock.gameapi.utils.entities.CreatureType;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
@@ -36,6 +39,38 @@ public interface NMSCustomCreature extends CustomCreature {
 	default CreatureType getEntityType() {
 		return CreatureType.getByBukkitEntity(getBukkit());
 	}
+	
+	@Override
+	default void targetAllHurtingCreatures(){
+		for(CreatureType type : CreatureType.values()){
+			addTargetable(type.bukkit(), TargetType.HURTED_BY);
+		}
+	}
+
+	
+	@Override
+	default void addTargetable(EntityType entityType, TargetType targetType){
+		getTargets().put(entityType, targetType);
+		regenerateAttributes();
+	}
+
+	@Override
+	default void removeTargetable(EntityType entityType){
+		getTargets().remove(entityType);
+		regenerateAttributes();
+	}
+	
+	@Override
+	default void clearTargetables(){
+		getTargets().clear();
+		regenerateAttributes();
+	}
+	
+	@Override
+	default TargetType getTargetType(EntityType entityType){
+		return getTargets().get(entityType);
+	}
+
 
 	default BlockPosition getBlockPosition() {
 		try {
@@ -121,6 +156,8 @@ public interface NMSCustomCreature extends CustomCreature {
 		}
 	}
 
+	public Map<EntityType, TargetType> getTargets();
+	
 	public void callSuperMove(float f1, float f2);
 
 	public void callSuperMoveFlying();

@@ -1,29 +1,66 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 
 import fr.badblock.gameapi.utils.entities.CustomCreature.CreatureBehaviour;
 import fr.badblock.gameapi.utils.entities.CustomCreature.CreatureFlag;
 import fr.badblock.gameapi.utils.entities.CustomCreature.CreatureGenericAttribute;
+import fr.badblock.gameapi.utils.entities.CustomCreature.TargetType;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EnchantmentManager;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityBat;
+import net.minecraft.server.v1_8_R3.EntityChicken;
+import net.minecraft.server.v1_8_R3.EntityCow;
+import net.minecraft.server.v1_8_R3.EntityCreature;
+import net.minecraft.server.v1_8_R3.EntityCreeper;
+import net.minecraft.server.v1_8_R3.EntityEnderman;
+import net.minecraft.server.v1_8_R3.EntityEndermite;
+import net.minecraft.server.v1_8_R3.EntityGhast;
+import net.minecraft.server.v1_8_R3.EntityGiantZombie;
+import net.minecraft.server.v1_8_R3.EntityGuardian;
+import net.minecraft.server.v1_8_R3.EntityHorse;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
+import net.minecraft.server.v1_8_R3.EntityIronGolem;
 import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntityMagmaCube;
+import net.minecraft.server.v1_8_R3.EntityMushroomCow;
+import net.minecraft.server.v1_8_R3.EntityOcelot;
+import net.minecraft.server.v1_8_R3.EntityPig;
+import net.minecraft.server.v1_8_R3.EntityPigZombie;
+import net.minecraft.server.v1_8_R3.EntityRabbit;
+import net.minecraft.server.v1_8_R3.EntitySheep;
+import net.minecraft.server.v1_8_R3.EntitySilverfish;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.EntitySlime;
+import net.minecraft.server.v1_8_R3.EntitySnowman;
+import net.minecraft.server.v1_8_R3.EntitySpider;
+import net.minecraft.server.v1_8_R3.EntitySquid;
+import net.minecraft.server.v1_8_R3.EntityVillager;
+import net.minecraft.server.v1_8_R3.EntityWitch;
+import net.minecraft.server.v1_8_R3.EntityWither;
+import net.minecraft.server.v1_8_R3.EntityWolf;
+import net.minecraft.server.v1_8_R3.EntityZombie;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.IAttribute;
 import net.minecraft.server.v1_8_R3.Material;
 import net.minecraft.server.v1_8_R3.MathHelper;
+import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 
 public class EntityUtils {
 	public static void prepare(NMSCustomCreature creature, CreatureFlag... flags){
@@ -51,6 +88,101 @@ public class EntityUtils {
 		};
 
 		return null;
+	}
+	
+	public static void doTargets(NMSCustomCreature creat, EntityType... exclude){
+		if(!(creat instanceof EntityCreature))
+			return;
+		
+		EntityCreature nms = (EntityCreature) creat.getNMSEntity();
+		
+		List<Class<? extends EntityLiving>> nearest = matching(creat.getTargets(), TargetType.NEAREST, exclude);
+		List<Class<? extends EntityLiving>> hurted = matching(creat.getTargets(), TargetType.HURTED_BY, exclude);
+		
+		if(!hurted.isEmpty()){
+			nms.targetSelector.a(1, new PathfinderGoalHurtByTarget(nms, true, nearest.toArray(new Class<?>[0])));
+		}
+		
+		if(!nearest.isEmpty()){
+			nearest.forEach(type ->
+				nms.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(nms, type, true))
+			);
+		}
+	}
+	
+	private static List<Class<? extends EntityLiving>> matching(Map<EntityType, TargetType> map, TargetType type, EntityType... exclude){
+		return map.entrySet().stream().filter(v -> v.getValue() == type && !Arrays.asList(exclude).contains(v.getKey())).map(entity -> getNMSClass(entity.getKey())).collect(Collectors.toList());
+	}
+	
+	private static Class<? extends EntityLiving> getNMSClass(EntityType type){
+		switch(type){
+		case BAT:
+			return EntityBat.class;
+		case BLAZE:
+			return EntityBat.class;
+		case CAVE_SPIDER:
+			return EntityBat.class;
+		case CHICKEN:
+			return EntityChicken.class;
+		case COW:
+			return EntityCow.class;
+		case CREEPER:
+			return EntityCreeper.class;
+		case ENDERMAN:
+			return EntityEnderman.class;
+		case ENDERMITE:
+			return EntityEndermite.class;
+		case GHAST:
+			return EntityGhast.class;
+		case GIANT:
+			return EntityGiantZombie.class;
+		case GUARDIAN:
+			return EntityGuardian.class;
+		case HORSE:
+			return EntityHorse.class;
+		case IRON_GOLEM:
+			return EntityIronGolem.class;
+		case MAGMA_CUBE:
+			return EntityMagmaCube.class;
+		case MUSHROOM_COW:
+			return EntityMushroomCow.class;
+		case OCELOT:
+			return EntityOcelot.class;
+		case PIG:
+			return EntityPig.class;
+		case PIG_ZOMBIE:
+			return EntityPigZombie.class;
+		case RABBIT:
+			return EntityRabbit.class;
+		case SHEEP:
+			return EntitySheep.class;
+		case SILVERFISH:
+			return EntitySilverfish.class;
+		case SKELETON:
+			return EntitySkeleton.class;
+		case SLIME:
+			return EntitySlime.class;
+		case SNOWMAN:
+			return EntitySnowman.class;
+		case SPIDER:
+			return EntitySpider.class;
+		case SQUID:
+			return EntitySquid.class;
+		case VILLAGER:
+			return EntityVillager.class;
+		case WITCH:
+			return EntityWitch.class;
+		case WITHER:
+			return EntityWither.class;
+		case WOLF:
+			return EntityWolf.class;
+		case ZOMBIE:
+			return EntityZombie.class;
+		case PLAYER:
+			return EntityHuman.class;
+		default:
+			return null;
+		}
 	}
 
 	public static double getAttributeValue(NMSCustomCreature creature, CreatureGenericAttribute attribute){

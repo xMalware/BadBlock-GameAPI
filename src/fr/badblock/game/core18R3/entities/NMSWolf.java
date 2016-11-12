@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Predicate;
@@ -19,17 +22,14 @@ import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityRabbit;
 import net.minecraft.server.v1_8_R3.EntitySheep;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.EntityWolf;
 import net.minecraft.server.v1_8_R3.PathfinderGoalBeg;
 import net.minecraft.server.v1_8_R3.PathfinderGoalBreed;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFollowOwner;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLeapAtTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalOwnerHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalOwnerHurtTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
@@ -50,10 +50,16 @@ public class NMSWolf extends EntityWolf implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSWolf(World world) {
 		super(world);
 
+		targets = new HashMap<>();
+		targetAllHurtingCreatures();
+		addTargetable(EntityType.SKELETON, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -112,7 +118,6 @@ public class NMSWolf extends EntityWolf implements NMSCustomCreature {
 
 	    this.targetSelector.a(1, new PathfinderGoalOwnerHurtByTarget(this));
 	    this.targetSelector.a(2, new PathfinderGoalOwnerHurtTarget(this));
-	    this.targetSelector.a(3, new PathfinderGoalHurtByTarget(this, true, new Class[0]));
 	    this.targetSelector.a(4, new PathfinderGoalRandomTargetNonTamed(this, EntityAnimal.class, false, new Predicate() {
 	      public boolean a(Entity entity) {
 	        return ((entity instanceof EntitySheep)) || ((entity instanceof EntityRabbit));
@@ -122,7 +127,7 @@ public class NMSWolf extends EntityWolf implements NMSCustomCreature {
 	        return a((Entity)object);
 	      }
 	    }));
-	    this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget<>(this, EntitySkeleton.class, false));
+	    EntityUtils.doTargets(this);
 	}
 
 	@Override

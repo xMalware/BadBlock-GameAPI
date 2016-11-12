@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -39,10 +42,16 @@ public class NMSSpider extends EntitySpider implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSSpider(World world) {
 		super(world);
 
+		targets = new HashMap<>();
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
+		addTargetable(EntityType.IRON_GOLEM, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -95,8 +104,12 @@ public class NMSSpider extends EntitySpider implements NMSCustomCreature {
 
 		this.goalSelector.a(3, new PathfinderGoalLeapAtTarget(this, 0.4F));
 
-		this.targetSelector.a(2, new PathfinderGoalSpiderNearestAttackableTarget<>(this, EntityHuman.class));
-		this.targetSelector.a(3, new PathfinderGoalSpiderNearestAttackableTarget<>(this, EntityIronGolem.class));
+		if(targets.containsKey(EntityType.PLAYER))
+			this.targetSelector.a(2, new PathfinderGoalSpiderNearestAttackableTarget<>(this, EntityHuman.class));
+		if(targets.containsKey(EntityType.IRON_GOLEM))
+			this.targetSelector.a(3, new PathfinderGoalSpiderNearestAttackableTarget<>(this, EntityIronGolem.class));
+		
+		EntityUtils.doTargets(this, EntityType.PLAYER, EntityType.IRON_GOLEM);
 	}
 
 	@Override

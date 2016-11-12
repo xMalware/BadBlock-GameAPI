@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import lombok.Getter;
@@ -15,7 +18,6 @@ import net.minecraft.server.v1_8_R3.EntityGhast;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
-import net.minecraft.server.v1_8_R3.PathfinderGoalTargetNearestPlayer;
 import net.minecraft.server.v1_8_R3.World;
 
 public class NMSGhast extends EntityGhast implements NMSCustomCreature {
@@ -30,10 +32,15 @@ public class NMSGhast extends EntityGhast implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSGhast(World world) {
 		super(world);
 
+		targets = new HashMap<>();		
+		addTargetable(EntityType.PLAYER, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -81,7 +88,7 @@ public class NMSGhast extends EntityGhast implements NMSCustomCreature {
 		buildGoalSelector(7, EntityGhast.class, "PathfinderGoalGhastMoveTowardsTarget", new Class[]{EntityGhast.class}, this);
 		buildGoalSelector(7, EntityGhast.class, "PathfinderGoalGhastAttackTarget", new Class[]{EntityGhast.class}, this);
 	    
-	    this.targetSelector.a(1, new PathfinderGoalTargetNearestPlayer(this));		
+	    EntityUtils.doTargets(this);
 	}
 
 	@Override

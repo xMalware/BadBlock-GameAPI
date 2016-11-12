@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.base.Predicate;
@@ -45,10 +48,14 @@ public class NMSIronGolem extends EntityIronGolem implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSIronGolem(World world) {
 		super(world);
 
+		targets = new HashMap<>();		
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}

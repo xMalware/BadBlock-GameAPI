@@ -1,10 +1,13 @@
 package fr.badblock.game.core18R3.entities;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import fr.badblock.gameapi.utils.reflection.Reflector;
@@ -41,10 +44,15 @@ public class NMSOcelot extends EntityOcelot  implements NMSCustomCreature {
 	public List<CreatureFlag> flags;
 	@Getter@Setter
 	public double speed = 1;
-
+	@Getter
+	public Map<EntityType, TargetType> targets = new HashMap<>();
+	
 	public NMSOcelot(World world) {
 		super(world);
 
+		targets = new HashMap<>();		
+		addTargetable(EntityType.CHICKEN, TargetType.NEAREST);
+		
 		flags = new ArrayList<>();
 		EntityUtils.prepare(this);
 	}
@@ -104,7 +112,10 @@ public class NMSOcelot extends EntityOcelot  implements NMSCustomCreature {
 
 	    this.goalSelector.a(7, new PathfinderGoalLeapAtTarget(this, 0.3F));
 	    this.goalSelector.a(8, new PathfinderGoalOcelotAttack(this));
-	    this.targetSelector.a(1, new PathfinderGoalRandomTargetNonTamed<>(this, EntityChicken.class, false, null));
+	    
+	    if(targets.containsKey(EntityType.CHICKEN))
+	    	this.targetSelector.a(1, new PathfinderGoalRandomTargetNonTamed<>(this, EntityChicken.class, false, null));
+	    EntityUtils.doTargets(this, EntityType.CHICKEN);
 	}
 
 	@Override
