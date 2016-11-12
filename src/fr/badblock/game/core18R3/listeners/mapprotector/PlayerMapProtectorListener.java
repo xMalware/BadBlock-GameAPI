@@ -77,6 +77,10 @@ public class PlayerMapProtectorListener extends BadListener {
 			if(!GameAPI.getAPI().getMapProtector().canBeingDamaged(player)){
 				e.setCancelled(true);
 			}
+		} else if (e.getDamager() != null && e.getDamager().getType().equals(EntityType.PLAYER) && e.getEntityType() != EntityType.PLAYER) {
+			if(!GameAPI.getAPI().getMapProtector().canEntityBeingDamaged(e.getEntity(), (BadblockPlayer) e.getDamager())){
+				e.setCancelled(true);
+			}
 		} else {
 			if(!GameAPI.getAPI().getMapProtector().canEntityBeingDamaged(e.getEntity())){
 				e.setCancelled(true);
