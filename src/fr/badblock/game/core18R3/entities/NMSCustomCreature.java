@@ -51,19 +51,25 @@ public interface NMSCustomCreature extends CustomCreature {
 	@Override
 	default void addTargetable(EntityType entityType, TargetType targetType){
 		getTargets().put(entityType, targetType);
-		regenerateAttributes();
+		
+		if(getFlags() != null)
+			regenerateAttributes();
 	}
 
 	@Override
 	default void removeTargetable(EntityType entityType){
 		getTargets().remove(entityType);
-		regenerateAttributes();
+		
+		if(getFlags() != null)
+			regenerateAttributes();
 	}
 	
 	@Override
 	default void clearTargetables(){
 		getTargets().clear();
-		regenerateAttributes();
+		
+		if(getFlags() != null)
+			regenerateAttributes();
 	}
 	
 	@Override
