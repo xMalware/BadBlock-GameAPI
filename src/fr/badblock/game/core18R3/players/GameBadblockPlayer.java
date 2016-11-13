@@ -32,6 +32,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
@@ -1049,10 +1050,32 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public <T extends Projectile> T launchProjectile(Class<T> projectile, BiConsumer<Block, Entity> action) {
+		return launchProjectile(projectile,  action, 0);
+	}
+	
+	@Override
+	public <T extends Projectile> T launchProjectile(Class<T> projectile, BiConsumer<Block, Entity> action, int range) {
 		T proj = launchProjectile(projectile);
-
 		proj.setMetadata(CustomProjectileListener.metadataKey, new ProjectileMetadata(action));
 
+		if(range <= 0)
+			return proj;
+		
+		Vector velocity  = proj.getVelocity();
+		Location initLoc = proj.getLocation();
+		
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				if(proj.isDead() || !proj.isValid() || proj.getLocation().distance(initLoc) > range){
+					cancel();
+					return;
+				}
+				
+				proj.setVelocity(velocity);
+			}
+		}.runTaskTimer(GameAPI.getAPI(), 0, 1L);
+		
 		return proj;
 	}
 
