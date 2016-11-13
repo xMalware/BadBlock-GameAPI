@@ -487,6 +487,7 @@ public class GamePlugin extends GameAPI {
 				this.gameServer 	   = new GameServer();
 				this.gameServerManager = new GameServerManager(gameServerConfig, ftpConfig);
 				this.gameServerManager.setRankedConfig(rankedConfig);
+				this.setLeaverBusterEnabled(gameServerConfig.isLeaverBusterEnabled());
 				this.getGameServerManager().start();
 			}
 
