@@ -118,7 +118,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private CustomObjective 			 customObjective 	  = null;
 	@Getter
 	private GamePlayerData 				 playerData 		  = null;
-	private PermissiblePlayer 			 permissions 		  = null;
+	public PermissiblePlayer 			 permissions 		  = null;
 
 	@Getter
 	private Map<Class<?>, InGameData> 	 inGameData  		  = null;
