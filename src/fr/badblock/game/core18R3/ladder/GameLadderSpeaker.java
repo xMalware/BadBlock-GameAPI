@@ -230,7 +230,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 			}
 		}else if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.MODIFICATION){
 			GameBadblockPlayer player = (GameBadblockPlayer) Bukkit.getPlayer(packet.getKey());
-
+			System.out.println("l " + packet.getKey() + " / " + player);
 			if(player != null){
 				Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
 			}
