@@ -73,8 +73,8 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		GameAPI gameApi = GameAPI.getAPI();
 		// ServerConfigurationFactory serverConfigurationFactory =
 		// gameServerManager.getServerConfigurationFactory();
-		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.stop",
-				gameApi.getServer().getServerName(), 5000, false);
+		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.stop", gameApi.getServer().getServerName(), 5000, false);
+		gameApi.getRabbitSpeaker().cut();
 	}
 
 	public void setFirstServer() {
