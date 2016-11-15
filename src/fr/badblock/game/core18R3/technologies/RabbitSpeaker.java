@@ -44,4 +44,14 @@ public class RabbitSpeaker implements fr.badblock.gameapi.technologies.RabbitSpe
 		this.getRabbitService().sendSyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.PUBLISHER, ttl, debug);
 	}
 
+	@Override
+	public void cut() {
+		try {
+			this.getRabbitService().getChannel().close();
+			this.getRabbitService().getConnection().close();
+		}catch(Exception error) {
+			error.printStackTrace();
+		}
+	}
+
 }
