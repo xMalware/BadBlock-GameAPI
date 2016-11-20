@@ -1,11 +1,10 @@
 package fr.badblock.game.core18R3.packets.in;
 
-import fr.badblock.game.core18R3.packets.GameBadblockInPacket;
 import fr.badblock.gameapi.packets.in.play.PlayInLook;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying.PacketPlayInLook;
 
-@Getter public class GamePlayInLook extends GameBadblockInPacket implements PlayInLook {
+@Getter public class GamePlayInLook extends GamePlayInFlying implements PlayInLook {
 	private float yaw;
 	private float pitch;
 	
