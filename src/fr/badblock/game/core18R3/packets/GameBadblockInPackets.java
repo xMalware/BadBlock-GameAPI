@@ -15,6 +15,7 @@ import fr.badblock.gameapi.packets.in.play.PlayInCloseWindow;
 import fr.badblock.gameapi.packets.in.play.PlayInCustomPayload;
 import fr.badblock.gameapi.packets.in.play.PlayInEnchantItem;
 import fr.badblock.gameapi.packets.in.play.PlayInEntityAction;
+import fr.badblock.gameapi.packets.in.play.PlayInFlying;
 import fr.badblock.gameapi.packets.in.play.PlayInHeldItemSlot;
 import fr.badblock.gameapi.packets.in.play.PlayInKeepAlive;
 import fr.badblock.gameapi.packets.in.play.PlayInLook;
@@ -44,6 +45,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayInCloseWindow;
 import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
 import net.minecraft.server.v1_8_R3.PacketPlayInEnchantItem;
 import net.minecraft.server.v1_8_R3.PacketPlayInEntityAction;
+import net.minecraft.server.v1_8_R3.PacketPlayInFlying;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying.PacketPlayInLook;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying.PacketPlayInPosition;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying.PacketPlayInPositionLook;
@@ -75,6 +77,7 @@ import net.minecraft.server.v1_8_R3.PacketStatusInStart;
 	PLAY_CUSTOM_PAYLOAD(PlayInCustomPayload.class, PacketPlayInCustomPayload.class),
 	PLAY_ENCHANT_ITEM(PlayInEnchantItem.class, PacketPlayInEnchantItem.class),
 	PLAY_ENTITY_ACTION(PlayInEntityAction.class, PacketPlayInEntityAction.class),
+	PLAY_FLYING(PlayInFlying.class, PacketPlayInFlying.class),
 	PLAY_HELD_ITEM_SLOT(PlayInHeldItemSlot.class, PacketPlayInHeldItemSlot.class),
 	PLAY_KEEPALIVE(PlayInKeepAlive.class, PacketPlayInKeepAlive.class),
 	PLAY_LOOK(PlayInLook.class, PacketPlayInLook.class),
