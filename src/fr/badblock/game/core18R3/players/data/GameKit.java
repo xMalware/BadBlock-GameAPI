@@ -137,7 +137,7 @@ public class GameKit implements PlayerKit {
 				.durability(kitItemData)
 				.displayName(GameAPI.getAPI().getI18n().get(player.getPlayerData().getLocale(), "kits." + kitName + ".itemDisplayname")[0])
 				.lore(lore(player))
-				.asExtra(isVIP() ? (player.hasPermission(GamePermission.VIP) ? 1 : 0) : player.getPlayerData().getUnlockedKitLevel(this))
+				.asExtra(isVIP() ? (player.hasPermission(GamePermission.VIP) ? 1 : 0) : 1)
 				.listenAs(new ItemEvent(){
 					@Override
 					public boolean call(ItemAction action, BadblockPlayer player) {
