@@ -462,6 +462,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			return;
 		}
 
+		// TODO fix avec la comptabilité 1.11
 		BossBar bar = ViaVersion.getInstance().createBossBar(message, life, BossColor.valueOf(color.name()), BossStyle.valueOf(style.name()));
 		bar.addPlayer(this);
 
