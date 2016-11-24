@@ -248,6 +248,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		if (object.has("permissions")) {
 			this.object.add("permissions", object.get("permissions"));
+			System.out.println("A");
 			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
 			// TODO: remove (SULFIQUE VEUT ME CREER UN GRADE CTO)
 			if (getName().equalsIgnoreCase("xmalware")) this.permissions.setParent(-1L, PermissionManager.getInstance().getGroup("admin"));

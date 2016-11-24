@@ -90,7 +90,9 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 	@EventHandler
 	public void onDataReceive(PlayerLoadedEvent e){
+		System.out.println("C");
 		if(!doGroupsPrefix) return;
+		System.out.println("D: " + e.getPlayer().getMainGroup() + " / " + groups.get(e.getPlayer().getMainGroup()));
 
 		getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
 
