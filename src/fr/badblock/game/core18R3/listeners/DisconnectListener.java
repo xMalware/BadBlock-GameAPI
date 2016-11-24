@@ -44,10 +44,7 @@ public class DisconnectListener extends BadListener {
 			System.out.println("Added LeaverBuster for " + player.getName());
 			player.getPlayerData().getLeaves().add(System.currentTimeMillis());
 			JsonObject jsonObject = new JsonObject();
-			JsonObject leaveObject = new JsonObject();
-			leaveObject.add("leaves", GameAPI.getGson().toJsonTree(player.getPlayerData().getLeaves()));
-			jsonObject.add("game", leaveObject);
-			System.out.println(jsonObject.toString());
+			jsonObject.add("leaves", GameAPI.getGson().toJsonTree(player.getPlayerData().getLeaves()));
 			GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
 			TaskManager.runTaskLater(new Runnable() {
 				@Override
