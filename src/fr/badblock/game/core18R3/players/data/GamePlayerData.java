@@ -46,7 +46,7 @@ public class GamePlayerData implements PlayerData {
 
 	private Map<String, Map<String, Double>> 			  stats   	 	   = Maps.newConcurrentMap();
 
-	private List<Long>									  leaves		   = new ArrayList<>();
+	public  List<Long>									  leaves		   = new ArrayList<>();
 	
 	private transient List<String>						  achloadeds	   = new ArrayList<>();
 
