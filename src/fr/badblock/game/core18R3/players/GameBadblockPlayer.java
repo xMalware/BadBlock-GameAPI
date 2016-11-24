@@ -168,8 +168,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		this.inGameData  = Maps.newConcurrentMap();
 
-		this.playerData  = offlinePlayer == null ? new GamePlayerData(this) : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recr�� � la r�c�ptions des donn�es
-
+		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recr�� � la r�c�ptions des donn�es
+		this.playerData.setGameBadblockPlayer(this);
+		
 		if(!GamePlugin.EMPTY_VERSION) {
 			this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
 			// TODO: remove (SULFIQUE VEUT ME CREER UN GRADE CTO)

@@ -27,6 +27,7 @@ import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.utils.i18n.Locale;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter@ToString
@@ -52,6 +53,7 @@ public class GamePlayerData implements PlayerData {
 	private transient JsonObject 						  data		 	   = new JsonObject();
 	private transient JsonObject 						  object		   = new JsonObject();
 
+	@Getter@Setter
 	private transient GameBadblockPlayer				  gameBadblockPlayer;
 
 	// temporary values
@@ -60,10 +62,6 @@ public class GamePlayerData implements PlayerData {
 	private transient int								  addedLevels      = 0;
 	private transient long								  addedXP		   = 0;
 	private transient int 								  addedRankedPoints= 0;
-	
-	public GamePlayerData(GameBadblockPlayer gameBadblockPlayer) {
-		this.gameBadblockPlayer = gameBadblockPlayer;
-	}
 	
 	public void setData(JsonObject data){
 		if(data.has("other")){
