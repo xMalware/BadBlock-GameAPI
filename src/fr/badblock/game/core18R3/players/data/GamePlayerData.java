@@ -61,6 +61,10 @@ public class GamePlayerData implements PlayerData {
 	private transient long								  addedXP		   = 0;
 	private transient int 								  addedRankedPoints= 0;
 	
+	public GamePlayerData(GameBadblockPlayer gameBadblockPlayer) {
+		this.gameBadblockPlayer = gameBadblockPlayer;
+	}
+	
 	public void setData(JsonObject data){
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
