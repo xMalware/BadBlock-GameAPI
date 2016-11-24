@@ -115,6 +115,7 @@ import us.myles.ViaVersion.api.boss.BossStyle;
 @SuppressWarnings({ "rawtypes", "deprecation" })
 public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public static final Type collectionType = new TypeToken<List<String>>() {}.getType();
+	public static final Type collectType = new TypeToken<List<Long>>() {}.getType();
 	@Getter@Setter
 	private CustomObjective 			 customObjective 	  = null;
 	@Getter
@@ -159,6 +160,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private String						realName;
 	@Getter@Setter
 	private List<UUID>					playersWithHim;
+	@Getter@Setter
+	public  List<Long>					leaves		   = new ArrayList<>();
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -223,6 +226,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 			playerData = GameAPI.getGson().fromJson(game, GamePlayerData.class);
 			playerData.setData(game);
+		}
+		if (object.has("leaves")) {
+			this.leaves = GameAPI.getGson().fromJson(object.get("leaves").getAsJsonObject(), collectType);
 		}
 		if (object.has("playersWithHim")) {
 			try {

@@ -45,8 +45,6 @@ public class GamePlayerData implements PlayerData {
 	private Map<String, PlayerAchievementState> 		  achievements 	   = Maps.newConcurrentMap();
 
 	private Map<String, Map<String, Double>> 			  stats   	 	   = Maps.newConcurrentMap();
-
-	public  List<Long>									  leaves		   = new ArrayList<>();
 	
 	private transient List<String>						  achloadeds	   = new ArrayList<>();
 
@@ -322,7 +320,6 @@ public class GamePlayerData implements PlayerData {
 	@Override
 	public JsonObject saveData() {
 		JsonObject object = GameAPI.getGson().toJsonTree(this).getAsJsonObject();
-
 		for(Entry<String, GameData> entries : datas.entrySet()){
 			if(data.has(entries.getKey())){
 				data.remove(entries.getKey());
@@ -376,6 +373,11 @@ public class GamePlayerData implements PlayerData {
 		if (!GamePlugin.getInstance().getGameServerManager().getRankedConfig().ranked) return addedRankedPoints;
 		addedRankedPoints -= rankedPoints;
 		return addedRankedPoints;
+	}
+
+	@Override
+	public List<Long> getLeaves() {
+		return this.getGameBadblockPlayer().getLeaves();
 	}
 
 }
