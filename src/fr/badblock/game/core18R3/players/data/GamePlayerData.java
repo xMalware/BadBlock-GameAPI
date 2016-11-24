@@ -377,7 +377,8 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public List<Long> getLeaves() {
-		if (this.getGameBadblockPlayer().getLeaves() == null) this.getGameBadblockPlayer().setLeaves(new ArrayList<>());
+		if (this.getGameBadblockPlayer().leaves == null)
+			return this.getGameBadblockPlayer().leaves = new ArrayList<>();
 		return this.getGameBadblockPlayer().getLeaves();
 	}
 
