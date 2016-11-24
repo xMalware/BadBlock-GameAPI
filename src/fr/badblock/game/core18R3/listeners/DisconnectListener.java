@@ -37,11 +37,12 @@ public class DisconnectListener extends BadListener {
 		player.removeBossBars();
 		player.undisguise();
 
+		if(GameAPI.getAPI().getRunType().equals(RunType.GAME) && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
+			System.out.println("Added LeaverBuster for " + player.getName());
+			player.getPlayerData().getLeaves().add(System.currentTimeMillis());
+			player.saveData();
+		}
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME) && !afterGame()) {
-			if(GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
-				player.getPlayerData().getLeaves().add(System.currentTimeMillis());
-				player.saveData();
-			}
 			// Booster
 			PlayerBooster playerBoosterZ = null;
 			for (PlayerBooster playerBoosterr : player.getPlayerData().getBoosters())
