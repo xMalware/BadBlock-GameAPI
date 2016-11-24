@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.google.gson.JsonObject;
+
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.gameserver.GameServer;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
@@ -28,6 +30,7 @@ import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.general.Callback;
+import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class DisconnectListener extends BadListener {
 	@EventHandler
@@ -40,7 +43,18 @@ public class DisconnectListener extends BadListener {
 		if(GameAPI.getAPI().getRunType().equals(RunType.GAME) && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
 			System.out.println("Added LeaverBuster for " + player.getName());
 			player.getPlayerData().getLeaves().add(System.currentTimeMillis());
-			player.saveData();
+			JsonObject jsonObject = new JsonObject();
+			JsonObject leaveObject = new JsonObject();
+			leaveObject.add("leaves", GameAPI.getGson().toJsonTree(player.getPlayerData().getLeaves()));
+			jsonObject.add("game", leaveObject);
+			System.out.println(jsonObject.toString());
+			GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
+			TaskManager.runTaskLater(new Runnable() {
+				@Override
+				public void run() {
+					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
+				}
+			}, 20);
 		}
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME) && !afterGame()) {
 			// Booster
