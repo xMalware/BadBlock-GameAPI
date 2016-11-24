@@ -54,7 +54,7 @@ public class DisconnectListener extends BadListener {
 				public void run() {
 					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
 				}
-			}, 20);
+			}, 5);
 		}
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME) && !afterGame()) {
 			// Booster
