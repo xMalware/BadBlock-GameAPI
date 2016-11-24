@@ -27,7 +27,6 @@ import fr.badblock.gameapi.game.GameServer.WhileRunningConnectionTypes;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
-import fr.badblock.gameapi.players.data.PlayerData;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.general.Callback;
@@ -43,8 +42,7 @@ public class DisconnectListener extends BadListener {
 
 		if(GameAPI.getAPI().getRunType().equals(RunType.GAME) && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
 			System.out.println("Added LeaverBuster for " + player.getName());
-			PlayerData playerData = player.getPlayerData();
-			List<Long> leaves = playerData.getLeaves();
+			List<Long> leaves = player.getLeaves();
 			leaves.add(System.currentTimeMillis());
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("leaves", GameAPI.getGson().toJsonTree(leaves));
