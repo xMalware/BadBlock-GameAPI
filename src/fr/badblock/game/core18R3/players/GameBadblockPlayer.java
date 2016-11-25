@@ -185,7 +185,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}else object = new JsonObject();
 
 		if (GamePlugin.EMPTY_VERSION) return;
-		boolean full = Bukkit.getOnlinePlayers().size() >= Bukkit.getMaxPlayers();
 		if (getRealName() == null) setRealName(CommonFilter.reverseFilterNames(this.getName()));
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
@@ -199,11 +198,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 				dataFetch = true;
 				synchronized (Bukkit.getServer()) {
-					if (full)
-						if (!hasPermission(GamePermission.MODERATOR)) {
-							sendMessage("§cCe serveur est plein.");
-							sendPlayer("lobby");
-						}
 					if (playersWithHim != null && !playersWithHim.isEmpty())
 						Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));	
 					Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
