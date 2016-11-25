@@ -43,10 +43,11 @@ import net.minecraft.server.v1_8_R3.EntityPlayer;
 public class LoginListener extends BadListener {
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onLogin(PlayerLoginEvent e){
-		// On met en ALLOWED ceux qui join en full et on les rekick au cas où au fetch des perms ils ne peuvent pas rejoindre quand c'est full
-		if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
-			if (!GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && BukkitUtils.getPlayers().size() <= Bukkit.getMaxPlayers() + 8)
-				e.setResult(Result.ALLOWED);
+		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
+			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
+				if (GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && BukkitUtils.getPlayers().size() <= Bukkit.getMaxPlayers() + 8)
+					e.setResult(Result.ALLOWED);
+			}
 		}
 		if(GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName())){
 			e.setResult(Result.KICK_WHITELIST); return;
