@@ -101,7 +101,11 @@ public class EntityUtils {
 		List<Class<? extends EntityLiving>> hurted = matching(creat.getTargets(), TargetType.HURTED_BY, exclude);
 		
 		if(!hurted.isEmpty()){
-			nms.targetSelector.a(1, new PathfinderGoalHurtByTarget(nms, true, nearest.toArray(new Class<?>[0])));
+			nms.targetSelector.a(1, new PathfinderGoalHurtByTarget(nms, true, hurted.toArray(new Class<?>[0])));
+			
+			hurted.forEach(type -> {
+				nms.goalSelector.a(2, new PathfinderGoalMeleeAttack(nms, type, 1.0D, false));
+			});
 		}
 		
 		if(!nearest.isEmpty()){
