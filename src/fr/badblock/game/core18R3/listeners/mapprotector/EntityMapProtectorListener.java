@@ -50,6 +50,14 @@ public class EntityMapProtectorListener extends BadListener {
 	public void onBlockExplode(BlockExplodeEvent e){
 		if(!GameAPI.getAPI().getMapProtector().allowExplosion(e.getBlock().getLocation())){
 			e.blockList().clear();
+		} else {
+			int i = 0;
+			
+			while(i < e.blockList().size()){
+				if(!GameAPI.getAPI().getMapProtector().canBlockExplode( e.blockList().get(i) )){
+					e.blockList().remove(i);
+				} else i++;
+			}
 		}
 	}
 	
