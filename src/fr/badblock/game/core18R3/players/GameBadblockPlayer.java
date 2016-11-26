@@ -112,7 +112,6 @@ import us.myles.ViaVersion.api.boss.BossBar;
 import us.myles.ViaVersion.api.boss.BossColor;
 import us.myles.ViaVersion.api.boss.BossStyle;
 
-@SuppressWarnings({ "rawtypes", "deprecation" })
 public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public static final Type collectionType = new TypeToken<List<String>>() {}.getType();
 	public static final Type collectType = new TypeToken<List<Long>>() {}.getType();
@@ -457,7 +456,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private Map<String, BossBar> bossBars    = new HashMap<>();
 	private BossBar	             lastBossBar = null;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void addBossBar(String key, String message, float life, BossBarColor color, BossBarStyle style) {
 		message = getI18n().replaceColors(message);
@@ -514,7 +512,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void removeBossBar(String key) {
 		BossBar bar = bossBars.get(key.toLowerCase());
@@ -533,7 +530,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void removeBossBars() {
 		bossBars.values().forEach(bar -> bar.removePlayer(this));
