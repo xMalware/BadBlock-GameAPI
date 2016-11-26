@@ -50,6 +50,7 @@ import fr.badblock.game.core18R3.internalutils.TeleportUtils;
 import fr.badblock.game.core18R3.itemstack.GameCustomInventory;
 import fr.badblock.game.core18R3.itemstack.GameItemExtra;
 import fr.badblock.game.core18R3.itemstack.GameItemStackFactory;
+import fr.badblock.game.core18R3.itemstack.ItemStackExtras;
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.LadderConfig;
@@ -304,6 +305,8 @@ public class GamePlugin extends GameAPI {
 
 			joinItems = new GameJoinItems();    // Items donn� � l'arriv�e du joueur
 			chestGenerator = new GameChestGenerator();
+			
+			new ItemStackExtras();
 
 			GameAPI.logColor("&b[GameAPI] &aRegistering packets listeners ...");
 
