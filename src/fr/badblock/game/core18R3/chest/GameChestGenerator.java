@@ -3,11 +3,15 @@ package fr.badblock.game.core18R3.chest;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -40,18 +44,23 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class GameChestGenerator extends BadListener implements ChestGenerator {
-	private List<Location> 	   filledChests = new ArrayList<>();
-	private List<RemovedChest> removedChest = new ArrayList<>();
+	private List<Location> 	   filledChests    = new ArrayList<>();
+	private Map<String, ChestGenData> chests   = new HashMap<>();
+	private List<RemovedChest> removedChest    = new ArrayList<>();
 
 	@Getter
-	private boolean 		   working 		= false;
+	private boolean 		   working 		   = false;
 
 	private File 			   configFile;
 	private ChestConfiguration config;
-	private Random 			   random 	    = new Random();
+	private Random 			   random 	       = new Random();
 	@Getter@Setter
-	private boolean			   removeOnOpen = false;
-
+	private boolean			   removeOnOpen    = false;
+	@Getter@Setter
+	private boolean			   individualChest = false;
+	@Getter@Setter
+	private Function<BadblockPlayer, List<ISProb>> alternateItemsProvider = (p -> new ArrayList<>());
+	
 	@Override
 	public void setConfigurationFile(File file) {
 		if(isConfigurated())
@@ -76,35 +85,49 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	}
 
 	@Override
-	public ItemStack[] generateChest(int lines) {
+	public ItemStack[] generateChest(BadblockPlayer player, int lines) {
 		int maxItems = config.maxItemsPerLine * lines;
 		int items = MathsUtils.integerRandomInclusive(config.maxItemsPerLine * lines, (maxItems * 2) / 3);
 
 		ItemStack[] result = new ItemStack[lines * 9];
 
+		List<ISProb> alternate = alternateItemsProvider.apply(player);
+		
 		int max = config.itemStacks.stream().mapToInt(item -> { return item.probability; }).sum();
-
+		max += alternate.stream().mapToInt(item -> item.prob).sum();
+		
 		if(max > 0)
 			for(int i=0;i<items;i++){
 				int value = new Random().nextInt(max);
 				int curr  = 0;
 
-				ChestMapItemStack res = null;
+				ItemStack res = null;
 
 				for(ChestMapItemStack item : config.itemStacks){
 					curr += item.probability;
 
 					if(value <= curr){
-						res = item;
+						res = item.getHandle();
 						break;
 					}
 				}
+				
+				if(res == null){
+					for(ISProb is : alternate){
+						curr += is.prob;
 
+						if(value <= curr){
+							res = is.stack;
+							break;
+						}
+					}
+				}
+				
 				while(true){
 					int pos = random.nextInt(result.length);
 
 					if(result[pos] == null){
-						result[pos] = res.getHandle();
+						result[pos] = res;
 						break;
 					}
 				}
@@ -126,7 +149,8 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	@Override
 	public void resetChests() {
 		filledChests.clear();
-
+		chests.clear();
+		
 		for(RemovedChest chest : removedChest){
 			Block block = chest.location.getBlock();
 			block.setType(Material.CHEST);
@@ -141,17 +165,47 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		if(!working || e.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;
 
+		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+		
 		Block block = e.getClickedBlock();
 
 		if(block.getType() != Material.CHEST || filledChests.contains(block.getLocation()))
 			return;
 
-		generate0( (Chest) block.getState() );
+		if( this.isIndividualChest() )
+		{
+			e.setCancelled(true);
+			ItemStack[] is = null;
+			
+			if(mustGenerateOwnChest(player, block.getLocation()))
+			{
+				Block relative = getNearbyChest(block);
+			
+				int size = (relative == null ? 3 : 6);
+
+				is = generateChest(player, size);
+				updateChest(player, block.getLocation(), is);
+			}
+			else
+			{
+				is = getChest(player, block.getLocation());
+			}
+			
+			Inventory inv = Bukkit.createInventory((Chest) block.getState(), is.length);
+			inv.setContents(is);
+			
+			player.openInventory(inv);
+			player.playChestAnimation(block, true);
+			
+			return;
+		}
+		
+		generate0( player, (Chest) block.getState() );
 
 		Block relative = getNearbyChest(block);
 
 		if(relative != null)
-			generate0( (Chest) relative.getState() );
+			generate0( player, (Chest) relative.getState() );
 	}
 
 	@EventHandler
@@ -175,6 +229,18 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 				if(relative != null)
 					remove0( (Chest) relative.getState() );
+			}
+		}
+		else if(isWorking() && isIndividualChest() && e.getPlayer().getType() == EntityType.PLAYER)
+		{
+			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+			
+			if(player.getGameMode().equals(GameMode.SPECTATOR)) return;
+			if(e.getInventory().getHolder() instanceof Chest){
+				Chest c = (Chest) e.getInventory().getHolder();
+				
+				player.playChestAnimation(c.getBlock(), false);
+				updateChest(player, c.getLocation(), e.getInventory().getContents());
 			}
 		}
 	}
@@ -207,10 +273,10 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		saveConfig();
 	}
 	
-	private void generate0(Chest chest){
+	private void generate0(BadblockPlayer player, Chest chest){
 		Inventory inv = chest.getBlockInventory();
 		if (!empty(inv)) return;
-		inv.setContents(generateChest(3));
+		inv.setContents(generateChest(player, 3));
 	}
 	
 	private boolean empty(Inventory inventory) {
@@ -232,6 +298,34 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		}
 
 		return null;
+	}
+	
+	private boolean mustGenerateOwnChest(BadblockPlayer player, Location loc){
+		if(!chests.containsKey(player.getName()))
+			return true;
+		
+		return !chests.get( player.getName() ).has( loc );
+	}
+	
+	private void updateChest(BadblockPlayer player, Location loc, ItemStack[] is){
+		ChestGenData data = chests.get(player.getName());
+		
+		if(data == null)
+		{
+			data = new ChestGenData();
+			chests.put(player.getName(), data);
+		}
+		
+		data.chestUpdated(loc, is);
+	}
+	
+	private ItemStack[] getChest(BadblockPlayer player, Location loc){
+		ChestGenData data = chests.get(player.getName());
+		
+		if(data == null)
+			data = chests.put(player.getName(), new ChestGenData());
+			
+		return data.chests.get(loc);
 	}
 
 	@AllArgsConstructor
@@ -267,6 +361,23 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 			this.probability = prob;
 			this.keep		 = keep;
+		}
+	}
+	
+	private class ChestGenData {
+		public Map<Location, ItemStack[]> chests = new HashMap<>();
+		
+		public void chestUpdated(Location loc, ItemStack[] is){
+			chests.put(loc, is);
+		
+			Block relative = getNearbyChest( loc.getBlock() );
+			
+			if(relative != null)
+				chests.put(relative.getLocation(), is);
+		}
+		
+		public boolean has(Location loc){
+			return chests.containsKey(loc);
 		}
 	}
 }

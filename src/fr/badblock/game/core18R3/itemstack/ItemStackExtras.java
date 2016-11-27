@@ -2,11 +2,9 @@ package fr.badblock.game.core18R3.itemstack;
 
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -18,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import com.google.common.collect.Maps;
 
 import fr.badblock.game.core18R3.players.ingamedata.CommandInGameData;
+import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
@@ -25,7 +24,7 @@ import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 
-public class ItemStackExtras implements Listener {
+public class ItemStackExtras extends BadListener {
 	private static ItemStackExtras instance;
 
 	public static ItemStackExtras get(){ return instance; }
@@ -35,8 +34,6 @@ public class ItemStackExtras implements Listener {
 
 	public ItemStackExtras(){
 		instance = this;
-		Bukkit.getPluginManager().registerEvents(this, GameAPI.getAPI());
-
 		this.items = Maps.newConcurrentMap();
 	}
 

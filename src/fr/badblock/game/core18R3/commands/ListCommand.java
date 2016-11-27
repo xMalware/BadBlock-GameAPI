@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -19,14 +20,13 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class ListCommand extends AbstractCommand {
 	public ListCommand() {
 		super("list", new TranslatableString("commands.list.usage"), GamePermission.MODERATOR, GamePermission.MODERATOR, GamePermission.BMODERATOR);
-		allowConsole(false);
 	}
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		Map<String, List<BadblockPlayer>> players = new HashMap<>();
 		
-		Stream<BadblockPlayer> stream = Bukkit.getOnlinePlayers().stream().map(player -> {
+		Set<BadblockPlayer> set = Bukkit.getOnlinePlayers().stream().map(player -> {
 			return (BadblockPlayer) player;
 		}).filter(player -> {
 			if(player.inGameData(CommandInGameData.class).vanish){
@@ -34,9 +34,9 @@ public class ListCommand extends AbstractCommand {
 			} else {
 				return true;
 			}
-		});
+		}).collect(Collectors.toSet());
 		
-		stream.forEach(player -> {
+		set.stream().forEach(player -> {
 			List<BadblockPlayer> fromGroups = players.get(player.getMainGroup());
 			
 			if(fromGroups == null){
@@ -47,7 +47,7 @@ public class ListCommand extends AbstractCommand {
 			fromGroups.add(player);
 		});
 		
-		int count = stream.mapToInt(player -> {
+		int count = set.stream().mapToInt(player -> {
 			return 1;
 		}).sum();
 		
@@ -56,8 +56,7 @@ public class ListCommand extends AbstractCommand {
 		players.forEach((group, concerneds) -> {
 			String prefix = concerneds.get(0).getTabGroupPrefix().getAsLine(sender);
 		
-			concerneds.size();
-			sendTranslatedMessage(sender, "commands.list.part", prefix, concerneds.size(), StringUtils.join(concerneds, ", "));
+			sendTranslatedMessage(sender, "commands.list.part", prefix, concerneds.size(), StringUtils.join(concerneds.stream().map(p -> p.getName()), ", "));
 		});
 		
 		return true;

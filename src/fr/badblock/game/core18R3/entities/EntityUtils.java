@@ -60,6 +60,7 @@ import net.minecraft.server.v1_8_R3.IAttribute;
 import net.minecraft.server.v1_8_R3.Material;
 import net.minecraft.server.v1_8_R3.MathHelper;
 import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
 import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 
 public class EntityUtils {
@@ -100,12 +101,19 @@ public class EntityUtils {
 		List<Class<? extends EntityLiving>> hurted = matching(creat.getTargets(), TargetType.HURTED_BY, exclude);
 		
 		if(!hurted.isEmpty()){
-			nms.targetSelector.a(1, new PathfinderGoalHurtByTarget(nms, true, nearest.toArray(new Class<?>[0])));
+			nms.targetSelector.a(1, new PathfinderGoalHurtByTarget(nms, true, hurted.toArray(new Class<?>[0])));
+			
+			hurted.forEach(type -> {
+				nms.goalSelector.a(2, new PathfinderGoalMeleeAttack(nms, type, 1.0D, false));
+			});
 		}
 		
 		if(!nearest.isEmpty()){
 			nearest.forEach(type ->
-				nms.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(nms, type, true))
+				{
+					nms.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(nms, type, true));
+					nms.goalSelector.a(2, new PathfinderGoalMeleeAttack(nms, type, 1.0D, false));
+				}
 			);
 		}
 	}
