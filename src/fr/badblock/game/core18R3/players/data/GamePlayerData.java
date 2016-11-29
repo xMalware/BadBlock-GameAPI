@@ -71,6 +71,7 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public int addBadcoins(int badcoins, boolean applyBonus) {
+		if (badcoins < 0) return 0;
 		badcoins = Math.abs(badcoins);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
@@ -125,6 +126,7 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public long addXp(long xp, boolean applyBonus) {
+		if (badcoins < 0) return 0;
 		xp = Math.abs(xp);
 
 		if (applyBonus) {
@@ -155,23 +157,23 @@ public class GamePlayerData implements PlayerData {
 			xp *= v < 1.0d ? 1.0d : v;
 		}
 
+		// Gestion de l'XP
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
-		addedXP += xp;
+		this.xp += xp;
 		// pas de passage de niveau
-		if (delta > 0)
-			return this.xp += xp;
-		// passage de niveau jusqu'à ce qu'il y ait suffisament de niveau(x) passé(s) pour avoir une progression
-		while (getXpUntilNextLevel() - (xp + this.xp) <= 0) {
+		if (delta > 0) return this.xp;
+		// passage de niveau jusqu'à ce qu'il y ai suffisament de niveau(x) passé(s) pour avoir une progression
+		while (getXpUntilNextLevel() - (this.xp + xp) <= 0) {
 			level++;
 			addedLevels++;
 		}
-
+		
 		if (this.getGameBadblockPlayer() != null) {
 			this.getGameBadblockPlayer().sendTranslatedMessage("game.level", level);
 			this.getGameBadblockPlayer().playSound(Sound.LEVEL_UP);
 		}
 
-		return this.xp = -(getXpUntilNextLevel() - (xp + this.xp));
+		return this.xp;
 	}
 
 	@Override
