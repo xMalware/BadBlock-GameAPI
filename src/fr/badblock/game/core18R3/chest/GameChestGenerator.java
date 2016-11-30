@@ -198,7 +198,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 			player.playChestAnimation(block, true);
 			
 			return;
-		}
+		} 
 		
 		generate0( player, (Chest) block.getState() );
 
