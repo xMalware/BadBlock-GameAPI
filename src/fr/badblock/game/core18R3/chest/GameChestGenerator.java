@@ -201,7 +201,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		} 
 		
 		generate0( player, (Chest) block.getState() );
-
+ 
 		Block relative = getNearbyChest(block);
 
 		if(relative != null)
