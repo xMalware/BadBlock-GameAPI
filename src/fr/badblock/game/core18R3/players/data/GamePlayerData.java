@@ -126,7 +126,7 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public long addXp(long xp, boolean applyBonus) {
-		if (badcoins < 0) return 0;
+		if (xp < 0) return 0;
 		xp = Math.abs(xp);
 
 		if (applyBonus) {
