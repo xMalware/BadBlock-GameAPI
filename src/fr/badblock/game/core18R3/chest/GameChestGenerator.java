@@ -26,15 +26,18 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.DirectionalContainer;
 
 import fr.badblock.game.core18R3.commands.ChestGeneratorCommand;
 import fr.badblock.gameapi.BadListener;
+import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.configuration.values.MapItemStack;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.servers.ChestGenerator;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.general.MathsUtils;
+import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -107,7 +110,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 					curr += item.probability;
 
 					if(value <= curr){
-						res = item.getHandle();
+						res = item.getHandle(player.getPlayerData().getLocale());
 						break;
 					}
 				}
@@ -345,6 +348,9 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		private 		  int 	  probability;
 		private transient boolean keep;
 		
+		private 		  String  optional_i18n_displayname;
+		private 		  String  optional_i18n_lore;
+		
 		public ChestMapItemStack(){
 			this.keep = true;
 		}
@@ -361,6 +367,26 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 			this.probability = prob;
 			this.keep		 = keep;
+		}
+		
+		public ItemStack getHandle(Locale locale){
+			ItemStack stack = getHandle();
+			
+			ItemMeta meta = stack.getItemMeta();
+			
+			if(optional_i18n_displayname != null)
+			{
+				meta.setDisplayName( GameAPI.i18n().get(optional_i18n_displayname)[0] );
+			}
+			
+			if(optional_i18n_lore != null)
+			{
+				meta.setDisplayName( GameAPI.i18n().get(optional_i18n_lore)[0] );
+			}
+			
+			stack.setItemMeta(meta);
+			
+			return stack;
 		}
 	}
 	
