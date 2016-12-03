@@ -18,6 +18,7 @@ import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 import fr.badblock.gameapi.utils.selections.Vector3f;
 
@@ -30,8 +31,11 @@ public class PlayerInteractListener extends BadListener {
 	
 	private void doSelectionListener(PlayerInteractEvent e){
 		if(e.getAction() == Action.RIGHT_CLICK_BLOCK || e.getAction() == Action.LEFT_CLICK_BLOCK){
+			GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
+			if (player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
+				if (!player.hasAdminMode()) e.setCancelled(true);
+			}
 			if(ItemStackUtils.isValid(e.getItem()) && e.getItem().getType() == Material.BLAZE_ROD){
-				GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 				
 				if(!player.hasAdminMode()) return;
 				
