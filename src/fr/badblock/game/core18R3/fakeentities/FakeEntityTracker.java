@@ -17,6 +17,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import us.myles.ViaVersion.api.ViaVersion;
 
+@SuppressWarnings("deprecation")
 public class FakeEntityTracker {
 	public static final double TRACKING_RANGE = 48.0d;
 
