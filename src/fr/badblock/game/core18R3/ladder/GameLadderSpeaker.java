@@ -13,8 +13,10 @@ import java.util.Map;
 import java.util.Queue;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import com.google.common.collect.Queues;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -229,8 +231,16 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 				}
 			}
 		}else if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.MODIFICATION){
-			GameBadblockPlayer player = (GameBadblockPlayer) Bukkit.getPlayer(packet.getKey());
-			player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
+			Player playerz = Bukkit.getPlayer(packet.getKey());
+			if (playerz == null) return;
+			GameBadblockPlayer player = (GameBadblockPlayer) playerz;
+			JsonElement jsonElement = new JsonParser().parse(packet.getData());
+			if (jsonElement != null) {
+				JsonObject jsonObject = jsonElement.getAsJsonObject();
+				if (jsonObject != null) {
+					player.updateData(jsonObject);
+				}
+			}
 			if(player != null){
 				Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
 			}
