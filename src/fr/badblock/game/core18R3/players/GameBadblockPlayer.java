@@ -186,9 +186,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		if (GamePlugin.EMPTY_VERSION) return;
 		if (getRealName() == null) setRealName(CommonFilter.reverseFilterNames(this.getName()));
+		System.out.println("[API/1] Loaded " + getName());
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
+				System.out.println("[API/2] Loaded " + getName());
 				object = result;
 				updateData(result);
 				while (!hasJoined)
@@ -196,10 +198,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						Thread.sleep(10L);
 					} catch (InterruptedException unused) {}
 
+				System.out.println("[API/3] Loaded " + getName());
 				dataFetch = true;
 				synchronized (Bukkit.getServer()) {
 					if (playersWithHim != null && !playersWithHim.isEmpty())
 						Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));	
+					System.out.println("[API/4] Loaded " + getName());
 					Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
 				}
 			}
