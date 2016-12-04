@@ -170,7 +170,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recr�� � la r�c�ptions des donn�es
 		this.playerData.setGameBadblockPlayer(this);
-		
+
 		if(!GamePlugin.EMPTY_VERSION) {
 			this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
 			// TODO: remove (SULFIQUE VEUT ME CREER UN GRADE CTO)
@@ -211,8 +211,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	public void loadInjector() {
-		Channel channel = getHandle().playerConnection.networkManager.channel;
-		channel.pipeline().addBefore("packet_handler", "api", new BadblockInjector(this));
+		try {
+			Channel channel = getHandle().playerConnection.networkManager.channel;
+			channel.pipeline().addBefore("packet_handler", "api", new BadblockInjector(this));
+		}catch(Exception error) {
+			error.printStackTrace();
+		}
 	}
 
 	public void updateData(JsonObject object) {
@@ -1070,7 +1074,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public <T extends Projectile> T launchProjectile(Class<T> projectile, BiConsumer<Block, Entity> action) {
 		return launchProjectile(projectile,  action, 0);
 	}
-	
+
 	@Override
 	public <T extends Projectile> T launchProjectile(Class<T> projectile, BiConsumer<Block, Entity> action, int range) {
 		T proj = launchProjectile(projectile);
@@ -1078,10 +1082,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		if(range <= 0)
 			return proj;
-		
+
 		Vector velocity  = proj.getVelocity();
 		Location initLoc = proj.getLocation();
-		
+
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -1089,11 +1093,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					cancel();
 					return;
 				}
-				
+
 				proj.setVelocity(velocity);
 			}
 		}.runTaskTimer(GameAPI.getAPI(), 0, 1L);
-		
+
 		return proj;
 	}
 
@@ -1206,11 +1210,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public boolean hasVipLevel(int level, boolean showErrorMessage) {
 		boolean have = getVipLevel() >= level;
-		
+
 		if(!have && showErrorMessage){
 			sendTranslatedMessage("game.vip.needlevel." + level);
 		}
-		
+
 		return have;
 	}
 }
