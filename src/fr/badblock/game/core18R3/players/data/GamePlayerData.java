@@ -167,6 +167,7 @@ public class GamePlayerData implements PlayerData {
 			level++;
 			addedLevels++;
 		}
+		this.xp = 0;
 		
 		if (this.getGameBadblockPlayer() != null) {
 			this.getGameBadblockPlayer().sendTranslatedMessage("game.level", level);
