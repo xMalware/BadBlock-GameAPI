@@ -45,6 +45,10 @@ public class CReportCommand extends AbstractCommand {
 			}
 		}
 		ChatData chatData = ChatListener.messages.get(id);
+		if (player.getName().equalsIgnoreCase(chatData.playerName)) {
+			player.sendTranslatedMessage("commands.creport.schizophrenia");
+			return true;
+		}
 		GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Message("badfilter", "§b[REPORT] §7(By " + player.getName() + ") | §7" + chatData.playerName + " §8» §7" + chatData.message, 5000, false);
 		player.sendTranslatedMessage("commands.creport.reportedmessage", chatData.playerName, chatData.message);
 		lastReport.put(player.getName(), System.currentTimeMillis() + 30_000L);

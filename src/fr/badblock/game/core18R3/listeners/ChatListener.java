@@ -42,7 +42,7 @@ public class ChatListener extends BadListener {
 			int i = messages.size() + 1;
 			messages.put(i, new ChatData(player.getName(), e.getMessage()));
 			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
-			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "creport " + i) );
+			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
 			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
 			
 			for(Player p : e.getRecipients()){
@@ -57,7 +57,7 @@ public class ChatListener extends BadListener {
 			int i = messages.size() + 1;
 			messages.put(i, new ChatData(player.getName(), e.getMessage()));
 			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
-			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "creport " + i) );
+			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
 			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
 			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 				if (e.getRecipients().contains(p))
@@ -73,7 +73,7 @@ public class ChatListener extends BadListener {
 			messages.put(i, new ChatData(player.getName(), e.getMessage()));
 			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), team, e.getMessage(), player.getPlayerData().getLevel(), player.getGroupSuffix());
 			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
-			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "creport " + i) );
+			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
 			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
 			for(Player pl : e.getRecipients())
 				pl.sendMessage(message, new TextComponent(" " + s.get((BadblockPlayer) pl)[0]));
