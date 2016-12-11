@@ -39,18 +39,29 @@ public class ChatListener extends BadListener {
 		protectColor(player, e);
 		if(player.getBadblockMode() == BadblockMode.SPECTATOR){
 			TranslatableString result = new TranslatableString("chat.spectator" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), e.getMessage(), player.getPlayerData().getLevel(), player.getGroupSuffix());
-
+			int i = messages.size() + 1;
+			messages.put(i, new ChatData(player.getName(), e.getMessage()));
+			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
+			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "creport " + i) );
+			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover")[0]).create() ) );
+			
 			for(Player p : e.getRecipients()){
 				BadblockPlayer bPlayer = (BadblockPlayer) p;
-				if (player.hasPermission(GamePermission.MODERATOR)) result.send(p);
-				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR) result.send(bPlayer);
+				if (player.hasPermission(GamePermission.MODERATOR))
+					p.sendMessage(message, new TextComponent(" " + result.get((BadblockPlayer) p)[0]));
+				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR)
+					p.sendMessage(message, new TextComponent(" " + result.get((BadblockPlayer) p)[0]));
 			}
 		} else if(team && player.getTeam() != null && e.getMessage().startsWith("$")){
 			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().substring(1), player.getPlayerData().getLevel(), player.getGroupSuffix());
-
+			int i = messages.size() + 1;
+			messages.put(i, new ChatData(player.getName(), e.getMessage()));
+			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
+			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "creport " + i) );
+			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover")[0]).create() ) );
 			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 				if (e.getRecipients().contains(p))
-					result.send(p);
+					p.sendMessage(message, new TextComponent(" " + result.get((BadblockPlayer) p)[0]));
 			}
 		} else {
 			Object team = "";
@@ -64,7 +75,6 @@ public class ChatListener extends BadListener {
 			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
 			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "creport " + i) );
 			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover")[0]).create() ) );
-			player.spigot().sendMessage( message, new TextComponent() );
 			for(Player pl : e.getRecipients())
 				pl.sendMessage(message, new TextComponent(" " + s.get((BadblockPlayer) pl)[0]));
 		}
