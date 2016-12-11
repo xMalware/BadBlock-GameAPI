@@ -41,7 +41,7 @@ public class DisconnectListener extends BadListener {
 		player.undisguise();
 
 		if(GameAPI.getAPI().getRunType().equals(RunType.GAME) && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
-			System.out.println("Added LeaverBuster for " + player.getName());
+
 			List<Long> leaves = player.getLeaves();
 			leaves.add(System.currentTimeMillis());
 			JsonObject jsonObject = new JsonObject();
@@ -53,6 +53,18 @@ public class DisconnectListener extends BadListener {
 					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
 				}
 			}, 5);
+			TaskManager.runTaskLater(new Runnable() {
+				@Override
+				public void run() {
+					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
+				}
+			}, 20);
+			TaskManager.runTaskLater(new Runnable() {
+				@Override
+				public void run() {
+					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
+				}
+			}, 20*5);
 		}
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME) && !afterGame()) {
 			// Booster
