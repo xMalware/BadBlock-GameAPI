@@ -46,23 +46,23 @@ public class DisconnectListener extends BadListener {
 			leaves.add(System.currentTimeMillis());
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("leaves", GameAPI.getGson().toJsonTree(leaves));
-			GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
+			GameAPI.getAPI().getLadderDatabase().updatePlayerData(player.getName(), jsonObject);
 			TaskManager.runTaskLater(new Runnable() {
 				@Override
 				public void run() {
-					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
+					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player.getName(), jsonObject);
 				}
 			}, 5);
 			TaskManager.runTaskLater(new Runnable() {
 				@Override
 				public void run() {
-					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
+					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player.getName(), jsonObject);
 				}
 			}, 20);
 			TaskManager.runTaskLater(new Runnable() {
 				@Override
 				public void run() {
-					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player, jsonObject);
+					GameAPI.getAPI().getLadderDatabase().updatePlayerData(player.getName(), jsonObject);
 				}
 			}, 20*5);
 		}
