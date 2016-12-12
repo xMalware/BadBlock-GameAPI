@@ -47,6 +47,7 @@ public class LoginListener extends BadListener {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && BukkitUtils.getPlayers().size() <= Bukkit.getMaxPlayers() + 8)
 					e.setResult(Result.ALLOWED);
+				else e.disallow(Result.KICK_FULL, "§cCe serveur est plein.");
 			}
 		}
 		if(GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName())){
