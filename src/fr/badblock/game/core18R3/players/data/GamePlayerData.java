@@ -67,6 +67,8 @@ public class GamePlayerData implements PlayerData {
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
 		}
+		if (this.xp < 0) this.xp = 0;
+		if (this.badcoins < 0) this.badcoins = 0;
 	}
 
 	@Override
