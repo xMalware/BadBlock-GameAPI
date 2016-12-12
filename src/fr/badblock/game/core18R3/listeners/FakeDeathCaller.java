@@ -250,6 +250,7 @@ public class FakeDeathCaller extends BadListener {
 	}
 
 	private void death(BadblockPlayer p, FakeDeathEvent e){
+		if (!p.getBadblockMode().equals(BadblockMode.PLAYER)) return;
 		p.inGameData(CommandInGameData.class).lastLocation = p.getLocation();
 		p.heal();
 		p.feed();
@@ -289,6 +290,7 @@ public class FakeDeathCaller extends BadListener {
 		}
 
 		if(e.getTimeBeforeRespawn() > 0){
+			p.setBadblockMode(BadblockMode.RESPAWNING);
 			new BukkitRunnable(){
 				private int time = e.getTimeBeforeRespawn();
 				private boolean first = true;
@@ -296,7 +298,6 @@ public class FakeDeathCaller extends BadListener {
 				@Override
 				public void run(){
 					if(first){
-						p.setBadblockMode(BadblockMode.RESPAWNING);
 						
 						if(e.getWhileRespawnPlace() != null)
 							p.teleport(e.getWhileRespawnPlace());
