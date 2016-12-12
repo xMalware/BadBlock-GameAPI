@@ -35,7 +35,7 @@ public class PlayerInteractListener extends BadListener {
 			if (player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
 				if (!player.hasAdminMode()) e.setCancelled(true);
 			}
-			if(ItemStackUtils.isValid(e.getItem()) && e.getItem().getType() == Material.BLAZE_ROD){
+			if(ItemStackUtils.isValid(player.getItemInHand()) && player.getItemInHand().getType() == Material.BLAZE_ROD){
 				
 				if(!player.hasAdminMode()) return;
 				
