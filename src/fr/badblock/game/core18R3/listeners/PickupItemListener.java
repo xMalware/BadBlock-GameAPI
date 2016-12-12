@@ -12,7 +12,6 @@ public class PickupItemListener extends BadListener {
 	@EventHandler
 	public void onPickupItem(PlayerPickupItemEvent e){
 		setMaxStackSize(e.getItem().getItemStack(), 256);
-		e.getItem().getItemStack().setAmount(256);
 	}
 
 	public static ItemStack setMaxStackSize(ItemStack is, int amount){
