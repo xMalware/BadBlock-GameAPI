@@ -26,6 +26,7 @@ import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayerData;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.utils.ServerProperties;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -150,4 +151,10 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 		total /= original.length;
 		return total;
 	}
+
+	@Override
+	public boolean isJoinableWhenRunning() {
+		return Boolean.parseBoolean(ServerProperties.getProperties().getProperty("docker-runningMatchmaking"));
+	}
+	
 }
