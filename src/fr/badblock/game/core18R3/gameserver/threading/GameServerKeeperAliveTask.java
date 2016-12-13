@@ -38,15 +38,13 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		if (BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) return false;
 		GameState gameState = GamePlugin.getInstance().getGameServer().getGameState();
 		if (gameState.equals(GameState.RUNNING) && GameAPI.getAPI().getGameServer().isJoinableWhenRunning()) {
-			if (GameAPI.getGameName().startsWith("rush") || GameAPI.getGameName().startsWith("tower")) {
-				if (!GameAPI.getAPI().getTeams().isEmpty()) {
-					// team pas full mais team avec > 0
-					long count = GameAPI.getAPI().getTeams().stream().filter(team -> team.playersCurrentlyOnline() < team.getMaxPlayers() && team.playersCurrentlyOnline() > 0 && !team.isDead()).count();
-					if (count == 0) return false;
-					return true;
-				}
+			if (!GameAPI.getAPI().getTeams().isEmpty()) {
+				// team pas full mais team avec > 0
+				long count = GameAPI.getAPI().getTeams().stream().filter(team -> team.playersCurrentlyOnline() < team.getMaxPlayers() && team.playersCurrentlyOnline() > 0 && !team.isDead()).count();
+				if (count == 0) return false;
 				return true;
 			}
+			return true;
 		}
 		return gameState.equals(GameState.WAITING);
 	}
