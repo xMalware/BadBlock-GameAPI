@@ -112,6 +112,7 @@ public class LoginListener extends BadListener {
 			p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
+			p.sendTranslatedMessage("game.closetheinventorytoplaywiththedefaultkit");
 			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && BukkitUtils.getPlayers().size() <= Bukkit.getMaxPlayers()) {
 				TaskManager.runTaskLater(new Runnable() {
 					@Override
