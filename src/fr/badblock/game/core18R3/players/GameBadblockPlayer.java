@@ -1223,4 +1223,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public boolean canJoinWhileRunning() {
 		return this.canJoinWhileRunning > System.currentTimeMillis();
 	}
+
+	@Override
+	public void setCanJoinWhileRunning(long time) {
+		this.canJoinWhileRunning = time;
+	}
 }
