@@ -37,6 +37,7 @@ import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
+import fr.badblock.gameapi.utils.threading.TaskManager;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 
 /**
@@ -93,22 +94,27 @@ public class LoginListener extends BadListener {
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && BukkitUtils.getPlayers().size() <= Bukkit.getMaxPlayers()) {
-				JoinItems joinItems = GameAPI.getAPI().getJoinItems();
-				if (joinItems.getKits().isEmpty()) {
-					// Manage
-				}
-				CustomInventory inventory = GameAPI.getAPI().createCustomInventory(joinItems.getKits().size() / 9, GameAPI.i18n().get(p.getPlayerData().getLocale(), "joinitems.kit.inventoryName")[0]);
-				
-				int slot = 0;
-				
-				for(PlayerKit kit : joinItems.getKits()){
-					if(kit != null){
-						inventory.addClickableItem(slot, kit.getKitItem(p));
+				TaskManager.runTaskLater(new Runnable() {
+					@Override
+					public void run() {
+						JoinItems joinItems = GameAPI.getAPI().getJoinItems();
+						if (joinItems.getKits().isEmpty()) {
+							// Manage
+						}
+						CustomInventory inventory = GameAPI.getAPI().createCustomInventory(joinItems.getKits().size() / 9, GameAPI.i18n().get(p.getPlayerData().getLocale(), "joinitems.kit.inventoryName")[0]);
+
+						int slot = 0;
+
+						for(PlayerKit kit : joinItems.getKits()){
+							if(kit != null){
+								inventory.addClickableItem(slot, kit.getKitItem(p));
+							}
+							slot++;
+						}
+
+						inventory.openInventory(p);
 					}
-					slot++;
-				}
-				
-				inventory.openInventory(p);
+				}, 1);
 			}
 		}
 		if (GamePlugin.getInstance().getGameServerManager().getRankedConfig().isRanked()) {
