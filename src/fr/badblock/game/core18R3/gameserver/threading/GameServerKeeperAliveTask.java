@@ -13,6 +13,7 @@ import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameServer;
 import fr.badblock.gameapi.game.GameState;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,7 +36,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 
 	private boolean isJoinable() {
 		GameState gameState = GamePlugin.getInstance().getGameServer().getGameState();
-		return gameState.equals(GameState.WAITING);
+		return gameState.equals(GameState.WAITING) || (gameState.equals(GameState.RUNNING) && GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && BukkitUtils.getPlayers().size() < Bukkit.getMaxPlayers());
 	}
 
 	public void keepAlive() {
