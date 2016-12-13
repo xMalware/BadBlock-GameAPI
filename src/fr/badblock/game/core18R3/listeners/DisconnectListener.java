@@ -41,11 +41,11 @@ public class DisconnectListener extends BadListener {
 		player.undisguise();
 
 		if(GameAPI.getAPI().getRunType().equals(RunType.GAME) && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
-
 			List<Long> leaves = player.getLeaves();
 			leaves.add(System.currentTimeMillis());
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("leaves", GameAPI.getGson().toJsonTree(leaves));
+			player.sendTranslatedMessage("game.addedleaverbuster");
 			GameAPI.getAPI().getLadderDatabase().updatePlayerData(player.getName(), jsonObject);
 			TaskManager.runTaskLater(new Runnable() {
 				@Override

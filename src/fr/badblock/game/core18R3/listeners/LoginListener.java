@@ -22,6 +22,7 @@ import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
+import fr.badblock.gameapi.events.PlayerGameInitEvent;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
@@ -34,6 +35,7 @@ import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.StringUtils;
+import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
@@ -100,7 +102,7 @@ public class LoginListener extends BadListener {
 						JoinItems joinItems = GameAPI.getAPI().getJoinItems();
 						if (joinItems.getKits().isEmpty()) {
 							// Manage
-							
+							manageRunningJoin(p);
 						}
 						CustomInventory inventory = GameAPI.getAPI().createCustomInventory(joinItems.getKits().size() / 9, GameAPI.i18n().get(p.getPlayerData().getLocale(), "joinitems.kit.inventoryName")[0]);
 
@@ -194,4 +196,11 @@ public class LoginListener extends BadListener {
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
 	}
+	
+	public static void manageRunningJoin(BadblockPlayer player) {
+		GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers()).broadcast();
+		player.setBadblockMode(BadblockMode.PLAYER);
+		Bukkit.getPluginManager().callEvent(new PlayerGameInitEvent(player));
+	}
+	
 }

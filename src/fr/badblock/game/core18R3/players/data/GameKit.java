@@ -7,6 +7,8 @@ import org.bukkit.Material;
 
 import com.google.gson.JsonObject;
 
+import fr.badblock.docker.GameState;
+import fr.badblock.game.core18R3.listeners.LoginListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -163,6 +165,9 @@ public class GameKit implements PlayerKit {
 							player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
 						}
 
+						if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
+							LoginListener.manageRunningJoin(player);
+						}
 						player.inGameData(InGameKitData.class).setChoosedKit(GameKit.this);
 						player.getPlayerData().setLastUsedKit(GameAPI.getInternalGameName(), getKitName());
 						player.saveGameData();
@@ -194,7 +199,9 @@ public class GameKit implements PlayerKit {
 							return true;
 						}
 
-						
+						if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
+							LoginListener.manageRunningJoin(player);
+						}
 						player.inGameData(InGameKitData.class).setChoosedKit(GameKit.this);
 						player.getPlayerData().setLastUsedKit(GameAPI.getInternalGameName(), getKitName());
 						player.saveGameData();
