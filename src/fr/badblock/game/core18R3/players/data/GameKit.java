@@ -7,10 +7,10 @@ import org.bukkit.Material;
 
 import com.google.gson.JsonObject;
 
-import fr.badblock.docker.GameState;
 import fr.badblock.game.core18R3.listeners.LoginListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
+import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.players.data.InGameKitData;
