@@ -166,7 +166,7 @@ public class GameTeam implements BadblockTeam {
 
 	@Override
 	public boolean joinTeam(BadblockPlayer player, JoinReason reason) {
-		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING) return false; // la partie a commencée, ouste !
+		if(!GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING) return false; // la partie a commencï¿½e, ouste !
 
 		if(players.contains(player.getUniqueId())){
 			player.sendTranslatedMessage("teams.already-in", getChatName()); return false;
