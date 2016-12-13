@@ -141,7 +141,7 @@ public class DisconnectListener extends BadListener {
 				}
 			}
 		}
-
+		
 		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING) {
 			if(player.getTeam() != null)
 				player.getTeam().leaveTeam(player);

@@ -46,7 +46,7 @@ public class GamePlayerData implements PlayerData {
 	private Map<String, PlayerAchievementState> 		  achievements 	   = Maps.newConcurrentMap();
 
 	private Map<String, Map<String, Double>> 			  stats   	 	   = Maps.newConcurrentMap();
-	
+
 	private transient List<String>						  achloadeds	   = new ArrayList<>();
 
 	private transient Map<String, GameData> 			  datas 		   = Maps.newConcurrentMap();
@@ -62,7 +62,7 @@ public class GamePlayerData implements PlayerData {
 	private transient int								  addedLevels      = 0;
 	private transient long								  addedXP		   = 0;
 	private transient int 								  addedRankedPoints= 0;
-	
+
 	public void setData(JsonObject data){
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
@@ -170,7 +170,7 @@ public class GamePlayerData implements PlayerData {
 			addedLevels++;
 		}
 		this.xp = 0;
-		
+
 		if (this.getGameBadblockPlayer() != null) {
 			this.getGameBadblockPlayer().sendTranslatedMessage("game.level", level);
 			this.getGameBadblockPlayer().playSound(Sound.LEVEL_UP);
@@ -337,7 +337,8 @@ public class GamePlayerData implements PlayerData {
 
 		JsonObject result = new JsonObject();
 
-		object.addProperty("canJoinWhileRunning", gameBadblockPlayer.canJoinWhileRunning);
+		if (gameBadblockPlayer != null)
+			object.addProperty("canJoinWhileRunning", gameBadblockPlayer.canJoinWhileRunning);
 		object.add("other", data);
 		result.add("game", object);
 
@@ -382,6 +383,6 @@ public class GamePlayerData implements PlayerData {
 		addedRankedPoints -= rankedPoints;
 		return addedRankedPoints;
 	}
-	
+
 }
 

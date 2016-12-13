@@ -39,13 +39,13 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		return gameState.equals(GameState.WAITING) || (gameState.equals(GameState.RUNNING) && GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && BukkitUtils.getPlayers().size() < Bukkit.getMaxPlayers());
 	}
 
-	public void keepAlive() {
-		keepAlive(GameAPI.getAPI().getGameServer().getGameState());
+	public void keepAlive(int addedPlayers) {
+		keepAlive(GameAPI.getAPI().getGameServer().getGameState(), addedPlayers);
 	}
 
-	public void keepAlive(GameState status) {
+	public void keepAlive(GameState gameState, int addedPlayers) {
 		if (!GameAPI.TEST_MODE)
-			sendKeepAlivePacket(status);
+			sendKeepAlivePacket(gameState, addedPlayers);
 	}
 
 	@Override
@@ -57,16 +57,16 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 			Bukkit.shutdown();
 			return;
 		}
-		this.keepAlive();
+		this.keepAlive(0);
 	}
 
-	private void sendKeepAlivePacket(GameState gameState) {
+	private void sendKeepAlivePacket(GameState gameState, int addedPlayers) {
 		GameAPI gameApi = GameAPI.getAPI();
 		GameServerManager gameServerManager = this.getGameServerManager();
 		// ServerConfigurationFactory serverConfigurationFactory =
 		// gameServerManager.getServerConfigurationFactory();
 		GameServer gameServer = gameApi.getGameServer();
-		GameAliveFactory gameAliveFactory = new GameAliveFactory(gameApi.getServer().getServerName(), fr.badblock.docker.GameState.getStatus(gameServer.getGameState().getId()), isJoinable(), Bukkit.getOnlinePlayers().size(), gameServer.getMaxPlayers());
+		GameAliveFactory gameAliveFactory = new GameAliveFactory(gameApi.getServer().getServerName(), fr.badblock.docker.GameState.getStatus(gameServer.getGameState().getId()), isJoinable(), Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers());
 		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.instance.keepalive", gameServerManager.getGson().toJson(gameAliveFactory), 5000, false);
 	}
 

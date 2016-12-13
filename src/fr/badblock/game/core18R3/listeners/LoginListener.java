@@ -134,6 +134,15 @@ public class LoginListener extends BadListener {
 						}
 
 						inventory.openInventory(p);
+						TaskManager.runTaskLater(new Runnable() {
+							@Override
+							public void run() {
+								if (!p.isOnline()) return;
+								if (p.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
+									p.closeInventory();
+								}
+							}
+						}, 20 * 15);
 					}
 				}, 1);
 			}
@@ -229,6 +238,7 @@ public class LoginListener extends BadListener {
 			else betterTeam.joinTeam(player, JoinReason.REBALANCING);
 		}
 		Bukkit.getPluginManager().callEvent(new PlayerGameInitEvent(player));
+		player.setVisible(true);
 	}
 	
 }

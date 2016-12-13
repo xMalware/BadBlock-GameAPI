@@ -53,6 +53,11 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 	private String gameBegin = "";
 
 	private long gameId = new SecureRandom().nextLong();
+	
+	@Override
+	public void keepAlive() {
+		GamePlugin.getInstance().getGameServerManager().getGameServerKeeperAliveTask().keepAlive(0);
+	}
 
 	@Override
 	public void cancelReconnectionInvitations() {
@@ -122,7 +127,7 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 		}
 
 		if (!GameAPI.TEST_MODE)
-			GamePlugin.getInstance().getGameServerManager().getGameServerKeeperAliveTask().keepAlive(gameState);
+			GamePlugin.getInstance().getGameServerManager().getGameServerKeeperAliveTask().keepAlive(gameState, 0);
 	}
 
 	@Override

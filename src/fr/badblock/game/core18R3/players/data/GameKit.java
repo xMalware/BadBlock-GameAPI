@@ -149,6 +149,9 @@ public class GameKit implements PlayerKit {
 								player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
 							} else {
 								player.sendTranslatedMessage("kits.canNotChooseVIP", new TranslatableString("kits." + kitName + "itemDisplayname"));	
+								if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
+									LoginListener.manageRunningJoin(player);
+								}
 								return true;
 							}
 
@@ -158,6 +161,9 @@ public class GameKit implements PlayerKit {
 								player.sendTranslatedMessage("kits.unlockLevel", new TranslatableString("kits." + kitName + ".itemDisplayname"), 1);
 							} else {
 								player.sendTranslatedMessage("kits.canNotUnlockLevel", new TranslatableString("kits." + kitName + ".itemDisplayname"), 1);
+								if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
+									LoginListener.manageRunningJoin(player);
+								}
 								player.closeInventory();
 								return true;
 							}
@@ -187,6 +193,9 @@ public class GameKit implements PlayerKit {
 								player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
 							} else {
 								player.sendTranslatedMessage("kits.canNotChooseVIP", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
+								if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
+									LoginListener.manageRunningJoin(player);
+								}
 								return true;
 							}
 
@@ -195,6 +204,9 @@ public class GameKit implements PlayerKit {
 							player.sendTranslatedMessage("kits.unlockLevel", new TranslatableString("kits." + kitName + ".itemDisplayname"), next);
 						} else {
 							player.sendTranslatedMessage("kits.canNotUnlockLevel", new TranslatableString("kits." + kitName + ".itemDisplayname"), next);
+							if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
+								LoginListener.manageRunningJoin(player);
+							}
 							player.closeInventory();
 							return true;
 						}

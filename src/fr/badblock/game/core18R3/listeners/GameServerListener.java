@@ -38,7 +38,7 @@ public class GameServerListener extends BadListener {
 		GameServerManager gameServerManager = gamePlugin.getGameServerManager();
 		GameServerKeeperAliveTask gameServerKeeperAliveTask = gameServerManager.getGameServerKeeperAliveTask();
 		gameServerKeeperAliveTask.incrementJoinTime();
-		gameServerKeeperAliveTask.keepAlive();
+		gameServerKeeperAliveTask.keepAlive(addedPlayers);
 
 		if (joinedMessage) {
 			GameAPI.i18n().sendMessage(player, "gameserver.join", serverName);
