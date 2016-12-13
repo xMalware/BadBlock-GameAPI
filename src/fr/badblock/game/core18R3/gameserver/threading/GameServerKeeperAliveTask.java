@@ -41,7 +41,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 			if (GameAPI.getGameName().startsWith("rush") || GameAPI.getGameName().startsWith("tower")) {
 				if (!GameAPI.getAPI().getTeams().isEmpty()) {
 					// team pas full mais team avec > 0
-					long count = GameAPI.getAPI().getTeams().stream().filter(team -> team.playersCurrentlyOnline() < team.getMaxPlayers() && team.playersCurrentlyOnline() > 0).count();
+					long count = GameAPI.getAPI().getTeams().stream().filter(team -> team.playersCurrentlyOnline() < team.getMaxPlayers() && team.playersCurrentlyOnline() > 0 && !team.isDead()).count();
 					if (count == 0) return false;
 					return true;
 				}
