@@ -162,7 +162,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private List<UUID>					playersWithHim;
 	@Getter@Setter
 	public  List<Long>					leaves		   = new ArrayList<>();
-
+	
+	public long							canJoinWhileRunning		= System.currentTimeMillis() + 604_800_000L;
+	
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
 
@@ -220,6 +222,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void updateData(JsonObject object) {
 		if (object.has("realName")) {
 			this.realName = object.get("realName").getAsString();
+		}
+		if (object.has("canJoinWhileRunning")) {
+			this.canJoinWhileRunning = object.get("canJoinWhileRunning").getAsLong();
 		}
 		if (object.has("game")) {
 			JsonObject game = object.get("game").getAsJsonObject();
@@ -1212,5 +1217,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 
 		return have;
+	}
+
+	@Override
+	public boolean canJoinWhileRunning() {
+		return this.canJoinWhileRunning > System.currentTimeMillis();
 	}
 }
