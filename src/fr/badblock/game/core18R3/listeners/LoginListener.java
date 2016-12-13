@@ -28,10 +28,13 @@ import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
+import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.run.RunType;
+import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.StringUtils;
+import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
@@ -89,6 +92,24 @@ public class LoginListener extends BadListener {
 			p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
+			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && BukkitUtils.getPlayers().size() <= Bukkit.getMaxPlayers()) {
+				JoinItems joinItems = GameAPI.getAPI().getJoinItems();
+				if (joinItems.getKits().isEmpty()) {
+					// Manage
+				}
+				CustomInventory inventory = GameAPI.getAPI().createCustomInventory(joinItems.getKits().size() / 9, GameAPI.i18n().get(p.getPlayerData().getLocale(), "joinitems.kit.inventoryName")[0]);
+				
+				int slot = 0;
+				
+				for(PlayerKit kit : joinItems.getKits()){
+					if(kit != null){
+						inventory.addClickableItem(slot, kit.getKitItem(p));
+					}
+					slot++;
+				}
+				
+				inventory.openInventory(p);
+			}
 		}
 		if (GamePlugin.getInstance().getGameServerManager().getRankedConfig().isRanked()) {
 			GamePlugin.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM rankeds WHERE playerName = '" + p.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {

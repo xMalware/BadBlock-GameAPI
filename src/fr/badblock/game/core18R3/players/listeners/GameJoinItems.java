@@ -419,4 +419,9 @@ public class GameJoinItems extends BadListener implements JoinItems {
 		ItemEvent event;
 		ItemStackFactory factory;
 	}
+
+	@Override
+	public List<PlayerKit> getKits() {
+		return this.kits;
+	}
 }
