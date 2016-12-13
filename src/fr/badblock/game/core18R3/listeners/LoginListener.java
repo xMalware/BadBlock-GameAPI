@@ -11,9 +11,11 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.badblock.game.core18R3.GamePlugin;
@@ -75,6 +77,19 @@ public class LoginListener extends BadListener {
 		}
 	}
 
+	@EventHandler
+	public void onInventoryClose(InventoryCloseEvent event) {
+		BadblockPlayer player = (BadblockPlayer) event.getPlayer();
+		if (player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
+			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning()) {
+				Inventory inventory = event.getInventory();
+				if (inventory != null && inventory.getName() != null && inventory.getName().equals(GameAPI.i18n().get(player.getPlayerData().getLocale(), "joinitems.kit.inventoryName")[0])) {
+					manageRunningJoin(player);
+				}
+			}
+		}
+	}
+	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
