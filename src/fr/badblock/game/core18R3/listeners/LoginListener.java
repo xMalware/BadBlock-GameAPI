@@ -100,6 +100,7 @@ public class LoginListener extends BadListener {
 						JoinItems joinItems = GameAPI.getAPI().getJoinItems();
 						if (joinItems.getKits().isEmpty()) {
 							// Manage
+							
 						}
 						CustomInventory inventory = GameAPI.getAPI().createCustomInventory(joinItems.getKits().size() / 9, GameAPI.i18n().get(p.getPlayerData().getLocale(), "joinitems.kit.inventoryName")[0]);
 
