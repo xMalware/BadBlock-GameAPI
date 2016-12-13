@@ -49,6 +49,9 @@ public class GameTeam implements BadblockTeam {
 
 	private List<UUID> 				players  		= null;
 	private Map<UUID, String>		playersAtStart  = null;
+	
+	@Getter@Setter
+	private boolean dead;
 
 	@SuppressWarnings("deprecation")
 	public GameTeam(ConfigurationSection section, int maxPlayers){
@@ -277,5 +280,10 @@ public class GameTeam implements BadblockTeam {
 						return true;
 					}
 				}, ItemPlaces.INVENTORY_CLICKABLE);
+	}
+
+	@Override
+	public void die() {
+		this.setDead(true);
 	}
 }

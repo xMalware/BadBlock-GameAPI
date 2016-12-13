@@ -108,7 +108,7 @@ public class LoginListener extends BadListener {
 			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
 			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getName().toLowerCase());
 
-		} else if(GameAPI.getAPI().getGameServer().getGameState() != GameState.WAITING){
+		} else if(GameAPI.getAPI().getGameServer().getGameState() == GameState.RUNNING){
 			p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
@@ -146,6 +146,10 @@ public class LoginListener extends BadListener {
 					}
 				}, 1);
 			}
+		} else if(GameAPI.getAPI().getGameServer().getGameState() == GameState.FINISHED){
+			p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));
+			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
+			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
 		if (GamePlugin.getInstance().getGameServerManager().getRankedConfig().isRanked()) {
 			GamePlugin.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM rankeds WHERE playerName = '" + p.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {

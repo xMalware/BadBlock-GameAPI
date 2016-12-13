@@ -338,7 +338,7 @@ public class GamePlayerData implements PlayerData {
 		JsonObject result = new JsonObject();
 
 		if (gameBadblockPlayer != null)
-			object.addProperty("canJoinWhileRunning", gameBadblockPlayer.canJoinWhileRunning);
+			result.addProperty("canJoinWhileRunning", gameBadblockPlayer.canJoinWhileRunning);
 		object.add("other", data);
 		result.add("game", object);
 
