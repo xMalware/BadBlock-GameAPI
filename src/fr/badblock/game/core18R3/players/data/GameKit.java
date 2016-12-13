@@ -165,12 +165,12 @@ public class GameKit implements PlayerKit {
 							player.sendTranslatedMessage("kits.selected", new TranslatableString("kits." + kitName + ".itemDisplayname"));	
 						}
 
-						if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
-							LoginListener.manageRunningJoin(player);
-						}
 						player.inGameData(InGameKitData.class).setChoosedKit(GameKit.this);
 						player.getPlayerData().setLastUsedKit(GameAPI.getInternalGameName(), getKitName());
 						player.saveGameData();
+						if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
+							LoginListener.manageRunningJoin(player);
+						}
 						player.closeInventory();
 
 						return true;
@@ -199,12 +199,12 @@ public class GameKit implements PlayerKit {
 							return true;
 						}
 
-						if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
-							LoginListener.manageRunningJoin(player);
-						}
 						player.inGameData(InGameKitData.class).setChoosedKit(GameKit.this);
 						player.getPlayerData().setLastUsedKit(GameAPI.getInternalGameName(), getKitName());
 						player.saveGameData();
+						if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING)) {
+							LoginListener.manageRunningJoin(player);
+						}
 						player.closeInventory();
 
 						return true;
