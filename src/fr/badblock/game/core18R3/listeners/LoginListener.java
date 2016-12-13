@@ -23,11 +23,13 @@ import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.events.PlayerGameInitEvent;
+import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent.JoinReason;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
+import fr.badblock.gameapi.players.BadblockTeam;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.run.RunType;
@@ -200,6 +202,16 @@ public class LoginListener extends BadListener {
 	public static void manageRunningJoin(BadblockPlayer player) {
 		GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers()).broadcast();
 		player.setBadblockMode(BadblockMode.PLAYER);
+		if (!GameAPI.getAPI().getTeams().isEmpty()) {
+			BadblockTeam betterTeam = null;
+			for (BadblockTeam team : GameAPI.getAPI().getTeams())
+				if (team.playersCurrentlyOnline() < team.getMaxPlayers() && team.playersCurrentlyOnline() > 0) {
+					if (betterTeam == null || (betterTeam != null && betterTeam.playersCurrentlyOnline() > team.playersCurrentlyOnline()))
+						betterTeam = team;
+				}
+			if (betterTeam == null) player.kickPlayer("Unable to push you in a team.");
+			else betterTeam.joinTeam(player, JoinReason.REBALANCING);
+		}
 		Bukkit.getPluginManager().callEvent(new PlayerGameInitEvent(player));
 	}
 	
