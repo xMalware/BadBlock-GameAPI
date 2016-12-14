@@ -21,6 +21,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
+import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
@@ -101,7 +102,9 @@ public class LoginListener extends BadListener {
 
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 
-		if(offlinePlayer != null){
+		if (VanishTeleportListener.time.containsKey(p.getName().toLowerCase()) && VanishTeleportListener.time.get(p.getName().toLowerCase()) > System.currentTimeMillis()) {
+			VanishTeleportListener.manage(p, VanishTeleportListener.splitters.get(p.getName().toLowerCase()));
+		}else if(offlinePlayer != null){
 			p.changePlayerDimension(offlinePlayer.getFalseDimension());
 			p.showCustomObjective(offlinePlayer.getCustomObjective());
 
