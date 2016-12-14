@@ -162,7 +162,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private List<UUID>					playersWithHim;
 	@Getter@Setter
 	public  List<Long>					leaves		   = new ArrayList<>();
-	
+
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
 
@@ -224,9 +224,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		if (object.has("game")) {
 			JsonObject game = object.get("game").getAsJsonObject();
 			this.object.add("game", game);
-
 			playerData = GameAPI.getGson().fromJson(game, GamePlayerData.class);
 			playerData.setData(game);
+			if (object.has("onlyJoinWhileWaiting"))
+				playerData.onlyJoinWhileWaiting = object.get("onlyJoinWhileWaiting").getAsLong();
 		}
 		if (object.has("leaves")) {
 			this.leaves = GameAPI.getGson().fromJson(object.get("leaves").toString(), collectType);
