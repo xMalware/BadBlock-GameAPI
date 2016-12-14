@@ -24,23 +24,24 @@ public class VanishTeleportListener extends RabbitListener {
 
 	@Override
 	public void onPacketReceiving(String body) {
-		String[] splitter = body.split(";");
-		BadblockPlayer player = BukkitUtils.getPlayer(splitter[0]);
-		if (player == null) {
-			time.put(splitter[0].toLowerCase(), System.currentTimeMillis() + 10000);
-			splitters.put(splitter[0].toLowerCase(), splitter);
-		}
-		else {
-			TaskManager.runTask(new Runnable() {
-				@Override
-				public void run() {
+		TaskManager.runTask(new Runnable() {
+			@Override
+			public void run() {
+				String[] splitter = body.split(";");
+				BadblockPlayer player = BukkitUtils.getPlayer(splitter[0]);
+				if (player == null) {
+					time.put(splitter[0].toLowerCase(), System.currentTimeMillis() + 10000);
+					splitters.put(splitter[0].toLowerCase(), splitter);
+				}
+				else {
 					manage(player, splitter);
 				}
-			});
-		}
+			}
+		});
 	}
 
 	public static void manage(BadblockPlayer player, String[] splitter) {
+		if (player == null) return;
 		player.sendTranslatedMessage("game.youjoinedinvanish");
 		player.closeInventory();
 		player.setBadblockMode(BadblockMode.SPECTATOR);
