@@ -42,7 +42,7 @@ public class VanishTeleportListener extends RabbitListener {
 
 	public static void manage(BadblockPlayer player, String[] splitter) {
 		if (player == null) return;
-		player.sendTranslatedMessage("game.youjoinedinvanish");
+		//player.sendTranslatedMessage("game.youjoinedinvanish");
 		player.closeInventory();
 		player.setBadblockMode(BadblockMode.SPECTATOR);
 		player.setGameMode(GameMode.SPECTATOR);
