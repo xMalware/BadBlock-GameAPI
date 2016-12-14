@@ -187,19 +187,24 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
-				object = result;
-				updateData(result);
-				while (!hasJoined)
-					try {
-						Thread.sleep(10L);
-					} catch (InterruptedException unused) {}
+				new Thread() {
+					@Override
+					public void run() {
+						object = result;
+						updateData(result);
+						while (!hasJoined)
+							try {
+								Thread.sleep(10L);
+							} catch (InterruptedException unused) {}
 
-				dataFetch = true;
-				synchronized (Bukkit.getServer()) {
-					if (playersWithHim != null && !playersWithHim.isEmpty())
-						Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
-					Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
-				}
+						dataFetch = true;
+						synchronized (Bukkit.getServer()) {
+							if (playersWithHim != null && !playersWithHim.isEmpty())
+								Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
+							Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
+						}
+					}
+				}.start();
 			}
 		});
 	}
