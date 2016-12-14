@@ -82,6 +82,7 @@ import fr.badblock.game.core18R3.signs.UpdateSignListener;
 import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
 import fr.badblock.game.core18R3.sql.GameSQLDatabase;
 import fr.badblock.game.core18R3.technologies.RabbitSpeaker;
+import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.game.core18R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.configuration.BadConfiguration;
@@ -314,6 +315,7 @@ public class GamePlugin extends GameAPI {
 			new InteractEntityListener().register();
 			new EquipmentListener().register();
 			new UpdateSignListener().register();
+			new VanishTeleportListener();
 			//AntiCheat.load();
 
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
