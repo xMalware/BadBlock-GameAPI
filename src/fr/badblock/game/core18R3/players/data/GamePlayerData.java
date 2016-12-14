@@ -55,6 +55,7 @@ public class GamePlayerData implements PlayerData {
 
 	@Getter@Setter
 	private transient GameBadblockPlayer				  gameBadblockPlayer;
+	public transient long								  onlyJoinWhileWaiting;
 
 	// temporary values
 	private transient int 								  addedBadcoins	   = 0;
@@ -66,6 +67,9 @@ public class GamePlayerData implements PlayerData {
 	public void setData(JsonObject data){
 		if(data.has("other")){
 			this.data = data.get("other").getAsJsonObject();
+		}
+		if (data.has("onlyJoinWhileWaiting")) {
+			this.onlyJoinWhileWaiting = data.get("onlyJoinWhileWaiting").getAsLong();
 		}
 		if (this.xp < 0) this.xp = 0;
 		if (this.badcoins < 0) this.badcoins = 0;
@@ -337,8 +341,7 @@ public class GamePlayerData implements PlayerData {
 
 		JsonObject result = new JsonObject();
 
-		if (gameBadblockPlayer != null)
-			result.addProperty("canJoinWhileRunning", gameBadblockPlayer.canJoinWhileRunning);
+		result.addProperty("onlyJoinWhileWaiting", onlyJoinWhileWaiting);
 		object.add("other", data);
 		result.add("game", object);
 
