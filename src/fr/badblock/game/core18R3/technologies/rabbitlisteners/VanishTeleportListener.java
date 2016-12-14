@@ -13,7 +13,7 @@ import fr.badblock.rabbitconnector.RabbitListenerType;
 public class VanishTeleportListener extends RabbitListener {
 
 	public VanishTeleportListener() {
-		super(RabbitConnector.getInstance().getService("default"), "vanishTeleport", false, RabbitListenerType.SUBSCRIBER);
+		super(RabbitConnector.getInstance().getService("default"), "vanishTeleport", true, RabbitListenerType.SUBSCRIBER);
 	}
 
 	@Override
