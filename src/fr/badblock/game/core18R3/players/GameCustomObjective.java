@@ -132,9 +132,11 @@ public class GameCustomObjective implements CustomObjective {
 		if(line < 1 || line > 15) return;
 	
 		CustomTeam custom = teams.get(line);
+		if (custom == null) return;
 		custom.prefix = "";
 		custom.suffix = "";
 		
+		if (getAssignedPlayer() == null) return;
 		if(player != null && getAssignedPlayer().isOnline()){
 			removeScore(getAssignedPlayer(), custom.name);
 		}
