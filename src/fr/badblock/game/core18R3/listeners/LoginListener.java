@@ -56,8 +56,7 @@ public class LoginListener extends BadListener {
 	public void onLogin(PlayerLoginEvent e){
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
-				if (VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) && VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) > System.currentTimeMillis()) 
-					return;
+				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
 				e.disallow(Result.KICK_FULL, "§cCe serveur est plein.");
 			}
 		}
