@@ -107,12 +107,10 @@ import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PlayerChunkMap;
 import net.minecraft.server.v1_8_R3.WorldServer;
-import us.myles.ViaVersion.api.ViaVersion;
-import us.myles.ViaVersion.api.boss.BossBar;
 import us.myles.ViaVersion.api.boss.BossColor;
 import us.myles.ViaVersion.api.boss.BossStyle;
+import us.myles.ViaVersion.boss.ViaBossBar;
 
-@SuppressWarnings("deprecation")
 public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public static final Type collectionType = new TypeToken<List<String>>() {}.getType();
 	public static final Type collectType = new TypeToken<List<Long>>() {}.getType();
@@ -459,12 +457,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		sendActionBar(getTranslatedMessage(key, args)[0]);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private Map<String, BossBar> bossBars    = new HashMap<>();
-	@SuppressWarnings("rawtypes")
-	private BossBar	             lastBossBar = null;
+	private Map<String, ViaBossBar> bossBars    = new HashMap<>();
+	private ViaBossBar	            lastBossBar = null;
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void addBossBar(String key, String message, float life, BossBarColor color, BossBarStyle style) {
 		message = getI18n().replaceColors(message);
@@ -476,10 +471,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			return;
 		}
 
-		// TODO fix avec la comptabilité 1.11
-		BossBar bar = ViaVersion.getInstance().createBossBar(message, life, BossColor.valueOf(color.name()), BossStyle.valueOf(style.name()));
+		ViaBossBar bar = new ViaBossBar(message, life, us.myles.ViaVersion.api.boss.BossColor.valueOf(color.name()), us.myles.ViaVersion.api.boss.BossStyle.valueOf(style.name()));
 		bar.addPlayer(this);
-
+		
 		bossBars.put(key.toLowerCase(), bar);
 		lastBossBar = bar;
 
@@ -496,10 +490,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void changeBossBar(String key, String message) {
-		BossBar bar = bossBars.get(key.toLowerCase());
+		ViaBossBar bar = bossBars.get(key.toLowerCase());
 
 		if(bar != null){
 			message = getI18n().replaceColors(message);
@@ -509,10 +502,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public void changeBossBarStyle(String key, float life, BossBarColor color, BossBarStyle style) {
-		BossBar bar = bossBars.get(key.toLowerCase());
+		ViaBossBar bar = bossBars.get(key.toLowerCase());
 
 		if(bar != null){
 			bar.setHealth(life);
@@ -523,10 +515,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void removeBossBar(String key) {
-		BossBar bar = bossBars.get(key.toLowerCase());
+		ViaBossBar bar = bossBars.get(key.toLowerCase());
 
 		if(bar != null){
 			bar.removePlayer(this);
@@ -542,7 +533,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void removeBossBars() {
 		bossBars.values().forEach(bar -> bar.removePlayer(this));
@@ -552,7 +542,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		lastBossBar = null;
 		enderdragon = null;
 	}
-
+	
 	@Override
 	public void sendTranslatedBossBar(String key, Object... args) {
 		sendBossBar(getTranslatedMessage(key, args)[0]);
@@ -1186,9 +1176,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		else return visiblePredicate;
 	}
 
-	@Override
+	@SuppressWarnings("deprecation")@Override
 	public int getProtocolVersion() {
-		return ViaVersion.getInstance().getPlayerVersion(this);
+		return us.myles.ViaVersion.api.ViaVersion.getInstance().getPlayerVersion(this);
 	}
 
 	@Override
