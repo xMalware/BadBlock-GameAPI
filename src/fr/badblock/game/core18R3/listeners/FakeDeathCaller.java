@@ -296,16 +296,14 @@ public class FakeDeathCaller extends BadListener {
 				
 				@Override
 				public void run(){
-					if(first){
-						
+					if(!p.isOnline()){
+						cancel(); return;
+					}
+					if(first && time > 0){
 						if(e.getWhileRespawnPlace() != null)
 							p.teleport(e.getWhileRespawnPlace());
 						
-						first = false; return;
-					}
-					
-					if(!p.isValid() || !p.isOnline()){
-						cancel(); return;
+						first = false;
 					}
 
 					if(time == 0){
