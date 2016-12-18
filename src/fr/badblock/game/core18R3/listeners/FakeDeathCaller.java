@@ -307,8 +307,8 @@ public class FakeDeathCaller extends BadListener {
 					}
 
 					if(time == 0){
-						cancel();
 						respawn(p, e.getRespawnPlace());
+						cancel();
 					} else {
 						p.sendTranslatedTitle(GameMessages.respawnTitleKey(), time);
 						time--;
