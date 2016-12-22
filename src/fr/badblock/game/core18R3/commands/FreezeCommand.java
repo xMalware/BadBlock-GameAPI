@@ -24,6 +24,14 @@ public class FreezeCommand extends AbstractCommand {
 		if(concerned == null){
 			new TranslatableString("commands.unknowplayer", args[0]).send(sender);
 		} else {
+			if (!sender.hasPermission(GamePermission.BMODERATOR.getPermission()) && sender.equals(concerned)) {
+				new TranslatableString("commands.youcantdothistoyou", args[0]).send(sender);		
+				return true;
+			}
+			if (!sender.hasPermission(GamePermission.BMODERATOR.getPermission()) && concerned.hasPermission(GamePermission.MODERATOR.getPermission())) {
+				new TranslatableString("commands.freeze.insufficientpermission", args[0]).send(sender);
+				return true;
+			}
 			String type = concerned.isJailed() ? "un" : "";
 			
 			if(concerned.isJailed()){
