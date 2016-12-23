@@ -53,7 +53,7 @@ import fr.badblock.permissions.PermissibleGroup;
 import fr.badblock.permissions.PermissionManager;
 
 public class GameScoreboard extends BadListener implements BadblockScoreboard {
-	private Scoreboard board 	       = Bukkit.getScoreboardManager().getNewScoreboard();
+	public static Scoreboard board 	       = Bukkit.getScoreboardManager().getNewScoreboard();
 	private Objective  tabListHealth   = null;
 	private Objective  belowNameHealth = null;
 	private Objective  voteObjective   = null;
