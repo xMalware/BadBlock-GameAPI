@@ -52,17 +52,19 @@ import net.minecraft.server.v1_8_R3.EntityPlayer;
  * @author LeLanN
  */
 public class LoginListener extends BadListener {
-	@EventHandler(priority=EventPriority.HIGHEST)
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e){
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
-				e.disallow(Result.KICK_FULL, "§cCe serveur est plein.");
+					e.disallow(Result.KICK_FULL, "§cCe serveur est plein.");
 			}
 		}
 		if (!GameAPI.isJoinable()) {
-			GameAPI.getAPI().getGameServer().keepAlive();
-			e.disallow(Result.KICK_FULL, "§cCette partie est en cours.");
+			if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) {
+				GameAPI.getAPI().getGameServer().keepAlive();
+				e.disallow(Result.KICK_FULL, "§cCette partie est en cours.");
+			}
 		}
 		if(GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName())){
 			e.setResult(Result.KICK_WHITELIST); return;
@@ -93,7 +95,7 @@ public class LoginListener extends BadListener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
@@ -233,7 +235,7 @@ public class LoginListener extends BadListener {
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
 	}
-	
+
 	public static void manageRunningJoin(BadblockPlayer player) {
 		GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers()).broadcast();
 		player.setBadblockMode(BadblockMode.PLAYER);
@@ -250,5 +252,5 @@ public class LoginListener extends BadListener {
 		Bukkit.getPluginManager().callEvent(new PlayerGameInitEvent(player));
 		player.setVisible(true);
 	}
-	
+
 }
