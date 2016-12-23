@@ -54,6 +54,7 @@ import net.minecraft.server.v1_8_R3.EntityPlayer;
 public class LoginListener extends BadListener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e){
+		System.out.println("PlayerLoginEvent: " + e.getPlayer().getName());
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
