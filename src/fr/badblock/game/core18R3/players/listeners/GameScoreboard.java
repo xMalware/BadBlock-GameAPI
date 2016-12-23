@@ -249,7 +249,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		}
 	}
 
-	private Map<String, String> groups = new HashMap<>();
+	public static Map<String, String> groups = new HashMap<>();
 
 	/*
 	 * Envoit le nouveau pr�fixe via packet, pour l'avoir custom sans le d�clarer dans un scoreboard personnel (opti)
@@ -260,7 +260,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	}
 
 	private void sendTeamData(String teamName, String displayName, BadblockPlayer p){
-		GameAPI.getAPI().createPacket(PlayScoreboardTeam.class)
+		GameAPI.getAPI().createPacket(PlayScoreboardTeam.class)	
 		.setMode(TeamMode.UPDATE)
 		.setTeamName(teamName)
 		.setFriendlyFire(doTeamsPrefix ? TeamFriendlyFire.OFF : TeamFriendlyFire.FRIENDLYFIRE)
@@ -287,7 +287,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		}).forEach(group -> {
 			String id = generateForId(i) + "";
 
-			this.groups.put(group.getName(), id);
+			groups.put(group.getName(), id);
 
 			if(getHandler().getTeam(id) == null){
 				getHandler().registerNewTeam(id);
