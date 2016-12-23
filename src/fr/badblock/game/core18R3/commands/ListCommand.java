@@ -1,7 +1,6 @@
 package fr.badblock.game.core18R3.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +16,7 @@ import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
+@SuppressWarnings("null")
 public class ListCommand extends AbstractCommand {
 	public ListCommand() {
 		super("list", new TranslatableString("commands.list.usage"), GamePermission.MODERATOR, GamePermission.MODERATOR, GamePermission.BMODERATOR);
@@ -24,7 +24,7 @@ public class ListCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		Map<String, List<BadblockPlayer>> players = new HashMap<>();
+		Map<String, List<BadblockPlayer>> players = null;
 		
 		Set<BadblockPlayer> set = Bukkit.getOnlinePlayers().stream().map(player -> {
 			return (BadblockPlayer) player;
