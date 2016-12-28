@@ -48,8 +48,8 @@ public class GameServerListener extends BadListener {
 					player.sendMessage("§8§m---------------------------------------------");
 					player.sendMessage("§a§l✘ Événement actif ✘");
 					player.sendMessage("§8§m---------------------------------------------");
-					player.sendMessage("§a§l➤ §r§aBadCoins doublé par §b" + gamePlugin.getServerBadcoinsBonus());
-					player.sendMessage("§a§l➤ §r§aXP doublé par §b" + gamePlugin.getServerXpBonus());
+					player.sendMessage("§a§l➤ §r§aBadCoins multiplié par §b" + gamePlugin.getServerBadcoinsBonus());
+					player.sendMessage("§a§l➤ §r§aXP multiplié par §b" + gamePlugin.getServerXpBonus());
 					player.sendMessage("§8§m---------------------------------------------");		
 					// TODO: pas sous i18n pour le moment la flemme
 				}
