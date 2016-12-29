@@ -51,7 +51,7 @@ public class CReportCommand extends AbstractCommand {
 			return true;
 		}
 		GameAPI api = GameAPI.getAPI();
-		api.getRabbitSpeaker().sendAsyncUTF8Publisher("badfilter", "§b[REPORT] §7(By " + player.getName() + ") | §7" + chatData.playerName + " §8» §7" + chatData.message, 5000, false);
+		api.getRabbitSpeaker().sendAsyncUTF8Publisher("badreport", "§7(By " + player.getName() + ") | §7" + chatData.playerName + " §8» §7" + chatData.message, 5000, false);
 		api.getSqlDatabase().call("INSERT INTO reportMsg(player, byPlayer, message, timestamp) VALUES('" + secure(chatData.playerName) + "', '" + secure(player.getName()) + "', '" + secure(chatData.message) + "', '" + System.currentTimeMillis() + "')", SQLRequestType.UPDATE);
 		player.sendTranslatedMessage("commands.creport.reportedmessage", chatData.playerName, chatData.message);
 		lastReport.put(player.getName(), System.currentTimeMillis() + 30_000L);
