@@ -2,11 +2,8 @@ package fr.badblock.game.core18R3.listeners;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,13 +30,11 @@ import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
-import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.Callback;
-import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
@@ -201,39 +196,6 @@ public class LoginListener extends BadListener {
 					}*/
 				}
 
-				if(GameAPI.getAPI().getGameServer().getGameState() == GameState.WAITING){
-					if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
-						List<String> players = new ArrayList<String>();
-						double xp = 0;
-						double badcoins = 0;
-
-						for (BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()) {
-							PlayerBooster playerBooster = player.getPlayerData().getActiveBooster();
-
-							if (playerBooster != null) {
-								xp 		 += playerBooster.getBooster().getXpMultiplier();
-								badcoins += playerBooster.getBooster().getCoinsMultiplier();
-							}
-						}
-
-						if (xp == 0) xp = 1;
-						if (badcoins == 0) badcoins = 1;
-
-						if (xp > 1 || badcoins > 1) {
-							String o = "[" + StringUtils.join(players, ", ") + "]";
-
-							if (p.getPlayerData().getActiveBooster() != null) {
-								for(BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()){
-									player.sendTranslatedMessage("booster.load", Double.toString(xp), Double.toString(badcoins), p.getName(), o);
-									player.playSound(Sound.LEVEL_UP);
-								}
-							} else{
-								p.sendTranslatedMessage("booster.resume", Double.toString(xp), Double.toString(badcoins), p.getName(), o);
-								p.playSound(Sound.LEVEL_UP);
-							}
-						}
-					}
-				}
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
 	}

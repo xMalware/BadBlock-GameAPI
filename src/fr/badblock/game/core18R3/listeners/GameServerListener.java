@@ -14,6 +14,7 @@ import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.run.RunType;
+import fr.badblock.gameapi.utils.general.TimeUnit;
 
 public class GameServerListener extends BadListener {
 
@@ -45,13 +46,16 @@ public class GameServerListener extends BadListener {
 			if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 				if (gamePlugin.getServerXpBonus() > 1 || gamePlugin.getServerBadcoinsBonus() > 1) {
 					player.playSound(player.getLocation(), Sound.LEVEL_UP, 100, 1);
-					player.sendMessage("§8§m---------------------------------------------");
-					player.sendMessage("§a§l✘ Événement actif ✘");
-					player.sendMessage("§8§m---------------------------------------------");
-					player.sendMessage("§a§l➤ §r§aBadCoins multiplié par §b" + gamePlugin.getServerBadcoinsBonus());
-					player.sendMessage("§a§l➤ §r§aXP multiplié par §b" + gamePlugin.getServerXpBonus());
-					player.sendMessage("§8§m---------------------------------------------");		
-					// TODO: pas sous i18n pour le moment la flemme
+					// TODO i18n
+					player.sendMessage("§6+" + ((int)(gamePlugin.getServerBadcoinsBonus() * 100)) + "% §7BadCoins §e(Event serveur)");
+					player.sendMessage("§3+" + ((int)(gamePlugin.getServerXpBonus() * 100)) + "% §7XP §e(Event serveur)");
+				}
+				if (gamePlugin.getBooster() != null) {
+					if (gamePlugin.getBooster().isEnabled() && gamePlugin.getBooster().isValid()) {
+						player.sendMessage("§6+" + ((int)(gamePlugin.getBooster().getBooster().getCoinsMultiplier() * 100)) + "% §7BadCoins §e(Jeu boosté par §a§l" + gamePlugin.getBooster().getUsername() + "§e)");		
+						player.sendMessage("§3+" + ((int)(gamePlugin.getBooster().getBooster().getXpMultiplier() * 100)) + "% §7XP §e(Jeu boosté par §a§l" + gamePlugin.getBooster().getUsername() + "§e)");		
+						player.sendMessage("§7Fin du booster de §a§l" + gamePlugin.getBooster().getUsername() + " §7: §c" + TimeUnit.SECOND.toFrench((gamePlugin.getBooster().getExpire() / 1000L) - (System.currentTimeMillis() / 1000L)));
+					}
 				}
 			}
 		}

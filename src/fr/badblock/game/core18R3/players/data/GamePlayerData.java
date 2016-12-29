@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
@@ -79,12 +77,9 @@ public class GamePlayerData implements PlayerData {
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
 			double playerBonus = 0;
-			for (Player playerz : Bukkit.getOnlinePlayers()) {
-				BadblockPlayer bbPlayer = (BadblockPlayer) playerz;
-				PlayerBooster playerBooster = bbPlayer.getPlayerData().getActiveBooster();
-				if (playerBooster != null) {
-					playerBonus += playerBooster.getBooster().getCoinsMultiplier();
-				}
+			PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
+			if (playerBooster != null && playerBooster.getBooster() != null) {
+				playerBonus += playerBooster.getBooster().getCoinsMultiplier();
 			}
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
@@ -134,15 +129,9 @@ public class GamePlayerData implements PlayerData {
 
 		if (applyBonus) {
 			double playerBonus = 0;
-
-			for(BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()) {
-				if (player != null && player.getPlayerData() != null && player.getPlayerData().getBoosters() != null) {
-					PlayerBooster playerBooster = player.getPlayerData().getActiveBooster();
-					if (playerBooster != null) {
-						playerBonus += playerBooster.getBooster().getXpMultiplier();
-						break;
-					}
-				}
+			PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
+			if (playerBooster != null && playerBooster.getBooster() != null) {
+				playerBonus += playerBooster.getBooster().getXpMultiplier();
 			}
 			if (playerBonus == 0) playerBonus = 1;
 			double serverBonus = GameAPI.getAPI().getServerXpBonus() <= 0 ? 1 : GameAPI.getAPI().getServerXpBonus();

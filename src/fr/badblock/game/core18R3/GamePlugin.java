@@ -1,6 +1,8 @@
 package fr.badblock.game.core18R3;
 
 import java.io.File;
+import java.lang.reflect.Type;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 import java.util.UUID;
@@ -35,6 +38,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import fr.badblock.game.core18R3.chest.GameChestGenerator;
 import fr.badblock.game.core18R3.commands.PortalCommand;
@@ -88,6 +92,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.configuration.BadConfiguration;
 import fr.badblock.gameapi.databases.LadderSpeaker;
 import fr.badblock.gameapi.databases.SQLDatabase;
+import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent.JoinReason;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.packets.BadblockInPacket;
@@ -104,6 +109,7 @@ import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.players.kits.DefaultKitContentManager;
 import fr.badblock.gameapi.players.kits.PlayerKit;
 import fr.badblock.gameapi.players.kits.PlayerKitContentManager;
@@ -115,6 +121,7 @@ import fr.badblock.gameapi.servers.MapProtector;
 import fr.badblock.gameapi.signs.SignManager;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
+import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
@@ -150,6 +157,7 @@ public class GamePlugin extends GameAPI {
 	WHITELIST		   = "whitelist.yml";
 	public static Thread thread;
 
+	private static final Type type = new TypeToken<Map<String, PlayerBooster>>() {}.getType();
 	@Getter private static GamePlugin   instance;
 
 	@Getter 
@@ -221,6 +229,10 @@ public class GamePlugin extends GameAPI {
 	private List<BadblockPlayer> 		onlinePlayers;
 	@Getter
 	private String						i18nFolder 		= "/home/dev01/i18n";
+	@Getter
+	private String						gamePrefix;
+	@Getter
+	private PlayerBooster				booster;
 
 	@Override
 	public void onEnable() {
@@ -306,7 +318,7 @@ public class GamePlugin extends GameAPI {
 
 			joinItems = new GameJoinItems();    // Items donn� � l'arriv�e du joueur
 			chestGenerator = new GameChestGenerator();
-			
+
 			new ItemStackExtras();
 
 			GameAPI.logColor("&b[GameAPI] &aRegistering packets listeners ...");
@@ -368,6 +380,30 @@ public class GamePlugin extends GameAPI {
 			File plugins = new File("plugins" + File.separator + "apiPlugins");
 			plugins.mkdirs();
 			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins)).forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
+			if (this.getRunType().equals(RunType.GAME)) {
+				GameAPI.getAPI().getSqlDatabase().call("SELECT value FROM keyValues WHERE `key` = 'booster'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+					@Override
+					public void done(ResultSet result, Throwable error) {
+						try {
+							result.next();
+							String value = result.getString("value");
+							Map<String, PlayerBooster> updatedMap = gson.fromJson(value, type);
+							for (Entry<String, PlayerBooster> entry : updatedMap.entrySet()) {
+								if (Bukkit.getServerName().startsWith(entry.getKey())) {
+									gamePrefix = entry.getKey();
+									booster = entry.getValue();
+									break;
+								}
+							}
+							result.close(); // don't forget to close it
+						} catch (Exception exception) {
+							exception.printStackTrace();
+						}
+					}
+
+				});
+			}
 		} catch (Throwable t){
 			t.printStackTrace();
 
