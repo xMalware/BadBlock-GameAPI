@@ -43,6 +43,7 @@ public class VanishTeleportListener extends RabbitListener {
 		player.closeInventory();
 		player.setBadblockMode(BadblockMode.SPECTATOR);
 		player.setGameMode(GameMode.SPECTATOR);
+		//TODO à revoir, ça a pas l'air bon
 		player.setVisible(false, rt -> !rt.hasPermission("game.seeothermodo") && !rt.getBadblockMode().equals(BadblockMode.SPECTATOR));
 		player.setVisible(true, rt -> rt.hasPermission("game.seeothermodo") && rt.getBadblockMode().equals(BadblockMode.SPECTATOR));
 		if (splitter == null) return;
