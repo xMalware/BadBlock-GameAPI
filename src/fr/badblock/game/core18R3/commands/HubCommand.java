@@ -16,7 +16,6 @@ public class HubCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0) return false;
 	
 		BadblockPlayer player = (BadblockPlayer) sender;
 		player.sendPlayer("lobby");

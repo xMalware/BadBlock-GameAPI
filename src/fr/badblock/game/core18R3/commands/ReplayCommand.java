@@ -20,7 +20,6 @@ public class ReplayCommand extends AbstractCommand {
 
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
-		if(args.length == 0) return false;
 		if (!GameAPI.getAPI().getRunType().equals(RunType.GAME)) return true;
 		
 		BadblockPlayer player = (BadblockPlayer) sender;
