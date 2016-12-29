@@ -45,6 +45,7 @@ import fr.badblock.protocol.packets.PacketPlayerPlace;
 import fr.badblock.protocol.packets.PacketPlayerQuit;
 import fr.badblock.protocol.packets.PacketReconnectionInvitation;
 import fr.badblock.protocol.packets.PacketSimpleCommand;
+import fr.badblock.protocol.packets.PacketPlayerChat.ChatAction;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingJoin;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive;
 import fr.badblock.protocol.packets.matchmaking.PacketMatchmakingKeepalive.ServerStatus;
@@ -288,6 +289,11 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void handle(PacketPlayerNickSet packet) {
+	}
+
+	@Override
+	public void broadcast(String... messages) {
+		sendPacket(new PacketPlayerChat(null, ChatAction.MESSAGE_FLAT, messages));
 	}
 }
 
