@@ -202,7 +202,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void sendReconnectionInvitation(String name, boolean invited) {
-		//sendPacket(new PacketReconnectionInvitation(name, invited));
+		sendPacket(new PacketReconnectionInvitation(name, invited));
 	}
 
 	@Override
