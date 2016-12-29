@@ -57,8 +57,8 @@ public class GameServerListener extends BadListener {
 					}
 					player.sendMessage("§6+" + ((int)((gamePlugin.getServerBadcoinsBonus() - 1) * 100)) + "% §7BadCoins (Event serveur)");
 					player.sendMessage("§3+" + ((int)((gamePlugin.getServerXpBonus() - 1) * 100)) + "% §7XP (Event serveur)");
-					badcoinsBonus += ((int)(gamePlugin.getServerBadcoinsBonus() * 100));
-					xpBonus += ((int)(gamePlugin.getServerXpBonus() * 100));
+					badcoinsBonus += ((int)((gamePlugin.getServerBadcoinsBonus() - 1) * 100));
+					xpBonus += ((int)((gamePlugin.getServerXpBonus() - 1) * 100));
 					boosts++;
 				}
 				if (gamePlugin.getBooster() != null) {
@@ -70,8 +70,8 @@ public class GameServerListener extends BadListener {
 						player.sendMessage("§6+" + ((int)((gamePlugin.getBooster().getBooster().getCoinsMultiplier() - 1) * 100)) + "% §7BadCoins (Jeu boosté par §a§l" + gamePlugin.getBooster().getUsername() + "§7)");		
 						player.sendMessage("§3+" + ((int)((gamePlugin.getBooster().getBooster().getXpMultiplier() -1) * 100)) + "% §7XP (Jeu boosté par §a§l" + gamePlugin.getBooster().getUsername() + "§7)");		
 						player.sendMessage("§7Fin du booster de §a§l" + gamePlugin.getBooster().getUsername() + " §7: §c" + TimeUnit.SECOND.toFrench((gamePlugin.getBooster().getExpire() / 1000L) - (System.currentTimeMillis() / 1000L)));
-						badcoinsBonus += ((int)(gamePlugin.getBooster().getBooster().getCoinsMultiplier() * 100));
-						xpBonus += ((int)(gamePlugin.getBooster().getBooster().getXpMultiplier() * 100));
+						badcoinsBonus += ((int)((gamePlugin.getBooster().getBooster().getCoinsMultiplier() - 1) * 100));
+						xpBonus += ((int)((gamePlugin.getBooster().getBooster().getXpMultiplier() - 1) * 100));
 						boosts++;
 					}
 				}
