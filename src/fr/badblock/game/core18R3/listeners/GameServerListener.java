@@ -44,18 +44,45 @@ public class GameServerListener extends BadListener {
 		if (joinedMessage) {
 			GameAPI.i18n().sendMessage(player, "gameserver.join", serverName);
 			if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
+				boolean started = false;
+				boolean finished = false;
+				int xpBonus = 0;
+				int badcoinsBonus = 0;
+				int boosts = 0;
 				if (gamePlugin.getServerXpBonus() > 1 || gamePlugin.getServerBadcoinsBonus() > 1) {
-					player.playSound(player.getLocation(), Sound.LEVEL_UP, 100, 1);
 					// TODO i18n
-					player.sendMessage("§6+" + ((int)(gamePlugin.getServerBadcoinsBonus() * 100)) + "% §7BadCoins §e(Event serveur)");
-					player.sendMessage("§3+" + ((int)(gamePlugin.getServerXpBonus() * 100)) + "% §7XP §e(Event serveur)");
+					if (!started) {
+						player.sendMessage("§8§l§m---------------------------------------------");
+						started = true;
+					}
+					player.sendMessage("§6+" + ((int)((gamePlugin.getServerBadcoinsBonus() - 1) * 100)) + "% §7BadCoins (Event serveur)");
+					player.sendMessage("§3+" + ((int)((gamePlugin.getServerXpBonus() - 1) * 100)) + "% §7XP (Event serveur)");
+					badcoinsBonus += ((int)(gamePlugin.getServerBadcoinsBonus() * 100));
+					xpBonus += ((int)(gamePlugin.getServerXpBonus() * 100));
+					boosts++;
 				}
 				if (gamePlugin.getBooster() != null) {
 					if (gamePlugin.getBooster().isEnabled() && gamePlugin.getBooster().isValid()) {
-						player.sendMessage("§6+" + ((int)(gamePlugin.getBooster().getBooster().getCoinsMultiplier() * 100)) + "% §7BadCoins §e(Jeu boosté par §a§l" + gamePlugin.getBooster().getUsername() + "§e)");		
-						player.sendMessage("§3+" + ((int)(gamePlugin.getBooster().getBooster().getXpMultiplier() * 100)) + "% §7XP §e(Jeu boosté par §a§l" + gamePlugin.getBooster().getUsername() + "§e)");		
+						if (!started) {
+							player.sendMessage("§8§l§m---------------------------------------------");
+							started = true;
+						}
+						player.sendMessage("§6+" + ((int)((gamePlugin.getBooster().getBooster().getCoinsMultiplier() - 1) * 100)) + "% §7BadCoins (Jeu boosté par §a§l" + gamePlugin.getBooster().getUsername() + "§7)");		
+						player.sendMessage("§3+" + ((int)((gamePlugin.getBooster().getBooster().getXpMultiplier() -1) * 100)) + "% §7XP (Jeu boosté par §a§l" + gamePlugin.getBooster().getUsername() + "§7)");		
 						player.sendMessage("§7Fin du booster de §a§l" + gamePlugin.getBooster().getUsername() + " §7: §c" + TimeUnit.SECOND.toFrench((gamePlugin.getBooster().getExpire() / 1000L) - (System.currentTimeMillis() / 1000L)));
+						badcoinsBonus += ((int)(gamePlugin.getBooster().getBooster().getCoinsMultiplier() * 100));
+						xpBonus += ((int)(gamePlugin.getBooster().getBooster().getXpMultiplier() * 100));
+						boosts++;
 					}
+				}
+				if (started && !finished) {
+					if (boosts > 1) {
+						player.sendMessage("§8§l§m---------------------------------------------");
+						player.sendMessage("§7Total: §6+" + badcoinsBonus + "% §7BadCoins (X" + ((badcoinsBonus / 100) + 1) + ") §8- §3+" + xpBonus + "% §7XP (X" + ((xpBonus / 100) + 1) + ")");
+					}
+					player.sendMessage("§8§l§m---------------------------------------------");
+					finished = true;
+					player.playSound(player.getLocation(), Sound.LEVEL_UP, 100, 1);
 				}
 			}
 		}
