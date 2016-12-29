@@ -159,7 +159,7 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 
 	@Override
 	public boolean isJoinableWhenRunning() {
-		return Boolean.parseBoolean(ServerProperties.getProperties().getProperty("docker-runningMatchmaking"));
+		return Boolean.parseBoolean(ServerProperties.getProperties().getProperty("docker-runningMatchmaking")) && !Bukkit.getServerName().startsWith("speeduhc") && !Bukkit.getServerName().startsWith("sg");
 	}
 	
 }
