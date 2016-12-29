@@ -102,6 +102,10 @@ import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.ChunkCoordIntPair;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -427,6 +431,15 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					getPlayerData().getBadcoins(), getPlayerData().getLevel(), percent, getPlayerData().getXp(),
 					getPlayerData().getXpUntilNextLevel(), line, Base64Url.encode(id), getPlayerData().getAddedBadcoins(), 
 					getPlayerData().getAddedLevels(), getPlayerData().getAddedXP(), getPlayerData().getAddedShopPoints());
+			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.replay")[0] );
+			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/replay") );
+			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", Bukkit.getServerName().split("_")[0])[0]).create() ) );
+			TextComponent textComponent = new TextComponent();
+			textComponent.setText(" - ");
+			TextComponent message2 = new TextComponent( GameAPI.i18n().get("chat.hub")[0] );
+			message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/hub") );
+			message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.hub_hover")[0]).create() ) );
+			this.sendMessage(message, textComponent, message2);
 
 			saveGameData();
 		} catch(Exception e){
