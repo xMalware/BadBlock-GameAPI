@@ -380,18 +380,18 @@ public class GamePlayerData implements PlayerData {
 		double multiplier = 1;
 		PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
 		if (playerBooster != null && playerBooster.getBooster() != null) {
-			multiplier += playerBooster.getBooster().getCoinsMultiplier();
+			multiplier += playerBooster.getBooster().getCoinsMultiplier() - 1;
 		}
 		multiplier += GameAPI.getAPI().getServerXpBonus() <= 0 ? 0 : (GameAPI.getAPI().getServerBadcoinsBonus() - 1);
-		double v = 1;
+		double v = 0;
 		try {
 			if (this.getGameBadblockPlayer() != null) {
 				Double o = this.getGameBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
 				if (o == null) o = 1.0d;
-				v = o;
+				v = o - 1;
 			}
 		}catch(Exception error) {
-			v = 1;
+			v = 0;
 		}
 		multiplier += v;
 		return multiplier;
