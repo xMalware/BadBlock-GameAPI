@@ -90,8 +90,9 @@ public class GamePlayerData implements PlayerData {
 					Double o = this.getGameBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
 					if (o == null) o = 1.0d;
 					v = o;
-				}
+				}else System.out.println("null gamePlayer");
 			}catch(Exception error) {
+				error.printStackTrace();
 				v = 1;
 			}
 			badcoins *= v < 1.0d ? 1.0d : v;
@@ -372,6 +373,50 @@ public class GamePlayerData implements PlayerData {
 		if (!GamePlugin.getInstance().getGameServerManager().getRankedConfig().ranked) return addedRankedPoints;
 		addedRankedPoints -= rankedPoints;
 		return addedRankedPoints;
+	}
+
+	@Override
+	public double getBadcoinsMultiplier() {
+		double multiplier = 1;
+		PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
+		if (playerBooster != null && playerBooster.getBooster() != null) {
+			multiplier += playerBooster.getBooster().getCoinsMultiplier();
+		}
+		multiplier += GameAPI.getAPI().getServerXpBonus() <= 0 ? 0 : (GameAPI.getAPI().getServerBadcoinsBonus() - 1);
+		double v = 1;
+		try {
+			if (this.getGameBadblockPlayer() != null) {
+				Double o = this.getGameBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
+				if (o == null) o = 1.0d;
+				v = o;
+			}
+		}catch(Exception error) {
+			v = 1;
+		}
+		multiplier += v;
+		return multiplier;
+	}
+
+	@Override
+	public double getXpMultiplier() {
+		double multiplier = 1;
+		PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
+		if (playerBooster != null && playerBooster.getBooster() != null) {
+			multiplier += playerBooster.getBooster().getXpMultiplier();
+		}
+		multiplier += GameAPI.getAPI().getServerXpBonus() <= 0 ? 0 : (GameAPI.getAPI().getServerXpBonus() - 1);
+		double v = 1;
+		try {
+			if (this.getGameBadblockPlayer() != null) {
+				Double o = this.getGameBadblockPlayer().getPermissionValue("xpboost", Double.class);
+				if (o == null) o = 1.0d;
+				v = o;
+			}
+		}catch(Exception error) {
+			v = 1;
+		}
+		multiplier += v;
+		return multiplier;
 	}
 
 }
