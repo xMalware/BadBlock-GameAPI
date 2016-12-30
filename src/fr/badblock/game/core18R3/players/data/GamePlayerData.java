@@ -149,6 +149,7 @@ public class GamePlayerData implements PlayerData {
 			xp *= v < 1.0d ? 1.0d : v;
 		}
 
+		addedXP += xp;
 		// Gestion de l'XP
 		long delta = getXpUntilNextLevel() - (xp + this.xp);
 		this.xp += xp;
