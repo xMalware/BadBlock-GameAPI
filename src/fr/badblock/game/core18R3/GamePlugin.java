@@ -86,6 +86,7 @@ import fr.badblock.game.core18R3.signs.UpdateSignListener;
 import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
 import fr.badblock.game.core18R3.sql.GameSQLDatabase;
 import fr.badblock.game.core18R3.technologies.RabbitSpeaker;
+import fr.badblock.game.core18R3.technologies.rabbitlisteners.PlayerBoosterRefreshListener;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.game.core18R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
@@ -157,7 +158,7 @@ public class GamePlugin extends GameAPI {
 	WHITELIST		   = "whitelist.yml";
 	public static Thread thread;
 
-	private static final Type type = new TypeToken<Map<String, PlayerBooster>>() {}.getType();
+	public static final Type type = new TypeToken<Map<String, PlayerBooster>>() {}.getType();
 	@Getter private static GamePlugin   instance;
 
 	@Getter 
@@ -230,9 +231,9 @@ public class GamePlugin extends GameAPI {
 	@Getter
 	private String						i18nFolder 		= "/home/dev01/i18n";
 	@Getter
-	private String						gamePrefix;
+	public String						gamePrefix;
 	@Getter
-	private PlayerBooster				booster;
+	public PlayerBooster				booster;
 
 	@Override
 	public void onEnable() {
@@ -328,6 +329,7 @@ public class GamePlugin extends GameAPI {
 			new EquipmentListener().register();
 			new UpdateSignListener().register();
 			new VanishTeleportListener();
+			new PlayerBoosterRefreshListener();
 			//AntiCheat.load();
 
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
