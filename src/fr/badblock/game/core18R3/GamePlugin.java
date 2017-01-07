@@ -944,6 +944,7 @@ public class GamePlugin extends GameAPI {
 								chunks.put(coord, loader.a(worldServer, coord.x, coord.z));
 							}
 						} catch(Exception e){
+							Bukkit.shutdown();
 							e.printStackTrace();
 						}
 
