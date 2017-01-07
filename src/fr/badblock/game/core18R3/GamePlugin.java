@@ -1,5 +1,7 @@
 package fr.badblock.game.core18R3;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.sql.ResultSet;
@@ -29,8 +31,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.util.LongHash;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.base.Function;
@@ -81,6 +85,7 @@ import fr.badblock.game.core18R3.players.GameTeam;
 import fr.badblock.game.core18R3.players.data.GameKit;
 import fr.badblock.game.core18R3.players.listeners.GameJoinItems;
 import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
+import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.signs.GameSignManager;
 import fr.badblock.game.core18R3.signs.UpdateSignListener;
 import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
@@ -331,8 +336,41 @@ public class GamePlugin extends GameAPI {
 			new VanishTeleportListener();
 			new PlayerBoosterRefreshListener();
 			//AntiCheat.load();
-
-			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+			GamePlugin gamePlugin = this;
+			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");;
+			getServer().getMessenger().registerIncomingPluginChannel(this, "SkinsRestorer", new PluginMessageListener()
+	        {
+	          public void onPluginMessageReceived(String channel, final Player player, final byte[] message)
+	          {
+	            if (!channel.equals("SkinsRestorer")) {
+	              return;
+	            }
+	            Bukkit.getScheduler().runTaskAsynchronously(gamePlugin, new Runnable()
+	            {
+	              public void run()
+	              {
+	                DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
+	                try
+	                {
+	                  String subchannel = in.readUTF();
+	                  if (subchannel.equalsIgnoreCase("SkinUpdate"))
+	                  {
+	                    try
+	                    {
+	                      SkinFactory.applySkin(player, SkinFactory.createProperty(in.readUTF(), in.readUTF(), in.readUTF()));
+	                    }
+	                    catch (Exception localException1) {}
+	                    SkinFactory.updateSkin(player);
+	                  }
+	                }
+	                catch (Exception e)
+	                {
+	                  e.printStackTrace();
+	                }
+	              }
+	            });
+	          }
+	        });
 			GameAPI.logColor("&b[GameAPI] &aCreating scoreboard...");
 
 			badblockScoreboard = new GameScoreboard(); // Permet de g�rer le scoreboard
