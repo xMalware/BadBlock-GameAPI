@@ -76,26 +76,29 @@ public class GamePlayerData implements PlayerData {
 		badcoins = Math.abs(badcoins);
 		if (applyBonus) {
 			GameAPI api = GameAPI.getAPI();
+			double totalBonus = 1;
 			double playerBonus = 0;
 			PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
 			if (playerBooster != null && playerBooster.getBooster() != null) {
 				playerBonus += playerBooster.getBooster().getCoinsMultiplier();
 			}
-			if (playerBonus == 0) playerBonus = 1;
+			if (playerBonus > 0) playerBonus--;
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
-			badcoins *= serverBonus > playerBonus ? serverBonus : playerBonus;
-			double v = 1;
+			if (serverBonus > 0) serverBonus--;
+			totalBonus += serverBonus + playerBonus;
+			double v = 0;
 			try {
 				if (this.getGameBadblockPlayer() != null) {
 					Double o = this.getGameBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
-					if (o == null) o = 1.0d;
-					v = o;
+					if (o == null) o = 0.0d;
+					v = o - 1.0d;
 				}else System.out.println("null gamePlayer");
 			}catch(Exception error) {
 				error.printStackTrace();
-				v = 1;
+				v = 0;
 			}
-			badcoins *= v < 1.0d ? 1.0d : v;
+			totalBonus += v < 0 ? 0 : v;
+			badcoins *= totalBonus;
 		}
 		addedBadcoins += badcoins;
 		return this.badcoins += badcoins;
@@ -129,25 +132,30 @@ public class GamePlayerData implements PlayerData {
 		xp = Math.abs(xp);
 
 		if (applyBonus) {
+			GameAPI api = GameAPI.getAPI();
+			double totalBonus = 1;
 			double playerBonus = 0;
 			PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
 			if (playerBooster != null && playerBooster.getBooster() != null) {
 				playerBonus += playerBooster.getBooster().getXpMultiplier();
 			}
-			if (playerBonus == 0) playerBonus = 1;
-			double serverBonus = GameAPI.getAPI().getServerXpBonus() <= 0 ? 1 : GameAPI.getAPI().getServerXpBonus();
-			xp *= serverBonus > playerBonus ? serverBonus : playerBonus;
-			double v = 1;
+			if (playerBonus > 0) playerBonus--;
+			double serverBonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
+			if (serverBonus > 0) serverBonus--;
+			totalBonus += serverBonus + playerBonus;
+			double v = 0;
 			try {
 				if (this.getGameBadblockPlayer() != null) {
 					Double o = this.getGameBadblockPlayer().getPermissionValue("xpboost", Double.class);
-					if (o == null) o = 1.0d;
-					v = o;
-				}
+					if (o == null) o = 0.0d;
+					v = o - 1.0d;
+				}else System.out.println("null gamePlayer");
 			}catch(Exception error) {
-				v = 1;
+				error.printStackTrace();
+				v = 0;
 			}
-			xp *= v < 1.0d ? 1.0d : v;
+			totalBonus += v < 0 ? 0 : v;
+			xp *= totalBonus;
 		}
 
 		addedXP += xp;
