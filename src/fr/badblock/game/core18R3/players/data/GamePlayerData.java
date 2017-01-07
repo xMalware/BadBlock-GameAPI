@@ -115,7 +115,7 @@ public class GamePlayerData implements PlayerData {
 
 		for(int i=1;i<level;i++){
 			base += add;
-			add  += 20;
+			add  += 300;
 		}
 
 		//Double doublet = Math.pow(1.2d, level + 1) * 100;
