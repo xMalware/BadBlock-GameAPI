@@ -16,6 +16,9 @@ public class MojangAPI
 			throws MojangAPI.SkinRequestException
 	{
 		String output = readURL("https://api.mojang.com/users/profiles/minecraft/" + name);
+		if (output.isEmpty()) {
+			return null;
+		}
 		if (output.contains("\"error\"")) {
 			throw new SkinRequestException(Locale.RATE_LIMITED);
 		}
