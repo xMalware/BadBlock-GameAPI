@@ -41,7 +41,7 @@ public class MojangAPI
 		}else{
 			String o = "";
 			for (char c : output.toCharArray())
-				if (!Character.isWhitespace(c) && Character.isDefined(c))
+				if (!Character.isWhitespace(c))
 					o += c;
 			output = readURL("https://api.mojang.com/users/profiles/minecraft/" + o);
 			output = output.substring(7, 39);
