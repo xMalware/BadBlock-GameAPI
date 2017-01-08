@@ -65,6 +65,7 @@ public class LoginListener extends BadListener {
 					}
 					catch (MojangAPI.SkinRequestException e)
 					{
+						e.printStackTrace();
 						return;
 					}
 					if (props == null) {
