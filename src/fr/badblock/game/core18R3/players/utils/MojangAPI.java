@@ -16,9 +16,6 @@ public class MojangAPI
 			throws MojangAPI.SkinRequestException
 	{
 		String output = readURL("https://api.mojang.com/users/profiles/minecraft/" + name);
-		if (output.isEmpty()) {
-			throw new SkinRequestException(Locale.NOT_PREMIUM);
-		}
 		if (output.contains("\"error\"")) {
 			throw new SkinRequestException(Locale.RATE_LIMITED);
 		}
@@ -39,7 +36,7 @@ public class MojangAPI
 		for (char c : output.toCharArray())
 			if (Character.isDigit(c) || c == '_' || c == '-' || Character.isLetter(c))
 				e += c;
-		if (output.isEmpty() || output.length() < 4 || e.isEmpty() || e.length() < 4)
+		if ((output.isEmpty() || output.length() < 4 || e.isEmpty() || e.length() < 4) && uuid != null)
 		{
 			System.out.println("A -- " + uuid);
 			output = readURL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
