@@ -35,18 +35,27 @@ public class MojangAPI
 		String signature = "";
 		String value = "";
 		String output = readSURL("https://badblock.fr/skin.php?name=" + name);
-		if (output.isEmpty() || output.length() < 2)
+		String e = "";
+		for (char c : output.toCharArray())
+			if (Character.isDigit(c) || c == '_' || c == '-' || Character.isLetter(c))
+				e += c;
+		if (output.isEmpty() || output.length() < 4 || e.isEmpty() || e.length() < 4)
 		{
+			System.out.println("A -- " + uuid);
 			output = readURL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
 		}else{
 			String o = "";
 			for (char c : output.toCharArray())
 				if (Character.isDigit(c) || c == '_' || c == '-' || Character.isLetter(c))
 					o += c;
+			System.out.println("B -- '" + o + "' - '" + output + "'");
 			if (!o.isEmpty()) {
 				output = readURL("https://api.mojang.com/users/profiles/minecraft/" + o);
+				System.out.println("C -- " + output);
 				output = output.substring(7, 39);
+				System.out.println("D -- " + output);
 				output = readURL("https://sessionserver.mojang.com/session/minecraft/profile/" + output + "?unsigned=false");
+				System.out.println("E -- " + output);
 			}
 		}
 		value = getStringBetween(output, mid, valend);
