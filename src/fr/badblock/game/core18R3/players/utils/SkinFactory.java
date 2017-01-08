@@ -6,6 +6,8 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 
+import com.mojang.authlib.properties.PropertyMap;
+
 import fr.badblock.game.core18R3.GamePlugin;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
@@ -34,6 +36,19 @@ public class SkinFactory {
 					new Class[] { Object.class, Object.class }, new Object[] { "textures", props });
 		}
 		catch (Exception localException) {}
+	}
+	
+	public static PropertyMap getPropertyMap(Player p)
+	{
+		try
+		{
+			Object ep = ReflectionUtil.invokeMethod(p.getClass(), p, "getHandle");
+			Object profile = ReflectionUtil.invokeMethod(ep.getClass(), ep, "getProfile");
+			Object propmap = ReflectionUtil.invokeMethod(profile.getClass(), profile, "getProperties");
+			return (PropertyMap) propmap;
+		}
+		catch (Exception localException) {}
+		return null;
 	}
 
 	public static void updateSkin(Player p)
