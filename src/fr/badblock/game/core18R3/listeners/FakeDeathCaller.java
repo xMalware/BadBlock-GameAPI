@@ -259,12 +259,9 @@ public class FakeDeathCaller extends BadListener {
 
 		if(!e.isKeepInventory()){
 			p.clearInventory();
-			ItemStack[] content = new ItemStack[85];
-			for (int i = 0; i < 85; i++) content[i] = new ItemStack(Material.AIR);
-			ItemStack[] armorContent = new ItemStack[4];
-			for (int i = 0; i < 5; i++) armorContent[i] = new ItemStack(Material.AIR);
-			p.getInventory().setContents(content);
-			p.getInventory().setArmorContents(armorContent);
+			if (p.getOpenInventory() != null && p.getOpenInventory().getTopInventory() != null) {
+				p.getOpenInventory().getTopInventory().clear();
+			}
 			drop(e.getDrops(), p.getLocation());
 		}
 
