@@ -41,7 +41,7 @@ public class MojangAPI
 		}else{
 			String o = "";
 			for (char c : output.toCharArray())
-				if (!Character.isWhitespace(c))
+				if (Character.isDigit(c) || c == '_' || c == '-' || Character.isLetter(c))
 					o += c;
 			output = readURL("https://api.mojang.com/users/profiles/minecraft/" + o);
 			output = output.substring(7, 39);
