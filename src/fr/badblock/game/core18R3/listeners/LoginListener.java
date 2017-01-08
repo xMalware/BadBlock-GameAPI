@@ -18,6 +18,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
+import fr.badblock.game.core18R3.players.utils.MojangAPI;
+import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
@@ -50,6 +52,33 @@ public class LoginListener extends BadListener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e){
 		System.out.println("PlayerLoginEvent: " + e.getPlayer().getName());
+		new Thread() {
+			@Override
+			public void run()
+			{
+				try
+				{
+					Object props = null;
+					try
+					{
+						props = MojangAPI.getSkinProperty(e.getPlayer().getName(), MojangAPI.getUUID(e.getPlayer().getName()));
+					}
+					catch (MojangAPI.SkinRequestException e)
+					{
+						return;
+					}
+					if (props == null) {
+						return;
+					}
+
+					SkinFactory.applySkin(e.getPlayer(), props);
+					SkinFactory.updateSkin(e.getPlayer());
+				}
+				catch (Exception localException1) {
+					localException1.printStackTrace();
+				}
+			}
+		}.start();
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
