@@ -8,8 +8,11 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
@@ -162,6 +165,14 @@ public class PlayerInteractListener extends BadListener {
 				
 			}
 		}
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onInventoryInteract(InventoryInteractEvent event) {
+		if (!(event.getWhoClicked() instanceof Player)) return;
+		GameBadblockPlayer player = (GameBadblockPlayer) event.getWhoClicked();
+		if (!player.hasAdminMode() && (player.getBadblockMode().equals(BadblockMode.RESPAWNING) || player.getBadblockMode().equals(BadblockMode.SPECTATOR)))
+			event.setCancelled(true);
 	}
 	
 	@EventHandler

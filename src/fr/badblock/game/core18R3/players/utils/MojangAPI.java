@@ -43,9 +43,11 @@ public class MojangAPI
 			for (char c : output.toCharArray())
 				if (Character.isDigit(c) || c == '_' || c == '-' || Character.isLetter(c))
 					o += c;
-			output = readURL("https://api.mojang.com/users/profiles/minecraft/" + o);
-			output = output.substring(7, 39);
-			output = readURL("https://sessionserver.mojang.com/session/minecraft/profile/" + output + "?unsigned=false");
+			if (!o.isEmpty()) {
+				output = readURL("https://api.mojang.com/users/profiles/minecraft/" + o);
+				output = output.substring(7, 39);
+				output = readURL("https://sessionserver.mojang.com/session/minecraft/profile/" + output + "?unsigned=false");
+			}
 		}
 		value = getStringBetween(output, mid, valend);
 		signature = getStringBetween(output, sigbeg, mid);
