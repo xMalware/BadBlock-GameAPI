@@ -15,9 +15,10 @@ import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class CReportCommand extends AbstractCommand {
-	
+
 	public static Map<String, Long> lastReport = new HashMap<>();
-	
+	public static Map<Integer, String> lastReportId = new HashMap<>();
+
 	public CReportCommand() {
 		super("creport", new TranslatableString("commands.creport.usage"), GamePermission.PLAYER, GamePermission.PLAYER, GamePermission.PLAYER);
 		this.allowConsole(false);
@@ -38,6 +39,15 @@ public class CReportCommand extends AbstractCommand {
 			player.sendTranslatedMessage("commands.creport.unknownmessageonthisserver");
 			return true;
 		}
+		if (lastReportId.containsKey(id)) {
+			if (lastReportId.get(id).equalsIgnoreCase(player.getName())) {
+				player.sendTranslatedMessage("commands.creport.youalreadyreportthismessage");
+				return true;
+			}else {
+				player.sendTranslatedMessage("commands.creport.thismessagehasalreadybeenreported");
+				return true;
+			}
+		}
 		if (lastReport.containsKey(player.getName())) {
 			long l = lastReport.get(player.getName());
 			if (l > System.currentTimeMillis()) {
@@ -55,9 +65,10 @@ public class CReportCommand extends AbstractCommand {
 		api.getSqlDatabase().call("INSERT INTO reportMsg(player, byPlayer, message, timestamp) VALUES('" + secure(chatData.playerName) + "', '" + secure(player.getName()) + "', '" + secure(chatData.message) + "', '" + System.currentTimeMillis() + "')", SQLRequestType.UPDATE);
 		player.sendTranslatedMessage("commands.creport.reportedmessage", chatData.playerName, chatData.message);
 		lastReport.put(player.getName(), System.currentTimeMillis() + 30_000L);
+		lastReportId.put(id, player.getName());
 		return true;
 	}
-	
+
 	public String secure(String str) {
 		if (str == null) {
 			return null;
@@ -93,5 +104,5 @@ public class CReportCommand extends AbstractCommand {
 			return str;
 		}
 	}
-	
+
 }

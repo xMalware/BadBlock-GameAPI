@@ -2,6 +2,7 @@ package fr.badblock.game.core18R3.listeners;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -39,7 +40,10 @@ public class ChatListener extends BadListener {
 		protectColor(player, e);
 		if(player.getBadblockMode() == BadblockMode.SPECTATOR){
 			TranslatableString result = new TranslatableString("chat.spectator" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), e.getMessage(), player.getPlayerData().getLevel(), player.getGroupSuffix());
-			int i = messages.size() + 1;
+			int i = new Random().nextInt(Integer.MAX_VALUE);
+			while (messages.containsKey(i)) {
+				i = new Random().nextInt(Integer.MAX_VALUE);
+			}
 			messages.put(i, new ChatData(player.getName(), e.getMessage()));
 			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
 			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
@@ -56,7 +60,10 @@ public class ChatListener extends BadListener {
 			}
 		} else if(team && player.getTeam() != null && e.getMessage().startsWith("$")){
 			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().substring(1), player.getPlayerData().getLevel(), player.getGroupSuffix());
-			int i = messages.size() + 1;
+			int i = new Random().nextInt(Integer.MAX_VALUE);
+			while (messages.containsKey(i)) {
+				i = new Random().nextInt(Integer.MAX_VALUE);
+			}
 			messages.put(i, new ChatData(player.getName(), e.getMessage()));
 			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
 			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
@@ -73,7 +80,10 @@ public class ChatListener extends BadListener {
 			if(player.getTeam() != null)
 				team = player.getTeam().getChatPrefix();
 
-			int i = messages.size() + 1;
+			int i = new Random().nextInt(Integer.MAX_VALUE);
+			while (messages.containsKey(i)) {
+				i = new Random().nextInt(Integer.MAX_VALUE);
+			}
 			messages.put(i, new ChatData(player.getName(), e.getMessage()));
 			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), team, e.getMessage(), player.getPlayerData().getLevel(), player.getGroupSuffix());
 			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
@@ -104,7 +114,10 @@ public class ChatListener extends BadListener {
 				if(!e.getMessage().contains(" ")) {
 					player.sendTranslatedMessage("game.pleasespecifyamessage");
 				}else{
-					int i = messages.size() + 1;
+					int i = new Random().nextInt(Integer.MAX_VALUE);
+					while (messages.containsKey(i)) {
+						i = new Random().nextInt(Integer.MAX_VALUE);
+					}
 					messages.put(i, new ChatData(player.getName(), e.getMessage()));
 					TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
 					message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
