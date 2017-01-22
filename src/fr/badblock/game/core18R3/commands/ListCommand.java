@@ -26,13 +26,15 @@ public class ListCommand extends AbstractCommand {
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		Map<String, List<BadblockPlayer>> players = null;
 		
+		boolean admin = !(sender instanceof BadblockPlayer) || ((BadblockPlayer) sender).hasAdminMode();
+		
 		Set<BadblockPlayer> set = Bukkit.getOnlinePlayers().stream().map(player -> {
 			return (BadblockPlayer) player;
 		}).filter(player -> {
 			if(player.inGameData(CommandInGameData.class).vanish){
-				return player.hasAdminMode();
+				return admin && isValid(player);
 			} else {
-				return true;
+				return isValid(player);
 			}
 		}).collect(Collectors.toSet());
 		
@@ -54,11 +56,17 @@ public class ListCommand extends AbstractCommand {
 		sendTranslatedMessage(sender, "commands.list.header", count, Bukkit.getMaxPlayers());
 
 		players.forEach((group, concerneds) -> {
-			String prefix = concerneds.get(0).getTabGroupPrefix().getAsLine(sender);
-		
-			sendTranslatedMessage(sender, "commands.list.part", prefix, concerneds.size(), StringUtils.join(concerneds.stream().map(p -> p.getName()), ", "));
+			if(group == null || concerneds == null || concerneds.isEmpty())
+				return;
+			
+			String prefix = new TranslatableString("permissions.tab." + group).getAsLine(sender);
+			sendTranslatedMessage(sender, "commands.list.part", prefix, concerneds.size(), StringUtils.join(concerneds.stream().filter(this::isValid).map(p -> p.getName()), ", "));
 		});
 		
 		return true;
+	}
+	
+	private boolean isValid(BadblockPlayer p){
+		return p != null && p.isOnline() && p.isDataFetch();
 	}
 }
