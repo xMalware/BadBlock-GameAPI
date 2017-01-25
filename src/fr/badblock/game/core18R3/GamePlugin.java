@@ -339,38 +339,38 @@ public class GamePlugin extends GameAPI {
 			GamePlugin gamePlugin = this;
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");;
 			getServer().getMessenger().registerIncomingPluginChannel(this, "SkinsRestorer", new PluginMessageListener()
-	        {
-	          public void onPluginMessageReceived(String channel, final Player player, final byte[] message)
-	          {
-	            if (!channel.equals("SkinsRestorer")) {
-	              return;
-	            }
-	            Bukkit.getScheduler().runTaskAsynchronously(gamePlugin, new Runnable()
-	            {
-	              public void run()
-	              {
-	                DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-	                try
-	                {
-	                  String subchannel = in.readUTF();
-	                  if (subchannel.equalsIgnoreCase("SkinUpdate"))
-	                  {
-	                    try
-	                    {
-	                      SkinFactory.applySkin(player, SkinFactory.createProperty(in.readUTF(), in.readUTF(), in.readUTF()));
-	                    }
-	                    catch (Exception localException1) {}
-	                    SkinFactory.updateSkin(player);
-	                  }
-	                }
-	                catch (Exception e)
-	                {
-	                  e.printStackTrace();
-	                }
-	              }
-	            });
-	          }
-	        });
+			{
+				public void onPluginMessageReceived(String channel, final Player player, final byte[] message)
+				{
+					if (!channel.equals("SkinsRestorer")) {
+						return;
+					}
+					Bukkit.getScheduler().runTaskAsynchronously(gamePlugin, new Runnable()
+					{
+						public void run()
+						{
+							DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
+							try
+							{
+								String subchannel = in.readUTF();
+								if (subchannel.equalsIgnoreCase("SkinUpdate"))
+								{
+									try
+									{
+										SkinFactory.applySkin(player, SkinFactory.createProperty(in.readUTF(), in.readUTF(), in.readUTF()));
+									}
+									catch (Exception localException1) {}
+									SkinFactory.updateSkin(player);
+								}
+							}
+							catch (Exception e)
+							{
+								e.printStackTrace();
+							}
+						}
+					});
+				}
+			});
 			GameAPI.logColor("&b[GameAPI] &aCreating scoreboard...");
 
 			badblockScoreboard = new GameScoreboard(); // Permet de g�rer le scoreboard
@@ -421,28 +421,33 @@ public class GamePlugin extends GameAPI {
 			plugins.mkdirs();
 			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins)).forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
 			if (this.getRunType().equals(RunType.GAME)) {
-				GameAPI.getAPI().getSqlDatabase().call("SELECT value FROM keyValues WHERE `key` = 'booster'", SQLRequestType.QUERY, new Callback<ResultSet>() {
-
+				TaskManager.scheduleAsyncRepeatingTask("booster", new Runnable() {
 					@Override
-					public void done(ResultSet result, Throwable error) {
-						try {
-							result.next();
-							String value = result.getString("value");
-							Map<String, PlayerBooster> updatedMap = gson.fromJson(value, type);
-							for (Entry<String, PlayerBooster> entry : updatedMap.entrySet()) {
-								if (Bukkit.getServerName().startsWith(entry.getKey())) {
-									gamePrefix = entry.getKey();
-									booster = entry.getValue();
-									break;
+					public void run() {
+						GameAPI.getAPI().getSqlDatabase().call("SELECT value FROM keyValues WHERE `key` = 'booster'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+							@Override
+							public void done(ResultSet result, Throwable error) {
+								try {
+									result.next();
+									String value = result.getString("value");
+									Map<String, PlayerBooster> updatedMap = gson.fromJson(value, type);
+									for (Entry<String, PlayerBooster> entry : updatedMap.entrySet()) {
+										if (Bukkit.getServerName().startsWith(entry.getKey())) {
+											gamePrefix = entry.getKey();
+											booster = entry.getValue();
+											break;
+										}
+									}
+									result.close(); // don't forget to close it
+								} catch (Exception exception) {
+									exception.printStackTrace();
 								}
 							}
-							result.close(); // don't forget to close it
-						} catch (Exception exception) {
-							exception.printStackTrace();
-						}
-					}
 
-				});
+						});
+					}
+				}, 10 * 20, 10 * 20);
 			}
 		} catch (Throwable t){
 			t.printStackTrace();

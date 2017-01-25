@@ -79,13 +79,17 @@ public class GamePlayerData implements PlayerData {
 			double totalBonus = 1;
 			double playerBonus = 0;
 			PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
+			System.out.println("AA");
 			if (playerBooster != null && playerBooster.getBooster() != null) {
+				System.out.println("BB");
 				playerBonus += playerBooster.getBooster().getCoinsMultiplier();
+				System.out.println("[ENABLED BOOSTER BONUS: " + playerBonus + "]");
 			}
 			if (playerBonus > 0) playerBonus--;
 			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
 			if (serverBonus > 0) serverBonus--;
 			totalBonus += serverBonus + playerBonus;
+			System.out.println(serverBonus + " / " + playerBonus + " / " + totalBonus);
 			double v = 0;
 			try {
 				if (this.getGameBadblockPlayer() != null) {
@@ -97,7 +101,10 @@ public class GamePlayerData implements PlayerData {
 				error.printStackTrace();
 				v = 0;
 			}
-			totalBonus += v < 0 ? 0 : v;
+			v += v < 0 ? 0 : v;
+			totalBonus += v;
+			System.out.println("AfterV / " + totalBonus);
+			System.out.println("BadCoins: " + badcoins + " / " + (badcoins * totalBonus));
 			badcoins *= totalBonus;
 		}
 		addedBadcoins += badcoins;
@@ -154,7 +161,8 @@ public class GamePlayerData implements PlayerData {
 				error.printStackTrace();
 				v = 0;
 			}
-			totalBonus += v < 0 ? 0 : v;
+			v += v < 0 ? 0 : v;
+			totalBonus += v;
 			xp *= totalBonus;
 		}
 
