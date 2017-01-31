@@ -115,6 +115,8 @@ import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.bossbars.BossBarColor;
+import fr.badblock.gameapi.players.bossbars.BossBarStyle;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
 import fr.badblock.gameapi.players.kits.DefaultKitContentManager;
 import fr.badblock.gameapi.players.kits.PlayerKit;
@@ -436,6 +438,7 @@ public class GamePlugin extends GameAPI {
 										if (Bukkit.getServerName().startsWith(entry.getKey())) {
 											gamePrefix = entry.getKey();
 											booster = entry.getValue();
+											getOnlinePlayers().forEach(player -> player.addBossBar("boosters", player.getTranslatedMessage("boosters.bossbar", entry.getKey(), booster.getUsername(), booster.getBooster().getXpMultiplier(), booster.getBooster().getCoinsMultiplier())[0], 1.0f, BossBarColor.GREEN, BossBarStyle.SOLID));
 											break;
 										}
 									}
@@ -448,6 +451,18 @@ public class GamePlugin extends GameAPI {
 						});
 					}
 				}, 10 * 20, 10 * 20);
+				/*TaskManager.scheduleAsyncRepeatingTask("boosterr", new Runnable() {
+					@Override
+					public void run() {
+						if (booster != null) {
+							float o = booster.getExpire();
+							long remainingTime = booster.getExpire() - System.currentTimeMillis();
+							long totalTime = booster.getBooster().getLength();
+							getOnlinePlayers().forEach(player -> player.addBossBar("boosters", player.getTranslatedMessage("boosters.bossbar", , booster.getUsername(), booster.getBooster().getXpMultiplier(), booster.getBooster().getCoinsMultiplier())[0], 1.0f, BossBarColor.GREEN, BossBarStyle.SOLID));
+						}
+
+					}
+				}, 20, 20);*/
 			}
 		} catch (Throwable t){
 			t.printStackTrace();
