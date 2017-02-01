@@ -457,7 +457,7 @@ public class GamePlugin extends GameAPI {
 							long o = booster.getExpire();
 							long remainingTime = o - System.currentTimeMillis();
 							remainingTime /= 1000;
-							long totalTime = booster.getBooster().getLength();
+							long totalTime = booster.getBooster().getLength() / 1000;
 							float a = remainingTime / totalTime;
 							System.out.println(a);
 							getOnlinePlayers().forEach(player -> player.addBossBar("boosters", player.getTranslatedMessage("boosters.bossbar", (int) ((booster.getBooster().getXpMultiplier() - 1) * 100), (int) ((booster.getBooster().getCoinsMultiplier() - 1) * 100), booster.getUsername())[0], a, BossBarColor.GREEN, BossBarStyle.SOLID));
