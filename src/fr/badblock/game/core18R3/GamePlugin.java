@@ -449,7 +449,7 @@ public class GamePlugin extends GameAPI {
 
 						});
 					}
-				}, 10 * 20, 10 * 20);
+				}, 1, 10 * 20);
 				TaskManager.scheduleAsyncRepeatingTask("boosterr", new Runnable() {
 					@Override
 					public void run() {
