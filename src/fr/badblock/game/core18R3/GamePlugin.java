@@ -438,7 +438,6 @@ public class GamePlugin extends GameAPI {
 										if (Bukkit.getServerName().startsWith(entry.getKey())) {
 											gamePrefix = entry.getKey();
 											booster = entry.getValue();
-											getOnlinePlayers().forEach(player -> player.addBossBar("boosters", player.getTranslatedMessage("boosters.bossbar", entry.getKey(), booster.getUsername(), booster.getBooster().getXpMultiplier(), booster.getBooster().getCoinsMultiplier())[0], 1.0f, BossBarColor.GREEN, BossBarStyle.SOLID));
 											break;
 										}
 									}
