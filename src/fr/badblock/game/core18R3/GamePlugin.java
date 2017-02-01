@@ -451,18 +451,22 @@ public class GamePlugin extends GameAPI {
 						});
 					}
 				}, 10 * 20, 10 * 20);
-				/*TaskManager.scheduleAsyncRepeatingTask("boosterr", new Runnable() {
+				TaskManager.scheduleAsyncRepeatingTask("boosterr", new Runnable() {
 					@Override
 					public void run() {
-						if (booster != null) {
-							float o = booster.getExpire();
-							long remainingTime = booster.getExpire() - System.currentTimeMillis();
+						if (booster != null && !booster.isExpired() && booster.isEnabled()) {
+							long o = booster.getExpire();
+							long remainingTime = o - System.currentTimeMillis();
+							remainingTime /= 1000;
 							long totalTime = booster.getBooster().getLength();
-							getOnlinePlayers().forEach(player -> player.addBossBar("boosters", player.getTranslatedMessage("boosters.bossbar", , booster.getUsername(), booster.getBooster().getXpMultiplier(), booster.getBooster().getCoinsMultiplier())[0], 1.0f, BossBarColor.GREEN, BossBarStyle.SOLID));
+							float a = remainingTime / totalTime;
+							getOnlinePlayers().forEach(player -> player.addBossBar("boosters", player.getTranslatedMessage("boosters.bossbar", (int) ((booster.getBooster().getXpMultiplier() - 1) * 100), (int) ((booster.getBooster().getCoinsMultiplier() - 1) * 100), booster.getUsername())[0], a, BossBarColor.GREEN, BossBarStyle.SOLID));
+						}else{
+							getOnlinePlayers().forEach(player -> player.removeBossBar("boosters"));
 						}
 
 					}
-				}, 20, 20);*/
+				}, 20, 20);
 			}
 		} catch (Throwable t){
 			t.printStackTrace();
