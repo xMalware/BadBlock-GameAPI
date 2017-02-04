@@ -59,18 +59,8 @@ public class LoginListener extends BadListener {
 				try
 				{
 					Object props = null;
-					try
-					{
-						props = MojangAPI.getSkinProperty(e.getPlayer().getName(), MojangAPI.getUUID(e.getPlayer().getName()));
-					}
-					catch (MojangAPI.SkinRequestException e)
-					{
-						e.printStackTrace();
-						return;
-					}
-					if (props == null) {
-						return;
-					}
+						props = MojangAPI.getSkinProperty(e.getPlayer().getName());
+					
 
 					SkinFactory.applySkin(e.getPlayer(), props);
 					SkinFactory.updateSkin(e.getPlayer());
