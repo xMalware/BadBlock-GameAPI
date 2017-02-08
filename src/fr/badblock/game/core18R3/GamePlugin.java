@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -463,7 +464,12 @@ public class GamePlugin extends GameAPI {
 						}else{
 							getOnlinePlayers().forEach(player -> player.removeBossBar("boosters"));
 						}
-
+						Calendar calendar = Calendar.getInstance();
+						int hours = calendar.get(Calendar.HOUR);
+						if (hours >= 21 && hours < 10) {
+							GamePlugin.getInstance().serverBadcoinsBonus = 6;
+							GamePlugin.getInstance().serverXpBonus = 11;
+						}
 					}
 				}, 20, 20);
 			}
