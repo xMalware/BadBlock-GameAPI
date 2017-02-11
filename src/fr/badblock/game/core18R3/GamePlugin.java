@@ -465,6 +465,7 @@ public class GamePlugin extends GameAPI {
 							getOnlinePlayers().forEach(player -> player.removeBossBar("boosters"));
 						}
 						Calendar calendar = Calendar.getInstance();
+						calendar.setTimeInMillis(System.currentTimeMillis());
 						int hours = calendar.get(Calendar.HOUR);
 						boolean t = false;
 						if (hours >= 21 && hours < 10) {
