@@ -466,10 +466,32 @@ public class GamePlugin extends GameAPI {
 						}
 						Calendar calendar = Calendar.getInstance();
 						int hours = calendar.get(Calendar.HOUR);
+						boolean t = false;
 						if (hours >= 21 && hours < 10) {
 							GamePlugin.getInstance().serverBadcoinsBonus = 6;
-							GamePlugin.getInstance().serverXpBonus = 11;
+							GamePlugin.getInstance().serverXpBonus = 11;	
+							t = true;
 						}
+						if (GamePlugin.getInstance().serverBadcoinsBonus > 1 || GamePlugin.getInstance().serverXpBonus > 1) {
+							float a = 1.0f;
+							if (t) {
+								calendar = Calendar.getInstance();
+								calendar.setTimeInMillis(System.currentTimeMillis());
+								calendar.set(Calendar.HOUR, 10);
+								double remainingTime = calendar.getTimeInMillis() - System.currentTimeMillis();
+								double totalTime = ((13 * 60) * 60) * 1000;
+								a = (float) (remainingTime / totalTime);
+							}
+							float o = a;
+							boolean p = t;
+							getOnlinePlayers().forEach(player -> player.addBossBar("serverbooster",
+									player.getTranslatedMessage("boosters.bossbarserver", 
+											(int) ((GamePlugin.getInstance().serverXpBonus - 1) * 100),
+											(int) ((GamePlugin.getInstance().serverBadcoinsBonus - 1) * 100),
+											p ? player.getTranslatedMessage("boosters.night")[0] : "")[0], o, BossBarColor.GREEN, BossBarStyle.SOLID));
+						}
+						else 
+							getOnlinePlayers().forEach(player -> player.removeBossBar("serverbooster"));
 					}
 				}, 20, 20);
 			}
