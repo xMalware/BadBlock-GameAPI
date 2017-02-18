@@ -156,8 +156,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Getter
 	private long 						lastFakeEntityUsedTime;
 	@Getter
-	private boolean 					visible 				= true;
-	private Predicate<BadblockPlayer> 	visiblePredicate;
+	private boolean						visible;
+	@Getter
+	private Predicate<BadblockPlayer> 	visiblePredicate = p -> true;
+	@Getter
+	private Predicate<BadblockPlayer> 	invisiblePredicate = p -> false;
 	@Getter@Setter
 	private String						realName;
 	@Getter@Setter
@@ -1173,20 +1176,14 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void setVisible(boolean visible, Predicate<BadblockPlayer> visiblePredicate) {
-		this.visible		  = visible;
-		this.visiblePredicate = visiblePredicate;
-
+		this.visible = visible;
 		if(visible){
-			GameAPI.getAPI().getOnlinePlayers().forEach(player -> player.showPlayer(this));
+			this.visiblePredicate = visiblePredicate;
+			GameAPI.getAPI().getOnlinePlayers().stream().filter(visiblePredicate).forEach(player -> player.showPlayer(this));
 		} else {
+			this.invisiblePredicate = visiblePredicate;
 			GameAPI.getAPI().getOnlinePlayers().stream().filter(visiblePredicate).forEach(player -> player.hidePlayer(this));
 		}
-	}
-
-	public Predicate<BadblockPlayer> getVisiblePredicate(){
-		if(visiblePredicate == null)
-			return (p -> false);
-		else return visiblePredicate;
 	}
 
 	@SuppressWarnings("deprecation")@Override

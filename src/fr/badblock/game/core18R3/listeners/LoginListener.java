@@ -208,8 +208,11 @@ public class LoginListener extends BadListener {
 					/*if(bp.isDisguised()){
 						bp.getDisguiseEntity().show(p);
 					} else */
-					if(!bp.isVisible() && bp.getVisiblePredicate().test(p)){
+					if(bp.getInvisiblePredicate().test(p)){
 						p.hidePlayer(bp);
+					}
+					if(bp.getVisiblePredicate().test(p)){
+						p.showPlayer(bp);
 					}
 					/*if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
 						p.hidePlayer(bp);
@@ -217,7 +220,7 @@ public class LoginListener extends BadListener {
 				}
 
 			}
-		}.runTaskLater(GameAPI.getAPI(), 10L);
+		}.runTaskLater(GameAPI.getAPI(), 1L);
 	}
 
 	public static void manageRunningJoin(BadblockPlayer player) {
@@ -225,11 +228,13 @@ public class LoginListener extends BadListener {
 		player.setBadblockMode(BadblockMode.PLAYER);
 		if (!GameAPI.getAPI().getTeams().isEmpty()) {
 			BadblockTeam betterTeam = null;
-			for (BadblockTeam team : GameAPI.getAPI().getTeams())
+			for (BadblockTeam team : GameAPI.getAPI().getTeams()) {
+				if (team.isDead()) continue;
 				if (team.playersCurrentlyOnline() < team.getMaxPlayers() && team.playersCurrentlyOnline() > 0) {
 					if (betterTeam == null || (betterTeam != null && betterTeam.playersCurrentlyOnline() > team.playersCurrentlyOnline()))
 						betterTeam = team;
 				}
+			}
 			if (betterTeam == null) player.kickPlayer("Unable to push you in a team.");
 			else betterTeam.joinTeam(player, JoinReason.REBALANCING);
 		}

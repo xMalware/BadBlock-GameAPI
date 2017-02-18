@@ -8,7 +8,6 @@ import org.bukkit.GameMode;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
-import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.rabbitconnector.RabbitConnector;
@@ -42,11 +41,10 @@ public class VanishTeleportListener extends RabbitListener {
 		if (GameAPI.getAPI().getRunType().equals(RunType.LOBBY)) return;
 		//player.sendTranslatedMessage("game.youjoinedinvanish");
 		player.closeInventory();
+		player.setVisible(false, pl -> !pl.hasPermission("others.mod.ghostconnect"));
+		player.setVisible(true, pl -> pl.hasPermission("others.mod.ghostconnect"));
 		player.setBadblockMode(BadblockMode.SPECTATOR);
 		player.setGameMode(GameMode.SPECTATOR);
-		//TODO à revoir, ça a pas l'air bon
-		player.setVisible(false, rt -> !rt.hasPermission(GamePermission.MODERATOR.getPermission()) && !rt.getBadblockMode().equals(BadblockMode.SPECTATOR));
-		player.setVisible(true, rt -> rt.hasPermission(GamePermission.MODERATOR.getPermission()) && rt.getBadblockMode().equals(BadblockMode.SPECTATOR));
 		if (splitter == null) return;
 		if (splitter.length > 1 && splitter[1] != null && !splitter[1].isEmpty()) {
 			BadblockPlayer otherPlayer = BukkitUtils.getPlayer(splitter[1]);

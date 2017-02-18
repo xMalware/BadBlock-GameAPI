@@ -466,7 +466,7 @@ public class GamePlugin extends GameAPI {
 						}
 						Calendar calendar = Calendar.getInstance();
 						calendar.setTimeInMillis(System.currentTimeMillis());
-						int hours = calendar.get(Calendar.HOUR);
+						int hours = calendar.get(Calendar.HOUR_OF_DAY);
 						boolean t = false;
 						if (hours >= 21 && hours < 10) {
 							GamePlugin.getInstance().serverBadcoinsBonus = 6;
@@ -478,7 +478,7 @@ public class GamePlugin extends GameAPI {
 							if (t) {
 								calendar = Calendar.getInstance();
 								calendar.setTimeInMillis(System.currentTimeMillis());
-								calendar.set(Calendar.HOUR, 10);
+								calendar.set(Calendar.HOUR_OF_DAY, 10);
 								double remainingTime = calendar.getTimeInMillis() - System.currentTimeMillis();
 								double totalTime = ((13 * 60) * 60) * 1000;
 								a = (float) (remainingTime / totalTime);
