@@ -13,7 +13,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import fr.badblock.gameapi.BadListener;
 
 public class BlockPlaceFixListener extends BadListener {
-	@EventHandler(priority=EventPriority.LOWEST)
+	@EventHandler(ignoreCancelled = true, priority=EventPriority.LOWEST)
 	public void onInteract(PlayerInteractEvent e)
 	{
 		if(e.getClickedBlock() == null || e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
