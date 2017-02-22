@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class AdminModeCommand extends AbstractCommand {
 	public AdminModeCommand() {
-		super("adminmode", new TranslatableString("commands.adminmode.usage"), GamePermission.BMODERATOR, GamePermission.ADMIN, GamePermission.ADMIN, "adminm", "am");
+		super("adminmode", new TranslatableString("commands.adminmode.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "adminm", "am");
 		allowConsole(false);
 	}
 
