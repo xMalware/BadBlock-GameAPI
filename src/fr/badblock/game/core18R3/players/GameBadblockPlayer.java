@@ -1,5 +1,6 @@
 package fr.badblock.game.core18R3.players;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
@@ -22,6 +23,7 @@ import org.bukkit.Sound;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -262,12 +264,19 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
 		}
 	}
-	
+
 	@Override
 	public EntityPlayer getHandle() {
-		return ((CraftPlayer) this).getHandle();
+		try {
+			Field field = CraftEntity.class.getField("entity");
+			field.setAccessible(true);
+			return ((EntityPlayer) field.get((CraftPlayer) this));
+		}catch(Exception error) {
+			error.printStackTrace();
+			return null;
+		}
 	}
-	
+
 	private GameAPI getAPI() {
 		return GameAPI.getAPI();
 	}
@@ -494,7 +503,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 		ViaBossBar bar = new ViaBossBar(message, life, us.myles.ViaVersion.api.boss.BossColor.valueOf(color.name()), us.myles.ViaVersion.api.boss.BossStyle.valueOf(style.name()));
 		bar.addPlayer(this);
-		
+
 		bossBars.put(key.toLowerCase(), bar);
 		lastBossBar = bar;
 
@@ -563,7 +572,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		lastBossBar = null;
 		enderdragon = null;
 	}
-	
+
 	@Override
 	public void sendTranslatedBossBar(String key, Object... args) {
 		sendBossBar(getTranslatedMessage(key, args)[0]);
