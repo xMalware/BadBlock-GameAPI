@@ -262,7 +262,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
 		}
 	}
-
+	
+	@Override
+	public EntityPlayer getHandle() {
+		return ((CraftPlayer) this).getHandle();
+	}
+	
 	private GameAPI getAPI() {
 		return GameAPI.getAPI();
 	}
