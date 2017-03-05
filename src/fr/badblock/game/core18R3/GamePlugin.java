@@ -424,33 +424,6 @@ public class GamePlugin extends GameAPI {
 			plugins.mkdirs();
 			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins)).forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
 			if (this.getRunType().equals(RunType.GAME)) {
-				TaskManager.scheduleAsyncRepeatingTask("booster", new Runnable() {
-					@Override
-					public void run() {
-						GameAPI.getAPI().getSqlDatabase().call("SELECT value FROM keyValues WHERE `key` = 'booster'", SQLRequestType.QUERY, new Callback<ResultSet>() {
-
-							@Override
-							public void done(ResultSet result, Throwable error) {
-								try {
-									result.next();
-									String value = result.getString("value");
-									Map<String, PlayerBooster> updatedMap = gson.fromJson(value, type);
-									for (Entry<String, PlayerBooster> entry : updatedMap.entrySet()) {
-										if (Bukkit.getServerName().startsWith(entry.getKey())) {
-											gamePrefix = entry.getKey();
-											booster = entry.getValue();
-											break;
-										}
-									}
-									result.close(); // don't forget to close it
-								} catch (Exception exception) {
-									exception.printStackTrace();
-								}
-							}
-
-						});
-					}
-				}, 1, 10 * 20);
 				TaskManager.scheduleAsyncRepeatingTask("boosterr", new Runnable() {
 					@Override
 					public void run() {

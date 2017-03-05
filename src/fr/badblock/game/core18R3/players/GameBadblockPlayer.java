@@ -265,17 +265,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
-	@Override
-	public EntityPlayer getHandle() {
-		try {
-			Field field = CraftEntity.class.getField("entity");
-			field.setAccessible(true);
-			return ((EntityPlayer) field.get((CraftPlayer) this));
-		}catch(Exception error) {
-			error.printStackTrace();
-			return null;
-		}
-	}
+    @Override
+    public EntityPlayer getHandle() {
+        return (EntityPlayer) entity;
+    }
 
 	private GameAPI getAPI() {
 		return GameAPI.getAPI();
