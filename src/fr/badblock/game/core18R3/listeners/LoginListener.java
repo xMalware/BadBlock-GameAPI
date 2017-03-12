@@ -220,7 +220,7 @@ public class LoginListener extends BadListener {
 				}
 
 			}
-		}.runTaskLater(GameAPI.getAPI(), 1L);
+		}.runTaskLater(GameAPI.getAPI(), 10L);
 	}
 
 	public static void manageRunningJoin(BadblockPlayer player) {
