@@ -53,19 +53,19 @@ public class ChatListener extends BadListener {
 				BadblockPlayer bPlayer = (BadblockPlayer) p;
 				TextComponent textComponent = new TextComponent();
 				String text = result.get((BadblockPlayer) p)[0];
-				String notColoredResult = "";
 				String coloredResult = "";
+				String base = "";
 				int length = text.length();
 				boolean wasColor = true;
-				for (int index = length - 1; index > -1; index--){
+				for (int index = 0; index < length; index++){
 					char character = text.charAt(index);
 					boolean b = false;
 					if (character == '&' || character == '§') {
 						wasColor = true;
 						b = true;
 					}
-					notColoredResult += character;
-					if (!wasColor) coloredResult += getLastColors(notColoredResult);
+					base += character;
+					if (!wasColor) coloredResult += getLastColors(base);
 					coloredResult += character;
 					if (!b)
 						wasColor = false;
@@ -89,19 +89,19 @@ public class ChatListener extends BadListener {
 			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 				TextComponent textComponent = new TextComponent();
 				String text = result.get((BadblockPlayer) p)[0];
-				String notColoredResult = "";
 				String coloredResult = "";
+				String base = "";
 				int length = text.length();
 				boolean wasColor = true;
-				for (int index = length - 1; index > -1; index--){
+				for (int index = 0; index < length; index++){
 					char character = text.charAt(index);
 					boolean b = false;
 					if (character == '&' || character == '§') {
 						wasColor = true;
 						b = true;
 					}
-					notColoredResult += character;
-					if (!wasColor) coloredResult += getLastColors(notColoredResult);
+					base += character;
+					if (!wasColor) coloredResult += getLastColors(base);
 					coloredResult += character;
 					if (!b)
 						wasColor = false;
@@ -129,19 +129,19 @@ public class ChatListener extends BadListener {
 			for(Player pl : e.getRecipients()) {
 				TextComponent textComponent = new TextComponent();
 				String text = s.get((BadblockPlayer) pl)[0];
-				String notColoredResult = "";
 				String coloredResult = "";
+				String base = "";
 				int length = text.length();
 				boolean wasColor = true;
-				for (int index = length - 1; index > -1; index--){
+				for (int index = 0; index < length; index++){
 					char character = text.charAt(index);
 					boolean b = false;
 					if (character == '&' || character == '§') {
 						wasColor = true;
 						b = true;
 					}
-					notColoredResult += character;
-					if (!wasColor) coloredResult += getLastColors(notColoredResult);
+					base += character;
+					if (!wasColor) coloredResult += getLastColors(base);
 					coloredResult += character;
 					if (!b)
 						wasColor = false;
@@ -180,8 +180,8 @@ public class ChatListener extends BadListener {
 					for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 						TextComponent textComponent = new TextComponent();
 						String text = result.get((BadblockPlayer) p)[0];
-						String notColoredResult = "";
 						String coloredResult = "";
+						String base = "";
 						int length = text.length();
 						boolean wasColor = true;
 						for (int index = 0; index < length; index++){
@@ -191,8 +191,8 @@ public class ChatListener extends BadListener {
 								wasColor = true;
 								b = true;
 							}
-							notColoredResult += character;
-							if (!wasColor) coloredResult += getLastColors(notColoredResult);
+							base += character;
+							if (!wasColor) coloredResult += getLastColors(base);
 							coloredResult += character;
 							if (!b)
 								wasColor = false;
@@ -209,7 +209,7 @@ public class ChatListener extends BadListener {
 	public static String getLastColors(String input){
 		String result = "";
 		int length = input.length();
-		for (int index = length - 1; index > -1; index--){
+		for (int index = 0; index < length; index++){
 			char section = input.charAt(index);
 			if ((section == '§' || section == '&') && (index < length - 1)){
 				char c = input.charAt(index + 1);
