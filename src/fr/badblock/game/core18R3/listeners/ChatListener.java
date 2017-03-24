@@ -52,7 +52,14 @@ public class ChatListener extends BadListener {
 			for(Player p : e.getRecipients()){
 				BadblockPlayer bPlayer = (BadblockPlayer) p;
 				TextComponent textComponent = new TextComponent();
-				textComponent.setText(" " + getLastColors(result.get((BadblockPlayer) p)[0]));
+				String text = result.get((BadblockPlayer) p)[0];
+				String notColoredResult = "";
+				String coloredResult = "";
+				for (String o : text.split(" ")) {
+					notColoredResult += o + " ";
+					coloredResult += getLastColors(notColoredResult) + o + " ";
+				}
+				textComponent.setText(" " + coloredResult);
 				if (player.hasPermission(GamePermission.MODERATOR))
 					p.sendMessage(message, textComponent);
 				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR)
@@ -70,7 +77,14 @@ public class ChatListener extends BadListener {
 			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
 			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 				TextComponent textComponent = new TextComponent();
-				textComponent.setText(" " + getLastColors(result.get((BadblockPlayer) p)[0]));
+				String text = result.get((BadblockPlayer) p)[0];
+				String notColoredResult = "";
+				String coloredResult = "";
+				for (String o : text.split(" ")) {
+					notColoredResult += o + " ";
+					coloredResult += getLastColors(notColoredResult) + o + " ";
+				}
+				textComponent.setText(" " + coloredResult);
 				if (e.getRecipients().contains(p))
 					p.sendMessage(message, textComponent);
 			}
@@ -92,7 +106,14 @@ public class ChatListener extends BadListener {
 
 			for(Player pl : e.getRecipients()) {
 				TextComponent textComponent = new TextComponent();
-				textComponent.setText(" " + getLastColors(s.get((BadblockPlayer) pl)[0]));
+				String text = s.get((BadblockPlayer) pl)[0];
+				String notColoredResult = "";
+				String coloredResult = "";
+				for (String o : text.split(" ")) {
+					notColoredResult += o + " ";
+					coloredResult += getLastColors(notColoredResult) + o + " ";
+				}
+				textComponent.setText(" " + coloredResult);
 				pl.sendMessage(message, textComponent);
 			}
 		}
@@ -125,7 +146,14 @@ public class ChatListener extends BadListener {
 					TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace(e.getMessage().split(" ")[0], ""), player.getPlayerData().getLevel());
 					for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 						TextComponent textComponent = new TextComponent();
-						textComponent.setText(" " + getLastColors(result.get((BadblockPlayer) p)[0]));
+						String text = result.get((BadblockPlayer) p)[0];
+						String notColoredResult = "";
+						String coloredResult = "";
+						for (String o : text.split(" ")) {
+							notColoredResult += o + " ";
+							coloredResult += getLastColors(notColoredResult) + o + " ";
+						}
+						textComponent.setText(" " + coloredResult);
 						if (e.getRecipients().contains(p))
 							p.sendMessage(message, textComponent);
 					}
