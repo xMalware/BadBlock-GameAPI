@@ -8,7 +8,7 @@ import lombok.Setter;
 public class RabbitMQConfig {
 
 	// Rabbit part
-	public String rabbitHostname;
+	public String[] rabbitHostname;
 	public int rabbitPort;
 	public String rabbitUsername;
 	public String rabbitPassword;

@@ -127,6 +127,7 @@ public class SkinFactory {
 			}
 		}
 		catch (Exception localException) {}
+		System.out.println("BROH!");
 	}
 
 	public static Object createProperty(String name, String value, String signature)

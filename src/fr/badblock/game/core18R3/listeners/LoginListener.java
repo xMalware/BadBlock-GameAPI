@@ -103,6 +103,8 @@ public class LoginListener extends BadListener {
 	@EventHandler
 	public void onInventoryClose(InventoryCloseEvent event) {
 		BadblockPlayer player = (BadblockPlayer) event.getPlayer();
+		for (StackTraceElement stack : Thread.currentThread().getStackTrace())
+			System.out.println("DATA: " + stack.toString());
 		if (player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
 			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning()) {
 				Inventory inventory = event.getInventory();
@@ -146,6 +148,7 @@ public class LoginListener extends BadListener {
 						if (joinItems.getKits().isEmpty()) {
 							// Manage
 							manageRunningJoin(p);
+							return;
 						}
 						CustomInventory inventory = GameAPI.getAPI().createCustomInventory(joinItems.getKits().size() / 9, GameAPI.i18n().get(p.getPlayerData().getLocale(), "joinitems.kit.inventoryName")[0]);
 

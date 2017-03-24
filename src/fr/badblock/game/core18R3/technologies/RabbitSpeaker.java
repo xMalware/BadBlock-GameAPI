@@ -21,7 +21,7 @@ public class RabbitSpeaker implements fr.badblock.gameapi.technologies.RabbitSpe
 	private RabbitService rabbitService;
 
 	public RabbitSpeaker(RabbitMQConfig rabbitMQConfig) throws IOException {
-		this.setRabbitService(getRabbitConnector().newService("default", rabbitMQConfig.getRabbitHostname(), rabbitMQConfig.getRabbitPort(), rabbitMQConfig.getRabbitUsername(), rabbitMQConfig.getRabbitPassword(), rabbitMQConfig.getRabbitVirtualHost()));
+		this.setRabbitService(getRabbitConnector().newService("default", rabbitMQConfig.getRabbitPort(), rabbitMQConfig.getRabbitUsername(), rabbitMQConfig.getRabbitPassword(), rabbitMQConfig.getRabbitVirtualHost(), rabbitMQConfig.getRabbitHostname()));
 	}
 
 	@Override
