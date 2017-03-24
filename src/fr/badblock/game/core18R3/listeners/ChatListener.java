@@ -173,7 +173,7 @@ public class ChatListener extends BadListener {
 	public static String getLastColors(String input){
 		String result = "";
 		int length = input.length();
-		for (int index = 0; index < length; index++){
+        for (int index = length - 1; index > -1; index--){
 			char section = input.charAt(index);
 			if ((section == '§' || section == '&') && (index < length - 1)){
 				char c = input.charAt(index + 1);
