@@ -55,9 +55,20 @@ public class ChatListener extends BadListener {
 				String text = result.get((BadblockPlayer) p)[0];
 				String notColoredResult = "";
 				String coloredResult = "";
-				for (String o : text.split(" ")) {
-					notColoredResult += o + " ";
-					coloredResult += getLastColors(notColoredResult) + o + " ";
+				int length = text.length();
+				boolean wasColor = true;
+				for (int index = length - 1; index > -1; index--){
+					char character = text.charAt(index);
+					boolean b = false;
+					if (character == '&' || character == '§') {
+						wasColor = true;
+						b = true;
+					}
+					notColoredResult += character;
+					if (!wasColor) coloredResult += getLastColors(notColoredResult);
+					coloredResult += character;
+					if (!b)
+						wasColor = false;
 				}
 				textComponent.setText(" " + coloredResult);
 				if (player.hasPermission(GamePermission.MODERATOR))
@@ -80,9 +91,20 @@ public class ChatListener extends BadListener {
 				String text = result.get((BadblockPlayer) p)[0];
 				String notColoredResult = "";
 				String coloredResult = "";
-				for (String o : text.split(" ")) {
-					notColoredResult += o + " ";
-					coloredResult += getLastColors(notColoredResult) + o + " ";
+				int length = text.length();
+				boolean wasColor = true;
+				for (int index = length - 1; index > -1; index--){
+					char character = text.charAt(index);
+					boolean b = false;
+					if (character == '&' || character == '§') {
+						wasColor = true;
+						b = true;
+					}
+					notColoredResult += character;
+					if (!wasColor) coloredResult += getLastColors(notColoredResult);
+					coloredResult += character;
+					if (!b)
+						wasColor = false;
 				}
 				textComponent.setText(" " + coloredResult);
 				if (e.getRecipients().contains(p))
@@ -109,9 +131,20 @@ public class ChatListener extends BadListener {
 				String text = s.get((BadblockPlayer) pl)[0];
 				String notColoredResult = "";
 				String coloredResult = "";
-				for (String o : text.split(" ")) {
-					notColoredResult += o + " ";
-					coloredResult += getLastColors(notColoredResult) + o + " ";
+				int length = text.length();
+				boolean wasColor = true;
+				for (int index = length - 1; index > -1; index--){
+					char character = text.charAt(index);
+					boolean b = false;
+					if (character == '&' || character == '§') {
+						wasColor = true;
+						b = true;
+					}
+					notColoredResult += character;
+					if (!wasColor) coloredResult += getLastColors(notColoredResult);
+					coloredResult += character;
+					if (!b)
+						wasColor = false;
 				}
 				textComponent.setText(" " + coloredResult);
 				pl.sendMessage(message, textComponent);
@@ -149,9 +182,20 @@ public class ChatListener extends BadListener {
 						String text = result.get((BadblockPlayer) p)[0];
 						String notColoredResult = "";
 						String coloredResult = "";
-						for (String o : text.split(" ")) {
-							notColoredResult += o + " ";
-							coloredResult += getLastColors(notColoredResult) + o + " ";
+						int length = text.length();
+						boolean wasColor = true;
+						for (int index = 0; index < length; index++){
+							char character = text.charAt(index);
+							boolean b = false;
+							if (character == '&' || character == '§') {
+								wasColor = true;
+								b = true;
+							}
+							notColoredResult += character;
+							if (!wasColor) coloredResult += getLastColors(notColoredResult);
+							coloredResult += character;
+							if (!b)
+								wasColor = false;
 						}
 						textComponent.setText(" " + coloredResult);
 						if (e.getRecipients().contains(p))
@@ -180,7 +224,7 @@ public class ChatListener extends BadListener {
 		}
 		return result;
 	}
-	
+
 	public static void protectColor(BadblockPlayer player, AsyncPlayerChatEvent event) {
 		if(player.hasPermission(GamePermission.ADMIN)){
 			String temp = ChatColor.translateAlternateColorCodes('&', event.getMessage());
