@@ -56,10 +56,19 @@ public class ChatListener extends BadListener {
 				String coloredResult = "";
 				String base = "";
 				int length = text.length();
+				boolean wasColor = true;
 				for (int index = 0; index < length; index++){
 					char character = text.charAt(index);
+					boolean b = false;
+					if (character == '&' || character == '§') {
+						wasColor = true;
+						b = true;
+					}
 					base += character;
-					coloredResult += getLastColors(base) + character;;
+					if (!wasColor) coloredResult += getLastColors(base);
+					coloredResult += character;
+					if (!b)
+						wasColor = false;
 				}
 				textComponent.setText(" " + coloredResult);
 				if (player.hasPermission(GamePermission.MODERATOR))
@@ -83,10 +92,19 @@ public class ChatListener extends BadListener {
 				String coloredResult = "";
 				String base = "";
 				int length = text.length();
+				boolean wasColor = true;
 				for (int index = 0; index < length; index++){
 					char character = text.charAt(index);
+					boolean b = false;
+					if (character == '&' || character == '§') {
+						wasColor = true;
+						b = true;
+					}
 					base += character;
-					coloredResult += getLastColors(base) + character;;
+					if (!wasColor) coloredResult += getLastColors(base);
+					coloredResult += character;
+					if (!b)
+						wasColor = false;
 				}
 				textComponent.setText(" " + coloredResult);
 				if (e.getRecipients().contains(p))
@@ -114,10 +132,19 @@ public class ChatListener extends BadListener {
 				String coloredResult = "";
 				String base = "";
 				int length = text.length();
+				boolean wasColor = true;
 				for (int index = 0; index < length; index++){
 					char character = text.charAt(index);
+					boolean b = false;
+					if (character == '&' || character == '§') {
+						wasColor = true;
+						b = true;
+					}
 					base += character;
-					coloredResult += getLastColors(base) + character;;
+					if (!wasColor) coloredResult += getLastColors(base);
+					coloredResult += character;
+					if (!b)
+						wasColor = false;
 				}
 				textComponent.setText(" " + coloredResult);
 				pl.sendMessage(message, textComponent);
@@ -156,10 +183,19 @@ public class ChatListener extends BadListener {
 						String coloredResult = "";
 						String base = "";
 						int length = text.length();
+						boolean wasColor = true;
 						for (int index = 0; index < length; index++){
 							char character = text.charAt(index);
+							boolean b = false;
+							if (character == '&' || character == '§') {
+								wasColor = true;
+								b = true;
+							}
 							base += character;
-							coloredResult += getLastColors(base) + character;;
+							if (!wasColor) coloredResult += getLastColors(base);
+							coloredResult += character;
+							if (!b)
+								wasColor = false;
 						}
 						textComponent.setText(" " + coloredResult);
 						if (e.getRecipients().contains(p))
