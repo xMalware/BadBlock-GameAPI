@@ -1,0 +1,33 @@
+package fr.badblock.bukkit.hub.inventories.settings.settings.directmessages;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+
+import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
+import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
+import fr.badblock.bukkit.hub.utils.RabbitUtils;
+import fr.badblock.gameapi.players.BadblockPlayer;
+
+public class PrivateMessagesForFriendsSettingsItem extends CustomItem {
+
+	public PrivateMessagesForFriendsSettingsItem() {
+		super("hub.items.privatemessagesforfriendssettingsitem", Material.STAINED_CLAY, (byte) 4,
+				"hub.items.privatemessagesforfriendssettingsitem.lore");
+	}
+
+	@Override
+	public List<ItemAction> getActions() {
+		return Arrays.asList(ItemAction.INVENTORY_DROP, ItemAction.INVENTORY_LEFT_CLICK,
+				ItemAction.INVENTORY_RIGHT_CLICK, ItemAction.INVENTORY_WHEEL_CLICK);
+	}
+
+	@Override
+	public void onClick(BadblockPlayer player, ItemAction itemAction, Block clickedBlock) {
+		RabbitUtils.forceCommand(player, "msg set FRIENDS");
+		player.closeInventory();
+	}
+
+}
