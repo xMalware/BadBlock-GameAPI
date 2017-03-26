@@ -47,6 +47,7 @@ import fr.badblock.bukkit.hub.tasks.RebootTask;
 import fr.badblock.bukkit.hub.tasks.RequestBoosterTask;
 import fr.badblock.bukkit.hub.tasks.RequestNPCTask;
 import fr.badblock.bukkit.hub.utils.MountManager;
+import fr.badblock.common.shoplinker.api.ShopLinkerAPI;
 import fr.badblock.gameapi.BadblockPlugin;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
@@ -58,7 +59,6 @@ import fr.badblock.gameapi.utils.selections.CuboidSelection;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.rabbitconnector.RabbitConnector;
 import fr.badblock.rabbitconnector.RabbitService;
-import fr.xmalware.badblock.shoplinker.api.ShopLinkerAPI;
 import lombok.Getter;
 import lombok.Setter;
 
