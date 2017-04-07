@@ -122,8 +122,11 @@ public class PlayerJoinListener extends _HubListener {
 						player.showPlayer(pl);
 					}
 				}
-				for (BadblockPlayer po : BukkitUtils.getPlayers())
-					if (HubStoredPlayer.get(po).hidePlayers) po.hidePlayer(player);
+				//for (BadblockPlayer po : BukkitUtils.getPlayers())
+				//	if (HubStoredPlayer.get(po).hidePlayers) po.hidePlayer(player);
+				if (hubStoredPlayer.isHidePlayers())
+					for (BadblockPlayer po : BukkitUtils.getPlayers())
+						player.hidePlayer(po);
 			}
 		});
 	}
