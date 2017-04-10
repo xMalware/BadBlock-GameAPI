@@ -83,7 +83,7 @@ public class PlayerJoinListener extends _HubListener {
 	public void onDataLoad(PlayerLoadedEvent event) {
 		BadblockPlayer player = event.getPlayer();
 		load(player);
-		TaskManager.runTask(new Runnable() {
+		TaskManager.runTaskLater(new Runnable() {
 			@Override
 			public void run() {
 				if (player == null || !player.isOnline()) return;
@@ -107,7 +107,7 @@ public class PlayerJoinListener extends _HubListener {
 				if (player.hasPermission("hub.broadcastjoin")) {
 					new TranslatableString("hub.joined", player.getGroupPrefix(), player.getName()).broadcast();
 				}
-				if (hubStoredPlayer.isHidePlayers()) {
+				/*if (hubStoredPlayer.isHidePlayers()) {
 					for (Player pl : Bukkit.getOnlinePlayers()) {
 						if (pl.hasPermission("hub.bypasshide"))
 							continue;
@@ -121,14 +121,29 @@ public class PlayerJoinListener extends _HubListener {
 					for (Player pl : Bukkit.getOnlinePlayers()) {
 						player.showPlayer(pl);
 					}
-				}
+				}*/
 				//for (BadblockPlayer po : BukkitUtils.getPlayers())
 				//	if (HubStoredPlayer.get(po).hidePlayers) po.hidePlayer(player);
+				System.out.println(player.getName() + " / " + hubStoredPlayer.isHidePlayers());
 				if (hubStoredPlayer.isHidePlayers())
-					for (BadblockPlayer po : BukkitUtils.getPlayers())
+					for (BadblockPlayer po : BukkitUtils.getPlayers()) {
 						player.hidePlayer(po);
+						System.out.println(player.getName() + " / Hide " + po.getName());
+					}
+				TaskManager.runTaskLater(new Runnable() {
+					@Override
+					public void run() {
+						if (player == null || !player.isOnline()) return;
+						System.out.println(player.getName() + " / " + hubStoredPlayer.isHidePlayers());
+						if (hubStoredPlayer.isHidePlayers())
+							for (BadblockPlayer po : BukkitUtils.getPlayers()) {
+								player.hidePlayer(po);
+								System.out.println(player.getName() + " / Hide " + po.getName());
+							}
+					}
+				}, 1);
 			}
-		});
+		}, 1);
 	}
 
 	/*@EventHandler

@@ -1,5 +1,5 @@
 name: BadBlockHub
-main: fr.xmalware.badblock.hub.BadBlockHub
+main: fr.badblock.bukkit.hub.BadBlockHub
 version: 1.0
 author: xMalware
 depend: [BadblockGameAPI]

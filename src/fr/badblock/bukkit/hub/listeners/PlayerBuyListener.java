@@ -3,10 +3,10 @@ package fr.badblock.bukkit.hub.listeners;
 import org.bukkit.event.EventHandler;
 
 import fr.badblock.bukkit.hub.inventories.market.properties.CustomProperty;
-import fr.badblock.common.shoplinker.api.ShopData;
-import fr.badblock.common.shoplinker.plugin.events.PlayerBuyEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.BukkitUtils;
+import fr.xmalware.badblock.shoplinker.api.ShopData;
+import fr.xmalware.badblock.shoplinker.plugin.events.PlayerBuyEvent;
 
 public class PlayerBuyListener extends _HubListener {
 
