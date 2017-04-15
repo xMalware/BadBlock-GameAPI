@@ -14,6 +14,7 @@ public class BuildSelectorItem extends CustomItem {
 
 	public BuildSelectorItem() {
 		super("hub.items.buildselectoritem", Material.COBBLESTONE, "hub.items.buildselectoritem.lore");
+		this.setNeededPermission("hub.staffroom");
 	}
 
 	@Override

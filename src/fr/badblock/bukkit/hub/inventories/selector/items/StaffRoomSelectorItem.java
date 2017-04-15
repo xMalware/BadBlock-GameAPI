@@ -18,6 +18,7 @@ public class StaffRoomSelectorItem extends CustomItem {
 
 	public StaffRoomSelectorItem() {
 		super("hub.items.staffroomselectoritem", Material.ENDER_PORTAL_FRAME, "hub.items.staffroomselectoritem.lore");
+		this.setNeededPermission("hub.staffroom");
 		this.setNoPermissionItem(new LightBlueStainedGlassPaneItem());
 	}
 
