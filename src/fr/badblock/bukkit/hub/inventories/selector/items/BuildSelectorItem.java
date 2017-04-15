@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
+import fr.badblock.bukkit.hub.inventories.settings.settings.LightBlueStainedGlassPaneItem;
 import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class BuildSelectorItem extends CustomItem {
@@ -15,6 +16,7 @@ public class BuildSelectorItem extends CustomItem {
 	public BuildSelectorItem() {
 		super("hub.items.buildselectoritem", Material.COBBLESTONE, "hub.items.buildselectoritem.lore");
 		this.setNeededPermission("hub.staffroom");
+		this.setNoPermissionItem(new LightBlueStainedGlassPaneItem());
 	}
 
 	@Override
