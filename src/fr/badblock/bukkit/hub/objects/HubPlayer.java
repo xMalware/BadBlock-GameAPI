@@ -138,7 +138,7 @@ public class HubPlayer implements InGameData {
 
 	public String message;
 
-	public long lastMove = System.currentTimeMillis() + 900_000L;
+	public long lastMove = System.currentTimeMillis() + 300_000L;
 
 	public PlayerBooster lastBooster;
 

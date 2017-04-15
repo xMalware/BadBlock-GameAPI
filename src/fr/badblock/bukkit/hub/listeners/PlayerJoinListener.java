@@ -141,7 +141,7 @@ public class PlayerJoinListener extends _HubListener {
 								System.out.println(player.getName() + " / Hide " + po.getName());
 							}
 					}
-				}, 1);
+				}, 5);
 			}
 		}, 1);
 	}
