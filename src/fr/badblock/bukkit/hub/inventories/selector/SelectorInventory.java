@@ -1,6 +1,7 @@
 package fr.badblock.bukkit.hub.inventories.selector;
 
 import fr.badblock.bukkit.hub.inventories.abstracts.inventories.CustomInventory;
+import fr.badblock.bukkit.hub.inventories.selector.items.BuildSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.CTSSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.DayZSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.FreeBuildSelectorItem;
@@ -14,9 +15,9 @@ import fr.badblock.bukkit.hub.inventories.selector.items.SkyBlockSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.SpaceBallsSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.SpawnSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.SpeedUHCSelectorItem;
+import fr.badblock.bukkit.hub.inventories.selector.items.StaffRoomSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.SurvivalGamesSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.TowerSelectorItem;
-import fr.badblock.bukkit.hub.inventories.selector.items.VIPZoneSelectorItem;
 import fr.badblock.bukkit.hub.inventories.settings.items.BlueStainedGlassPaneItem;
 import fr.badblock.bukkit.hub.inventories.settings.settings.LightBlueStainedGlassPaneItem;
 
@@ -28,7 +29,8 @@ public class SelectorInventory extends CustomInventory {
 		LightBlueStainedGlassPaneItem lightBlueStainedGlassPaneItem = new LightBlueStainedGlassPaneItem();
 		this.setItem(lightBlueStainedGlassPaneItem, 28, 29, 30, 31, 32, 33, 34);
 		this.setItem(0, new SpawnSelectorItem());
-		this.setItem(8, new VIPZoneSelectorItem());
+		this.setItem(4, new StaffRoomSelectorItem());
+		this.setItem(8, new BuildSelectorItem());
 		this.setItem(19, new TowerSelectorItem());
 		this.setItem(20, new RushSelectorItem());
 		this.setItem(21, new SpeedUHCSelectorItem());
