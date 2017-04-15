@@ -17,7 +17,7 @@ import fr.badblock.gameapi.utils.ConfigUtils;
 public class StaffRoomSelectorItem extends CustomItem {
 
 	public StaffRoomSelectorItem() {
-		super("hub.items.staffroomselectoritem", Material.ENDER_PORTAL, "hub.items.staffroomselectoritem.lore");
+		super("hub.items.staffroomselectoritem", Material.ENDER_PORTAL_FRAME, "hub.items.staffroomselectoritem.lore");
 		this.setNoPermissionItem(new LightBlueStainedGlassPaneItem());
 	}
 

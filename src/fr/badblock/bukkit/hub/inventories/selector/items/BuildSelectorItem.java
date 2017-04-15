@@ -13,7 +13,7 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 public class BuildSelectorItem extends CustomItem {
 
 	public BuildSelectorItem() {
-		super("hub.items.buildselectoritem", Material.ENDER_PORTAL, "hub.items.buildselectoritem.lore");
+		super("hub.items.buildselectoritem", Material.COBBLESTONE, "hub.items.buildselectoritem.lore");
 	}
 
 	@Override
