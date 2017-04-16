@@ -1,6 +1,5 @@
 package fr.badblock.game.core18R3.players;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
@@ -23,7 +22,6 @@ import org.bukkit.Sound;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
