@@ -42,8 +42,8 @@ public class PlayerJoinListener extends _HubListener {
 					if (SEntryInfosListener.tempPlayersUUID.containsKey(npc.getKey()) && SEntryInfosListener.tempPlayersRank.containsKey(npc.getKey()) && SEntryInfosListener.tempPlayersPropertyMap.containsKey(npc.getKey())) {
 						Player pl = Bukkit.getPlayer(npc.getKey());
 						if (pl == null || (pl != null && !pl.isOnline())) {
-							if (!player.hasPermission("vip"))
-								npc.getValue().show(npc.getKey(), SEntryInfosListener.tempPlayersUUID.get(npc.getKey()), player, SEntryInfosListener.tempPlayersPropertyMap.get(npc.getKey()));
+							//if (!player.hasPermission("vip"))
+							//	npc.getValue().show(npc.getKey(), SEntryInfosListener.tempPlayersUUID.get(npc.getKey()), player, SEntryInfosListener.tempPlayersPropertyMap.get(npc.getKey()));
 						}
 					}
 				}
