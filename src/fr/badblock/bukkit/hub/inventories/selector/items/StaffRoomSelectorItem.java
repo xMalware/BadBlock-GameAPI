@@ -10,7 +10,7 @@ import org.bukkit.block.Block;
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
-import fr.badblock.bukkit.hub.inventories.settings.settings.LightBlueStainedGlassPaneItem;
+import fr.badblock.bukkit.hub.inventories.settings.items.BlueStainedGlassPaneItem;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.ConfigUtils;
 
@@ -19,7 +19,7 @@ public class StaffRoomSelectorItem extends CustomItem {
 	public StaffRoomSelectorItem() {
 		super("hub.items.staffroomselectoritem", Material.ENDER_PORTAL_FRAME, "hub.items.staffroomselectoritem.lore");
 		this.setNeededPermission("hub.staffroom");
-		this.setNoPermissionItem(new LightBlueStainedGlassPaneItem());
+		this.setNoPermissionItem(new BlueStainedGlassPaneItem());
 	}
 
 	@Override
