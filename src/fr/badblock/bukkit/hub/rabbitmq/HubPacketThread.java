@@ -61,7 +61,6 @@ public class HubPacketThread implements Runnable {
 				ranks.put(order.get(npc.rank), ranks.get(order.get(npc.rank)) + 1);
 		}
 		int playersWorker = Bukkit.getOnlinePlayers().size();
-		playersWorker += SEntryInfosListener.tempPlayers.size();
 		HubAliveFactory hubAliveFactory = new HubAliveFactory(Bukkit.getServerName(), playersWorker, Bukkit.getMaxPlayers(), opened, ranks);
 		rabbitService.sendAsyncPacket("hub",
 				BadBlockHub.getInstance().getGson()
