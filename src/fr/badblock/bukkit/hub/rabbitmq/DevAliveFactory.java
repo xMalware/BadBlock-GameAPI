@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DevAliveFactory {
 	public String name;
-	public String displayName;
 	public boolean open;
 	public int players;
 	public int slots;

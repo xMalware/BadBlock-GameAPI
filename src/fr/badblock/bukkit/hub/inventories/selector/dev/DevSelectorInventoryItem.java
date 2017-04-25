@@ -21,7 +21,7 @@ public class DevSelectorInventoryItem extends CustomItem {
 	
 	public DevSelectorInventoryItem(DevAliveFactory daf)
 	{
-		super(daf.displayName, Material.WOOL);
+		super("", Material.WOOL);
 		apply(daf);
 	}
 	
@@ -33,7 +33,6 @@ public class DevSelectorInventoryItem extends CustomItem {
 	public boolean apply(DevAliveFactory daf)
 	{
 		this.name = daf.name;
-		this.displayname = daf.displayName;
 		this.players = daf.players;
 		this.slot = daf.slots;
 
