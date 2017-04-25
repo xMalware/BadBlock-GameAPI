@@ -155,12 +155,15 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void updatePlayerData(BadblockPlayer player, JsonObject toUpdate) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		if (!player.isDataFetch()) return;
 		updatePlayerData(player.getName(), toUpdate);
 	}
 
 	@Override
 	public void updatePlayerData(String player, JsonObject toUpdate) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
 		//System.out.println("updatePlayerData / " + player + " / " + toUpdate.toString());
 		//for (StackTraceElement stackTrace : Thread.currentThread().getStackTrace())
 		//	System.out.println(stackTrace.toString());
@@ -170,6 +173,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void getIpPlayerData(BadblockPlayer player, Callback<JsonObject> callback) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		String ip = player.getAddress().getAddress().getHostAddress();
 
 		requestedIps.put(ip, callback);
@@ -178,6 +183,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void updateIpPlayerData(BadblockPlayer player, JsonObject toUpdate) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		if (!player.isDataFetch()) return;
 		String ip = player.getAddress().getAddress().getHostAddress();
 		if(toUpdate != null)
@@ -186,16 +193,22 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void askForPermissions() {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		sendPacket(new PacketPlayerData(DataType.PERMISSION, DataAction.REQUEST, "*", ""));
 	}
 
 	@Override
 	public void keepAlive(GameState state, int current, int max){
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		sendPacket(new PacketMatchmakingKeepalive(ServerStatus.getStatus(state.getId()), current, max));
 	}
 
 	@Override
 	public void sendPing(String[] servers, Callback<Integer> count){
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		requestedPing.put(nextKey, count);
 		sendPacket(new PacketMatchmakingPing(nextKey, servers));
 		nextKey++;
@@ -203,16 +216,22 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void sendReconnectionInvitation(String name, boolean invited) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		sendPacket(new PacketReconnectionInvitation(name, invited));
 	}
 
 	@Override
 	public void executeCommand(String command) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		sendPacket(new PacketSimpleCommand(command));
 	}
 
 	@Override
 	public void executeCommand(BadblockPlayer player, String command) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		sendPacket(new PacketSimpleCommand(player.getName(), command));
 	}
 
@@ -293,6 +312,8 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void broadcast(String... messages) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		sendPacket(new PacketPlayerChat(null, ChatAction.MESSAGE_FLAT, messages));
 	}
 }

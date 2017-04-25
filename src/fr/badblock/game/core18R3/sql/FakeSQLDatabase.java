@@ -13,21 +13,23 @@ import lombok.RequiredArgsConstructor;
 public class FakeSQLDatabase implements SQLDatabase {
 	@Override
 	public Statement createStatement() throws Exception {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
 		throw new IllegalAccessException("Cannot create statement with a fake database!");	
 	}
 
 	@Override
 	public PreparedStatement preparedStatement(String request) throws Exception {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
 		throw new IllegalAccessException("Cannot create statement with a fake database!");	
 	}
 
 	@Override
 	public void call(String request, SQLRequestType requestType) {
-
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
 	}
 
 	@Override
 	public void call(String request, SQLRequestType requestType, Callback<ResultSet> callback) {
-
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
 	}
 }
