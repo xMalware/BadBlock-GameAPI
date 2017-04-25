@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 
 import fr.badblock.docker.factories.GameAliveFactory;
 import fr.badblock.game.core18R3.GamePlugin;
+import fr.badblock.game.core18R3.gameserver.DevAliveFactory;
 import fr.badblock.game.core18R3.gameserver.GameServerManager;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
@@ -79,6 +80,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		// gameServerManager.getServerConfigurationFactory();
 		GameServer gameServer = gameApi.getGameServer();
 		GameAliveFactory gameAliveFactory = new GameAliveFactory(gameApi.getServer().getServerName(), fr.badblock.docker.GameState.getStatus(gameServer.getGameState().getId()), isJoinable(), Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers());
+		sendDevSignal(false, addedPlayers);
 		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.instance.keepalive", gameServerManager.getGson().toJson(gameAliveFactory), 5000, false);
 	}
 
@@ -86,6 +88,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		GameAPI gameApi = GameAPI.getAPI();
 		// ServerConfigurationFactory serverConfigurationFactory =
 		// gameServerManager.getServerConfigurationFactory();
+		sendDevSignal(false, 0);
 		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.stop", gameApi.getServer().getServerName(), 5000, false);
 		gameApi.getRabbitSpeaker().cut();
 	}
@@ -106,6 +109,16 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		}).filter((value) -> value > 0).min();
 
 		this.setFirstServer(optionalInt.isPresent() && optionalInt.getAsInt() == serverId);
+	}
+	
+	private void sendDevSignal(boolean open, int addedPlayers)
+	{
+		GameAPI gameApi = GameAPI.getAPI();
+		GameServerManager gameServerManager = this.getGameServerManager();
+		GameServer gameServer = gameApi.getGameServer();
+
+		DevAliveFactory devAliveFactory = new DevAliveFactory(gameApi.getServer().getServerName(), open, Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers());
+		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("dev", gameServerManager.getGson().toJson(devAliveFactory), 5000, false);
 	}
 
 }

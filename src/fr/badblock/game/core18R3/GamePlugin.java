@@ -153,7 +153,7 @@ import net.minecraft.server.v1_8_R3.WorldServer;
 
 public class GamePlugin extends GameAPI {
 	public static final String
-		FOLDER_CONFIG = "config",
+		FOLDER_CONFIG 	  = "config",
 		FOLDER_KITS		  = "kits",
 		CONFIG_DATABASES  = "databases.json",
 		WHITELIST		  = "whitelist.yml";
