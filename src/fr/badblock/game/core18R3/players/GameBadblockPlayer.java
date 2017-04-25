@@ -82,6 +82,7 @@ import fr.badblock.gameapi.players.bossbars.BossBarColor;
 import fr.badblock.gameapi.players.bossbars.BossBarStyle;
 import fr.badblock.gameapi.players.data.InGameData;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
+import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.general.StringUtils;
@@ -808,6 +809,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public boolean hasPermission(String permission) {
+		if(GameAPI.getAPI().getRunType() == RunType.DEV && permissions.hasPermission("devserver"))
+			return true;
 		return permission == null ? true : permissions.hasPermission(permission);
 	}
 

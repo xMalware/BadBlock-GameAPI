@@ -23,7 +23,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameServerKeeperAliveTask extends GameServerTask {
-
+	private static boolean openStaff = false;
+	
+	public static boolean switchOpenStaff()
+	{
+		return (openStaff = !openStaff);
+	}
+	
 	private boolean firstServer;
 	private long joinTime;
 
@@ -121,7 +127,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		if(gameApi.getRunType() != RunType.DEV)
 			return;
 		
-		DevAliveFactory devAliveFactory = new DevAliveFactory(gameApi.getServer().getServerName(), open, Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers());
+		DevAliveFactory devAliveFactory = new DevAliveFactory(gameApi.getServer().getServerName(), open, Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers(), openStaff);
 		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("dev", gameServerManager.getGson().toJson(devAliveFactory), 5000, false);
 	}
 
