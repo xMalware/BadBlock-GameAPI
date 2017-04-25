@@ -132,7 +132,6 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 			return;
 		
 		DevAliveFactory devAliveFactory = new DevAliveFactory(gameApi.getServer().getServerName(), open, Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers(), openStaff);
-		System.out.println(devAliveFactory);
 		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("dev", gameServerManager.getGson().toJson(devAliveFactory), 5000, false);
 	}
 
