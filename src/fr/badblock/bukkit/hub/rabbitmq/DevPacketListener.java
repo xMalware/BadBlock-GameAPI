@@ -7,7 +7,7 @@ import fr.badblock.rabbitconnector.RabbitListenerType;
 
 public class DevPacketListener extends RabbitListener {
 	public DevPacketListener() {
-		super(BadBlockHub.getInstance().getRabbitService(), "hub", false, RabbitListenerType.SUBSCRIBER);
+		super(BadBlockHub.getInstance().getRabbitService(), "dev", false, RabbitListenerType.SUBSCRIBER);
 	}
 
 	@Override
