@@ -14,6 +14,7 @@ import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameServer;
 import fr.badblock.gameapi.game.GameState;
+import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import lombok.Getter;
@@ -117,6 +118,9 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		GameServerManager gameServerManager = this.getGameServerManager();
 		GameServer gameServer = gameApi.getGameServer();
 
+		if(gameApi.getRunType() != RunType.DEV)
+			return;
+		
 		DevAliveFactory devAliveFactory = new DevAliveFactory(gameApi.getServer().getServerName(), open, Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers());
 		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("dev", gameServerManager.getGson().toJson(devAliveFactory), 5000, false);
 	}
