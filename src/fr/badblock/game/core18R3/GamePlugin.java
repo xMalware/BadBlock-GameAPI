@@ -152,14 +152,11 @@ import net.minecraft.server.v1_8_R3.World;
 import net.minecraft.server.v1_8_R3.WorldServer;
 
 public class GamePlugin extends GameAPI {
-
-	public static final boolean EMPTY_VERSION = false;
-
 	public static final String
-	FOLDER_CONFIG = "config",
-	FOLDER_KITS		   = "kits",
-	CONFIG_DATABASES    = "databases.json",
-	WHITELIST		   = "whitelist.yml";
+		FOLDER_CONFIG = "config",
+		FOLDER_KITS		  = "kits",
+		CONFIG_DATABASES  = "databases.json",
+		WHITELIST		  = "whitelist.yml";
 	public static Thread thread;
 
 	public static final Type type = new TypeToken<Map<String, PlayerBooster>>() {}.getType();
@@ -270,6 +267,7 @@ public class GamePlugin extends GameAPI {
 				configFile.createNewFile();
 			File configFolder = new File(getDataFolder(), FOLDER_CONFIG);
 			if (!configFolder.exists()) configFolder.mkdirs();
+			
 			FTPConfig ftpConfig = JsonUtils.load(new File(configFolder, "ftp.json"), FTPConfig.class);
 			GameServerConfig gameServerConfig = JsonUtils.load(new File(configFolder, "gameServer.json"), GameServerConfig.class);
 			RankedConfig rankedConfig = JsonUtils.load(new File(configFolder, "ranked.json"), RankedConfig.class);
@@ -277,11 +275,11 @@ public class GamePlugin extends GameAPI {
 			RabbitMQConfig rabbitMQConfig = JsonUtils.load(new File(configFolder, "rabbitmq.json"), RabbitMQConfig.class);
 			ServerConfig serverConfig = JsonUtils.load(new File(configFolder, "server.json"), ServerConfig.class);
 			SQLConfig sqlConfig = JsonUtils.load(new File(configFolder, "sql.json"), SQLConfig.class);
+			
 			i18nFolder = serverConfig.getI18nPath();
 			if (i18nFolder == null || i18nFolder.isEmpty()) i18nFolder = getDataFolder().getAbsolutePath() + "/i18n/";
 			loadI18n();
 
-			if(!EMPTY_VERSION) {
 				teams 		 	 = Maps.newConcurrentMap();
 
 				GameAPI.logColor("&b[GameAPI] &aLoading databases configuration...");
@@ -295,7 +293,7 @@ public class GamePlugin extends GameAPI {
 				ladderDatabase = new GameLadderSpeaker(ladderConfig.ladderIp, ladderConfig.ladderPort);
 				ladderDatabase.askForPermissions();
 
-				if(!GameAPI.TEST_MODE){
+				if(!GameAPI.TEST_MODE) {
 					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + sqlConfig.sqlIp + ":" + sqlConfig.sqlPort);
 					GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
 
@@ -306,7 +304,6 @@ public class GamePlugin extends GameAPI {
 				} else {
 					sqlDatabase = new FakeSQLDatabase();
 				}
-			}
 
 			GameAPI.logColor("&b[GameAPI] &aLoading NMS classes...");
 			/**
@@ -397,7 +394,6 @@ public class GamePlugin extends GameAPI {
 			serverBadcoinsBonus = serverConfig.getBonusCoins();
 
 			// Loading GameServer
-			if(!EMPTY_VERSION){
 				GameAPI.logColor("&b[GameAPI] &aGameServer loading...");
 				// GameServer apr�s tout
 				this.gameServer 	   = new GameServer();
@@ -405,7 +401,6 @@ public class GamePlugin extends GameAPI {
 				this.gameServerManager.setRankedConfig(rankedConfig);
 				this.setLeaverBusterEnabled(gameServerConfig.isLeaverBusterEnabled());
 				this.getGameServerManager().start();
-			}
 
 			nano = System.nanoTime() - nano;
 
@@ -476,7 +471,7 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public void onDisable(){
 		try {
-			if(!EMPTY_VERSION && !TEST_MODE)
+			if(!TEST_MODE)
 				((GameSQLDatabase) sqlDatabase).closeConnection();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -656,9 +651,7 @@ public class GamePlugin extends GameAPI {
 
 	@Override
 	public BadblockOfflinePlayer getOfflinePlayer(@NonNull String name) {
-		if(EMPTY_VERSION) return null;
-
-		return EMPTY_VERSION ? null : gameServer.getPlayers().get(name.toLowerCase());
+		return gameServer.getPlayers().get(name.toLowerCase());
 	}
 
 	@Override
