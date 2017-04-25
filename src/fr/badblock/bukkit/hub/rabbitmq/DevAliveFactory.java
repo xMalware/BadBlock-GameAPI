@@ -10,4 +10,5 @@ public class DevAliveFactory {
 	public boolean open;
 	public int players;
 	public int slots;
+	public boolean openStaff;
 }

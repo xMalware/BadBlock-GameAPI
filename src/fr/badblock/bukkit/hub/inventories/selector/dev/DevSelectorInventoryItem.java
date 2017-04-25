@@ -18,6 +18,7 @@ import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 public class DevSelectorInventoryItem extends CustomItem {
 	private String name, displayname;
 	private int players, slot;	
+	private boolean openStaff;
 	
 	public DevSelectorInventoryItem(DevAliveFactory daf)
 	{
@@ -35,6 +36,7 @@ public class DevSelectorInventoryItem extends CustomItem {
 		this.name = daf.name;
 		this.players = daf.players;
 		this.slot = daf.slots;
+		this.openStaff = daf.openStaff;
 
 		staticItem.clear();
 		
@@ -49,7 +51,10 @@ public class DevSelectorInventoryItem extends CustomItem {
 	@Override
 	public void onClick(BadblockPlayer player, ItemAction action, Block clickedBlock) {
 		player.closeInventory();
-		player.sendPlayer(name);
+		
+		if(openStaff && !player.hasPermission("devserver"))
+			player.sendTranslatedMessage("hub.items.devinventory.notforstaff");
+		else player.sendPlayer(name);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -59,7 +64,7 @@ public class DevSelectorInventoryItem extends CustomItem {
 		if (locale == null)
 			return null;
 
-		ItemStack itemStack = new ItemStack(Material.WOOL, 1, players >= slot ? DyeColor.RED.getData() : DyeColor.GREEN.getData());
+		ItemStack itemStack = new ItemStack(Material.WOOL, 1, players >= slot ? DyeColor.RED.getData() : (openStaff ? DyeColor.GREEN.getData() : DyeColor.ORANGE.getData()));
 		return ItemStackUtils.changeDisplay(itemStack, displayname + " (" + players + "/" + slot + ")");
 	}
 }
