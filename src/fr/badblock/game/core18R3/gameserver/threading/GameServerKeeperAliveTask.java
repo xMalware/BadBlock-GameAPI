@@ -105,17 +105,21 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		if (split.length < 2)
 			return;
 		String af = split[1];
-		long serverId = Integer.parseInt(af);
-		OptionalInt optionalInt = Arrays.stream(new File("..").listFiles()).mapToInt((file) -> {
-			if (file.isDirectory())
-				try {
-					return Integer.parseInt(file.getName());
-				} catch (Exception unused) {
-				}
-			return -1;
-		}).filter((value) -> value > 0).min();
-
-		this.setFirstServer(optionalInt.isPresent() && optionalInt.getAsInt() == serverId);
+		try
+		{
+			long serverId = Integer.parseInt(af);
+			OptionalInt optionalInt = Arrays.stream(new File("..").listFiles()).mapToInt((file) -> {
+				if (file.isDirectory())
+					try {
+						return Integer.parseInt(file.getName());
+					} catch (Exception unused) {
+					}
+				return -1;
+			}).filter((value) -> value > 0).min();
+	
+			this.setFirstServer(optionalInt.isPresent() && optionalInt.getAsInt() == serverId);
+		}
+		catch(Exception e){}
 	}
 	
 	private void sendDevSignal(boolean open, int addedPlayers)
@@ -128,6 +132,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 			return;
 		
 		DevAliveFactory devAliveFactory = new DevAliveFactory(gameApi.getServer().getServerName(), open, Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers(), openStaff);
+		System.out.println(devAliveFactory);
 		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("dev", gameServerManager.getGson().toJson(devAliveFactory), 5000, false);
 	}
 
