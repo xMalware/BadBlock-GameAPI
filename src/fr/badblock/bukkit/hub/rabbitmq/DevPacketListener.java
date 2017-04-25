@@ -19,7 +19,6 @@ public class DevPacketListener extends RabbitListener {
 		
 		if (devAliveFactory == null)
 			return;
-		
 		DevSelectorInventory.Apply(devAliveFactory);
 	}
 }

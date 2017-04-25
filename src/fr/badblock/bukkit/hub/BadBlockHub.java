@@ -37,6 +37,7 @@ import fr.badblock.bukkit.hub.listeners.ServerSchedulerListener;
 import fr.badblock.bukkit.hub.listeners.vipzone.RaceListener;
 import fr.badblock.bukkit.hub.rabbitmq.BoosterUpdateListener;
 import fr.badblock.bukkit.hub.rabbitmq.BungeeWorkerListener;
+import fr.badblock.bukkit.hub.rabbitmq.DevPacketListener;
 import fr.badblock.bukkit.hub.rabbitmq.HubPacketListener;
 import fr.badblock.bukkit.hub.rabbitmq.HubPacketThread;
 import fr.badblock.bukkit.hub.rabbitmq.QuitListener;
@@ -145,6 +146,7 @@ public class BadBlockHub extends BadblockPlugin {
 		// Hub changer
 		CustomInventory.get(HubChangerInventory.class);
 		new HubPacketListener();
+		new DevPacketListener();
 		new BoosterUpdateListener();
 		new BungeeWorkerListener();
 		new WorkerListener();

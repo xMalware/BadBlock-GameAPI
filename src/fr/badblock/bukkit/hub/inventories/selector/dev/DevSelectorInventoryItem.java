@@ -16,7 +16,7 @@ import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 
 public class DevSelectorInventoryItem extends CustomItem {
-	private String name, displayname;
+	private String name;
 	private int players, slot;	
 	private boolean openStaff;
 	
@@ -40,6 +40,9 @@ public class DevSelectorInventoryItem extends CustomItem {
 
 		staticItem.clear();
 		
+		for(Locale loc : Locale.values())
+			staticItem.put(loc, toItemStack(loc));
+		
 		return !daf.open;
 	}
 
@@ -54,7 +57,11 @@ public class DevSelectorInventoryItem extends CustomItem {
 		
 		if(openStaff && !player.hasPermission("devserver"))
 			player.sendTranslatedMessage("hub.items.devinventory.notforstaff");
-		else player.sendPlayer(name);
+		else
+		{
+			player.sendMessage("§aLet's go!");
+			player.sendPlayer(name);
+		}
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -65,6 +72,6 @@ public class DevSelectorInventoryItem extends CustomItem {
 			return null;
 
 		ItemStack itemStack = new ItemStack(Material.WOOL, 1, players >= slot ? DyeColor.RED.getData() : (openStaff ? DyeColor.GREEN.getData() : DyeColor.ORANGE.getData()));
-		return ItemStackUtils.changeDisplay(itemStack, displayname + " (" + players + "/" + slot + ")");
+		return ItemStackUtils.changeDisplay(itemStack, name + " (" + players + "/" + slot + ")");
 	}
 }

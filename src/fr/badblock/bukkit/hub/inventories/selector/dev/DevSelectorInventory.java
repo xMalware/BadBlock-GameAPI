@@ -37,8 +37,7 @@ public class DevSelectorInventory extends CustomInventory {
 			}
 		}
 		
-		if(daf.open)
-			servers.add( new DevSelectorInventoryItem(daf) );
+		servers.add( new DevSelectorInventoryItem(daf) );
 		inventory.create();
 	}
 	
@@ -51,7 +50,7 @@ public class DevSelectorInventory extends CustomInventory {
 		items.clear();
 		
 		for(int i = 0; i < servers.size(); i++)
-			setItem(i, servers.get(0));
+			setItem(i, servers.get(i));
 		
 		for (BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers()) {
 			HubPlayer hubPlayer = HubPlayer.get(player);
