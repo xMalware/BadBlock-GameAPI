@@ -51,12 +51,13 @@ public abstract class CustomInventory {
 	}
 
 	public void open(BadblockPlayer player) {
-		player.closeInventory();
 		HubPlayer.get(player).setCurrentInventory(this);
-		Inventory inventory = Bukkit.createInventory(null, this.getLines() * 9,
-				player.getTranslatedMessage(this.getName())[0]);
+		
+		Inventory inventory = Bukkit.createInventory(null, this.getLines() * 9, player.getTranslatedMessage(this.getName())[0]);
+		
 		for (Entry<Integer, CustomItem> entry : items.entrySet())
 			inventory.setItem(entry.getKey(), entry.getValue().toItemStack(player));
+		
 		player.openInventory(inventory);
 	}
 

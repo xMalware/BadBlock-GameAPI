@@ -39,12 +39,12 @@ public abstract class CustomItem {
 	// d'utiliser
 	// cet
 	// item.";
-	private String lore;
-	private Material material;
-	private String name;
-	private String neededPermission;
-	private boolean fakeEnchantment;
-	private CustomItem noPermissionItem;
+	protected String lore;
+	protected Material material;
+	protected String name;
+	protected String neededPermission;
+	protected boolean fakeEnchantment;
+	protected CustomItem noPermissionItem;
 	protected Map<Locale, ItemStack> staticItem = new HashMap<>();
 
 	public CustomItem(String name, Material material) {

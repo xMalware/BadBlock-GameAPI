@@ -8,10 +8,14 @@ import lombok.Setter;
 
 @Getter
 public enum ItemAction {
-
-	INVENTORY_DROP(InventoryAction.DROP_ONE_SLOT), INVENTORY_LEFT_CLICK(
-			InventoryAction.PICKUP_ALL), INVENTORY_RIGHT_CLICK(InventoryAction.PICKUP_HALF), INVENTORY_WHEEL_CLICK(
-					InventoryAction.NOTHING), LEFT_CLICK_AIR, LEFT_CLICK_BLOCK, RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK;
+	INVENTORY_DROP(InventoryAction.DROP_ONE_SLOT), 
+	INVENTORY_LEFT_CLICK(InventoryAction.PICKUP_ALL),
+	INVENTORY_RIGHT_CLICK(InventoryAction.PICKUP_HALF),
+	INVENTORY_WHEEL_CLICK(InventoryAction.NOTHING),
+	LEFT_CLICK_AIR,
+	LEFT_CLICK_BLOCK,
+	RIGHT_CLICK_AIR,
+	RIGHT_CLICK_BLOCK;
 
 	public static ItemAction get(Action action) {
 		for (ItemAction itemAction : values())

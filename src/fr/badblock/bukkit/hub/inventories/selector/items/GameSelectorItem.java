@@ -76,8 +76,7 @@ public abstract class GameSelectorItem extends CustomItem {
 						continue;
 					if (player.getOpenInventory() == null)
 						continue;
-					if (hubPlayer.getCurrentInventory().getLines() * 9 != player.getOpenInventory().getTopInventory()
-							.getSize())
+					if (hubPlayer.getCurrentInventory().getLines() * 9 != player.getOpenInventory().getTopInventory().getSize())
 						continue;
 					if (!player.getTranslatedMessage(hubPlayer.getCurrentInventory().getName())[0]
 							.equals(player.getOpenInventory().getTopInventory().getName()))
