@@ -8,12 +8,15 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
+import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.rabbitmq.DevAliveFactory;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
+import fr.badblock.rabbitconnector.RabbitPacketType;
+import fr.badblock.utils.Encodage;
 
 public class DevSelectorInventoryItem extends CustomItem {
 	private String name;
@@ -57,6 +60,11 @@ public class DevSelectorInventoryItem extends CustomItem {
 		
 		if(openStaff && !player.hasPermission("devserver"))
 			player.sendTranslatedMessage("hub.items.devinventory.notforstaff");
+		else if(action == ItemAction.INVENTORY_WHEEL_CLICK)
+		{
+			BadBlockHub.getInstance().getRabbitService().sendAsyncPacket("forcekill", name, Encodage.UTF8, RabbitPacketType.PUBLISHER, 5000, false);
+			player.sendMessage("§aKill message send..");
+		}
 		else
 		{
 			player.sendMessage("§aLet's go!");
