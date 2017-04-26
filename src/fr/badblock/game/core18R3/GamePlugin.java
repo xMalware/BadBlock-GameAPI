@@ -52,6 +52,7 @@ import fr.badblock.game.core18R3.entities.CustomEntities;
 import fr.badblock.game.core18R3.fakeentities.FakeEntities;
 import fr.badblock.game.core18R3.gameserver.GameServer;
 import fr.badblock.game.core18R3.gameserver.GameServerManager;
+import fr.badblock.game.core18R3.gameserver.threading.ServerForceKillListener;
 import fr.badblock.game.core18R3.i18n.GameI18n;
 import fr.badblock.game.core18R3.internalutils.TeleportUtils;
 import fr.badblock.game.core18R3.itemstack.GameCustomInventory;
@@ -331,6 +332,7 @@ public class GamePlugin extends GameAPI {
 			new UpdateSignListener().register();
 			new VanishTeleportListener();
 			new PlayerBoosterRefreshListener();
+			new ServerForceKillListener();
 			//AntiCheat.load();
 			GamePlugin gamePlugin = this;
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");;

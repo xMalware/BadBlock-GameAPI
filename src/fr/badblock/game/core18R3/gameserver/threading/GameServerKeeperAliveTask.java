@@ -122,10 +122,10 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		catch(Exception e){}
 	}
 	
-	private void sendDevSignal(boolean open, int addedPlayers)
+	public static void sendDevSignal(boolean open, int addedPlayers)
 	{
 		GameAPI gameApi = GameAPI.getAPI();
-		GameServerManager gameServerManager = this.getGameServerManager();
+		GameServerManager gameServerManager = GamePlugin.getInstance().getGameServerManager();
 		GameServer gameServer = gameApi.getGameServer();
 
 		if(gameApi.getRunType() != RunType.DEV)

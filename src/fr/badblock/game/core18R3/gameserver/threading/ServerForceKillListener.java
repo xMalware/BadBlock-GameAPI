@@ -23,6 +23,7 @@ public class ServerForceKillListener extends RabbitListener {
 		
 		if(body.equalsIgnoreCase(Bukkit.getServerName()) && GameAPI.getAPI().getRunType() == RunType.DEV)
 		{
+			GameServerKeeperAliveTask.sendDevSignal(false, 0);
 			String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
 			System.out.println("Kill process...");
 			
