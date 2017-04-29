@@ -15,8 +15,8 @@ public class AuthSelectorInventory extends CustomInventory {
 			if ((id == 0 || id < 9 || id % 9 == 0 || id == 17 || id == 26 || id == 35 || id == 44 || id == 53
 					|| id > (9 * (this.getLines() - 1)) - 1))
 				this.setItem(blueStainedGlassPaneItem, id);
-		this.setItem(3, new AuthGenerateSelectorItem());
-		this.setItem(5, new AuthRemoveSelectorItem());
+		this.setItem(12, new AuthGenerateSelectorItem());
+		this.setItem(14, new AuthRemoveSelectorItem());
 		this.setItem(26, new AuthSelectorQuitItem());
 		this.setNoFilledItem(lightBlueStainedGlassPaneItem);
 	}
