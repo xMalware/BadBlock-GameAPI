@@ -15,6 +15,8 @@ public class GameServerConfig {
 	public int ticksBetweenKeepAlives;
 	public long uselessUntilTime;
 	public boolean leaverBusterEnabled;
+	public String serverName;
+	public String serverDisplayName;
 	
 	// Run type
 	public RunType runType = RunType.LOBBY;

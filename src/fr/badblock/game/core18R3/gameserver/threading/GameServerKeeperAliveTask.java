@@ -8,11 +8,13 @@ import org.bukkit.Bukkit;
 
 import fr.badblock.docker.factories.GameAliveFactory;
 import fr.badblock.game.core18R3.GamePlugin;
+import fr.badblock.game.core18R3.gameserver.DevAliveFactory;
 import fr.badblock.game.core18R3.gameserver.GameServerManager;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameServer;
 import fr.badblock.gameapi.game.GameState;
+import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import lombok.Getter;
@@ -21,7 +23,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameServerKeeperAliveTask extends GameServerTask {
-
+	private static boolean openStaff = false;
+	
+	public static boolean switchOpenStaff()
+	{
+		return (openStaff = !openStaff);
+	}
+	
 	private boolean firstServer;
 	private long joinTime;
 
@@ -79,6 +87,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		// gameServerManager.getServerConfigurationFactory();
 		GameServer gameServer = gameApi.getGameServer();
 		GameAliveFactory gameAliveFactory = new GameAliveFactory(gameApi.getServer().getServerName(), fr.badblock.docker.GameState.getStatus(gameServer.getGameState().getId()), isJoinable(), Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers());
+		sendDevSignal(true, addedPlayers);
 		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.instance.keepalive", gameServerManager.getGson().toJson(gameAliveFactory), 5000, false);
 	}
 
@@ -86,6 +95,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		GameAPI gameApi = GameAPI.getAPI();
 		// ServerConfigurationFactory serverConfigurationFactory =
 		// gameServerManager.getServerConfigurationFactory();
+		sendDevSignal(false, 0);
 		gameApi.getRabbitSpeaker().sendSyncUTF8Publisher("networkdocker.instance.stop", gameApi.getServer().getServerName(), 5000, false);
 		gameApi.getRabbitSpeaker().cut();
 	}
@@ -95,17 +105,34 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		if (split.length < 2)
 			return;
 		String af = split[1];
-		long serverId = Integer.parseInt(af);
-		OptionalInt optionalInt = Arrays.stream(new File("..").listFiles()).mapToInt((file) -> {
-			if (file.isDirectory())
-				try {
-					return Integer.parseInt(file.getName());
-				} catch (Exception unused) {
-				}
-			return -1;
-		}).filter((value) -> value > 0).min();
+		try
+		{
+			long serverId = Integer.parseInt(af);
+			OptionalInt optionalInt = Arrays.stream(new File("..").listFiles()).mapToInt((file) -> {
+				if (file.isDirectory())
+					try {
+						return Integer.parseInt(file.getName());
+					} catch (Exception unused) {
+					}
+				return -1;
+			}).filter((value) -> value > 0).min();
+	
+			this.setFirstServer(optionalInt.isPresent() && optionalInt.getAsInt() == serverId);
+		}
+		catch(Exception e){}
+	}
+	
+	public static void sendDevSignal(boolean open, int addedPlayers)
+	{
+		GameAPI gameApi = GameAPI.getAPI();
+		GameServerManager gameServerManager = GamePlugin.getInstance().getGameServerManager();
+		GameServer gameServer = gameApi.getGameServer();
 
-		this.setFirstServer(optionalInt.isPresent() && optionalInt.getAsInt() == serverId);
+		if(gameApi.getRunType() != RunType.DEV)
+			return;
+		
+		DevAliveFactory devAliveFactory = new DevAliveFactory(gameApi.getServer().getServerName(), open, Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers(), openStaff);
+		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("dev", gameServerManager.getGson().toJson(devAliveFactory), 5000, false);
 	}
 
 }

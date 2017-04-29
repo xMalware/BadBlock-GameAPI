@@ -29,6 +29,7 @@ public class GameSQLDatabase implements SQLDatabase {
 	}
 
 	public Connection openConnection() throws SQLException, ClassNotFoundException {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
 		if (checkConnection()) {
 			return this.connection;
 		}
@@ -45,12 +46,16 @@ public class GameSQLDatabase implements SQLDatabase {
 	}
 
 	public void closeConnection() throws SQLException {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+		
 		if(checkConnection());
 		connection.close();
 	}
 
 	@Override
 	public Statement createStatement() throws Exception {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+		
 		if(!checkConnection()) {
 			openConnection();
 		}
@@ -60,6 +65,8 @@ public class GameSQLDatabase implements SQLDatabase {
 
 	@Override
 	public PreparedStatement preparedStatement(String request) throws Exception {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+		
 		if(!checkConnection()) {
 			openConnection();
 		}
@@ -69,12 +76,16 @@ public class GameSQLDatabase implements SQLDatabase {
 
 	@Override
 	public void call(String request, SQLRequestType requestType) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+		
 		if (requestType.equals(SQLRequestType.QUERY)) throw new IllegalArgumentException("U can't done a query if you don't handle a callback!");
 		call(request, requestType, null);
 	}
 
 	@Override
 	public void call(String request, SQLRequestType requestType, Callback<ResultSet> callback) {
+		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
+
 		SQLThread availableThread = null;
 		SQLThread firstThread = null;
 		for (SQLThread sqlThread : sqlThread)

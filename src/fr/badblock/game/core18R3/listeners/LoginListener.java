@@ -122,8 +122,6 @@ public class LoginListener extends BadListener {
 		p.loadInjector();
 		p.setHasJoined(true);
 
-		if(GamePlugin.EMPTY_VERSION) return;
-
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 
 		if (VanishTeleportListener.time.containsKey(p.getName().toLowerCase()) && VanishTeleportListener.time.get(p.getName().toLowerCase()) > System.currentTimeMillis()) {
