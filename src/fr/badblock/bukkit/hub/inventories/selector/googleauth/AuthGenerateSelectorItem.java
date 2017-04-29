@@ -18,7 +18,7 @@ public class AuthGenerateSelectorItem extends CustomItem {
 
 	@SuppressWarnings("deprecation")
 	public AuthGenerateSelectorItem() {
-		super("hub.items.authgenerateitem", Material.getMaterial(385));
+		super("hub.items.authgenerateitem", Material.getMaterial(385), "hub.items.authgenerateitem.lore");
 	}
 
 	@Override

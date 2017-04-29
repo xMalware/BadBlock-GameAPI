@@ -27,7 +27,8 @@ public class AuthRemoveSelectorItem extends CustomItem {
 	@Override
 	public void onClick(BadblockPlayer player, ItemAction itemAction, Block clickedBlock) {
 		player.closeInventory();
-		AuthUtils.getAuthKey(player.getName(), new Callback<String>() {
+		String playerName = player.getName().toLowerCase();
+		AuthUtils.getAuthKey(playerName, new Callback<String>() {
 			@Override
 			public void done(String key, Throwable throwable) {
 				// clé non générée, rien à supprimer
@@ -35,20 +36,7 @@ public class AuthRemoveSelectorItem extends CustomItem {
 					player.sendTranslatedMessage("hub.auth.nokey");
 					return;
 				}
-				String playerName = player.getName().toLowerCase();
-				AuthUtils.getAuthKey(playerName, new Callback<String>() {
-					@Override
-					public void done(String string, Throwable throwable) {
-						String secretKey = string;
-						if (secretKey == null || secretKey.isEmpty()) {
-							player.sendTranslatedMessage("hub.auth.nokeyassociatedwithyouraccount");
-							return;
-						}
-						// demander une suppression avec une commande
-						// /authremove <code>
-						player.sendTranslatedMessage("hub.auth.removeinstructions");
-					}
-				});
+				player.sendTranslatedMessage("hub.auth.removeinstructions");
 			}
 		});
 	}
