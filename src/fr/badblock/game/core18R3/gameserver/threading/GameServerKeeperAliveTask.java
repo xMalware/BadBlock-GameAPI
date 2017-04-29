@@ -25,6 +25,11 @@ import lombok.Setter;
 public class GameServerKeeperAliveTask extends GameServerTask {
 	private static boolean openStaff = false;
 	
+	public static boolean isOpenToStaff()
+	{
+		return openStaff;
+	}
+	
 	public static boolean switchOpenStaff()
 	{
 		return (openStaff = !openStaff);

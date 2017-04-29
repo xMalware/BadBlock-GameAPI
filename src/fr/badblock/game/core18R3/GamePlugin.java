@@ -33,6 +33,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -59,6 +60,7 @@ import fr.badblock.game.core18R3.itemstack.GameCustomInventory;
 import fr.badblock.game.core18R3.itemstack.GameItemExtra;
 import fr.badblock.game.core18R3.itemstack.GameItemStackFactory;
 import fr.badblock.game.core18R3.itemstack.ItemStackExtras;
+import fr.badblock.game.core18R3.itemstack.QrCodeMap;
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.LadderConfig;
@@ -287,7 +289,8 @@ public class GamePlugin extends GameAPI {
 
 				runType = gameServerConfig.runType;
 
-				GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + ladderConfig.ladderIp + ":" + ladderConfig.ladderPort);
+				if(runType != RunType.DEV)
+					GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + ladderConfig.ladderIp + ":" + ladderConfig.ladderPort);
 				GameAPI.logColor("&b[GameAPI] &aConnecting to Ladder...");
 
 				new PermissionManager(new JsonArray());
@@ -295,7 +298,8 @@ public class GamePlugin extends GameAPI {
 				ladderDatabase.askForPermissions();
 
 				if(!GameAPI.TEST_MODE) {
-					GameAPI.logColor("&b[GameAPI] &a=> SQL : " + sqlConfig.sqlIp + ":" + sqlConfig.sqlPort);
+					if(runType != RunType.DEV)
+							GameAPI.logColor("&b[GameAPI] &a=> SQL : " + sqlConfig.sqlIp + ":" + sqlConfig.sqlPort);
 					GameAPI.logColor("&b[GameAPI] &aConnecting to SQL...");
 
 					sqlDatabase = new GameSQLDatabase(sqlConfig.sqlIp, Integer.toString(sqlConfig.sqlPort), sqlConfig.sqlUser, sqlConfig.sqlPassword, sqlConfig.sqlDatabase);
@@ -1059,6 +1063,22 @@ public class GamePlugin extends GameAPI {
 				}
 			}
 		}, 1);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public ItemStack generateQrCode(org.bukkit.World world, String content)
+	{
+		MapView view = getServer().createMap(world);
+		view.addRenderer(new QrCodeMap(content));
+		
+		return new ItemStack(Material.MAP, 1, view.getId());
+	}
+	
+	@Override
+	public ItemStack generateGoogleAuthQrCode(BadblockPlayer player, String googleAuthKey, String image)
+	{
+		return generateQrCode(player.getWorld(), "otpauth://totp/BadBlock (" + player.getName() + ")?secret=" + googleAuthKey + "&image=" + image);
 	}
 
 }

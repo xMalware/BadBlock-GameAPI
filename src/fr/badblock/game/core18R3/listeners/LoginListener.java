@@ -16,6 +16,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.badblock.game.core18R3.GamePlugin;
+import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.MojangAPI;
@@ -26,6 +27,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.events.PlayerGameInitEvent;
 import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent.JoinReason;
+import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockOfflinePlayer;
@@ -97,6 +99,18 @@ public class LoginListener extends BadListener {
 		} catch (Exception exception) {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
+		}
+	}
+	
+	@EventHandler
+	public void onDataReceived(PlayerLoadedEvent e)
+	{
+		if(GameAPI.getAPI().getRunType() != RunType.DEV  || GameServerKeeperAliveTask.isOpenToStaff())
+			return;
+		
+		if(!e.getPlayer().hasPermission("devserver"))
+		{
+			e.getPlayer().kickPlayer("Serveur dév non ouvert au staff !");
 		}
 	}
 
