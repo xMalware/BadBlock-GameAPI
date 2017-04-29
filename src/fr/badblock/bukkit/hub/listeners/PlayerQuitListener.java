@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
+import fr.badblock.bukkit.hub.inventories.selector.googleauth.AuthUtils;
 import fr.badblock.bukkit.hub.listeners.vipzone.RaceListener;
 import fr.badblock.bukkit.hub.listeners.vipzone.RaceListener.RaceState;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -36,6 +37,7 @@ public class PlayerQuitListener extends _HubListener {
 								player.getTabGroupPrefix().getAsLine(racePlayer) + player.getName()));
 			RaceListener.racePlayers.remove(player);
 		}
+		AuthUtils.tempPlayersKeys.remove(player.getName().toLowerCase());
 	}
 
 }
