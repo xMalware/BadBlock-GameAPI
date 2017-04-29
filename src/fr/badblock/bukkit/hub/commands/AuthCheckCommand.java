@@ -39,6 +39,7 @@ public class AuthCheckCommand extends AbstractCommand {
 		int enteredTemporaryCode = secretId;
 		int currentTemporaryCode = AuthUtils.gAuth.getTotpPassword(secretKey);
 		if (enteredTemporaryCode == currentTemporaryCode) {
+			player.getInventory().setItem(7, null);
 			player.sendTranslatedMessage("hub.auth.checked");
 			updateAuthKey(playerName, secretKey);
 			AuthUtils.tempPlayersKeys.remove(playerName);

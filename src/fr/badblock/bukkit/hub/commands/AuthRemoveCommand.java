@@ -44,6 +44,7 @@ public class AuthRemoveCommand extends AbstractCommand {
 				int currentTemporaryCode = AuthUtils.gAuth.getTotpPassword(secretKey);
 				if (enteredTemporaryCode == currentTemporaryCode) {
 					player.sendTranslatedMessage("hub.auth.removed");
+					player.getInventory().setItem(7, null);
 					updateAuthKey(playerName, "");
 					AuthUtils.tempPlayersKeys.remove(playerName);
 					return;

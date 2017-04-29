@@ -6,11 +6,13 @@ import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
 
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
+import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.general.Callback;
 
@@ -43,6 +45,8 @@ public class AuthGenerateSelectorItem extends CustomItem {
 				// demander une vérification du mot de passe avant sauvegarde
 				// /authcheck <code>
 				player.sendTranslatedMessage("hub.auth.generatedkey", secretKey);
+				ItemStack itemStack = GameAPI.getAPI().generateGoogleAuthQrCode(player, secretKey, "https://badblock.fr/includes/img/logosmall.png");
+				player.getInventory().setItem(7, itemStack);
 			}
 		});
 	}
