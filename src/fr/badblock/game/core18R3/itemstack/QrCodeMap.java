@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapCursorCollection;
 import org.bukkit.map.MapPalette;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
@@ -33,6 +34,14 @@ public class QrCodeMap extends MapRenderer {
 			
 			hintMap.put(EncodeHintType.MARGIN, 1);
 			hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+			
+			map.setCenterX(Integer.MAX_VALUE);
+			map.setCenterZ(Integer.MAX_VALUE);
+			
+			for(int i = 0; i < canvas.getCursors().size(); i++)
+				canvas.getCursors().removeCursor(canvas.getCursors().getCursor(0));
+			
+			canvas.setCursors(new MapCursorCollection());				
 						
 			QRCodeWriter qrCodeWriter = new QRCodeWriter();
 			BitMatrix byteMatrix = qrCodeWriter.encode(value, BarcodeFormat.QR_CODE, 128, 128, hintMap);

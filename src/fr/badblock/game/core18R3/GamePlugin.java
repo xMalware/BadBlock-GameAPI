@@ -1070,6 +1070,8 @@ public class GamePlugin extends GameAPI {
 	public ItemStack generateQrCode(org.bukkit.World world, String content)
 	{
 		MapView view = getServer().createMap(world);
+		
+		view.getRenderers().clear();
 		view.addRenderer(new QrCodeMap(content));
 		
 		return new ItemStack(Material.MAP, 1, view.getId());
