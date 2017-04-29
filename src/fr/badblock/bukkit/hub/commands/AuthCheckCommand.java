@@ -27,7 +27,7 @@ public class AuthCheckCommand extends AbstractCommand {
 			secretId = Integer.parseInt(args[0]);
 			if (secretId < 0) throw new NullPointerException();
 		}catch(Exception error) {
-			player.sendMessage("hub.auth.notanint");
+			player.sendTranslatedMessage("hub.auth.notanint");
 			return true;
 		}
 		String playerName = player.getName().toLowerCase();
