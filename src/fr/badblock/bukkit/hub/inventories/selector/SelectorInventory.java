@@ -19,6 +19,7 @@ import fr.badblock.bukkit.hub.inventories.selector.items.SpeedUHCSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.StaffRoomSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.SurvivalGamesSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.TowerSelectorItem;
+import fr.badblock.bukkit.hub.inventories.settings.items.BlueStainedGlassPaneItem;
 import fr.badblock.bukkit.hub.inventories.settings.settings.LightBlueStainedGlassPaneItem;
 
 public class SelectorInventory extends CustomInventory {
@@ -46,7 +47,7 @@ public class SelectorInventory extends CustomInventory {
 		this.setItem(42, new DayZSelectorItem());
 		this.setItem(45, new HubChangerSelectorItem());
 		this.setItem(53, new QuitSelectorItem());
-		this.setItem(53, new QuitSelectorItem());
+		this.setNoFilledItem(new BlueStainedGlassPaneItem());
 	}
 
 }
