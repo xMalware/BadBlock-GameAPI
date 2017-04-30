@@ -4,6 +4,7 @@ package fr.badblock.bukkit.hub.inventories.selector.googleauth;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -47,6 +48,9 @@ public class AuthGenerateSelectorItem extends CustomItem {
 				player.sendTranslatedMessage("hub.auth.generatedkey", secretKey);
 				ItemStack itemStack = GameAPI.getAPI().generateGoogleAuthQrCode(player, secretKey, "https://badblock.fr/includes/img/logosmall.png");
 				player.getInventory().setItem(6, itemStack);
+				Location loc = player.getLocation().clone();
+				loc.setYaw(50);
+				player.teleport(loc);
 				player.getInventory().setHeldItemSlot(6);
 			}
 		});
