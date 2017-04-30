@@ -46,7 +46,8 @@ public class AuthGenerateSelectorItem extends CustomItem {
 				// /authcheck <code>
 				player.sendTranslatedMessage("hub.auth.generatedkey", secretKey);
 				ItemStack itemStack = GameAPI.getAPI().generateGoogleAuthQrCode(player, secretKey, "https://badblock.fr/includes/img/logosmall.png");
-				player.getInventory().setItem(7, itemStack);
+				player.getInventory().setItem(6, itemStack);
+				player.getInventory().setHeldItemSlot(6);
 			}
 		});
 	}
