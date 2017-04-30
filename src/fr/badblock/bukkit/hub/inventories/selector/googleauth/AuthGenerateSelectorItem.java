@@ -48,10 +48,10 @@ public class AuthGenerateSelectorItem extends CustomItem {
 				player.sendTranslatedMessage("hub.auth.generatedkey", secretKey);
 				ItemStack itemStack = GameAPI.getAPI().generateGoogleAuthQrCode(player, secretKey, "https://badblock.fr/includes/img/logosmall.png");
 				player.getInventory().setItem(6, itemStack);
+				player.getInventory().setHeldItemSlot(6);
 				Location loc = player.getLocation().clone();
 				loc.setYaw(50);
 				player.teleport(loc);
-				player.getInventory().setHeldItemSlot(6);
 			}
 		});
 	}
