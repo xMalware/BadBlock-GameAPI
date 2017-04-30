@@ -1080,7 +1080,7 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public ItemStack generateGoogleAuthQrCode(BadblockPlayer player, String googleAuthKey, String image)
 	{
-		return generateQrCode(player.getWorld(), "otpauth://totp/BadBlock (" + player.getName() + ")?secret=" + googleAuthKey + "&image=" + image);
+		return generateQrCode(player.getWorld(), "otpauth://totp/BadBlock%20(" + player.getName() + ")?secret=" + googleAuthKey + "&image=" + image);
 	}
 
 }
