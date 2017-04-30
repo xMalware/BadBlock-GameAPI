@@ -50,7 +50,7 @@ public class AuthGenerateSelectorItem extends CustomItem {
 				player.getInventory().setItem(6, itemStack);
 				player.getInventory().setHeldItemSlot(6);
 				Location loc = player.getLocation().clone();
-				loc.setYaw(50);
+				loc.setPitch(50);
 				player.teleport(loc);
 			}
 		});
