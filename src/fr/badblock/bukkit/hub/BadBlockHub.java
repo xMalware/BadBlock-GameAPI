@@ -71,6 +71,7 @@ public class BadBlockHub extends BadblockPlugin {
 	@Getter
 	@Setter
 	private static BadBlockHub instance;
+	public CuboidSelection cuboid2;
 	public CuboidSelection cuboid;
 	public CuboidSelection vipPushCuboid;
 	public CuboidSelection vipPortalCuboid;
@@ -164,6 +165,13 @@ public class BadBlockHub extends BadblockPlugin {
 			loc2.setY(256);
 			this.setCuboid(new CuboidSelection(loc1, loc2));
 		}
+		loc1 = ConfigUtils.getLocation(this, "cuboid.loc1");
+		loc2 = ConfigUtils.getLocation(this, "cuboid.loc2");
+		if (loc1 != null && loc2 != null) {
+			loc1.setY(0);
+			loc2.setY(256);
+			this.setCuboid2(new CuboidSelection(loc1, loc2));
+		}
 		// VIP Portal
 		Location defaultLocation = new Location(Bukkit.getWorld("world"), 0, 0, 0);
 		loc1 = ConfigUtils.getBlockLocationFromFile(this, "viplimit.portal.loc1");
@@ -241,9 +249,9 @@ public class BadBlockHub extends BadblockPlugin {
 			}
 		}, 20 * 300, 20 * 300);*/
 		System.out.println("[ChunkLoader] Searching chunks...");
-		GameAPI.getAPI().setLightChunks(cuboid, false);
-		GameAPI.getAPI().setEmptyChunks(cuboid, true);
-		GameAPI.getAPI().loadChunks(cuboid, 1);
+		GameAPI.getAPI().setLightChunks(cuboid2, false);
+		GameAPI.getAPI().setEmptyChunks(cuboid2, true);
+		GameAPI.getAPI().loadChunks(cuboid2, 1);
 		/*System.out.println("[ChunkLoader] Searching chunks...");
 		World world = Bukkit.getWorld("world");
 		HashSet<Chunk> chunks = new HashSet<>();
