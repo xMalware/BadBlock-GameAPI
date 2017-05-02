@@ -21,7 +21,6 @@ import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.bukkit.hub.objects.HubScoreboard;
 import fr.badblock.bukkit.hub.objects.HubStoredPlayer;
 import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
-import fr.badblock.bukkit.hub.utils.NPC;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.BukkitUtils;
@@ -35,7 +34,7 @@ public class PlayerJoinListener extends _HubListener {
 		Bukkit.getScheduler().runTask(BadBlockHub.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				if (SEntryInfosListener.tempNPCs.containsKey(player.getName())) {
+				/*if (SEntryInfosListener.tempNPCs.containsKey(player.getName())) {
 					SEntryInfosListener.tempPlayers.put(player.getName(), System.currentTimeMillis());
 				}
 				for (Entry<String, NPC> npc : SEntryInfosListener.tempNPCs.entrySet()) {
@@ -46,7 +45,7 @@ public class PlayerJoinListener extends _HubListener {
 							//	npc.getValue().show(npc.getKey(), SEntryInfosListener.tempPlayersUUID.get(npc.getKey()), player, SEntryInfosListener.tempPlayersPropertyMap.get(npc.getKey()));
 						}
 					}
-				}
+				}*/
 				player.inGameData(HubPlayer.class);
 				reload(player);
 			}

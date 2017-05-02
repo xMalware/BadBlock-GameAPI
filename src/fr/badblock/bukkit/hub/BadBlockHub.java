@@ -242,12 +242,6 @@ public class BadBlockHub extends BadblockPlugin {
 
 		// Reload players
 		Bukkit.getOnlinePlayers().forEach(player -> PlayerJoinListener.load((BadblockPlayer) player));
-		/*TaskManager.scheduleAsyncRepeatingTask("fix", new Runnable() {
-			@Override
-			public void run() {
-				System.gc();
-			}
-		}, 20 * 300, 20 * 300);*/
 		System.out.println("[ChunkLoader] Searching chunks...");
 		GameAPI.getAPI().setLightChunks(cuboid2, false);
 		GameAPI.getAPI().setEmptyChunks(cuboid2, true);

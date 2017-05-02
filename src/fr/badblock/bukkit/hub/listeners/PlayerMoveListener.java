@@ -1,8 +1,11 @@
 package fr.badblock.bukkit.hub.listeners;
 
+import java.util.Random;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
@@ -33,14 +36,14 @@ public class PlayerMoveListener extends _HubListener {
 		Location from = event.getFrom();
 		Location to = event.getTo();
 		if ((from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) && (from.getPitch() != to.getPitch() || from.getYaw() != to.getYaw())) {
-			hubPlayer.lastMove = System.currentTimeMillis() + 300_000L;
+			hubPlayer.lastMove = System.currentTimeMillis() + (new Random().nextInt(1800_000) + 1800_000L);
 		}
-		//Location underOne = to.clone().add(0, -1, 0);
-		//Location underTwo = to.clone().add(0, -2, 0);
-		//Block blockOne = underOne.getBlock();
-		//Block blockTwo = underTwo.getBlock();
+		Location underOne = to.clone().add(0, -1, 0);
+		Location underTwo = to.clone().add(0, -2, 0);
+		Block blockOne = underOne.getBlock();
+		Block blockTwo = underTwo.getBlock();
 		BadBlockHub hub = BadBlockHub.getInstance();
-		/*if ((blockOne.getType().equals(Material.WOOL) && blockOne.getData() == 10)
+		if ((blockOne.getType().equals(Material.WOOL) && blockOne.getData() == 10)
 				|| (blockTwo.getType().equals(Material.WOOL) && blockTwo.getData() == 10)) {
 			if (hubPlayer.getTimeBetweenEachVelocityUsage() <= System.currentTimeMillis()) {
 				if (hubPlayer.mountEntity != null && hubPlayer.mountEntity.isValid()) {
@@ -72,7 +75,7 @@ public class PlayerMoveListener extends _HubListener {
 				hubPlayer.setVelocity(false);
 				hubPlayer.setTimeBetweenEachVelocityUsage(System.currentTimeMillis() + 15000L);
 			}
-		}*/
+		}
 
 		if (hub.getCuboid() != null && !hub.getCuboid().isInSelection(to) && !player.hasAdminMode()) {
 			Location playerCenterLocation = ConfigUtils.getLocation(hub, "worldspawn");

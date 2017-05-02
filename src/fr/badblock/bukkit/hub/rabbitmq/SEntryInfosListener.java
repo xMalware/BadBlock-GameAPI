@@ -8,7 +8,6 @@ import com.mojang.authlib.properties.PropertyMap;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.utils.NPC;
-import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.rabbitconnector.RabbitListener;
 import fr.badblock.rabbitconnector.RabbitListenerType;
 import fr.badblock.sentry.FullSEntry;
@@ -26,7 +25,7 @@ public class SEntryInfosListener extends RabbitListener {
 	public SEntryInfosListener() {
 		super(BadBlockHub.getInstance().getRabbitService(), "networkdocker.sentry.infos", false,
 				RabbitListenerType.SUBSCRIBER);
-		TaskManager.scheduleSyncRepeatingTask("scotch", new Runnable() {
+		/*TaskManager.scheduleSyncRepeatingTask("scotch", new Runnable() {
 			@Override
 			public void run() {
 				/*tempTime	= (long) (600_000L * BungeeWorkerListener.bungeeWorkers);
@@ -64,9 +63,9 @@ public class SEntryInfosListener extends RabbitListener {
 							}
 						}
 					}
-				}*/
+				}
 			}
-		}, 1, 1);
+		}, 1, 1);*/
 	}
 
 	public boolean isCached() {
