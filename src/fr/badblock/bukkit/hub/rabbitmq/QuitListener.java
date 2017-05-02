@@ -12,9 +12,9 @@ public class QuitListener extends RabbitListener {
 	
 	@Override
 	public void onPacketReceiving(String body) {
-		if (SEntryInfosListener.tempPlayers.containsKey(body)) {
+		/*if (SEntryInfosListener.tempPlayers.containsKey(body)) {
 			SEntryInfosListener.tempPlayers.put(body, 0L);
-		}
+		}*/
 	}
 	
 }

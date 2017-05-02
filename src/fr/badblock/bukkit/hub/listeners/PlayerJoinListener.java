@@ -1,18 +1,13 @@
 package fr.badblock.bukkit.hub.listeners;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
@@ -20,7 +15,6 @@ import fr.badblock.bukkit.hub.inventories.join.PlayerCustomInventory;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.bukkit.hub.objects.HubScoreboard;
 import fr.badblock.bukkit.hub.objects.HubStoredPlayer;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.BukkitUtils;
@@ -62,21 +56,21 @@ public class PlayerJoinListener extends _HubListener {
 		System.out.println("[HUB] Loaded " + player.getName() + ".");
 	}
 
-	@EventHandler
+	/*@EventHandler
 	public void onPlayerChatTabComplete(PlayerChatTabCompleteEvent event) {
 		if (!event.getChatMessage().startsWith("/")) {
 			List<String> playerNames = new ArrayList<>();
 			for (Player player : BukkitUtils.getPlayers()) 
 				if (player.getName().toLowerCase().startsWith(event.getChatMessage().toLowerCase()))
 					playerNames.add(player.getName());
-			for (Entry<String, Long> entry : SEntryInfosListener.tempPlayers.entrySet())
-				if (entry.getValue() > System.currentTimeMillis()) 
-					if (entry.getKey().toLowerCase().startsWith(event.getChatMessage().toLowerCase()))
-						playerNames.add(entry.getKey());
+			//for (Entry<String, Long> entry : SEntryInfosListener.tempPlayers.entrySet())
+			//	if (entry.getValue() > System.currentTimeMillis()) 
+			//		if (entry.getKey().toLowerCase().startsWith(event.getChatMessage().toLowerCase()))
+			//			playerNames.add(entry.getKey());
 			event.getTabCompletions().clear();
 			event.getTabCompletions().addAll(playerNames);
 		}
-	}
+	}*/
 
 	@EventHandler
 	public void onDataLoad(PlayerLoadedEvent event) {

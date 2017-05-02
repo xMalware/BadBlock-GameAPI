@@ -2,7 +2,6 @@ package fr.badblock.bukkit.hub.inventories.join.items;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -16,8 +15,6 @@ import org.bukkit.potion.PotionEffectType;
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.objects.HubStoredPlayer;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
-import fr.badblock.bukkit.hub.utils.NPC;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -70,10 +67,10 @@ public class HiderDisablePlayerItem extends CustomItem {
 				continue;
 			player.showPlayer(pl);
 		}
-		for (Entry<String, NPC> entry : SEntryInfosListener.tempNPCs.entrySet()) {
+		/*for (Entry<String, NPC> entry : SEntryInfosListener.tempNPCs.entrySet()) {
 			if (SEntryInfosListener.tempPlayersUUID.containsKey(entry.getKey()) && SEntryInfosListener.tempPlayersPropertyMap.containsKey(entry.getKey()))
 				entry.getValue().show(entry.getKey(), SEntryInfosListener.tempPlayersUUID.get(entry.getKey()), player, SEntryInfosListener.tempPlayersPropertyMap.get(entry.getKey()));
-		}
+		}*/
 		player.saveGameData();
 		player.sendTranslatedMessage("hub.items.hiderdisableplayeritem.success");
 	}

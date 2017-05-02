@@ -6,14 +6,12 @@ import java.util.List;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 
 import com.google.gson.Gson;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.selector.submenus.items.SubGameSelectorItem;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.rabbitconnector.RabbitPacketType;
 import fr.badblock.rabbitconnector.RabbitService;
@@ -49,12 +47,12 @@ public class Tower4v4SelectorItem extends SubGameSelectorItem {
 			public void run() {
 				service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "tower4v4", false)),
 						Encodage.UTF8, RabbitPacketType.PUBLISHER, 5000, false);
-				if (!player.hasPermission("others.mod.connect")) {
+				/*if (!player.hasPermission("others.mod.connect")) {
 					SEntryInfosListener.tempPlayers.put(player.getName(), System.currentTimeMillis() + SEntryInfosListener.tempTime);
 					SEntryInfosListener.tempPlayersRank.put(player.getName(), player.getMainGroup());
 					SEntryInfosListener.tempPlayersUUID.put(player.getName(), player.getUniqueId());
 					SEntryInfosListener.tempPlayersPropertyMap.put(player.getName(), ((CraftPlayer)player).getHandle().getProfile().getProperties());
-				}
+				}*/
 			}
 		};
 		if (player.hasPermission("matchmaking.priority")) runnable.run();

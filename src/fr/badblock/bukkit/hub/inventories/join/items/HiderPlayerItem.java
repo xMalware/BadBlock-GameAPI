@@ -16,8 +16,6 @@ import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.bukkit.hub.objects.HubStoredPlayer;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
-import fr.badblock.bukkit.hub.utils.NPC;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -74,9 +72,9 @@ public class HiderPlayerItem extends CustomItem {
 				continue;
 			player.hidePlayer(pl);
 		}
-		for (NPC npc : SEntryInfosListener.tempNPCs.values()) {
+		/*for (NPC npc : SEntryInfosListener.tempNPCs.values()) {
 			npc.despawn(player);
-		}
+		}*/
 		player.saveGameData();
 		// player.sendMessage("§7Vous avez §ccaché§7 les joueurs.");
 		player.sendTranslatedMessage("hub.items.hiderplayeritem.success");

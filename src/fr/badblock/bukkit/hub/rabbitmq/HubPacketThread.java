@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
-import fr.badblock.bukkit.hub.utils.NPC;
 import fr.badblock.game.core18R3.players.ingamedata.CommandInGameData;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.threading.TaskManager;
@@ -54,12 +53,12 @@ public class HubPacketThread implements Runnable {
 				ranks.put(order.get(bPlayer.getMainGroup()), ranks.get(order.get(bPlayer.getMainGroup())) + 1);
 		}
 		// Cached SEntry players (in queue)
-		for (NPC npc : SEntryInfosListener.tempNPCs.values()) {
+		/*for (NPC npc : SEntryInfosListener.tempNPCs.values()) {
 			if (!ranks.containsKey(order.get(npc.rank)))
 				ranks.put(order.get(npc.rank), 1);
 			else
 				ranks.put(order.get(npc.rank), ranks.get(order.get(npc.rank)) + 1);
-		}
+		}*/
 		int playersWorker = Bukkit.getOnlinePlayers().size();
 		HubAliveFactory hubAliveFactory = new HubAliveFactory(Bukkit.getServerName(), playersWorker, Bukkit.getMaxPlayers(), opened, ranks);
 		rabbitService.sendAsyncPacket("hub",

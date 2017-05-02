@@ -1,13 +1,10 @@
 package fr.badblock.bukkit.hub.rabbitmq;
 
-import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Maps;
-import com.mojang.authlib.properties.PropertyMap;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
-import fr.badblock.bukkit.hub.utils.NPC;
 import fr.badblock.rabbitconnector.RabbitListener;
 import fr.badblock.rabbitconnector.RabbitListenerType;
 import fr.badblock.sentry.FullSEntry;
@@ -15,12 +12,12 @@ import fr.badblock.sentry.FullSEntry;
 public class SEntryInfosListener extends RabbitListener {
 
 	public static ConcurrentMap<String, FullSEntry> sentries = Maps.newConcurrentMap();
-	public static ConcurrentMap<String, Long> tempPlayers = Maps.newConcurrentMap();
+	/*public static ConcurrentMap<String, Long> tempPlayers = Maps.newConcurrentMap();
 	public static ConcurrentMap<String, UUID> tempPlayersUUID = Maps.newConcurrentMap();
 	public static ConcurrentMap<String, PropertyMap> tempPlayersPropertyMap = Maps.newConcurrentMap();
 	public static ConcurrentMap<String, NPC> tempNPCs = Maps.newConcurrentMap();
 	public static ConcurrentMap<String, String> tempPlayersRank = Maps.newConcurrentMap();
-	public static long	tempTime	= (long) (600_000L * BungeeWorkerListener.bungeeWorkers);
+	public static long	tempTime	= (long) (600_000L * BungeeWorkerListener.bungeeWorkers);*/
 
 	public SEntryInfosListener() {
 		super(BadBlockHub.getInstance().getRabbitService(), "networkdocker.sentry.infos", false,

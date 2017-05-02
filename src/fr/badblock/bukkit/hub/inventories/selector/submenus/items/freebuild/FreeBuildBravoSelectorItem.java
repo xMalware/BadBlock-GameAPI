@@ -7,11 +7,9 @@ import java.util.Random;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.selector.submenus.items.SubGameSelectorItem;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
 import fr.badblock.bukkit.hub.utils.TimeUtils;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.threading.TaskManager;
@@ -42,12 +40,12 @@ public class FreeBuildBravoSelectorItem extends SubGameSelectorItem {
 			@Override
 			public void run() {
 				player.sendPlayer("fb2");
-				if (!player.hasPermission("others.mod.connect")) {
+				/*if (!player.hasPermission("others.mod.connect")) {
 					SEntryInfosListener.tempPlayers.put(player.getName(), System.currentTimeMillis() + SEntryInfosListener.tempTime);
 					SEntryInfosListener.tempPlayersRank.put(player.getName(), player.getMainGroup());
 					SEntryInfosListener.tempPlayersUUID.put(player.getName(), player.getUniqueId());
 					SEntryInfosListener.tempPlayersPropertyMap.put(player.getName(), ((CraftPlayer)player).getHandle().getProfile().getProperties());
-				}
+				}*/
 			}
 		};
 		if (player.hasPermission("matchmaking.priority")) {
