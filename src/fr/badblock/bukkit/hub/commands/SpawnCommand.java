@@ -19,7 +19,6 @@ public class SpawnCommand extends AbstractCommand {
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer player = (BadblockPlayer) sender;
-		player.sendMessage(player.getLocation().getX() + " / " + player.getLocation().getZ());
 		player.sendTranslatedMessage("hub.admin.spawnteleporting.loading");
 		PlayerJoinListener.reload(player);
 		player.teleport(ConfigUtils.getLocation(BadBlockHub.getInstance(), "worldspawn"));
