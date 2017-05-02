@@ -204,7 +204,7 @@ public class HubPlayer implements InGameData {
 						player.saveGameData();
 					}
 				}
-				GameAPI.getAPI().getSqlDatabase().call("SELECT id, xp, badcoins FROM debts WHERE playerName = '" + player.getName().toLowerCase() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+				/*GameAPI.getAPI().getSqlDatabase().call("SELECT id, xp, badcoins FROM debts WHERE playerName = '" + player.getName().toLowerCase() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 					@Override
 					public void done(ResultSet result, Throwable error) {
@@ -231,7 +231,7 @@ public class HubPlayer implements InGameData {
 						}
 					}
 
-				});
+				});*/
 			}
 		}, 1, 5 * 300);
 		HubStoredPlayer hubStoredPlayer = HubStoredPlayer.get(player);

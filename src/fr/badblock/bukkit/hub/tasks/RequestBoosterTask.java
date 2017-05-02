@@ -29,7 +29,7 @@ public class RequestBoosterTask extends CustomTask {
 	}
 	
 	public static void work() {
-		GameAPI.getAPI().getSqlDatabase().call("SELECT value FROM keyValues WHERE `key` = 'booster'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+		/*GameAPI.getAPI().getSqlDatabase().call("SELECT value FROM keyValues WHERE `key` = 'booster'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 			@Override
 			public void done(ResultSet result, Throwable error) {
@@ -47,7 +47,7 @@ public class RequestBoosterTask extends CustomTask {
 				}
 			}
 
-		});
+		});*/
 	}
 
 }

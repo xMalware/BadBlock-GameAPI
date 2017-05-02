@@ -21,7 +21,6 @@ public class AdminCommand extends AbstractCommand {
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		BadblockPlayer player = (BadblockPlayer) sender;
-
 		if (args.length >= 1 && args[0].equalsIgnoreCase("limit")) {
 			if (player.getSelection() == null) {
 				player.sendTranslatedMessage("commands.noselection");

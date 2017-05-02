@@ -30,7 +30,7 @@ public class RequestNPCTask extends CustomTask {
 	}
 
 	public static void work() {
-		GameAPI.getAPI().getSqlDatabase().call("SELECT value FROM keyValues WHERE `key` = 'npc'", SQLRequestType.QUERY,
+		/*GameAPI.getAPI().getSqlDatabase().call("SELECT value FROM keyValues WHERE `key` = 'npc'", SQLRequestType.QUERY,
 				new Callback<ResultSet>() {
 
 					@Override
@@ -69,7 +69,7 @@ public class RequestNPCTask extends CustomTask {
 						}
 					}
 
-				});
+				});*/
 	}
 
 }

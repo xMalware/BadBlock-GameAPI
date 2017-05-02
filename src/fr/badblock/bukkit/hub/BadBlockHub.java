@@ -58,7 +58,6 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.ConfigUtils;
 import fr.badblock.gameapi.utils.selections.CuboidSelection;
-import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.rabbitconnector.RabbitConnector;
 import fr.badblock.rabbitconnector.RabbitService;
 import fr.xmalware.badblock.shoplinker.api.ShopLinkerAPI;
@@ -235,14 +234,39 @@ public class BadBlockHub extends BadblockPlugin {
 
 		// Reload players
 		Bukkit.getOnlinePlayers().forEach(player -> PlayerJoinListener.load((BadblockPlayer) player));
-		TaskManager.scheduleAsyncRepeatingTask("fix", new Runnable() {
+		/*TaskManager.scheduleAsyncRepeatingTask("fix", new Runnable() {
 			@Override
 			public void run() {
 				System.gc();
 			}
-		}, 20 * 300, 20 * 300);
-		// TODO remove after christmas
+		}, 20 * 300, 20 * 300);*/
+		System.out.println("[ChunkLoader] Searching chunks...");
+		GameAPI.getAPI().setLightChunks(cuboid, false);
+		GameAPI.getAPI().setEmptyChunks(cuboid, true);
+		GameAPI.getAPI().loadChunks(cuboid, 1);
+		/*System.out.println("[ChunkLoader] Searching chunks...");
+		World world = Bukkit.getWorld("world");
+		HashSet<Chunk> chunks = new HashSet<>();
+		for (int x = -243; x < 244; x += 4) {
+			for (int z = -223; z < 223; z += 4) {
+				Chunk chunk = world.getChunkAt(x, z);
+				if (!chunks.contains(chunk)) chunks.add(chunk);
+			}
+		}
+		System.out.println("[ChunkLoader] Found " + chunks.size() + " chunks!");
+		System.out.println("[ChunkLoader] Loading chunks...");
+		int i = 0;
+		for (Chunk chunk : chunks) {
+			while (!chunk.isLoaded()) {
+				chunk.load(false);
+			}
+			i++;
+			System.out.println("Loaded chunk " + i + " (" + chunk.getX() + ";" + chunk.getZ() + ")");
+		}*/
+		System.out.println("[ChunkLoader] Loaded chunks");
+		
 		/*TaskManager.scheduleAsyncRepeatingTask("christmas_starparticles", new Runnable() {
+		 * // remove after christmas
 			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
