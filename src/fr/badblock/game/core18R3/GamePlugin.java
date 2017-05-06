@@ -238,6 +238,8 @@ public class GamePlugin extends GameAPI {
 	public String						gamePrefix;
 	@Getter
 	public PlayerBooster				booster;
+	@Getter@Setter
+	public boolean						finished;
 
 	@Override
 	public void onEnable() {
