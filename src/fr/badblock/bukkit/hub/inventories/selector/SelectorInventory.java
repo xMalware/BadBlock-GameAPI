@@ -25,10 +25,9 @@ import fr.badblock.bukkit.hub.inventories.settings.settings.LightBlueStainedGlas
 public class SelectorInventory extends CustomInventory {
 
 	public SelectorInventory() {
-		// super("§6Sélecteur", 6);
 		super("hub.items.selectorinventory", 6);
 		LightBlueStainedGlassPaneItem lightBlueStainedGlassPaneItem = new LightBlueStainedGlassPaneItem();
-		this.setItem(lightBlueStainedGlassPaneItem, 28, 29, 30, 31, 32, 33, 34);
+		this.setItem(lightBlueStainedGlassPaneItem, 19, 20, 21, 13, 23, 24, 25, 27, 35, 37, 43, 47, 48, 49, 50, 51);
 		this.setItem(0, new SpawnSelectorItem());
 		this.setItem(4, new GoogleAuthSelectorItem());
 		this.setItem(8, new VIPZoneSelectorItem());
