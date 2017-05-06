@@ -5,15 +5,22 @@ import java.sql.ResultSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Location;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.npc.NPCData;
+import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
+import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.utils.ConfigUtils;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.threading.TaskManager;
+import fr.badblock.sentry.FullSEntry;
+import net.md_5.bungee.api.ChatColor;
 
 public class RequestNPCTask extends CustomTask {
 
@@ -21,7 +28,7 @@ public class RequestNPCTask extends CustomTask {
 	public static boolean work;
 
 	public RequestNPCTask() {
-		super(0, 100);
+		super(0, 20);
 	}
 
 	@Override
@@ -49,8 +56,30 @@ public class RequestNPCTask extends CustomTask {
 									for (Entry<Integer, NPCData> npcData : updatedMap.entrySet()) {
 										if (!oldMap.containsKey(npcData.getKey())) {
 											npcData.getValue().yop();
+											Location loc = ConfigUtils.convertStringToLocation(npcData.getValue().getLocation()).clone();
+											loc.setY(loc.getY() + 5);
+											int nb = 0;
+											FullSEntry sentry = SEntryInfosListener.sentries.get(npcData.getValue().getServer());
+											if (sentry != null) nb = sentry.getIngamePLayers();
+											for (BadblockPlayer player : GameAPI.getAPI().getRealOnlinePlayers()) {
+												player.showFloatingText(ChatColor.translateAlternateColorCodes('°', npcData.getValue().getDisplayName()), loc, 20, 0);
+												Location locA = loc.clone();
+												locA.setY(locA.getY() - 1);
+												player.showFloatingText("§b" + nb + " §7joueurs dans ce jeu", locA, 20, 0);
+											}
 										} else {
 											npcData.getValue().setFakeEntity(oldMap.get(npcData.getKey()).getFakeEntity());
+											Location loc = ConfigUtils.convertStringToLocation(npcData.getValue().getLocation()).clone();
+											loc.setY(loc.getY() + 5);
+											int nb = 0;
+											FullSEntry sentry = SEntryInfosListener.sentries.get(npcData.getValue().getServer());
+											if (sentry != null) nb = sentry.getIngamePLayers();
+											for (BadblockPlayer player : GameAPI.getAPI().getRealOnlinePlayers()) {
+												player.showFloatingText(ChatColor.translateAlternateColorCodes('°', npcData.getValue().getDisplayName()), loc, 20, 0);
+												Location locA = loc.clone();
+												locA.setY(locA.getY() - 1);
+												player.showFloatingText("§b" + nb + " §7joueurs dans ce jeu", locA, 20, 0);
+											}
 										}
 									}
 									// Remove old

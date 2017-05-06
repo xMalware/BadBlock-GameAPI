@@ -117,21 +117,17 @@ public class PlayerJoinListener extends _HubListener {
 				}*/
 				//for (BadblockPlayer po : BukkitUtils.getPlayers())
 				//	if (HubStoredPlayer.get(po).hidePlayers) po.hidePlayer(player);
-				System.out.println(player.getName() + " / " + hubStoredPlayer.isHidePlayers());
 				if (hubStoredPlayer.isHidePlayers())
 					for (BadblockPlayer po : BukkitUtils.getPlayers()) {
 						player.hidePlayer(po);
-						System.out.println(player.getName() + " / Hide " + po.getName());
 					}
 				TaskManager.runTaskLater(new Runnable() {
 					@Override
 					public void run() {
 						if (player == null || !player.isOnline()) return;
-						System.out.println(player.getName() + " / " + hubStoredPlayer.isHidePlayers());
 						if (hubStoredPlayer.isHidePlayers())
 							for (BadblockPlayer po : BukkitUtils.getPlayers()) {
 								player.hidePlayer(po);
-								System.out.println(player.getName() + " / Hide " + po.getName());
 							}
 					}
 				}, 5);
