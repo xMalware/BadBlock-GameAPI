@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Random;
 
 import fr.badblock.gameapi.utils.i18n.Message;
+import lombok.Getter;
+import lombok.Setter;
 
 public class GameMessage implements Message {
 	public transient File file;
@@ -14,6 +16,8 @@ public class GameMessage implements Message {
 					useFooter;
 	
 	private String[][] messages;
+	
+	@Getter @Setter private boolean unknown;
 	
 	public GameMessage(){}
 	
@@ -27,6 +31,7 @@ public class GameMessage implements Message {
 	
 	public void verify(String whenUnknow){
 		if(messages == null || messages.length == 0){
+			unknown = true;
 			messages = new String[][]{new String[]{whenUnknow}};
 		}
 	}
