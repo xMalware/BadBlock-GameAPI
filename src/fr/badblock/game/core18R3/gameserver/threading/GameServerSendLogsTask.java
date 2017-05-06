@@ -4,18 +4,20 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 
-import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
-import fr.badblock.gameapi.run.RunType;
-import fr.badblock.gameapi.utils.ServerProperties;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class GameServerSendLogsTask extends GameServerTask {
@@ -27,7 +29,6 @@ public class GameServerSendLogsTask extends GameServerTask {
 		this.config = ftpConfig;
 		TaskManager.scheduleAsyncRepeatingTask("sendLogsTask", this, 0, gameServerConfig.timeBetweenLogs);
 		// Temporary
-		/*
 		List<String> lines = null;
 		try {
 			lines = Files.readAllLines(Paths.get("server.properties"), Charset.defaultCharset());
@@ -38,12 +39,10 @@ public class GameServerSendLogsTask extends GameServerTask {
 			if (line.startsWith("docker-logs=")) {
 				logFile = line.replace("docker-logs=", "");
 			}
-		}*/
-		logFile = ServerProperties.getProperties().getProperty("docker-logs");
+		}
 	}
 
 	public void doLog() {
-		if (GamePlugin.getAPI().getRunType().equals(RunType.LOBBY)) return;
 		File file = new File("./logs/latest.log");
 		if (file.exists()) {
 			FTPClient ftpClient = new FTPClient();
