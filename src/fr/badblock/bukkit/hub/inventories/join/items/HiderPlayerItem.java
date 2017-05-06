@@ -16,6 +16,7 @@ import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.bukkit.hub.objects.HubStoredPlayer;
+import fr.badblock.game.core18R3.players.ingamedata.CommandInGameData;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -63,14 +64,32 @@ public class HiderPlayerItem extends CustomItem {
 				content[i] = disabler.getStaticItem().get(player.getPlayerData().getLocale());
 		}
 		player.getInventory().setContents(content);
+		// For sur tous les joueurs pour voir s'ils peuvent voir celui qui vient de se co
 		for (Player pl : Bukkit.getOnlinePlayers()) {
-			if (pl.hasPermission("hub.bypasshide"))
+			if (pl.hasPermission("hub.bypasshide")) {
+				pl.showPlayer(player);
 				continue;
-			if (player.inGameData(HubPlayer.class).getFriends().contains(pl.getName()))
+			}
+			BadblockPlayer plo = (BadblockPlayer) player;
+			HubStoredPlayer pls = HubStoredPlayer.get(plo);
+			if (player.inGameData(CommandInGameData.class).vanish) pl.hidePlayer(player);
+			else if (plo.inGameData(HubPlayer.class).getFriends().contains(player.getName())) pl.showPlayer(player);
+			else if (pls.isHidePlayers()) pl.hidePlayer(player);
+			else if (!pl.canSee(player)) pl.hidePlayer(player);
+			else pl.showPlayer(player);
+		}
+		// For sur tous les joueurs pour voir si celui qui vient de se co peut les voir
+		for (Player pl : Bukkit.getOnlinePlayers()) {
+			if (player.hasPermission("hub.bypasshide")) {
+				player.showPlayer(player);
 				continue;
-			if (!player.canSee(pl))
-				continue;
-			player.hidePlayer(pl);
+			}
+			BadblockPlayer plo = (BadblockPlayer) pl;
+			if (plo.inGameData(CommandInGameData.class).vanish) player.hidePlayer(plo);
+			else if (player.inGameData(HubPlayer.class).getFriends().contains(plo.getName())) player.showPlayer(plo);
+			else if (hubStoredPlayer.isHidePlayers()) player.hidePlayer(plo);
+			else if (!player.canSee(pl)) player.hidePlayer(pl);
+			else player.showPlayer(pl);
 		}
 		/*for (NPC npc : SEntryInfosListener.tempNPCs.values()) {
 			npc.despawn(player);
