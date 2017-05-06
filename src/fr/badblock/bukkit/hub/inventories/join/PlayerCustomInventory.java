@@ -6,6 +6,7 @@ import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.inventories.join.items.ChestPlayerItem;
 import fr.badblock.bukkit.hub.inventories.join.items.GadgetsPlayerItem;
 import fr.badblock.bukkit.hub.inventories.join.items.GameSelectorPlayerItem;
+import fr.badblock.bukkit.hub.inventories.join.items.HiderDisablePlayerItem;
 import fr.badblock.bukkit.hub.inventories.join.items.HiderPlayerItem;
 import fr.badblock.bukkit.hub.inventories.join.items.HostPlayerItem;
 import fr.badblock.bukkit.hub.inventories.join.items.SettingsPlayerItem;
@@ -14,6 +15,7 @@ import fr.badblock.bukkit.hub.inventories.selector.dev.DevSelectorInventoryOpenI
 import fr.badblock.bukkit.hub.inventories.selector.items.BuildSelectorItem;
 import fr.badblock.bukkit.hub.inventories.selector.items.StaffRoomSelectorItem;
 import fr.badblock.bukkit.hub.inventories.settings.items.BlueStainedGlassPaneItem;
+import fr.badblock.bukkit.hub.objects.HubStoredPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,12 +44,11 @@ public enum PlayerCustomInventory {
 		player.clearInventory();
 		PlayerInventory inventory = player.getInventory();
 		inventory.setHeldItemSlot(4);
-		//HubStoredPlayer hubStoredPlayer = HubStoredPlayer.get(player);
+		HubStoredPlayer hubStoredPlayer = HubStoredPlayer.get(player);
 		for (PlayerCustomInventory item : values()) {
 			if (item.getPermission() != null && !player.hasPermission(item.getPermission())) continue;
-			//if (item.name().equalsIgnoreCase("HIDER") && hubStoredPlayer.hidePlayers) inventory.setItem(item.getSlot(), new HiderDisablePlayerItem().toItemStack(player));
-			//else 
-			inventory.setItem(item.getSlot(), item.getCustomItem().getStaticItem().get(player.getPlayerData().getLocale()));
+			if (item.name().equalsIgnoreCase("HIDER") && hubStoredPlayer.hidePlayers) inventory.setItem(item.getSlot(), new HiderDisablePlayerItem().toItemStack(player));
+			else inventory.setItem(item.getSlot(), item.getCustomItem().getStaticItem().get(player.getPlayerData().getLocale()));
 		}
 	}
 
