@@ -66,6 +66,8 @@ public class RebootTask extends CustomTask {
 					GameAPI.getAPI().setWhitelistStatus(true);
 				}
 				if (time > 60) {
+					if (time <= 120) 
+						GameAPI.getAPI().setFinished(true);
 					GameAPI.i18n().broadcast("hub.reboot.reboot_minutes", time / 60);
 				}else if (time == 60) {
 					GameAPI.i18n().broadcast("hub.reboot.reboot_minute");
@@ -78,7 +80,7 @@ public class RebootTask extends CustomTask {
 			time--;
 			return;
 		}
-		if (System.currentTimeMillis() - boot >= max) {
+		if (System.currentTimeMillis() - boot >= max && time > 0) {
 			time = 900;
 			laggy = -1;
 		}
