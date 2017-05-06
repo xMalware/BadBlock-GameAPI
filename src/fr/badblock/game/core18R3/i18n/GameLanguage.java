@@ -135,12 +135,12 @@ public class GameLanguage implements Language {
 			JsonUtils.save(file, message, true);
 			try {
 				final String finalKey = key;
-				GameAPI.getAPI().getSqlDatabase().call("SELECT * FROM unknownMessages WHERE key = '" + finalKey + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+				GameAPI.getAPI().getSqlDatabase().call("SELECT * FROM unknownMessages WHERE ikey = '" + finalKey + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 					@Override
 					public void done(ResultSet result, Throwable error) {
 						try {
 							if (!result.next()) {
-								GameAPI.getAPI().getSqlDatabase().call("INSERT INTO unknownMessages(key, serverName) VALUES('" + finalKey + "', '" + Bukkit.getServerName() + "')", SQLRequestType.UPDATE);
+								GameAPI.getAPI().getSqlDatabase().call("INSERT INTO unknownMessages(ikey, serverName) VALUES('" + finalKey + "', '" + Bukkit.getServerName() + "')", SQLRequestType.UPDATE);
 							}
 						} catch (SQLException e) {
 							e.printStackTrace();
@@ -156,12 +156,12 @@ public class GameLanguage implements Language {
 			if (message.isUnknown()) {
 				try {
 					final String finalKey = key;
-					GameAPI.getAPI().getSqlDatabase().call("SELECT * FROM unknownMessages WHERE key = '" + finalKey + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+					GameAPI.getAPI().getSqlDatabase().call("SELECT * FROM unknownMessages WHERE ikey = '" + finalKey + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 						@Override
 						public void done(ResultSet result, Throwable error) {
 							try {
 								if (!result.next()) {
-									GameAPI.getAPI().getSqlDatabase().call("INSERT INTO unknownMessages(key, serverName) VALUES('" + finalKey + "', '" + Bukkit.getServerName() + "')", SQLRequestType.UPDATE);
+									GameAPI.getAPI().getSqlDatabase().call("INSERT INTO unknownMessages(ikey, serverName) VALUES('" + finalKey + "', '" + Bukkit.getServerName() + "')", SQLRequestType.UPDATE);
 								}
 							} catch (SQLException e) {
 								e.printStackTrace();
