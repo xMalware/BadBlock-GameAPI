@@ -49,12 +49,12 @@ public class GameServerSendLogsTask extends GameServerTask {
 				ftpClient.connect(config.ftpHostname, config.ftpPort);
 	            ftpClient.execPBSZ(0);
 	            ftpClient.execPROT("P");
-				ftpClient.login(config.ftpUsername, config.ftpPassword);
 				ftpClient.setBufferSize(0);
+				ftpClient.login(config.ftpUsername, config.ftpPassword);
 	            ftpClient.setFileType(2);
 				ftpClient.setAutodetectUTF8(true);
 				ftpClient.setListHiddenFiles(true);
-				ftpClient.enterLocalPassiveMode();
+				ftpClient.enterLocalActiveMode();
 				
 				String logFile = "/logs/" + this.logFile;
 				String[] splitter = logFile.split("/");
