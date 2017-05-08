@@ -13,8 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPSClient;
 
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
@@ -45,12 +44,14 @@ public class GameServerSendLogsTask extends GameServerTask {
 	public void doLog() {
 		File file = new File("./logs/latest.log");
 		if (file.exists()) {
-			FTPClient ftpClient = new FTPClient();
+			FTPSClient ftpClient = new FTPSClient("TLS", false);
 			try {
 				ftpClient.connect(config.ftpHostname, config.ftpPort);
+	            ftpClient.execPBSZ(0);
+	            ftpClient.execPROT("P");
 				ftpClient.login(config.ftpUsername, config.ftpPassword);
 				ftpClient.setBufferSize(0);
-				ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+	            ftpClient.setFileType(2);
 				ftpClient.setAutodetectUTF8(true);
 				ftpClient.setListHiddenFiles(true);
 				ftpClient.enterLocalPassiveMode();
