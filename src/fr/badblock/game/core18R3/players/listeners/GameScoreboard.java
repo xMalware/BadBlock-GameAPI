@@ -336,29 +336,34 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 	@Override
 	public void beginVote(JsonArray maps) {
+		List<VoteElement> elements = new ArrayList<VoteElement>();
+		
+		for(int i=0;i<maps.size();i++){
+			JsonElement element = maps.get(i);
+
+			if(element.isJsonObject()){
+				VoteElement vote = GameAPI.getGson().fromJson(element, VoteElement.class);
+				elements.add(vote);
+			}
+		}
+		
+		beginVote(elements);
+	}
+
+	@Override
+	public void beginVote(List<VoteElement> elements)
+	{
 		votes = Maps.newLinkedHashMap();
 
 		voteObjective = board.registerNewObjective("vote", "dummy");
 		voteObjective.setDisplayName(GameAPI.i18n().get("vote.scoreboardName", GameAPI.getGameName())[0]);
 		voteObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
 
-		for(int i=0;i<maps.size();i++){
-			JsonElement element = maps.get(i);
-
-			if(element.isJsonObject()){
-				VoteElement vote = GameAPI.getGson().fromJson(element, VoteElement.class);
-				voteObjective.getScore(GameAPI.i18n().replaceColors(vote.getDisplayName())).setScore(0);
-				votes.put(vote, 0);
-			}
-		}
-
-		// Vote random
-		/*if (maps.size() > 0) {
-			VoteElement vote = new VoteElement("random", "?");
-			voteObjective.getScore(GameAPI.i18n().replaceColors("§7?")).setScore(0);
+		for(VoteElement vote : elements)
+		{
+			voteObjective.getScore(GameAPI.i18n().replaceColors(vote.getDisplayName())).setScore(0);
 			votes.put(vote, 0);
-		}*/
-
+		}
 	}
 
 	@Override
