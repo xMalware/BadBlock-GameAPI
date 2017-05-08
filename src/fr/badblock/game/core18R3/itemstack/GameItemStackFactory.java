@@ -1,8 +1,10 @@
 package fr.badblock.game.core18R3.itemstack;
 
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -14,6 +16,10 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.Wool;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
+
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.utils.i18n.I18n;
 import fr.badblock.gameapi.utils.i18n.Locale;
@@ -21,6 +27,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
+import fr.badblock.gameapi.utils.reflection.Reflector;
 
 /**
  * A simple {@link fr.badblock.gameapi.ItemStackFactory} implementation.
@@ -143,6 +150,28 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 			skull.setItemMeta(meta);
 		}
 
+		return skull;
+	}
+	
+	@Override
+	public ItemStack asCustomSkull(int amount, String url) {
+		ItemStack skull = create(amount);
+
+		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+        PropertyMap propertyMap = profile.getProperties();
+        
+        if (propertyMap == null)
+            throw new IllegalStateException("Profile doesn't contain a property map");
+        
+        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
+        propertyMap.put("textures", new Property("textures", new String(encodedData)));
+        
+        try {
+			new Reflector(skull.getItemMeta()).setFieldValue("profile", profile);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
 		return skull;
 	}
 
