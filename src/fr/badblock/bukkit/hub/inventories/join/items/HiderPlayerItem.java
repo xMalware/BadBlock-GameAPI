@@ -72,7 +72,6 @@ public class HiderPlayerItem extends CustomItem {
 					else if (player.inGameData(CommandInGameData.class).vanish) pl.hidePlayer(player);
 					else if (plo.inGameData(HubPlayer.class).getFriends().contains(player.getName())) pl.showPlayer(player);
 					else if (pls.isHidePlayers()) pl.hidePlayer(player);
-					else if (!pl.canSee(player)) pl.hidePlayer(player);
 					else pl.showPlayer(player);
 				}
 				// For sur tous les joueurs pour voir si celui qui vient de se co peut les voir
@@ -82,7 +81,6 @@ public class HiderPlayerItem extends CustomItem {
 					else if (plo.inGameData(CommandInGameData.class).vanish) player.hidePlayer(plo); 
 					else if (player.inGameData(HubPlayer.class).getFriends().contains(plo.getName())) player.showPlayer(plo);
 					else if (hubStoredPlayer.isHidePlayers()) player.hidePlayer(plo);
-					else if (!player.canSee(pl)) player.hidePlayer(pl);
 					else player.showPlayer(pl);
 				}
 		/*for (NPC npc : SEntryInfosListener.tempNPCs.values()) {
