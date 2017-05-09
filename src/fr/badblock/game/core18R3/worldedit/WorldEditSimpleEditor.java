@@ -71,10 +71,15 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	@Override
 	public void setCurrentChunk(int x, int z)
 	{
+		boolean save = world.chunkProviderServer.forceChunkLoad;
+		world.chunkProviderServer.forceChunkLoad = true;
+		
 		this.chunk = world.getChunkAt(x, z);
 		this.sections = this.chunk.getSections();
 		
 		this.modified = false;
+		
+		world.chunkProviderServer.forceChunkLoad = save;
 	}
 	
 	private ChunkSection getSection(int y)
@@ -154,6 +159,9 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 			LongHashMap<?> hashMap = (LongHashMap<?>)new Reflector(map).getFieldValue("d");
 			Object o = hashMap.getEntry(chunk.locX + 2147483647L | chunk.locZ + 2147483647L << 32);
 
+			if(o == null)
+				return;
+			
 			ChunkCoordIntPair coord = new ChunkCoordIntPair(chunk.locX, chunk.locZ);
 			
 			for(EntityPlayer player : (List<EntityPlayer>)new Reflector(o).getFieldValue("b"))
