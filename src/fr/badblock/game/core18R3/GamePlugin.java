@@ -308,6 +308,7 @@ public class GamePlugin extends GameAPI {
 					((GameSQLDatabase) sqlDatabase).openConnection();
 
 					rabbitSpeaker = new RabbitSpeaker(rabbitMQConfig);
+					new ServerForceKillListener();
 				} else {
 					sqlDatabase = new FakeSQLDatabase();
 				}
@@ -338,7 +339,7 @@ public class GamePlugin extends GameAPI {
 			new UpdateSignListener().register();
 			new VanishTeleportListener();
 			new PlayerBoosterRefreshListener();
-			new ServerForceKillListener();
+			
 			//AntiCheat.load();
 			GamePlugin gamePlugin = this;
 			getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");;
