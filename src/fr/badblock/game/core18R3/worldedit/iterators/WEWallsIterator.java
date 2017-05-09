@@ -5,6 +5,7 @@ import fr.badblock.gameapi.utils.selections.CuboidSelection;
 public class WEWallsIterator extends WEAbstractCuboidIterator {
 	public WEWallsIterator(CuboidSelection selection) {
 		super(selection);
+		parseNext();
 	}
 
 	@Override
