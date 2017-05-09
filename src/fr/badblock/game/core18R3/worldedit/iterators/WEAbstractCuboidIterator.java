@@ -19,8 +19,10 @@ public abstract class WEAbstractCuboidIterator implements WEBlockIterator {
 	protected int curX, curY, curZ;
 
 	protected int[] next;
+	protected CuboidSelection selection;
 	
 	public WEAbstractCuboidIterator(CuboidSelection selection) {
+		this.selection = selection;
 		this.world = Bukkit.getWorld(selection.getWorldName());
 
 		this.minX = (int)selection.getMinX();
@@ -141,4 +143,9 @@ public abstract class WEAbstractCuboidIterator implements WEBlockIterator {
 	}
 	
 	protected abstract boolean accept(int[] coords);
+
+	protected boolean isIn(int[] coords)
+	{
+		return selection.isInSelection(coords[0], coords[1], coords[2]);
+	}
 }

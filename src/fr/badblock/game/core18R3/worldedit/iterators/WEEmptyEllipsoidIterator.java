@@ -9,20 +9,24 @@ public class WEEmptyEllipsoidIterator extends WEEllipsoidIterator {
 
 	@Override
 	protected boolean accept(int[] coords) {
-		boolean accept = super.accept(coords);
-
-		if(!accept)
-			return false;
+		return super.accept(coords) && nearbyEmpty(coords[0], coords[1], coords[2]);
+	}
+	
+	private boolean nearbyEmpty(int x, int y, int z)
+	{
+		if(!selection.isInSelection(x - 1, y, z) || !super.accept(new int[]{x - 1, y, z}))
+			return true;
+		if(!selection.isInSelection(x + 1, y, z) || !super.accept(new int[]{x + 1, y, z}))
+			return true;
+		if(!selection.isInSelection(x, y, z - 1) || !super.accept(new int[]{x, y, z - 1}))
+			return true;
+		if(!selection.isInSelection(x, y, z + 1) || !super.accept(new int[]{x, y, z + 1}))
+			return true;
+		if(!selection.isInSelection(x, y - 1, z) || !super.accept(new int[]{x, y - 1, z}))
+			return true;
+		if(!selection.isInSelection(x, y + 1, z) || !super.accept(new int[]{x, y + 1, z}))
+			return true;
 		
-		boolean nearbyEmpty = false;
-		
-		nearbyEmpty |= !super.accept(new int[]{coords[0] - 1, coords[1], coords[2]});
-		nearbyEmpty |= !super.accept(new int[]{coords[0] + 1, coords[1], coords[2]});
-		nearbyEmpty |= !super.accept(new int[]{coords[0], coords[1] - 1, coords[2]});
-		nearbyEmpty |= !super.accept(new int[]{coords[0], coords[1] + 1, coords[2]});
-		nearbyEmpty |= !super.accept(new int[]{coords[0], coords[1], coords[2] - 1});
-		nearbyEmpty |= !super.accept(new int[]{coords[0], coords[1], coords[2] + 1});
-		
-		return nearbyEmpty;
+		return false;
 	}
 }
