@@ -30,9 +30,11 @@ public class NPC {
 	public NPC(String name, UUID uuid) {
 		this.name = name;
 		this.uuid = uuid;
+		System.out.println("New NPC(" + name + ", " + uuid.toString() + ")");
 	}
 
 	public EntityPlayer spawn(Location location) {
+		System.out.println("Spawn NPC(" + name + ", " + uuid.toString() + ")");
 		MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
 		WorldServer nmsWorld = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
 		EntityPlayer entityPlayer = new EntityPlayer(nmsServer, nmsWorld, new GameProfile(uuid, name),
@@ -50,6 +52,7 @@ public class NPC {
 	}
 
 	public void show(BadblockPlayer player, Location location) {
+		System.out.println("Show NPC(" + name + ", " + uuid.toString() + ")");
 		EntityPlayer npc;
 		if (!forPlayers.containsKey(player.getUniqueId())) {
 			npc = spawn(location);

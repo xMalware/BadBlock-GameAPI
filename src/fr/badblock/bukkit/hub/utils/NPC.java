@@ -41,6 +41,7 @@ public class NPC {
 	public List<Player> shown = new ArrayList<>();
 
 	public NPC(String rank, Location loc) {
+		System.out.println("1NPC(" + rank + ", " + loc + ")");
 		this.loc = loc;
 		this.rank = rank;
 		double rx = loc.getX();
@@ -50,6 +51,7 @@ public class NPC {
 	}
 
 	public void show(String name, UUID uuid, Player player, PropertyMap propertyMap) {
+		System.out.println("1NPCShow(" + name+ ", " + uuid.toString() + ")");
 		MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
 		WorldServer nmsWorld = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
 
@@ -80,6 +82,7 @@ public class NPC {
 	}
 
 	public void despawn() {
+		System.out.println("DespawnNPC2(" + rank + ", " + loc + ")");
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			final PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
 			for (EntityPlayer npc : npcs) {
@@ -93,6 +96,7 @@ public class NPC {
 	}
 
 	public void despawn(BadblockPlayer player) {
+		System.out.println("DespawnNPC1(" + rank + ", " + loc + ")");
 		final PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
 		for (EntityPlayer npc : npcs) {
 			connection.sendPacket(new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, npc));
