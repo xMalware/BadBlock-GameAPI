@@ -9,6 +9,6 @@ public class WEEmptyCuboidIterator extends WEAbstractCuboidIterator {
 
 	@Override
 	protected boolean accept(int[] coords) {
-		return coords[0] == minX || coords[0] == maxX || coords[2] == minZ || coords[2] == maxZ;
+		return coords[0] == minX || coords[0] == maxX || coords[2] == minZ || coords[2] == maxZ || coords[1] == minY || coords[1] == maxY;
 	}
 }
