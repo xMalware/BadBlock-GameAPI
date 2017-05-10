@@ -28,14 +28,14 @@ public class ReplaceCommand extends SelectionNeededCommand {
 		byte replaceData = 0;
 		
 		if(replaceMat == null) {
-			sendTranslatedMessage(concerned, "commands.give.unknow-type", args[0]);
+			sendTranslatedMessage(concerned, "commands.give.unknow-type", splitted[0]);
 			return true;
 		}
 
 		try {
 			replaceData = Byte.parseByte(splitted[1]);
 		} catch (Exception e) {
-			sendTranslatedMessage(concerned, "commands.nan", args[1]);
+			sendTranslatedMessage(concerned, "commands.nan", splitted[1]);
 			return true;
 		}
 		
@@ -51,14 +51,14 @@ public class ReplaceCommand extends SelectionNeededCommand {
 		byte data = 0;
 		
 		if(material == null) {
-			sendTranslatedMessage(concerned, "commands.give.unknow-type", args[0]);
+			sendTranslatedMessage(concerned, "commands.give.unknow-type", splitted[0]);
 			return true;
 		}
 
 		try {
 			data = Byte.parseByte(splitted[1]);
 		} catch (Exception e) {
-			sendTranslatedMessage(concerned, "commands.nan", args[1]);
+			sendTranslatedMessage(concerned, "commands.nan", splitted[1]);
 			return true;
 		}
 		
@@ -82,7 +82,14 @@ public class ReplaceCommand extends SelectionNeededCommand {
 	@Override
 	public Collection<String> doTab(CommandSender sender, String[] args) {
 		if(args.length == 1){
-			return super.doTab(sender, args);
+			args[0] = args[0].toLowerCase();
+
+			if(!args[0].startsWith("minecraft:"))
+				args[0] = "minecraft:" + args[0];
+
+			return Item.REGISTRY.keySet().stream().map(mcKey -> {
+				return mcKey.toString();
+			}).collect(Collectors.toList());
 		} else if(args.length == 2){
 			args[1] = args[1].toLowerCase();
 
@@ -92,17 +99,8 @@ public class ReplaceCommand extends SelectionNeededCommand {
 			return Item.REGISTRY.keySet().stream().map(mcKey -> {
 				return mcKey.toString();
 			}).collect(Collectors.toList());
-		} else if(args.length == 3){
-			args[2] = args[2].toLowerCase();
-
-			if(!args[2].startsWith("minecraft:"))
-				args[2] = "minecraft:" + args[2];
-
-			return Item.REGISTRY.keySet().stream().map(mcKey -> {
-				return mcKey.toString();
-			}).collect(Collectors.toList());
 		}
-		else if(args.length == 4)
+		else if(args.length == 3)
 		{
 			args[2] = args[2].toLowerCase();
 			return SetCommand.shapes.keySet().stream().collect(Collectors.toList());

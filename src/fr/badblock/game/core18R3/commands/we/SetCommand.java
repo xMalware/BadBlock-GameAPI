@@ -133,14 +133,14 @@ public class SetCommand extends SelectionNeededCommand {
 		byte data = 0;
 		
 		if(material == null) {
-			sendTranslatedMessage(concerned, "commands.give.unknow-type", args[0]);
+			sendTranslatedMessage(concerned, "commands.give.unknow-type", splitted[0]);
 			return true;
 		}
 
 		try {
 			data = Byte.parseByte(splitted[1]);
 		} catch (Exception e) {
-			sendTranslatedMessage(concerned, "commands.nan", args[1]);
+			sendTranslatedMessage(concerned, "commands.nan", splitted[1]);
 			return true;
 		}
 		
@@ -164,20 +164,18 @@ public class SetCommand extends SelectionNeededCommand {
 	@Override
 	public Collection<String> doTab(CommandSender sender, String[] args) {
 		if(args.length == 1){
-			return super.doTab(sender, args);
-		} else if(args.length == 2){
-			args[1] = args[1].toLowerCase();
+			args[0] = args[0].toLowerCase();
 
-			if(!args[1].startsWith("minecraft:"))
-				args[1] = "minecraft:" + args[1];
+			if(!args[0].startsWith("minecraft:"))
+				args[0] = "minecraft:" + args[1];
 
 			return Item.REGISTRY.keySet().stream().map(mcKey -> {
 				return mcKey.toString();
 			}).collect(Collectors.toList());
 		}
-		else if(args.length == 3)
+		else if(args.length == 2)
 		{
-			args[2] = args[2].toLowerCase();
+			args[1] = args[1].toLowerCase();
 			return shapes.keySet().stream().collect(Collectors.toList());
 		}
 		
