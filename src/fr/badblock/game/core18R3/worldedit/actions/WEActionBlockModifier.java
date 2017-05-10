@@ -42,6 +42,8 @@ public abstract class WEActionBlockModifier implements WEAction {
 
 	@Override
 	public void next() {
+		count++;
+		
 		if(iterator.hasNextChunk())
 		{
 			editor.finalizeWorkOnChunk();
