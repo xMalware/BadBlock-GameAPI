@@ -90,7 +90,8 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		int id = -1;
 		FullSEntry sentry = SEntryInfosListener.sentries.get("login");
 		if (sentry != null) {
-			generate(inventory, player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, id++, null, "§6Serveur de connexion", null);
+			id++;
+			generate(inventory, player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, id, null, "§6Serveur de connexion", null);
 		}
 		for (Hub hub : choosenHubs) {
 			if (hub == null) continue;
