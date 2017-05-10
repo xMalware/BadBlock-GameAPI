@@ -109,7 +109,17 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	int c = 0;
 	
 	@Override
+	public char getBlockAt(int x, int y, int z) {
+		if(y < 0 || y > 256)
+			return 0;
+		return getSection(y >> 4).getIdArray()[((y & 15) << 8) | (z << 4) | x];
+	}
+	
+	@Override
 	public void setBlockAt(int x, int y, int z) {
+		if(y < 0 || y > 256)
+			return;
+		
 		ChunkSection sec = getSection(y >> 4);
 		char[] array = sec.getIdArray();
 		int pos = ((y & 15) << 8) | (z << 4) | x;
