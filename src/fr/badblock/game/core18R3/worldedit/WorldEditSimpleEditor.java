@@ -146,7 +146,7 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	
 	@Override
 	public boolean hasSameData(int x, int y, int z) {
-		ChunkSection section = sections[y];
+		ChunkSection section = sections[y >> 4];
 		return section != null && section.getIdArray()[((y & 15) << 8) | (z << 4) | x] == value;
 	}
 
