@@ -2,15 +2,11 @@ package fr.badblock.game.core18R3.commands.we;
 
 import org.bukkit.command.CommandSender;
 
-import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
-import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
-public abstract class SelectionNeededCommand extends AbstractCommand {
+public abstract class SelectionNeededCommand extends WorldEditCommand {
 	public SelectionNeededCommand(String commandName) {
-		super("/" + commandName, new TranslatableString("commands.worldedit." + commandName + ".usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
-		allowConsole(false);
+		super(commandName);
 	}
 
 	@Override
@@ -28,6 +24,4 @@ public abstract class SelectionNeededCommand extends AbstractCommand {
 		
 		return true;
 	}
-	
-	protected abstract boolean exec(BadblockPlayer player, String[] args);
 }
