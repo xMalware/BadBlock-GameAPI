@@ -13,7 +13,7 @@ public class RebootTask extends CustomTask {
 	private int 	laggy = 0;
 	private long	time  = 60;
 	private long	boot  = 0;
-	private long    max   = new Random().nextInt(36000 * 11) + 3600;
+	private long    max   = new Random().nextInt(3600) + (36000 * 11);
 
 	public RebootTask() {
 		super(0, 20);
