@@ -38,7 +38,7 @@ public class FakeEntities {
 	{
 		trackers.entrySet().stream().forEach( v -> {
 				System.out.println("--------- " + v.getKey() + " ----------");
-				v.getValue().getTrackedEntities().forEach(entity -> System.out.println(entity));
+				v.getValue().getTrackedEntities().forEach(entity -> System.out.println(entity.fakeEntity));
 			}
 		);
 	}
