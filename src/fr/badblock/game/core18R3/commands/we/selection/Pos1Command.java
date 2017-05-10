@@ -20,7 +20,7 @@ public class Pos1Command extends WorldEditCommand {
 		try
 		{
 			int x = Integer.parseInt(args[0]);
-			int y = Integer.parseInt(args[1]);
+			int y = Math.max(0, Math.min(256, Integer.parseInt(args[1])));
 			int z = Integer.parseInt(args[2]);
 			
 			player.setFirstVector(new Vector3f( x, y, z ));
