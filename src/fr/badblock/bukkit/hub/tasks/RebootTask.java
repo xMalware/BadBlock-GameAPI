@@ -38,7 +38,6 @@ public class RebootTask extends CustomTask {
 						if (onlinePlayers > 0) {
 							// Teleport them to the login skeleton server.
 							BukkitUtils.forEachPlayers(player -> player.sendPlayer("lobby"));
-							GameAPI.setJoinable(false);
 							GameAPI.getAPI().setWhitelistStatus(true);
 							// We set a delay to shutdown the server because of players who still here :(
 							TaskManager.runTaskLater(new Runnable() {
@@ -61,8 +60,6 @@ public class RebootTask extends CustomTask {
 					GameAPI.getAPI().setWhitelistStatus(true);
 				}
 				if (time > 60) {
-					if (time <= 120) 
-						GameAPI.getAPI().setFinished(true);
 					GameAPI.i18n().broadcast("hub.reboot.reboot_minutes", time / 60);
 				}else if (time == 60) {
 					GameAPI.i18n().broadcast("hub.reboot.reboot_minute");
