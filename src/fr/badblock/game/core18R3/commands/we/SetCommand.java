@@ -67,7 +67,7 @@ public class SetCommand extends SelectionNeededCommand {
 	{
 		String[] splitted = item.split(":");
 		String resMaterial = "";
-		String resData = "0";
+		String resData = "-1";
 		
 		int i = 0;
 		
@@ -105,6 +105,9 @@ public class SetCommand extends SelectionNeededCommand {
 	@SuppressWarnings("deprecation")
 	public static boolean isValidBlock(Material material, byte data)
 	{
+		if(data == -1)
+			data = 0;
+		
 		return Block.d.a( (material.getId() << 4) | data ) != null;
 	}
 	
@@ -169,7 +172,7 @@ public class SetCommand extends SelectionNeededCommand {
 			return true;
 		
 		sendTranslatedMessage(concerned, "commands.worldedit.blockcount", formatLong(iterator.getCount()));
-		WorldEditThread.thread.getAction().addActions( new WEActionSet(iterator, concerned, material, data) );
+		WorldEditThread.thread.getAction().addActions( new WEActionSet(iterator, concerned, material, data == -1 ? 0 : data) );
 		
 		return true;
 	}

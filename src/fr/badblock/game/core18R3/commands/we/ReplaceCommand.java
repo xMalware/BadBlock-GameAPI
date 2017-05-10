@@ -22,30 +22,35 @@ public class ReplaceCommand extends SelectionNeededCommand {
 		if(args.length <= 1)
 			return false;
 		
-		String[] splitted = SetCommand.splitItem(args[0]);
+		Material replaceMat = null;
+		byte replaceData = -1;
 		
-		Material replaceMat = SetCommand.getItem(splitted[0]);
-		byte replaceData = 0;
-		
-		if(replaceMat == null) {
-			sendTranslatedMessage(concerned, "commands.give.unknow-type", splitted[0]);
-			return true;
-		}
-
-		try {
-			replaceData = Byte.parseByte(splitted[1]);
-		} catch (Exception e) {
-			sendTranslatedMessage(concerned, "commands.nan", splitted[1]);
-			return true;
-		}
-		
-		if(!SetCommand.isValidBlock(replaceMat, replaceData))
+		if(!args[0].equalsIgnoreCase("all"))
 		{
-			sendTranslatedMessage(concerned, "commands.worldedit.invalidblock", splitted[0] + ":" + splitted[1]);
-			return true;
+			String[] splitted = SetCommand.splitItem(args[0]);
+			
+			replaceMat = SetCommand.getItem(splitted[0]);
+			
+			if(replaceMat == null) {
+				sendTranslatedMessage(concerned, "commands.give.unknow-type", splitted[0]);
+				return true;
+			}
+	
+			try {
+				replaceData = Byte.parseByte(splitted[1]);
+			} catch (Exception e) {
+				sendTranslatedMessage(concerned, "commands.nan", splitted[1]);
+				return true;
+			}
+			
+			if(!SetCommand.isValidBlock(replaceMat, replaceData))
+			{
+				sendTranslatedMessage(concerned, "commands.worldedit.invalidblock", splitted[0] + ":" + splitted[1]);
+				return true;
+			}
 		}
 		
-		splitted = SetCommand.splitItem(args[1]);
+		String[] splitted = SetCommand.splitItem(args[1]);
 		
 		Material material = SetCommand.getItem(splitted[0]);
 		byte data = 0;
@@ -74,7 +79,7 @@ public class ReplaceCommand extends SelectionNeededCommand {
 			return true;
 		
 		sendTranslatedMessage(concerned, "commands.worldedit.blockcount", SetCommand.formatLong(iterator.getCount()));
-		WorldEditThread.thread.getAction().addActions( new WEActionReplace(iterator, concerned, material, data, replaceMat, replaceData) );
+		WorldEditThread.thread.getAction().addActions( new WEActionReplace(iterator, concerned, material, data == -1 ? 0 : data, replaceMat, replaceData) );
 		
 		return true;
 	}

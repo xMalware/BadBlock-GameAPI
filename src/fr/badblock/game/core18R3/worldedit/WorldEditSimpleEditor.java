@@ -35,6 +35,8 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	private WorldServer world;
 
 	private char value, replaceValue;
+	private int id, replaceId;
+	private boolean haveNoData, replaceHaveNoData, replaceHaveNoType;
 	
 	private Chunk chunk;
 	private ChunkSection[] sections;
@@ -50,10 +52,16 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void setData(Material material, byte data) {
+		if(material == null)
+			throw new NullPointerException("material");
+		
 		if(!material.isBlock())
 			throw new IllegalArgumentException(material.name() + " is not a block");
 
-		value = (char)(material.getId() << 4 | data);
+		id = material.getId();
+		haveNoData = (data == -1);
+		
+		value = (char)(id << 4 | data);
 	
 		empty = material == Material.AIR;
 		ticking = ticking_blocks[value];
@@ -62,10 +70,15 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void setDataReplace(Material material, byte data) {
-		if(!material.isBlock())
+		if(material != null && !material.isBlock())
 			throw new IllegalArgumentException(material.name() + " is not a block");
 
-		replaceValue = (char)(material.getId() << 4 | data);
+		replaceId = material == null ? 0 : material.getId();
+		replaceHaveNoData = (data == -1);
+		replaceHaveNoType = (material == null);
+		
+		if(!replaceHaveNoType)
+			replaceValue = (char)(material.getId() << 4 | data);
 	}
 
 	@Override
@@ -138,7 +151,17 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	
 	@Override
 	public void replaceBlockAt(int x, int y, int z) {
-		if(getSection(y >> 4).getIdArray()[((y & 15) << 8) | (z << 4) | x] != replaceValue)
+		if(replaceHaveNoType)
+		{
+			if(getSection(y >> 4).getIdArray()[((y & 15) << 8) | (z << 4) | x] == 0)
+				return;
+		}
+		else if(replaceHaveNoData)
+		{
+			if(getSection(y >> 4).getIdArray()[((y & 15) << 8) | (z << 4) | x] >> 4 != replaceId)
+				return;
+		}
+		else if(getSection(y >> 4).getIdArray()[((y & 15) << 8) | (z << 4) | x] != replaceValue)
 			return;
 		
 		setBlockAt(x, y, z);
@@ -147,7 +170,14 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	@Override
 	public boolean hasSameData(int x, int y, int z) {
 		ChunkSection section = sections[y >> 4];
-		return section != null && section.getIdArray()[((y & 15) << 8) | (z << 4) | x] == value;
+
+		if(section == null)
+			return false;
+		
+		if(haveNoData)
+			return section.getIdArray()[((y & 15) << 8) | (z << 4) | x] >> 4 == id;
+		
+		return section.getIdArray()[((y & 15) << 8) | (z << 4) | x] == value;
 	}
 
 	@SuppressWarnings("unchecked")
