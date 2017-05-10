@@ -7,6 +7,13 @@ import fr.badblock.gameapi.worldedit.WEActionGroup;
 import lombok.Getter;
 
 public class WorldEditThread extends BukkitRunnable {
+	public static final WorldEditThread thread = new WorldEditThread();
+	
+	static
+	{
+		thread.runTaskTimer(GameAPI.getAPI(), 0, 1L);
+	}
+	
 	@Getter
 	private WEActionGroup action = new WEActionGroup();
 	private int i = 0;
@@ -14,6 +21,7 @@ public class WorldEditThread extends BukkitRunnable {
 	@Override
 	public void run() {
 		WorldEditTimer timer = new WorldEditTimer(20L);
+		timer.start();
 		
 		while(action.hasNext() && !timer.timedOut)
 			action.next();

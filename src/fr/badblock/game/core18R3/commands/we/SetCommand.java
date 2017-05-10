@@ -20,7 +20,6 @@ import fr.badblock.game.core18R3.worldedit.iterators.WEEmptyCylinderIterator;
 import fr.badblock.game.core18R3.worldedit.iterators.WEEmptyEllipsoidIterator;
 import fr.badblock.game.core18R3.worldedit.iterators.WELineIterator;
 import fr.badblock.game.core18R3.worldedit.iterators.WEWallsIterator;
-import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.selections.CuboidSelection;
@@ -30,7 +29,20 @@ import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.MinecraftKey;
 
 public class SetCommand extends SelectionNeededCommand {
-	private final Map<String, Class<?>> shapes;
+	public final static Map<String, Class<?>> shapes;
+	
+	static
+	{
+		shapes = new HashMap<>();
+		shapes.put("cuboid", WECuboidIterator.class);
+		shapes.put("hcuboid", WEEmptyCuboidIterator.class);
+		shapes.put("walls", WEWallsIterator.class);
+		shapes.put("sphere", WEEllipsoidIterator.class);
+		shapes.put("hsphere", WEEmptyEllipsoidIterator.class);
+		shapes.put("cyl", WECylinderIterator.class);
+		shapes.put("hcyl", WEEmptyCylinderIterator.class);
+		shapes.put("line", WELineIterator.class);
+	}
 	
 	public static String[] splitItem(String item)
 	{
@@ -77,18 +89,29 @@ public class SetCommand extends SelectionNeededCommand {
 		return Block.d.a( (material.getId() << 4) | data ) != null;
 	}
 	
+	public static WEBlockIterator getIterator(BadblockPlayer player, String shape)
+	{
+		if(shape == null)
+			return new WECuboidIterator(player.getSelection());
+		
+		shape = shape.toLowerCase();
+		
+		if(!shapes.containsKey(shape))
+		{
+			player.sendTranslatedMessage("commands.worldedit.invalidshape", shape, StringUtils.join(shapes.keySet(), "&b, ", "&7, ") );
+			return null;
+		}
+		
+		try {
+			return (WEBlockIterator)shapes.get(shape).getConstructor(CuboidSelection.class).newInstance(player.getSelection());
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public SetCommand() {
 		super("set");
-		
-		shapes = new HashMap<>();
-		shapes.put("cuboid", WECuboidIterator.class);
-		shapes.put("hcuboid", WEEmptyCuboidIterator.class);
-		shapes.put("walls", WEWallsIterator.class);
-		shapes.put("sphere", WEEllipsoidIterator.class);
-		shapes.put("hsphere", WEEmptyEllipsoidIterator.class);
-		shapes.put("cyl", WECylinderIterator.class);
-		shapes.put("hcyl", WEEmptyCylinderIterator.class);
-		shapes.put("line", WELineIterator.class);
 	}
 
 	@Override
@@ -100,7 +123,6 @@ public class SetCommand extends SelectionNeededCommand {
 		
 		Material material = getItem(splitted[0]);
 		byte data = 0;
-		WEBlockIterator iterator;
 		
 		if(material == null) {
 			sendTranslatedMessage(concerned, "commands.give.unknow-type", args[0]);
@@ -120,32 +142,13 @@ public class SetCommand extends SelectionNeededCommand {
 			return true;
 		}
 		
-		if(args.length > 1)
-		{
-			String shape = args[1].toLowerCase();
-			
-			if(!shapes.containsKey(shape))
-			{
-				sendTranslatedMessage(concerned, "commands.worldedit.invalidshape", args[1], StringUtils.join(shapes.keySet(), "&b, ", "&7, ") );
-				return true;
-			}
-			
-			try {
-				iterator = (WEBlockIterator)shapes.get(shape).getConstructor(CuboidSelection.class).newInstance(concerned.getSelection());
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-				e.printStackTrace();
-				return true;
-			}
-		}
-		else iterator = new WECuboidIterator(concerned.getSelection());
+		WEBlockIterator iterator = getIterator(concerned, args.length > 1 ? args[1] : null);
 		
-		WEActionSet action = new WEActionSet(iterator, concerned, material, data);
-		WorldEditThread thread = new WorldEditThread();
+		if(iterator == null)
+			return true;
 		
 		sendTranslatedMessage(concerned, "commands.worldedit.blockcount", iterator.getCount());
-		
-		thread.runTaskTimer(GameAPI.getAPI(), 0, 1L);
-		thread.getAction().addActions(action);
+		WorldEditThread.thread.getAction().addActions( new WEActionSet(iterator, concerned, material, data) );
 		
 		return true;
 	}

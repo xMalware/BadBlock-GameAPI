@@ -138,7 +138,7 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 	
 	@Override
 	public void replaceBlockAt(int x, int y, int z) {
-		if(getSection(y >> 4).getIdArray()[(x << 8) | (z << 4) | (y & 15)] != replaceValue)
+		if(getSection(y >> 4).getIdArray()[((y & 15) << 8) | (z << 4) | x] != replaceValue)
 			return;
 		
 		setBlockAt(x, y, z);
