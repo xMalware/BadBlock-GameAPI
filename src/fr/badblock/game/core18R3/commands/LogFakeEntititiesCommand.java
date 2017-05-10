@@ -9,7 +9,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
 public class LogFakeEntititiesCommand extends AbstractCommand {
 
-	public LogFakeEntititiesCommand(String command, TranslatableString usage, GamePermission perm, String[] aliases) {
+	public LogFakeEntititiesCommand() {
 		super("logfakeent", new TranslatableString(""), GamePermission.ADMIN);
 	}
 
