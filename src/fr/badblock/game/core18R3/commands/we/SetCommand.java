@@ -192,16 +192,4 @@ public class SetCommand extends SelectionNeededCommand {
 		
 		return null;
 	}
-
-	@Override
-	public String[] changeArgs(CommandSender sender, String[] args){
-		if(args.length == 2){
-			args[1] = args[1].toLowerCase();
-
-			if(!args[1].startsWith("minecraft:"))
-				args[1] = "minecraft:" + args[1];
-		}
-		
-		return args;
-	}
 }
