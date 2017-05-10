@@ -176,7 +176,7 @@ public class HubPlayer implements InGameData {
 					return;
 				}
 				if (lastMove < System.currentTimeMillis()) {
-					if (player.getPlayerData().getLevel() < 2) {
+					if (player.getPlayerData().getBadcoins() < 10) {
 						player.kickPlayer("§cVous êtes resté trop longtemps inactif sur le hub.");
 					}
 				}

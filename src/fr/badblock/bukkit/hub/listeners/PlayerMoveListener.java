@@ -1,7 +1,5 @@
 package fr.badblock.bukkit.hub.listeners;
 
-import java.util.Random;
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -36,7 +34,7 @@ public class PlayerMoveListener extends _HubListener {
 		Location from = event.getFrom();
 		Location to = event.getTo();
 		if ((from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) && (from.getPitch() != to.getPitch() || from.getYaw() != to.getYaw())) {
-			hubPlayer.lastMove = System.currentTimeMillis() + (new Random().nextInt(1800_000) + 1800_000L);
+			hubPlayer.lastMove = Integer.MAX_VALUE;
 		}
 		Location underOne = to.clone().add(0, -1, 0);
 		Location underTwo = to.clone().add(0, -2, 0);
