@@ -15,6 +15,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
 import fr.badblock.game.core18R3.worldedit.WorldEditThread;
 import fr.badblock.game.core18R3.worldedit.actions.WEActionSet;
+import fr.badblock.game.core18R3.worldedit.iterators.WECenterIterator;
 import fr.badblock.game.core18R3.worldedit.iterators.WECuboidIterator;
 import fr.badblock.game.core18R3.worldedit.iterators.WECylinderIterator;
 import fr.badblock.game.core18R3.worldedit.iterators.WEEllipsoidIterator;
@@ -46,7 +47,8 @@ public class SetCommand extends SelectionNeededCommand {
 		shapes.put("cyl", WECylinderIterator.class);
 		shapes.put("hcyl", WEEmptyCylinderIterator.class);
 		shapes.put("line", WELineIterator.class);
-		
+		shapes.put("center", WECenterIterator.class);
+
 		DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols();
 		
 		unusualSymbols.setNaN("-");
