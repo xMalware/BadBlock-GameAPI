@@ -1,10 +1,11 @@
 package fr.badblock.game.core18R3.commands.we;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ import net.minecraft.server.v1_8_R3.MinecraftKey;
 
 public class SetCommand extends SelectionNeededCommand {
 	public final static Map<String, Class<?>> shapes;
-	public final static NumberFormat formatter = NumberFormat.getNumberInstance(Locale.FRENCH);
+	public final static NumberFormat formatter;
 	
 	static
 	{
@@ -45,6 +46,16 @@ public class SetCommand extends SelectionNeededCommand {
 		shapes.put("cyl", WECylinderIterator.class);
 		shapes.put("hcyl", WEEmptyCylinderIterator.class);
 		shapes.put("line", WELineIterator.class);
+		
+		DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols();
+		
+		unusualSymbols.setNaN("-");
+		unusualSymbols.setInfinity("-");
+		unusualSymbols.setDecimalSeparator('.');
+		unusualSymbols.setGroupingSeparator(' ');
+		
+		formatter = new DecimalFormat("###,###.###", unusualSymbols);
+		formatter.setGroupingUsed(true);
 	}
 	
 	public static String formatLong(long value)
@@ -124,6 +135,8 @@ public class SetCommand extends SelectionNeededCommand {
 
 	@Override
 	protected boolean exec(BadblockPlayer concerned, String[] args) {
+		System.out.println(formatter.format(1000032));
+		
 		if(args.length == 0)
 			return false;
 		
