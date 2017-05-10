@@ -9,7 +9,7 @@ import fr.badblock.gameapi.worldedit.WESimpleEditor;
 
 public abstract class WEActionBlockModifier implements WEAction {
 	private WEBlockIterator iterator;
-	private CommandSender sender;
+	protected CommandSender sender;
 	protected WESimpleEditor editor;
 	
 	private long count;
