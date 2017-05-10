@@ -143,6 +143,12 @@ public class WorldEditSimpleEditor implements WESimpleEditor {
 		
 		setBlockAt(x, y, z);
 	}
+	
+	@Override
+	public boolean hasSameData(int x, int y, int z) {
+		ChunkSection section = sections[y];
+		return section != null && section.getIdArray()[((y & 15) << 8) | (z << 4) | x] == value;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
