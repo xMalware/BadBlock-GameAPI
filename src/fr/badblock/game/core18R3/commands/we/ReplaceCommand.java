@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 
+import fr.badblock.game.core18R3.commands.GiveCommand;
 import fr.badblock.game.core18R3.worldedit.WorldEditThread;
 import fr.badblock.game.core18R3.worldedit.actions.WEActionReplace;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.worldedit.WEBlockIterator;
-import net.minecraft.server.v1_8_R3.Item;
 
 public class ReplaceCommand extends SelectionNeededCommand {
 	public ReplaceCommand() {
@@ -86,25 +86,8 @@ public class ReplaceCommand extends SelectionNeededCommand {
 	
 	@Override
 	public Collection<String> doTab(CommandSender sender, String[] args) {
-		if(args.length == 1){
-			args[0] = args[0].toLowerCase();
-
-			if(!args[0].startsWith("minecraft:"))
-				args[0] = "minecraft:" + args[0];
-
-			return Item.REGISTRY.keySet().stream().map(mcKey -> {
-				return mcKey.toString();
-			}).collect(Collectors.toList());
-		} else if(args.length == 2){
-			args[1] = args[1].toLowerCase();
-
-			if(!args[1].startsWith("minecraft:"))
-				args[1] = "minecraft:" + args[1];
-
-			return Item.REGISTRY.keySet().stream().map(mcKey -> {
-				return mcKey.toString();
-			}).collect(Collectors.toList());
-		}
+		if(args.length == 1 || args.length == 2)
+			return GiveCommand.doTabItem(args);
 		else if(args.length == 3)
 		{
 			args[2] = args[2].toLowerCase();

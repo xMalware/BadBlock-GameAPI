@@ -19,6 +19,18 @@ import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.MinecraftKey;
 
 public class GiveCommand extends AbstractCommand {
+	public static Collection<String> doTabItem(String[] args)
+	{
+		args[args.length - 1] = args[args.length - 1].toLowerCase();
+
+		if(!args[args.length - 1].startsWith("minecraft:"))
+			args[args.length - 1] = "minecraft:" + args[args.length - 1];
+
+		return Item.REGISTRY.keySet().stream().map(mcKey -> {
+			return mcKey.toString();
+		}).collect(Collectors.toList());
+	}
+
 	public GiveCommand() {
 		super("give", new TranslatableString("commands.give.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN);
 	}
@@ -99,14 +111,7 @@ public class GiveCommand extends AbstractCommand {
 		if(args.length == 1){
 			return super.doTab(sender, args);
 		} else if(args.length == 2){
-			args[1] = args[1].toLowerCase();
-
-			if(!args[1].startsWith("minecraft:"))
-				args[1] = "minecraft:" + args[1];
-
-			return Item.REGISTRY.keySet().stream().map(mcKey -> {
-				return mcKey.toString();
-			}).collect(Collectors.toList());
+			return doTabItem(args);
 		}
 
 		return null;
@@ -120,7 +125,7 @@ public class GiveCommand extends AbstractCommand {
 			if(!args[1].startsWith("minecraft:"))
 				args[1] = "minecraft:" + args[1];
 		}
-		
+
 		return args;
 	}
 }

@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
+import fr.badblock.game.core18R3.commands.GiveCommand;
 import fr.badblock.game.core18R3.worldedit.WorldEditThread;
 import fr.badblock.game.core18R3.worldedit.actions.WEActionSet;
 import fr.badblock.game.core18R3.worldedit.iterators.WECenterIterator;
@@ -181,16 +182,8 @@ public class SetCommand extends SelectionNeededCommand {
 	
 	@Override
 	public Collection<String> doTab(CommandSender sender, String[] args) {
-		if(args.length == 1){
-			args[0] = args[0].toLowerCase();
-
-			if(!args[0].startsWith("minecraft:"))
-				args[0] = "minecraft:" + args[1];
-
-			return Item.REGISTRY.keySet().stream().map(mcKey -> {
-				return mcKey.toString();
-			}).collect(Collectors.toList());
-		}
+		if(args.length == 1)
+			return GiveCommand.doTabItem(args);
 		else if(args.length == 2)
 		{
 			args[1] = args[1].toLowerCase();
