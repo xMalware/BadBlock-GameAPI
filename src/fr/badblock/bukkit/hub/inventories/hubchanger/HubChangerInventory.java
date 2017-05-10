@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.badblock.bukkit.hub.inventories.abstracts.inventories.CustomUniqueInventory;
+import fr.badblock.bukkit.hub.rabbitmq.BungeeWorkerListener;
 import fr.badblock.bukkit.hub.rabbitmq.Hub;
 import fr.badblock.bukkit.hub.rabbitmq.HubPacketThread;
 import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
@@ -91,7 +92,7 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		FullSEntry sentry = SEntryInfosListener.sentries.get("login");
 		if (sentry != null) {
 			id++;
-			generate(inventory, player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, id, null, "§6Serveur de connexion", null);
+			generate(inventory, player, true, (int) ((sentry.getIngamePLayers() + sentry.getWaitinglinePlayers()) / BungeeWorkerListener.bungeeWorkers), -1, id, null, "§6Serveur de connexion", null);
 		}
 		for (Hub hub : choosenHubs) {
 			if (hub == null) continue;

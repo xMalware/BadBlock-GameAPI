@@ -37,21 +37,16 @@ public class RebootTask extends CustomTask {
 						int onlinePlayers = Bukkit.getOnlinePlayers().size();
 						if (onlinePlayers > 0) {
 							// Teleport them to the login skeleton server.
-							for (int i = 0; i < 16; i++) {
-								BukkitUtils.forEachPlayers(player -> player.sendPlayer("lobby"));
-								try {
-									Thread.sleep(1000);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								}
-							}
+							BukkitUtils.forEachPlayers(player -> player.sendPlayer("lobby"));
+							GameAPI.setJoinable(false);
+							GameAPI.getAPI().setWhitelistStatus(true);
 							// We set a delay to shutdown the server because of players who still here :(
 							TaskManager.runTaskLater(new Runnable() {
 								@Override
 								public void run() {
 									Bukkit.shutdown();
 								}
-							}, 200);
+							}, 1000);
 						}else{
 							Bukkit.shutdown();
 						}
