@@ -1,8 +1,10 @@
 package fr.badblock.game.core18R3.commands.we;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -30,6 +32,7 @@ import net.minecraft.server.v1_8_R3.MinecraftKey;
 
 public class SetCommand extends SelectionNeededCommand {
 	public final static Map<String, Class<?>> shapes;
+	public final static NumberFormat formatter = NumberFormat.getNumberInstance(Locale.FRENCH);
 	
 	static
 	{
@@ -42,6 +45,11 @@ public class SetCommand extends SelectionNeededCommand {
 		shapes.put("cyl", WECylinderIterator.class);
 		shapes.put("hcyl", WEEmptyCylinderIterator.class);
 		shapes.put("line", WELineIterator.class);
+	}
+	
+	public static String formatLong(long value)
+	{
+		return formatter.format(value);
 	}
 	
 	public static String[] splitItem(String item)
@@ -147,7 +155,7 @@ public class SetCommand extends SelectionNeededCommand {
 		if(iterator == null)
 			return true;
 		
-		sendTranslatedMessage(concerned, "commands.worldedit.blockcount", iterator.getCount());
+		sendTranslatedMessage(concerned, "commands.worldedit.blockcount", formatLong(iterator.getCount()));
 		WorldEditThread.thread.getAction().addActions( new WEActionSet(iterator, concerned, material, data) );
 		
 		return true;

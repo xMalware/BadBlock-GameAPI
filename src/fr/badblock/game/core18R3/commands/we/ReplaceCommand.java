@@ -73,7 +73,7 @@ public class ReplaceCommand extends SelectionNeededCommand {
 		if(iterator == null)
 			return true;
 		
-		sendTranslatedMessage(concerned, "commands.worldedit.blockcount", iterator.getCount());
+		sendTranslatedMessage(concerned, "commands.worldedit.blockcount", SetCommand.formatLong(iterator.getCount()));
 		WorldEditThread.thread.getAction().addActions( new WEActionReplace(iterator, concerned, material, data, replaceMat, replaceData) );
 		
 		return true;
