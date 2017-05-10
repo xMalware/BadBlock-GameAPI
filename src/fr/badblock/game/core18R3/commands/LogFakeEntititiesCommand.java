@@ -16,7 +16,7 @@ public class LogFakeEntititiesCommand extends AbstractCommand {
 	@Override
 	public boolean executeCommand(CommandSender sender, String[] args) {
 		FakeEntities.logFakeEntities();
-		return false;
+		return true;
 	}
 
 }
