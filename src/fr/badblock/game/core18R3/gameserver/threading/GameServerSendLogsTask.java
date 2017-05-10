@@ -18,6 +18,8 @@ import org.apache.commons.net.ftp.FTPSClient;
 
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
+import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class GameServerSendLogsTask extends GameServerTask {
@@ -43,6 +45,8 @@ public class GameServerSendLogsTask extends GameServerTask {
 	}
 
 	public void doLog() {
+		// Removed logs if it's a lobby
+		if (GameAPI.getAPI().getRunType().equals(RunType.LOBBY)) return;
 		File file = new File("./logs/latest.log");
 		if (file.exists()) {
 			FTPSClient ftpClient = new FTPSClient("TLS", false);
