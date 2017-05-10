@@ -90,12 +90,12 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		int id = -1;
 		FullSEntry sentry = SEntryInfosListener.sentries.get("login");
 		if (sentry != null) {
-			generate(player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, 0, null, "§6Serveur de connexion", null);
+			generate(inventory, player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, 0, null, "§6Serveur de connexion", null);
 		}
 		for (Hub hub : choosenHubs) {
 			id++;
 			if (hub == null) continue;
-			generate(player, hub.isOnline(), hub.getPlayers(), hub.getSlots(), hub.getId(), hub, null, hub.getRanks());
+			generate(inventory, player, hub.isOnline(), hub.getPlayers(), hub.getSlots(), hub.getId(), hub, null, hub.getRanks());
 		}
 		for (int o = id + 1; o < (getLines() * 9) - 1; o++)
 			if (inventory.getItem(o) == null || (inventory.getItem(o) != null && inventory.getItem(o).getType().equals(Material.AIR)))
@@ -106,7 +106,7 @@ public class HubChangerInventory extends CustomUniqueInventory {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public void generate(BadblockPlayer player, boolean isOnline, int players, int slots, int id, Hub hudb, String display, Map<String, Integer> ranks) {
+	public void generate(Inventory inventory, BadblockPlayer player, boolean isOnline, int players, int slots, int id, Hub hudb, String display, Map<String, Integer> ranks) {
 		Material material = Material.REDSTONE_BLOCK;
 		byte data = 0;
 		int amount = 1;
