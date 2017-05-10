@@ -90,13 +90,13 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		int id = -1;
 		FullSEntry sentry = SEntryInfosListener.sentries.get("login");
 		if (sentry != null) {
-			generate(inventory, player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, i++, null, "§6Serveur de connexion", null);
+			generate(inventory, player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, id++, null, "§6Serveur de connexion", null);
 		}
 		for (Hub hub : choosenHubs) {
 			if (hub == null) continue;
 			if (!hub.isOnline()) continue;
 			id++;
-			generate(inventory, player, hub.isOnline(), hub.getPlayers(), hub.getSlots(), hub.getId(), hub, null, hub.getRanks());
+			generate(inventory, player, hub.isOnline(), hub.getPlayers(), hub.getSlots(), id, hub, null, hub.getRanks());
 		}
 		for (int o = id + 1; o < (getLines() * 9) - 1; o++)
 			if (inventory.getItem(o) == null || (inventory.getItem(o) != null && inventory.getItem(o).getType().equals(Material.AIR)))
