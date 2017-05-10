@@ -52,7 +52,6 @@ public class GameServerSendLogsTask extends GameServerTask {
 				ftpClient.enterLocalPassiveMode();
 	            ftpClient.execPBSZ(0);
 	            ftpClient.execPROT("P");
-				ftpClient.setBufferSize(0);
 				ftpClient.login(config.ftpUsername, config.ftpPassword);
 				ftpClient.setAutodetectUTF8(true);
 				ftpClient.setListHiddenFiles(true);
