@@ -34,6 +34,15 @@ public class FakeEntities {
 		return trackers.get(world.getName());
 	}
 	
+	public static void logFakeEntities()
+	{
+		trackers.entrySet().stream().forEach( v -> {
+				System.out.println("--------- " + v.getKey() + " ----------");
+				v.getValue().getTrackedEntities().forEach(entity -> System.out.println(entity));
+			}
+		);
+	}
+	
 	public static <T extends WatcherEntity> FakeEntity<T> spawnFakeLivingEntity(Location location, EntityType type, Class<T> clazz) {
 		T watcher = GameAPI.getAPI().createWatcher(clazz);
 		return spawnNotify(new GameFakeLivingEntity<T>(type, lastId--, watcher, location));

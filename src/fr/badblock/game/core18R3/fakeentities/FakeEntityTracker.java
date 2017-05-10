@@ -15,6 +15,7 @@ import com.google.common.collect.Queues;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import lombok.Getter;
 import us.myles.ViaVersion.api.ViaVersion;
 
 @SuppressWarnings("deprecation")
@@ -22,6 +23,7 @@ public class FakeEntityTracker {
 	public static final double TRACKING_RANGE = 48.0d;
 
 	private World			              trackedWorld;
+	@Getter
 	private List<FakeEntityTrackerEntry>  trackedEntities;
 
 	private Queue<FakeEntityTrackerEntry> toRemove, toAdd;

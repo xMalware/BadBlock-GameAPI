@@ -224,4 +224,16 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		
 		return null;
 	}
+	
+	@Override
+	public String toString()
+	{
+		String res = "=============================\n";
+		res += "Type: " + this.getType() + "\n";
+		res += "Location: " + this.getLocation() + "\n";
+		res += "Viewing mode: " + this.getVisibility() + ", whitelist: " + this.whitelist + ", blaclist: " + this.blacklist + "\n";
+		res += "=============================";
+	
+		return res;
+	}
 }
