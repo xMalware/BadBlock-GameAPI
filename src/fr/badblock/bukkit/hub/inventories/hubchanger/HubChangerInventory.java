@@ -23,10 +23,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import fr.badblock.bukkit.hub.inventories.abstracts.inventories.CustomUniqueInventory;
 import fr.badblock.bukkit.hub.rabbitmq.Hub;
 import fr.badblock.bukkit.hub.rabbitmq.HubPacketThread;
+import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.permissions.PermissionManager;
+import fr.badblock.sentry.FullSEntry;
 
 public class HubChangerInventory extends CustomUniqueInventory {
 
@@ -71,7 +73,6 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		inventoryPlayers.put(player, inventory);
 	}
 
-	@SuppressWarnings("deprecation")
 	public Inventory fill(BadblockPlayer player, Inventory inventory) {
 		ArrayList<Hub> choosenHubs = new ArrayList<>();
 		Hub.getHubs().parallelStream().filter(hub -> hub != null && hub.isOnline()).forEach(hub -> choosenHubs.add(hub));
@@ -87,70 +88,14 @@ public class HubChangerInventory extends CustomUniqueInventory {
 			inventory = Bukkit.createInventory(null, linesNeeded * 9, player.getTranslatedMessage(this.getName())[0]);
 		}
 		int id = -1;
-
+		FullSEntry sentry = SEntryInfosListener.sentries.get("login");
+		if (sentry != null) {
+			generate(player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, 0, null, "§6Serveur de connexion", null);
+		}
 		for (Hub hub : choosenHubs) {
 			id++;
 			if (hub == null) continue;
-			Material material = Material.REDSTONE_BLOCK;
-			byte data = 0;
-			int amount = 1;
-			ChatColor chatColor = ChatColor.DARK_RED;
-			if (hub.isOnline()) {
-				material = Material.STAINED_CLAY;
-				if (hub.getPlayers() >= hub.getSlots()) {
-					data = DyeColor.RED.getWoolData();
-					chatColor = ChatColor.RED;
-				} else if (hub.getPlayers() >= 80) {
-					data = DyeColor.ORANGE.getWoolData();
-					chatColor = ChatColor.GOLD;
-				} else if (hub.getPlayers() >= 60) {
-					data = DyeColor.YELLOW.getWoolData();
-					chatColor = ChatColor.YELLOW;
-				} else if (hub.getPlayers() >= 50) {
-					data = DyeColor.BLUE.getWoolData();
-					chatColor = ChatColor.BLUE;
-				} else if (hub.getPlayers() >= 40) {
-					data = DyeColor.CYAN.getWoolData();
-					chatColor = ChatColor.AQUA;
-				} else {
-					data = DyeColor.LIME.getWoolData();
-					chatColor = ChatColor.GREEN;
-				}
-				amount = hub.getId() >= 64 ? 64 : hub.getId();
-			}
-			ItemStack itemStack = new ItemStack(material, amount, data);
-			setMaxStackSize(itemStack, 70);
-			//if (hub.getId() > 64)
-			itemStack.setAmount(69);
-			if (hub.getId() == HubPacketThread.hubId) itemStack = ItemStackUtils.fakeEnchant(itemStack);
-			ItemMeta itemMeta = itemStack.getItemMeta();
-			itemMeta.setDisplayName(chatColor + "Hub n°" + hub.getId());
-			List<String> lore = new ArrayList<>();
-			lore.add("");
-			if (hub.getId() == HubPacketThread.hubId) {
-				lore.add(player.getTranslatedMessage("hub.changer.onlineonthis")[0]);
-			}
-			// §7Connectés:
-			lore.add(player.getTranslatedMessage("hub.changer.onlines")[0] + "§b" + hub.getPlayers() + "/"
-					+ hub.getSlots());
-			i = 0;
-			Map<String, String> order = new HashMap<>();
-			PermissionManager.getInstance().getGroups().stream().sorted((a, b) -> { return Integer.compare(b.getPower(), a.getPower()); }).forEach(group -> {
-				String d = generateForId(i) + "";
-				order.put(d, group.getName());
-				i++;
-			});
-			if (hub.getRanks() != null && !hub.getRanks().isEmpty()) {
-				lore.add("");
-				for (Entry<String, Integer> entry : hub.getRanks().entrySet()) {
-					lore.add(player.getTranslatedMessage("permissions.tab." + order.get(entry.getKey()))[0].replace("null", "default") + "§f» §7" + entry.getValue());
-				}
-			}
-			itemMeta.setLore(lore);
-			itemStack.setItemMeta(itemMeta);
-			hub.setItemStack(itemStack);
-			if (inventory.getItem(id) == null || (inventory.getItem(id) != null && !inventory.getItem(id).isSimilar(itemStack)))
-				inventory.setItem(id, itemStack);
+			generate(player, hub.isOnline(), hub.getPlayers(), hub.getSlots(), hub.getId(), hub, null, hub.getRanks());
 		}
 		for (int o = id + 1; o < (getLines() * 9) - 1; o++)
 			if (inventory.getItem(o) == null || (inventory.getItem(o) != null && inventory.getItem(o).getType().equals(Material.AIR)))
@@ -158,6 +103,69 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		if (inventory.getItem((getLines() * 9) - 1) == null || (inventory.getItem((getLines() * 9) - 1) != null && !inventory.getItem((getLines() * 9) - 1).isSimilar(backItem.getStaticItem().get(player.getPlayerData().getLocale()))))
 			inventory.setItem((getLines() * 9) - 1, backItem.getStaticItem().get(player.getPlayerData().getLocale()));
 		return inventory;
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void generate(BadblockPlayer player, boolean isOnline, int players, int slots, int id, Hub hudb, String display, Map<String, Integer> ranks) {
+		Material material = Material.REDSTONE_BLOCK;
+		byte data = 0;
+		int amount = 1;
+		ChatColor chatColor = ChatColor.DARK_RED;
+		if (isOnline) {
+			material = Material.STAINED_CLAY;
+			if (players >= slots) {
+				data = DyeColor.RED.getWoolData();
+				chatColor = ChatColor.RED;
+			} else if (players >= 80) {
+				data = DyeColor.ORANGE.getWoolData();
+				chatColor = ChatColor.GOLD;
+			} else if (players >= 60) {
+				data = DyeColor.YELLOW.getWoolData();
+				chatColor = ChatColor.YELLOW;
+			} else if (players >= 50) {
+				data = DyeColor.BLUE.getWoolData();
+				chatColor = ChatColor.BLUE;
+			} else if (players >= 40) {
+				data = DyeColor.CYAN.getWoolData();
+				chatColor = ChatColor.AQUA;
+			} else {
+				data = DyeColor.LIME.getWoolData();
+				chatColor = ChatColor.GREEN;
+			}
+			amount = id >= 64 ? 64 : id;
+		}
+		ItemStack itemStack = new ItemStack(material, amount, data);
+		setMaxStackSize(itemStack, 70);
+		//if (hub.getId() > 64)
+		itemStack.setAmount(69);
+		if (id == HubPacketThread.hubId) itemStack = ItemStackUtils.fakeEnchant(itemStack);
+		ItemMeta itemMeta = itemStack.getItemMeta();
+		itemMeta.setDisplayName(chatColor + (hudb != null ? "Hub n°" + id : display));
+		List<String> lore = new ArrayList<>();
+		lore.add("");
+		if (id == HubPacketThread.hubId) {
+			lore.add(player.getTranslatedMessage("hub.changer.onlineonthis")[0]);
+		}
+		// §7Connectés:
+		lore.add(player.getTranslatedMessage("hub.changer.onlines")[0] + "§b" + players + (slots >= 0 ? "/" + slots : ""));
+		i = 0;
+		Map<String, String> order = new HashMap<>();
+		PermissionManager.getInstance().getGroups().stream().sorted((a, b) -> { return Integer.compare(b.getPower(), a.getPower()); }).forEach(group -> {
+			String d = generateForId(i) + "";
+			order.put(d, group.getName());
+			i++;
+		});
+		if (ranks != null && !ranks.isEmpty()) {
+			lore.add("");
+			for (Entry<String, Integer> entry : ranks.entrySet()) {
+				lore.add(player.getTranslatedMessage("permissions.tab." + order.get(entry.getKey()))[0].replace("null", "default") + "§f» §7" + entry.getValue());
+			}
+		}
+		itemMeta.setLore(lore);
+		itemStack.setItemMeta(itemMeta);
+		if (hudb != null) hudb.setItemStack(itemStack);
+		if (inventory.getItem(id) == null || (inventory.getItem(id) != null && !inventory.getItem(id).isSimilar(itemStack)))
+			inventory.setItem(id, itemStack);
 	}
 
 	private char generateForId(int id){
