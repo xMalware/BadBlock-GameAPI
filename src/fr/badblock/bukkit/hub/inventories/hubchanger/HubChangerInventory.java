@@ -108,7 +108,6 @@ public class HubChangerInventory extends CustomUniqueInventory {
 	
 	@SuppressWarnings("deprecation")
 	public void generate(Inventory inventory, BadblockPlayer player, boolean isOnline, int players, int slots, int id, Hub hudb, String display, Map<String, Integer> ranks) {
-		System.out.println(id);
 		Material material = Material.REDSTONE_BLOCK;
 		byte data = 0;
 		int amount = 1;
