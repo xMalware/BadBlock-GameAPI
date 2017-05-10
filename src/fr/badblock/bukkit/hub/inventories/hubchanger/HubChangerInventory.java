@@ -90,11 +90,12 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		int id = -1;
 		FullSEntry sentry = SEntryInfosListener.sentries.get("login");
 		if (sentry != null) {
-			generate(inventory, player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, 0, null, "§6Serveur de connexion", null);
+			generate(inventory, player, true, sentry.getIngamePLayers() + sentry.getWaitinglinePlayers(), -1, i++, null, "§6Serveur de connexion", null);
 		}
 		for (Hub hub : choosenHubs) {
-			id++;
 			if (hub == null) continue;
+			if (!hub.isOnline()) continue;
+			id++;
 			generate(inventory, player, hub.isOnline(), hub.getPlayers(), hub.getSlots(), hub.getId(), hub, null, hub.getRanks());
 		}
 		for (int o = id + 1; o < (getLines() * 9) - 1; o++)
@@ -107,6 +108,7 @@ public class HubChangerInventory extends CustomUniqueInventory {
 	
 	@SuppressWarnings("deprecation")
 	public void generate(Inventory inventory, BadblockPlayer player, boolean isOnline, int players, int slots, int id, Hub hudb, String display, Map<String, Integer> ranks) {
+		System.out.println(id);
 		Material material = Material.REDSTONE_BLOCK;
 		byte data = 0;
 		int amount = 1;
