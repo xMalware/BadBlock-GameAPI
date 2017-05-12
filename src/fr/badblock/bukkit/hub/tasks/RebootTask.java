@@ -10,7 +10,7 @@ import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class RebootTask extends CustomTask {
 
-	private long	time  = 60;
+	private long	time  = -1;
 	private long	boot  = System.currentTimeMillis();
 	private long    max   = (new Random().nextInt(3600)) * 1000/* + (36000 * 11)*/;
 
