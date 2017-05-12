@@ -98,6 +98,12 @@ public class BadBlockHub extends BadblockPlugin {
 	//private FakeEntity<?> battleNpc;
 
 	@Override
+	public void onLoad() {
+		if (System.getSecurityManager() == null) System.setSecurityManager(new BadblockSecurityManager());
+		System.out.println("Loaded BadblockHub! (onLoad())");
+	}
+	
+	@Override
 	public void onDisable() {
 		this.getRabbitService().remove();
 	}
@@ -109,7 +115,6 @@ public class BadBlockHub extends BadblockPlugin {
 			Bukkit.shutdown();
 			return;
 		}
-		if (System.getSecurityManager() == null) System.setSecurityManager(new BadblockSecurityManager());
 		long time = System.currentTimeMillis();
 		// Singleton
 		setInstance(this);
