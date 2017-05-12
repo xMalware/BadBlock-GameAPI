@@ -58,6 +58,7 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.ConfigUtils;
 import fr.badblock.gameapi.utils.selections.CuboidSelection;
+import fr.badblock.minecraftserver.BadblockSecurityManager;
 import fr.badblock.rabbitconnector.RabbitConnector;
 import fr.badblock.rabbitconnector.RabbitService;
 import fr.xmalware.badblock.shoplinker.api.ShopLinkerAPI;
@@ -108,6 +109,7 @@ public class BadBlockHub extends BadblockPlugin {
 			Bukkit.shutdown();
 			return;
 		}
+		System.setSecurityManager(new BadblockSecurityManager());
 		long time = System.currentTimeMillis();
 		// Singleton
 		setInstance(this);
