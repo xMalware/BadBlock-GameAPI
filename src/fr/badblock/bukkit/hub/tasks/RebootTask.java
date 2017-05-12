@@ -10,27 +10,24 @@ import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class RebootTask extends CustomTask {
 
-	private int 	laggy = 0;
 	private long	time  = 60;
-	private long	boot  = 0;
-	private long    max   = new Random().nextInt(3600) + (36000 * 11);
+	private long	boot  = System.currentTimeMillis();
+	private long    max   = new Random().nextInt(3600)/* + (36000 * 11)*/;
 
 	public RebootTask() {
-		super(0, 20);
-		boot = System.currentTimeMillis();
+		super(20, 20);
 	}
 
 	@Override
 	public void done() {
-		if (laggy == -1 && time != -1) {
-			if (time == 0) {
-				time = -1;
-				// Broadcast what's going on
-				GameAPI.i18n().broadcast("hub.reboot.teleport");
-				// Teleport to the "lobby" skeleton server.
-				BukkitUtils.forEachPlayers(player -> player.sendPlayer("lobby"));
-				// We wait to shutdown the server.
-				TaskManager.runTaskLater(new Runnable() {
+		if (time == 0) {
+			time = -1;
+			// Broadcast what's going on
+			GameAPI.i18n().broadcast("hub.reboot.teleport");
+			// Teleport to the "lobby" skeleton server.
+			BukkitUtils.forEachPlayers(player -> player.sendPlayer("lobby"));
+			// We wait to shutdown the server.
+			TaskManager.runTaskLater(new Runnable() {
 					@Override
 					public void run() {
 						// Check if players are here
@@ -68,14 +65,12 @@ public class RebootTask extends CustomTask {
 				}else{
 					GameAPI.i18n().broadcast("hub.reboot.reboot_second");
 				}
+				return;
 			}
 			time--;
-			return;
-		}
-		if (System.currentTimeMillis() - boot >= max && time > 0) {
-			time = 900;
-			laggy = -1;
-		}
+			if (System.currentTimeMillis() - boot >= max && time > 0) {
+				time = 900;
+			}
 	}
 
 }
