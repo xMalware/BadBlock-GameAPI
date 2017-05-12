@@ -65,9 +65,9 @@ public class RebootTask extends CustomTask {
 				}else{
 					GameAPI.i18n().broadcast("hub.reboot.reboot_second");
 				}
+				time--;
 				return;
 			}
-			time--;
 			if (System.currentTimeMillis() - boot >= max && time > 0) {
 				time = 900;
 			}
