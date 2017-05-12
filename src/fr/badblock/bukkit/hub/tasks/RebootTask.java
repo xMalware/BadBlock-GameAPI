@@ -12,7 +12,7 @@ public class RebootTask extends CustomTask {
 
 	private long	time  = 60;
 	private long	boot  = System.currentTimeMillis();
-	private long    max   = new Random().nextInt(3600)/* + (36000 * 11)*/;
+	private long    max   = (new Random().nextInt(3600)) * 1000/* + (36000 * 11)*/;
 
 	public RebootTask() {
 		super(20, 20);
