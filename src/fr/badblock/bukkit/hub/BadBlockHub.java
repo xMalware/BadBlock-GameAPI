@@ -109,7 +109,7 @@ public class BadBlockHub extends BadblockPlugin {
 			Bukkit.shutdown();
 			return;
 		}
-		System.setSecurityManager(new BadblockSecurityManager());
+		if (System.getSecurityManager() == null) System.setSecurityManager(new BadblockSecurityManager());
 		long time = System.currentTimeMillis();
 		// Singleton
 		setInstance(this);
