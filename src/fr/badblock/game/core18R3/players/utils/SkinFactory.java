@@ -23,7 +23,7 @@ import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 public class SkinFactory {
 	public static void applySkin(Player p, Object props)
 	{
-		/*try
+		try
 		{
 			if (props == null) {
 				return;
@@ -35,25 +35,25 @@ public class SkinFactory {
 			ReflectionUtil.invokeMethod(propmap.getClass(), propmap, "put", 
 					new Class[] { Object.class, Object.class }, new Object[] { "textures", props });
 		}
-		catch (Exception localException) {}*/
+		catch (Exception localException) {}
 	}
 	
 	public static PropertyMap getPropertyMap(Player p)
 	{
-		/*try
+		try
 		{
 			Object ep = ReflectionUtil.invokeMethod(p.getClass(), p, "getHandle");
 			Object profile = ReflectionUtil.invokeMethod(ep.getClass(), ep, "getProfile");
 			Object propmap = ReflectionUtil.invokeMethod(profile.getClass(), profile, "getProperties");
 			return (PropertyMap) propmap;
 		}
-		catch (Exception localException) {}*/
+		catch (Exception localException) {}
 		return null;
 	}
 
 	public static void updateSkin(Player p)
 	{
-		/*try
+		try
 		{
 			if (!p.isOnline()) {
 				return;
@@ -62,13 +62,13 @@ public class SkinFactory {
 			EntityPlayer ep = cp.getHandle();
 			int entId = ep.getId();
 
-			PacketPlayOutPlayerInfo removeInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, new EntityPlayer[] { ep });
+			PacketPlayOutPlayerInfo removeInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.REMOVE_PLAYER, ep);
 
 			PacketPlayOutEntityDestroy removeEntity = new PacketPlayOutEntityDestroy(new int[] { entId });
 
 			PacketPlayOutNamedEntitySpawn addNamed = new PacketPlayOutNamedEntitySpawn(ep);
 
-			PacketPlayOutPlayerInfo addInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, new EntityPlayer[] { ep });
+			PacketPlayOutPlayerInfo addInfo = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, ep);
 
 			@SuppressWarnings("deprecation")
 			PacketPlayOutRespawn respawn = new PacketPlayOutRespawn(ep.getWorld().worldProvider.getDimension(), 
@@ -98,45 +98,57 @@ public class SkinFactory {
 				if (pOnline.getName().equals(p.getName()))
 				{
 					con.sendPacket(removeInfo);
-					con.sendPacket(addInfo);
-					con.sendPacket(respawn);
-					con.sendPacket(slot);
-					craftOnline.updateScaledHealth();
-					craftOnline.getHandle().triggerHealthUpdate();
-					craftOnline.updateInventory();
-					Bukkit.getScheduler().runTask(GamePlugin.getInstance(), new Runnable()
+					Bukkit.getScheduler().runTaskLater(GamePlugin.getInstance(), new Runnable()
 					{
 						public void run()
 						{
-							craftOnline.getHandle().updateAbilities();
+							con.sendPacket(addInfo);
+							con.sendPacket(respawn);
+							con.sendPacket(slot);
+							craftOnline.updateScaledHealth();
+							craftOnline.getHandle().triggerHealthUpdate();
+							craftOnline.updateInventory();
+							Bukkit.getScheduler().runTask(GamePlugin.getInstance(), new Runnable()
+							{
+								public void run()
+								{
+									craftOnline.getHandle().updateAbilities();
+								}
+							});
 						}
-					});
+					}, 5);
 				}
 				else if (pOnline.canSee(p))
 				{
 					con.sendPacket(removeEntity);
 					con.sendPacket(removeInfo);
-					con.sendPacket(addInfo);
-					con.sendPacket(addNamed);
-					con.sendPacket(itemhand);
-					con.sendPacket(helmet);
-					con.sendPacket(chestplate);
-					con.sendPacket(leggings);
-					con.sendPacket(boots);
+					Bukkit.getScheduler().runTaskLater(GamePlugin.getInstance(), new Runnable()
+					{
+						public void run()
+						{
+							con.sendPacket(addInfo);
+							con.sendPacket(addNamed);
+							con.sendPacket(itemhand);
+							con.sendPacket(helmet);
+							con.sendPacket(chestplate);
+							con.sendPacket(leggings);
+							con.sendPacket(boots);
+						}
+					}, 5);
 				}
 			}
 		}
-		catch (Exception localException) {}*/
+		catch (Exception localException) {}
 	}
 
 	public static Object createProperty(String name, String value, String signature)
 	{
-		/*try
+		try
 		{
 			return ReflectionUtil.invokeConstructor(Class.forName("com.mojang.authlib.properties.Property"), 
 					new Class[] { String.class, String.class, String.class }, new Object[] { name, value, signature });
 		}
-		catch (Exception localException) {}*/
+		catch (Exception localException) {}
 		return null;
 	}
 }
