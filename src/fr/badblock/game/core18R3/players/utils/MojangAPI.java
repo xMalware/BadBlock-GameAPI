@@ -30,8 +30,8 @@ public class MojangAPI
 
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			con.setConnectTimeout(5000);
-			con.setReadTimeout(5000);
+			con.setConnectTimeout(500);
+			con.setReadTimeout(500);
 			con.setDoOutput(true);
 
 

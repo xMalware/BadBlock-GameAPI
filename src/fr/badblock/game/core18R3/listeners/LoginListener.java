@@ -55,22 +55,10 @@ public class LoginListener extends BadListener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e){
 		System.out.println("PlayerLoginEvent: " + e.getPlayer().getName());
-		new Thread() {
-			@Override
-			public void run()
-			{
-				try
-				{
 					Property props = MojangAPI.getSkinProperty(e.getPlayer().getName());
 
 					SkinFactory.applySkin(e.getPlayer(), props);
 					SkinFactory.updateSkin(e.getPlayer());
-				}
-				catch (Exception localException1) {
-					localException1.printStackTrace();
-				}
-			}
-		}.start();
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
