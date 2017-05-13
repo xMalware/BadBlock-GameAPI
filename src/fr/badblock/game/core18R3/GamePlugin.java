@@ -87,6 +87,7 @@ import fr.badblock.game.core18R3.players.GameTeam;
 import fr.badblock.game.core18R3.players.data.GameKit;
 import fr.badblock.game.core18R3.players.listeners.GameJoinItems;
 import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
+import fr.badblock.game.core18R3.players.utils.Property;
 import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.signs.GameSignManager;
 import fr.badblock.game.core18R3.signs.UpdateSignListener;
@@ -362,7 +363,7 @@ public class GamePlugin extends GameAPI {
 								{
 									try
 									{
-										SkinFactory.applySkin(player, SkinFactory.createProperty(in.readUTF(), in.readUTF(), in.readUTF()));
+										SkinFactory.applySkin(player, new Property(in.readUTF(), in.readUTF(), in.readUTF()));
 									}
 									catch (Exception localException1) {}
 									SkinFactory.updateSkin(player);

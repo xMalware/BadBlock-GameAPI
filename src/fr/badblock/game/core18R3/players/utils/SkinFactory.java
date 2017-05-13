@@ -1,27 +1,15 @@
 package fr.badblock.game.core18R3.players.utils;
 
-import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 
+import com.comphenix.protocol.wrappers.WrappedGameProfile;
+import com.comphenix.protocol.wrappers.WrappedSignedProperty;
+import com.google.common.collect.Multimap;
 import com.mojang.authlib.properties.PropertyMap;
 
-import fr.badblock.game.core18R3.GamePlugin;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityEquipment;
-import net.minecraft.server.v1_8_R3.PacketPlayOutHeldItemSlot;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedEntitySpawn;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
-import net.minecraft.server.v1_8_R3.PacketPlayOutRespawn;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
-import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
-
 public class SkinFactory {
-	public static void applySkin(Player p, Object props)
+	
+	public static void applySkin(Player p, Property props)
 	{
 		try
 		{
@@ -34,9 +22,19 @@ public class SkinFactory {
 			ReflectionUtil.invokeMethod(propmap, "clear");
 			ReflectionUtil.invokeMethod(propmap.getClass(), propmap, "put", 
 					new Class[] { Object.class, Object.class }, new Object[] { "textures", props });
+			 WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(p);
+			 Multimap<String, WrappedSignedProperty> properties = gameProfile.getProperties();
+			 properties.clear();
+			 properties.put("textures", convertToProperty(props) );
 		}
 		catch (Exception localException) {}
 	}
+	
+
+	  public static WrappedSignedProperty convertToProperty(Property property)
+	  {
+	    return WrappedSignedProperty.fromValues("textures", property.getValue(), property.getSignature());
+	  }
 	
 	public static PropertyMap getPropertyMap(Player p)
 	{
@@ -53,7 +51,7 @@ public class SkinFactory {
 
 	public static void updateSkin(Player p)
 	{
-		try
+		/*try
 		{
 			if (!p.isOnline()) {
 				return;
@@ -138,7 +136,7 @@ public class SkinFactory {
 				}
 			}
 		}
-		catch (Exception localException) {}
+		catch (Exception localException) {}*/
 	}
 
 	public static Object createProperty(String name, String value, String signature)

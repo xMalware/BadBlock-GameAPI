@@ -11,7 +11,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class MojangAPI
 {
 
-	public static Object getSkinProperty(String name)
+	public static Property getSkinProperty(String name)
 	{
 		List<String> output = readSURL("https://extdata.badblock-network.fr/skin.php?name=" + name);
 		if (output.size() >= 2) {
@@ -48,12 +48,11 @@ public class MojangAPI
 		return result;
 	}
 	
-	public static Object createProperty(String name, String value, String signature)
+	public static Property createProperty(String name, String value, String signature)
 	{
 		try
 		{
-			return ReflectionUtil.invokeConstructor(Class.forName("com.mojang.authlib.properties.Property"), 
-					new Class[] { String.class, String.class, String.class }, new Object[] { name, value, signature });
+			return new Property(name, value, signature);
 		}
 		catch (Exception localException) {}
 		return null;

@@ -20,6 +20,7 @@ import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.MojangAPI;
+import fr.badblock.game.core18R3.players.utils.Property;
 import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
@@ -60,9 +61,7 @@ public class LoginListener extends BadListener {
 			{
 				try
 				{
-					Object props = null;
-						props = MojangAPI.getSkinProperty(e.getPlayer().getName());
-					
+					Property props = MojangAPI.getSkinProperty(e.getPlayer().getName());
 
 					SkinFactory.applySkin(e.getPlayer(), props);
 					SkinFactory.updateSkin(e.getPlayer());
