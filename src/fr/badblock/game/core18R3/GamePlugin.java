@@ -417,13 +417,14 @@ public class GamePlugin extends GameAPI {
 			double ms = (double) nano / 1_000_000d;
 			ms = MathsUtils.round(ms, 3);
 
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
+			//Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
 
 			GameAPI.logColor("&b[GameAPI] &aAPI loaded! (" + ms + "ms)");
 
 			File plugins = new File("plugins" + File.separator + "apiPlugins");
 			plugins.mkdirs();
 			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins)).forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
+			
 			if (this.getRunType().equals(RunType.GAME)) {
 				TaskManager.scheduleAsyncRepeatingTask("boosterr", new Runnable() {
 					@Override
