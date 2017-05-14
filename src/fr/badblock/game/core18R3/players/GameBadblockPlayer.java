@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,8 @@ import com.google.common.io.ByteStreams;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.internalutils.Base64Url;
@@ -67,6 +70,9 @@ import fr.badblock.gameapi.packets.out.play.PlayChat.ChatType;
 import fr.badblock.gameapi.packets.out.play.PlayEntityEquipment;
 import fr.badblock.gameapi.packets.out.play.PlayEntityStatus;
 import fr.badblock.gameapi.packets.out.play.PlayEntityStatus.EntityStatus;
+import fr.badblock.gameapi.packets.out.play.PlayPlayerInfo;
+import fr.badblock.gameapi.packets.out.play.PlayPlayerInfo.PlayerInfo;
+import fr.badblock.gameapi.packets.out.play.PlayPlayerInfo.TabAction;
 import fr.badblock.gameapi.packets.out.play.PlayPlayerListHeaderFooter;
 import fr.badblock.gameapi.packets.out.play.PlayRespawn;
 import fr.badblock.gameapi.packets.out.play.PlayTitle;
@@ -1224,5 +1230,61 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Override
 	public void setOnlyJoinWhileWaiting(long time) {
 		this.getPlayerData().onlyJoinWhileWaiting = time;
+	}
+
+	@Override
+	public void setPlayerSkin(String skinUrl) {
+        setPlayerSkin0(String.format("{textures:{SKIN:{url:\"%s\"}}}", skinUrl));
+	}
+
+	@Override
+	public void setPlayerSkin(String skinUrl, String capeUrl) {
+		setPlayerSkin0(String.format("{textures:{SKIN:{url:\"%s\"},CAPE:{url\"%s\"}}", skinUrl, capeUrl));
+	}
+	
+	private void setPlayerSkin0(String textures)
+	{
+		PropertyMap map = this.getHandle().getProfile().getProperties();
+		
+		map.clear();
+		
+		byte[] encodedData = Base64.getEncoder().encode(textures.getBytes());
+        map.put("textures", new Property("textures", new String(encodedData)));
+        
+        resetPlayerView();
+        
+        for(BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers())
+        {
+        	if(player == this || !player.canSee(this))
+        		return;
+        	
+        	player.hidePlayer(this);
+        	player.showPlayer(this);
+        }
+	}
+	
+	public void resetPlayerView()
+	{
+		Environment env = customEnvironment == null ? getWorld().getEnvironment() : customEnvironment;
+		
+		
+        getAPI().createPacket(PlayPlayerInfo.class).setAction(TabAction.REMOVE_PLAYER).addPlayer(getUniqueId(), createPlayerInfo()).send(this);
+        getAPI().createPacket(PlayPlayerInfo.class).setAction(TabAction.ADD_PLAYER).addPlayer(getUniqueId(), createPlayerInfo()).send(this);
+
+		getAPI().createPacket(PlayRespawn.class).setDimension(env).setDifficulty(getWorld().getDifficulty()).setGameMode(getGameMode()).setWorldType(getWorld().getWorldType()).send(this);
+		
+		updateInventory();
+
+		updateScaledHealth();
+		getHandle().triggerHealthUpdate();
+		
+		getInventory().setHeldItemSlot(getInventory().getHeldItemSlot());
+		setItemInHand(getItemInHand());
+		getHandle().updateAbilities();
+	}
+	
+	private PlayerInfo createPlayerInfo()
+	{
+		return new PlayerInfo(getUniqueId(), getName(), getHandle().getProfile().getProperties(), getGameMode(), getPing(), getDisplayName());
 	}
 }
