@@ -81,14 +81,20 @@ public class LoginListener extends BadListener {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
 		}
-		try {
-			if (player == null) return;
-			String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
-			player.setTextureProperty(props[0], props[1]);
-		} catch (Exception exception) {
-			System.out.println("Impossible de mettre le skin au joueur : ");
-			exception.printStackTrace();
-		}
+		final GameBadblockPlayer finalPlayer = player;
+		TaskManager.runTaskAsync(new Runnable() {
+			@Override
+			public void run() {
+				if (finalPlayer == null) return;
+				try {
+					String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
+					finalPlayer.setTextureProperty(props[0], props[1]);
+				} catch (Exception exception) {
+					System.out.println("Impossible de mettre le skin au joueur : ");
+					exception.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@EventHandler
