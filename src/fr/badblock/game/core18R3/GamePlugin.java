@@ -87,8 +87,6 @@ import fr.badblock.game.core18R3.players.GameTeam;
 import fr.badblock.game.core18R3.players.data.GameKit;
 import fr.badblock.game.core18R3.players.listeners.GameJoinItems;
 import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
-import fr.badblock.game.core18R3.players.utils.Property;
-import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.signs.GameSignManager;
 import fr.badblock.game.core18R3.signs.UpdateSignListener;
 import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
@@ -130,6 +128,7 @@ import fr.badblock.gameapi.servers.JoinItems;
 import fr.badblock.gameapi.servers.MapProtector;
 import fr.badblock.gameapi.signs.SignManager;
 import fr.badblock.gameapi.utils.BukkitUtils;
+import fr.badblock.gameapi.utils.ServerProperties;
 import fr.badblock.gameapi.utils.entities.CustomCreature;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 import fr.badblock.gameapi.utils.general.MathsUtils;
@@ -361,12 +360,12 @@ public class GamePlugin extends GameAPI {
 								String subchannel = in.readUTF();
 								if (subchannel.equalsIgnoreCase("SkinUpdate"))
 								{
-									try
+									/*try
 									{
 										SkinFactory.applySkin(player, new Property(in.readUTF(), in.readUTF(), in.readUTF()));
 									}
 									catch (Exception localException1) {}
-									SkinFactory.updateSkin(player);
+									SkinFactory.updateSkin(player);*/
 								}
 							}
 							catch (Exception e)
@@ -398,7 +397,8 @@ public class GamePlugin extends GameAPI {
 				this.whitelist.add(player.toLowerCase());
 
 			whitelist.save(whitelistFile);
-
+			enableWhiteList();
+			
 			// Set server bonus
 			serverXpBonus = serverConfig.getBonusXp();
 			serverBadcoinsBonus = serverConfig.getBonusCoins();
@@ -498,6 +498,25 @@ public class GamePlugin extends GameAPI {
 		CustomCreatures.unregisterEntities();
 	}
 
+	private void enableWhiteList()
+	{
+		String whitelist = System.getProperty("badblockwhitelist");
+		
+		if(whitelist == null){
+			whitelist = ServerProperties.getProperties().getProperty("badblockwhitelist", "false");
+		}
+		
+		boolean hasWhiteList = false;
+		
+		try {
+			hasWhiteList = Boolean.parseBoolean(whitelist);
+		} catch(Exception e){
+			hasWhiteList = false;
+		} finally {
+			this.setWhitelistStatus(hasWhiteList);
+		}
+	}
+	
 	public void loadI18n(){
 		File file = new File(this.getI18nFolder());
 		i18n.load(file);
