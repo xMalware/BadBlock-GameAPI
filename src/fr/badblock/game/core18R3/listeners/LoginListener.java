@@ -105,7 +105,7 @@ public class LoginListener extends BadListener {
 		if (player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
 			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning()) {
 				Inventory inventory = event.getInventory();
-				if (inventory != null && inventory.getName() != null && inventory.getName().equals(GameAPI.i18n().get(player.getPlayerData().getLocale(), "joinitems.kit.inventoryName")[0])) {
+				if (inventory != null && inventory.getName() != null && inventory.getSize() < 9 * 2) {
 					manageRunningJoin(player);
 				}
 			}
