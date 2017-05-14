@@ -11,14 +11,14 @@ import javax.net.ssl.HttpsURLConnection;
 public class MojangAPI
 {
 
-	public static Property getSkinProperty(String name)
+	public static String[] getSkinProperty(String name)
 	{
 		List<String> output = readSURL("https://extdata.badblock-network.fr/skin.php?name=" + name);
 		if (output.size() >= 2) {
 			String value = output.get(0);
 			String signature = output.get(1);
-			return createProperty("textures", value, signature);
-		}else return createProperty("textures", "", "");
+			return new String[]{value, signature};
+		}else return new String[]{"", ""};
 	}
 
 	private static List<String> readSURL(String url)

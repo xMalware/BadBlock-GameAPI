@@ -19,6 +19,7 @@ import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
+import fr.badblock.game.core18R3.players.utils.MojangAPI;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
@@ -52,8 +53,7 @@ public class LoginListener extends BadListener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e){
 		System.out.println("PlayerLoginEvent: " + e.getPlayer().getName());
-		//Property props = MojangAPI.getSkinProperty(e.getPlayer().getName());
-		//SkinFactory.applySkin(e.getPlayer(), props);
+		
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
@@ -75,9 +75,14 @@ public class LoginListener extends BadListener {
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 		GameBadblockPlayer    player;
 
+		//SkinFactory.applySkin(e.getPlayer(), props);
+		
 		try {
 			player = new GameBadblockPlayer((CraftServer) Bukkit.getServer(), (EntityPlayer) reflector.getReflected(), (GameOfflinePlayer) offlinePlayer);
 			reflector.setFieldValue("bukkitEntity", player);
+			
+			String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
+			player.setTextureProperty(props[0], props[1]);
 		} catch (Exception exception) {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();

@@ -360,6 +360,8 @@ public class GamePlugin extends GameAPI {
 								String subchannel = in.readUTF();
 								if (subchannel.equalsIgnoreCase("SkinUpdate"))
 								{
+									in.readUTF();
+									((BadblockPlayer)player).setTextureProperty(in.readUTF(), in.readUTF());
 									/*try
 									{
 										SkinFactory.applySkin(player, new Property(in.readUTF(), in.readUTF(), in.readUTF()));
