@@ -101,6 +101,7 @@ import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import fr.badblock.gameapi.utils.selections.CuboidSelection;
 import fr.badblock.gameapi.utils.selections.Vector3f;
+import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.permissions.PermissiblePlayer;
 import fr.badblock.permissions.PermissionManager;
 import fr.badblock.utils.CommonFilter;
@@ -1256,11 +1257,15 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void setTextureProperty(String value, String signature) {
-		PropertyMap map = this.getHandle().getProfile().getProperties();
-
-		map.clear();
-		map.put("textures", new Property("textures", value, signature));
-		updatePlayerSkin();
+		TaskManager.runTask(new Runnable() {
+			@Override
+			public void run() {
+				PropertyMap map = getHandle().getProfile().getProperties();
+				map.clear();
+				map.put("textures", new Property("textures", value, signature));
+				updatePlayerSkin();
+			}
+		});
 	}
 
 	public void updatePlayerSkin()
