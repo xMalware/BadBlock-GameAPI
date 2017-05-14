@@ -73,18 +73,20 @@ public class LoginListener extends BadListener {
 
 		Reflector 			  reflector 	= new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
-		GameBadblockPlayer    player;
-
-		//SkinFactory.applySkin(e.getPlayer(), props);
-		
+		GameBadblockPlayer    player        = null;
 		try {
 			player = new GameBadblockPlayer((CraftServer) Bukkit.getServer(), (EntityPlayer) reflector.getReflected(), (GameOfflinePlayer) offlinePlayer);
 			reflector.setFieldValue("bukkitEntity", player);
-			
+		} catch (Exception exception) {
+			System.out.println("Impossible de modifier la classe du joueur : ");
+			exception.printStackTrace();
+		}
+		try {
+			if (player == null) return;
 			String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
 			player.setTextureProperty(props[0], props[1]);
 		} catch (Exception exception) {
-			System.out.println("Impossible de modifier la classe du joueur : ");
+			System.out.println("Impossible de mettre le skin au joueur : ");
 			exception.printStackTrace();
 		}
 	}
