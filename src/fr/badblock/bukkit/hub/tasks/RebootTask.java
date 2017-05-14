@@ -68,7 +68,7 @@ public class RebootTask extends CustomTask {
 				time--;
 				return;
 			}
-			if (System.currentTimeMillis() - boot >= max && time > 0) {
+			if (System.currentTimeMillis() - boot >= max && time == -1) {
 				time = 900;
 			}
 	}
