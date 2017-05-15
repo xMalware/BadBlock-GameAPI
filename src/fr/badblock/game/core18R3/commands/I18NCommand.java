@@ -19,10 +19,10 @@ public class I18NCommand extends AbstractCommand {
 		
 		if(args[0].equalsIgnoreCase("reload")){
 			GamePlugin.getInstance().loadI18n();
-			new TranslatableString("commands.i18r.reload").send(sender);
+			new TranslatableString("commands.i18n.reload").send(sender);
 		} else if(args[0].equalsIgnoreCase("save")){
 			GamePlugin.getInstance().getI18n().save();
-			new TranslatableString("commands.i18r.save").send(sender);			
+			new TranslatableString("commands.i18n.save").send(sender);			
 		}
 		
 		return true;
