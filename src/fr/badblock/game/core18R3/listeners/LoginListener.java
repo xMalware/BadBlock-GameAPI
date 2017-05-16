@@ -100,11 +100,10 @@ public class LoginListener extends BadListener {
 	@EventHandler
 	public void onDataReceived(PlayerLoadedEvent e)
 	{
-		if(GameAPI.getAPI().getRunType() != RunType.DEV  || GameServerKeeperAliveTask.isOpenToStaff())
+		if(GameAPI.getAPI().getRunType() != RunType.DEV || GameServerKeeperAliveTask.isOpenToStaff())
 			return;
 
-		if(!e.getPlayer().hasPermission("devserver"))
-		{
+		if(!e.getPlayer().hasPermission("devserver")) {
 			e.getPlayer().kickPlayer("Serveur dév non ouvert au staff !");
 		}
 	}
