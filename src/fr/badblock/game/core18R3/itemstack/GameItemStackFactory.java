@@ -45,6 +45,11 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	private Material				  type;
 	private Locale					  locale;
 
+	private GameItemType			  itemType;
+	private String					  valueStr;
+	private DyeColor				  valueDyeColor;
+	private Color					  valueColor;
+	
 	public GameItemStackFactory(){
 		this.enchants 	 = new HashMap<>();
 		this.type		 = Material.AIR;
@@ -115,6 +120,40 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	}
 
 	@Override
+	public ItemStackFactory setAsLeatherArmor(Color color)
+	{
+		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.valueColor = color;
+		
+		return this;
+	}
+	
+	public ItemStackFactory setAsCustomSkull(String url)
+	{
+		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.valueStr = url;
+		
+		return this;
+	}
+	
+	public ItemStackFactory setAsSkull(String user)
+	{
+		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.valueStr = user;
+		
+		return this;
+	}
+	
+	public ItemStackFactory setAsWool(DyeColor color)
+	{
+		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.valueDyeColor = color;
+		
+		return this;
+	}
+
+	
+	@Override
 	public ItemStack asWool(int amount, DyeColor color) {
 		ItemStack colored = create(amount);
 
@@ -177,6 +216,35 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 
 	@Override
 	public ItemStack create(int amount) {
+		if(itemType != null)
+		{
+			GameItemType save = itemType;
+			itemType = null;
+			
+			ItemStack result = null;
+
+			switch(save)
+			{
+				case CUSTOM_SKULL:
+					result = asCustomSkull(amount, valueStr);
+					break;
+				case LEATHERED_ARMOR:
+					result = asLeatheredArmor(amount, valueColor);
+					break;
+				case SKULL:
+					result = asSkull(amount, valueStr);
+					break;
+				case WOOL:
+					result = asWool(amount, valueDyeColor);
+					break;
+				default:
+					break;
+			}
+			
+			itemType = save;
+			return result;
+		}
+		
 		ItemStack item = new ItemStack(type, amount, durability);
 		item.addUnsafeEnchantments(enchants);
 
@@ -233,5 +301,13 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 		}
 
 		return null;
+	}
+	
+	public enum GameItemType
+	{
+		LEATHERED_ARMOR,
+		SKULL,
+		CUSTOM_SKULL,
+		WOOL
 	}
 }
