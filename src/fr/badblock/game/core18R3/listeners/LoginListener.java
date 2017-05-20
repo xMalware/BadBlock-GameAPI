@@ -73,30 +73,37 @@ public class LoginListener extends BadListener {
 
 		Reflector 			  reflector 	= new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
-		GameBadblockPlayer    player;
-
-		//SkinFactory.applySkin(e.getPlayer(), props);
-		
+		GameBadblockPlayer    player        = null;
 		try {
 			player = new GameBadblockPlayer((CraftServer) Bukkit.getServer(), (EntityPlayer) reflector.getReflected(), (GameOfflinePlayer) offlinePlayer);
 			reflector.setFieldValue("bukkitEntity", player);
-			
-			String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
-			player.setTextureProperty(props[0], props[1]);
 		} catch (Exception exception) {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
 		}
+		final GameBadblockPlayer finalPlayer = player;
+		TaskManager.runTaskAsync(new Runnable() {
+			@Override
+			public void run() {
+				if (finalPlayer == null) return;
+				try {
+					String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
+					finalPlayer.setTextureProperty(props[0], props[1]);
+				} catch (Exception exception) {
+					System.out.println("Impossible de mettre le skin au joueur : ");
+					exception.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@EventHandler
 	public void onDataReceived(PlayerLoadedEvent e)
 	{
-		if(GameAPI.getAPI().getRunType() != RunType.DEV  || GameServerKeeperAliveTask.isOpenToStaff())
+		if(GameAPI.getAPI().getRunType() != RunType.DEV || GameServerKeeperAliveTask.isOpenToStaff())
 			return;
 
-		if(!e.getPlayer().hasPermission("devserver"))
-		{
+		if(!e.getPlayer().hasPermission("devserver")) {
 			e.getPlayer().kickPlayer("Serveur dév non ouvert au staff !");
 		}
 	}
