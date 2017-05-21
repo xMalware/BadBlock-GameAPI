@@ -42,6 +42,15 @@ import lombok.experimental.Accessors;
 		} else setDisplayName(handler.getItemMeta().getDisplayName());
 	}
 	
+	private GameItemExtra(ItemStack handler, int id) {
+		this.handler = handler;
+		this.id = id;
+		
+		if(!handler.getItemMeta().hasDisplayName()){
+			setLore(handler.getItemMeta().getLore());
+		} else setDisplayName(handler.getItemMeta().getDisplayName());
+	}
+	
 	@Override
 	public void stopListeningAt() {
 		this.listening = false;
@@ -134,5 +143,11 @@ import lombok.experimental.Accessors;
 		}
 		
 		return this;
+	}
+	
+	public static ItemStack setCodeInItemStack(ItemStack handler, int code)
+	{
+		new GameItemExtra(handler, code);
+		return handler;
 	}
 }
