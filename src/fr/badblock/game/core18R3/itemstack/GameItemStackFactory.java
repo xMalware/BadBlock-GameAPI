@@ -217,6 +217,9 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 		if(code != -1)
 			GameItemExtra.setCodeInItemStack(item, code);
 		
+		if(itemType == null)
+			return item;
+		
 		switch(itemType)
 		{
 			case CUSTOM_SKULL:
