@@ -174,7 +174,13 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 		item.setDurability(durability);
 		item.setAmount(amount);
 		
-		item.getEnchantments().clear();
+		for(Enchantment ench : Enchantment.values())
+		{
+			if(item.containsEnchantment(ench))
+				item.removeEnchantment(ench);
+		}
+		
+		
 		item.addUnsafeEnchantments(enchants);
 
 		ItemMeta meta = item.getItemMeta();
