@@ -155,6 +155,15 @@ public class ItemStackExtras extends BadListener {
 		if(!ItemStackUtils.isValid(item))
 			return null;
 		
+		int id = getCode(item);
+
+		if(id == -1 || !get().items.containsKey(id)) return null;
+
+		return get().items.get(id);
+	}
+	
+	public static int getCode(ItemStack item)
+	{
 		int id = -1;
 		
 		if(!item.getItemMeta().hasDisplayName()){
@@ -163,9 +172,7 @@ public class ItemStackExtras extends BadListener {
 			}
 
 		} else id = ItemStackUtils.decodeItemFromName(item.getItemMeta().getDisplayName());
-
-		if(id == -1 || !get().items.containsKey(id)) return null;
-
-		return get().items.get(id);
+		
+		return id;
 	}
 }

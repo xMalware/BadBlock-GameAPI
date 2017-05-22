@@ -1,10 +1,8 @@
 package fr.badblock.game.core18R3.itemstack;
 
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
@@ -12,13 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.material.Wool;
-
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import com.mojang.authlib.properties.PropertyMap;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.utils.i18n.I18n;
@@ -27,7 +18,6 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.ItemStackExtra;
 import fr.badblock.gameapi.utils.itemstack.ItemStackFactory;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
-import fr.badblock.gameapi.utils.reflection.Reflector;
 
 /**
  * A simple {@link fr.badblock.gameapi.ItemStackFactory} implementation.
@@ -45,6 +35,11 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	private Material				  type;
 	private Locale					  locale;
 
+	private GameItemType			  itemType;
+	private String					  valueStr;
+	private DyeColor				  valueDyeColor;
+	private Color					  valueColor;
+	
 	public GameItemStackFactory(){
 		this.enchants 	 = new HashMap<>();
 		this.type		 = Material.AIR;
@@ -115,69 +110,77 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	}
 
 	@Override
+	public ItemStackFactory setAsLeatherArmor(Color color)
+	{
+		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.valueColor = color;
+		
+		return this;
+	}
+	
+	public ItemStackFactory setAsCustomSkull(String url)
+	{
+		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.valueStr = url;
+		
+		return this;
+	}
+	
+	public ItemStackFactory setAsSkull(String user)
+	{
+		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.valueStr = user;
+		
+		return this;
+	}
+	
+	public ItemStackFactory setAsWool(DyeColor color)
+	{
+		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.valueDyeColor = color;
+		
+		return this;
+	}
+
+	
+	@Override
 	public ItemStack asWool(int amount, DyeColor color) {
-		ItemStack colored = create(amount);
-
-		if(colored.getData() instanceof Wool){
-			Wool meta = (Wool) colored.getItemMeta();
-			meta.setColor(color);
-			colored.setData(meta);
-		}
-
-		return colored;
+		return ItemStackFactoryUtils.applyWool(create(amount), color);
 	}
 
 	@Override
 	public ItemStack asLeatheredArmor(int amount, Color color) {
-		ItemStack leather = create(amount);
-
-		if(leather.getItemMeta() instanceof LeatherArmorMeta){
-			LeatherArmorMeta meta = (LeatherArmorMeta) leather.getItemMeta();
-			meta.setColor(color);
-			leather.setItemMeta(meta);
-		}
-
-		return leather;
+		return ItemStackFactoryUtils.applyLeatheredArmor(create(amount), color);
 	}
 
 	@Override
 	public ItemStack asSkull(int amount, String owner) {
-		ItemStack skull = create(amount);
-
-		if(skull.getItemMeta() instanceof SkullMeta){
-			SkullMeta meta = (SkullMeta) skull.getItemMeta();
-			meta.setOwner(owner);
-			skull.setItemMeta(meta);
-		}
-
-		return skull;
+		return ItemStackFactoryUtils.applySkull(create(amount), owner);
 	}
 	
 	@Override
 	public ItemStack asCustomSkull(int amount, String url) {
-		ItemStack skull = create(amount);
-
-		GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        PropertyMap propertyMap = profile.getProperties();
-        
-        if (propertyMap == null)
-            throw new IllegalStateException("Profile doesn't contain a property map");
-        
-        byte[] encodedData = Base64.getEncoder().encode(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
-        propertyMap.put("textures", new Property("textures", new String(encodedData)));
-        
-        try {
-			new Reflector(skull.getItemMeta()).setFieldValue("profile", profile);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-        
-		return skull;
+		return ItemStackFactoryUtils.applyCustomSkull(create(amount), url);
 	}
 
 	@Override
-	public ItemStack create(int amount) {
-		ItemStack item = new ItemStack(type, amount, durability);
+	public ItemStack create(int amount) {		
+		return updateItemStack(amount, new ItemStack(type));
+	}
+
+	@Override
+	public ItemStack updateItemStack(int amount, ItemStack item) {
+		item.setType(type);
+		item.setDurability(durability);
+		item.setAmount(amount);
+		
+		for(Enchantment ench : Enchantment.values())
+		{
+			if(item.containsEnchantment(ench))
+				item.removeEnchantment(ench);
+		}
+		
+		
 		item.addUnsafeEnchantments(enchants);
 
 		ItemMeta meta = item.getItemMeta();
@@ -188,6 +191,8 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 			item = ItemStackUtils.fakeEnchant(item);
 		}
 
+		int code = ItemStackExtras.getCode(item);
+		
 		I18n i18n = GameAPI.i18n();
 
 		if(meta != null && tDisplayName != null && locale != null){
@@ -208,10 +213,34 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 		}
 
 		item.setItemMeta(meta);
-
+		
+		if(code != -1)
+			GameItemExtra.setCodeInItemStack(item, code);
+		
+		if(itemType == null)
+			return item;
+		
+		switch(itemType)
+		{
+			case CUSTOM_SKULL:
+				return ItemStackFactoryUtils.applyCustomSkull(item, valueStr);
+			case LEATHERED_ARMOR:
+				return ItemStackFactoryUtils.applyLeatheredArmor(item, valueColor);
+			case SKULL:
+				return ItemStackFactoryUtils.applySkull(item, valueStr);
+			case WOOL:
+				return ItemStackFactoryUtils.applyWool(item, valueDyeColor);
+			default: break;
+		}
+		
 		return item;
 	}
 
+	@Override
+	public ItemStack updateItemExtra(int amount, ItemStackExtra itemStackExtra) {
+		return updateItemStack(amount, itemStackExtra.getHandler());
+	}
+	
 	@Override
 	public ItemStackExtra asExtra(int amount) {
 		return GameAPI.getAPI().createItemStackExtra(create(amount));
@@ -220,7 +249,6 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	@Override
 	public ItemStackFactory doWithI18n(Locale locale) {
 		this.locale = locale;
-
 		return this;
 	}
 
@@ -233,5 +261,13 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 		}
 
 		return null;
+	}
+	
+	public enum GameItemType
+	{
+		LEATHERED_ARMOR,
+		SKULL,
+		CUSTOM_SKULL,
+		WOOL
 	}
 }
