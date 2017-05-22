@@ -165,13 +165,17 @@ public class ItemStackExtras extends BadListener {
 	public static int getCode(ItemStack item)
 	{
 		int id = -1;
-		
-		if(!item.getItemMeta().hasDisplayName()){
-			if(item.getItemMeta().getLore() != null && !item.getItemMeta().getLore().isEmpty()){
-				id = ItemStackUtils.decodeItemFromName(item.getItemMeta().getLore().get(0));
-			}
-
-		} else id = ItemStackUtils.decodeItemFromName(item.getItemMeta().getDisplayName());
+		// TODO: Audran fix moi ça ça fait planter les jeux
+		try {
+			if(!item.getItemMeta().hasDisplayName()){
+				if(item.getItemMeta().getLore() != null && !item.getItemMeta().getLore().isEmpty()){
+					id = ItemStackUtils.decodeItemFromName(item.getItemMeta().getLore().get(0));
+				}
+	
+			} else id = ItemStackUtils.decodeItemFromName(item.getItemMeta().getDisplayName());
+		}catch(Exception error) {
+			id = -1;
+		}
 		
 		return id;
 	}
