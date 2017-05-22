@@ -12,7 +12,7 @@ public class RebootTask extends CustomTask {
 
 	private long	time  = -1;
 	private long	boot  = System.currentTimeMillis();
-	private long    max   = (new Random().nextInt(3600)) * 1000 + (36000 * 1);
+	private long    max   = ((new Random().nextInt(3600)) + 3600) * 1000;
 
 	public RebootTask() {
 		super(20, 20);
@@ -50,6 +50,7 @@ public class RebootTask extends CustomTask {
 				}, 200);
 				return;
 			}
+			System.out.println(time + " / " + boot + " / " + System.currentTimeMillis() + " / " + max + " / " + (System.currentTimeMillis() - boot));
 			if (time != -1 && time > 0) time--;
 			if (time == 900 || time == 600 || time == 300 || time == 120 || time == 60 || time == 30 || time == 15
 					|| time == 10 || time == 5 || time == 4 || time == 3 || time == 2 || time == 1) {
@@ -69,7 +70,7 @@ public class RebootTask extends CustomTask {
 				return;
 			}
 			if (System.currentTimeMillis() - boot >= max && time == -1) {
-				time = 900;
+				time = 905;
 			}
 	}
 
