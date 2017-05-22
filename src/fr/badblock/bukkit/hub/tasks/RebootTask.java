@@ -50,7 +50,7 @@ public class RebootTask extends CustomTask {
 				}, 200);
 				return;
 			}
-			if (time != -1)  time--;
+			if (time != -1 && time > 0) time--;
 			if (time == 900 || time == 600 || time == 300 || time == 120 || time == 60 || time == 30 || time == 15
 					|| time == 10 || time == 5 || time == 4 || time == 3 || time == 2 || time == 1) {
 				if (time <= 30) {
