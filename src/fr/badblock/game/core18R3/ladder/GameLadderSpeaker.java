@@ -247,10 +247,12 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 	public void handle(PacketPlayerData packet) {
 		if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.SEND){
 			Callback<JsonObject> callback = requestedPlayers.get(packet.getKey().toLowerCase());
+			requestedPlayers.remove(packet.getKey().toLowerCase());
 
 			if(callback != null){
 				callback.done(new JsonParser().parse(packet.getData()).getAsJsonObject(), null);
 			} else {
+
 				GameBadblockPlayer player = (GameBadblockPlayer) Bukkit.getPlayer(packet.getKey());
 
 				if(player != null){
@@ -274,6 +276,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 			}
 		} else if(packet.getType() == DataType.IP && packet.getAction() == DataAction.SEND){
 			Callback<JsonObject> callback = requestedIps.get(packet.getKey().toLowerCase());
+			requestedIps.remove(packet.getKey().toLowerCase());
 
 			if(callback != null){
 				callback.done(new JsonParser().parse(packet.getData()).getAsJsonObject(), null);

@@ -91,6 +91,7 @@ import fr.badblock.game.core18R3.signs.GameSignManager;
 import fr.badblock.game.core18R3.signs.UpdateSignListener;
 import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
 import fr.badblock.game.core18R3.sql.GameSQLDatabase;
+import fr.badblock.game.core18R3.tasks.GameStatisticsTask;
 import fr.badblock.game.core18R3.technologies.RabbitSpeaker;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.PlayerBoosterRefreshListener;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
@@ -472,6 +473,7 @@ public class GamePlugin extends GameAPI {
 							getOnlinePlayers().forEach(player -> player.removeBossBar("serverbooster"));
 					}
 				}, 20, 20);
+				new GameStatisticsTask();
 			}
 		} catch (Throwable t){
 			t.printStackTrace();

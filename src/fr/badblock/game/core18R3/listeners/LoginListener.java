@@ -20,6 +20,7 @@ import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.MojangAPI;
+import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
@@ -82,8 +83,9 @@ public class LoginListener extends BadListener {
 			exception.printStackTrace();
 		}
 		try {
-			String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
-			player.setTextureProperty(props[0], props[1]);
+			SkinFactory.applySkin(player, MojangAPI.getSkinPropertyObject(player.getName()));
+			//String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
+			//player.setTextureProperty(props[0], props[1]);
 		} catch (Exception exception) {
 			System.out.println("Impossible de mettre le skin au joueur : ");
 			exception.printStackTrace();

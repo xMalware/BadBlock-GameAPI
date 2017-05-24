@@ -71,10 +71,11 @@ public class BadblockInjector extends ChannelDuplexHandler {
 	@Override
 	public void write(ChannelHandlerContext channelHandlerContext, Object msg, final ChannelPromise promise) throws Exception {
 		boolean cancel = false;
-		
+		if (msg == null || msg.getClass() == null) return;
 		for (GameBadblockOutPackets packet : GameBadblockOutPackets.values()) {
 			try {
 				// Le packet recherch� dans la boucle est pas celui qui est re�u
+				if (packet == null || packet.getNmsClazz() == null) continue;
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
 				Set<OutPacketListener<?>> listeners = GamePlugin.getInstance().getPacketOutListeners().get(packet.getClazz());
 				

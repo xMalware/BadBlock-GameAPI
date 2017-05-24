@@ -20,6 +20,16 @@ public class MojangAPI
 			return new String[]{value, signature};
 		}else return new String[]{"", ""};
 	}
+	
+	public static Property getSkinPropertyObject(String name)
+	{
+		List<String> output = readSURL("https://extdata.badblock-network.fr/skin.php?name=" + name);
+		if (output.size() >= 2) {
+			String value = output.get(0);
+			String signature = output.get(1);
+			return createProperty("textures", value, signature);
+		}else return createProperty("textures", "", "");
+	}
 
 	private static List<String> readSURL(String url)
 	{
