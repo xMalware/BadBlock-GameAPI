@@ -46,6 +46,8 @@ public class GameSignManager implements SignManager {
 
 	@Override
 	public void updateSign(Block block) {
+		if (block == null) return;
+		if (block.getState() == null) return;
 		if(block.getState() instanceof Sign){
 			Sign sign = (Sign) block.getState();
 			sign.update(true);
@@ -56,6 +58,8 @@ public class GameSignManager implements SignManager {
 
 	@Override
 	public boolean isSignTranslatable(Block block) {
+		if (block == null) return false;
+		if (block.getState() == null) return false;
 		if(block.getState() instanceof Sign){
 			return translatedSigns.containsKey(block.getLocation());
 		} else {
