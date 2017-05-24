@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -38,7 +39,9 @@ public class HubChangerInventory extends CustomUniqueInventory {
 	ItemStack air = new ItemStack(Material.AIR);
 
 	private int i;
-
+	private int nb;
+	private long time;
+	
 	public HubChangerInventory() {
 		// super("§6Changer de hub", 1);
 		super("hub.items.hubchangerinventory", 1);
@@ -92,7 +95,16 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		FullSEntry sentry = SEntryInfosListener.sentries.get("login");
 		if (sentry != null) {
 			id++;
-			generate(inventory, player, true, (int) ((sentry.getIngamePLayers() + sentry.getWaitinglinePlayers()) / BungeeWorkerListener.bungeeWorkers), -1, id, null, "§6Serveur de connexion", null);
+			if (time < System.currentTimeMillis()) {
+				if (nb > sentry.getIngamePLayers() / BungeeWorkerListener.bungeeWorkers) {
+					nb--;
+					time = System.currentTimeMillis() + (500 + new Random().nextInt(6000));
+				}else if (nb < sentry.getIngamePLayers() / BungeeWorkerListener.bungeeWorkers) {
+					nb++;
+					time = System.currentTimeMillis() + (500 + new Random().nextInt(6000));
+				}
+			}
+			generate(inventory, player, true, nb, -1, id, null, "§6Serveur de connexion", null);
 		}
 		for (Hub hub : choosenHubs) {
 			if (hub == null) continue;
@@ -143,7 +155,7 @@ public class HubChangerInventory extends CustomUniqueInventory {
 		itemStack.setAmount(69);
 		if (id == HubPacketThread.hubId) itemStack = ItemStackUtils.fakeEnchant(itemStack);
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		itemMeta.setDisplayName(chatColor + (hudb != null ? "Hub n°" + id : display));
+		itemMeta.setDisplayName(chatColor + (hudb != null ? "Hub n°" + hudb.getId() : display));
 		List<String> lore = new ArrayList<>();
 		lore.add("");
 		if (id == HubPacketThread.hubId) {
