@@ -3,7 +3,10 @@ package fr.badblock.game.core18R3.technologies;
 import java.io.IOException;
 
 import fr.badblock.game.core18R3.jsonconfiguration.data.RabbitMQConfig;
+import fr.badblock.gameapi.technologies.RabbitAPIListener;
 import fr.badblock.rabbitconnector.RabbitConnector;
+import fr.badblock.rabbitconnector.RabbitListener;
+import fr.badblock.rabbitconnector.RabbitListenerType;
 import fr.badblock.rabbitconnector.RabbitPacketType;
 import fr.badblock.rabbitconnector.RabbitService;
 import fr.badblock.utils.Encodage;
@@ -62,6 +65,16 @@ public class RabbitSpeaker implements fr.badblock.gameapi.technologies.RabbitSpe
 		}catch(Exception error) {
 			error.printStackTrace();
 		}
+	}
+
+	@Override
+	public void listen(RabbitAPIListener rabbitListener) {
+		new RabbitListener(this.getRabbitService(), rabbitListener.getQueue(), rabbitListener.isDebug(), RabbitListenerType.get(rabbitListener.getType().name())) {
+			@Override
+			public void onPacketReceiving(String body) {
+				rabbitListener.onPacketReceiving(body);
+			}
+		};
 	}
 
 }
