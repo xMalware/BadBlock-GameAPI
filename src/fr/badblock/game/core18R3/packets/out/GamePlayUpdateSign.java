@@ -50,6 +50,8 @@ public class GamePlayUpdateSign extends GameBadblockOutPacket implements PlayUpd
 	
 	@Override
 	public Packet<?> buildPacket(BadblockPlayer player) throws Exception {
+		// wtf.
+		if (player == null || block == null || block.getWorld() == null) return null;
 		World 		  world    = ((CraftWorld) block.getWorld()).getHandle();
 		BlockPosition position = new BlockPosition(block.getX(), block.getY(), block.getZ());
 		

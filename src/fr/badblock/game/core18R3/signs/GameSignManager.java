@@ -50,6 +50,7 @@ public class GameSignManager implements SignManager {
 		if (block.getState() == null) return;
 		if(block.getState() instanceof Sign){
 			Sign sign = (Sign) block.getState();
+			if (sign == null) return;
 			sign.update(true);
 		} else {
 			throw new IllegalArgumentException("Provided block is not a sign!");
