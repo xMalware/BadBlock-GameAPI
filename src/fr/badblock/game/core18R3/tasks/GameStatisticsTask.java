@@ -55,7 +55,7 @@ public class GameStatisticsTask implements Runnable {
 					if (result.next()) {
 						GameAPI.getAPI().getSqlDatabase().call("UPDATE games SET gameTotal=gameTotal+1" + (outch ? ", " + name + "=" + name + "+1" : "") + " WHERE gameName = '" + gameName + "'", SQLRequestType.UPDATE);
 					}else{
-						GameAPI.getAPI().getSqlDatabase().call("INSERT INTO games(gameName, gameTotal, gameEndedNotEnoughPlayers, gameTeamsNotFull) VALUES('" + gameName + "', '1', '" + (outch && notEnough ? "1" : 0) + "', '" + (outch && !notEnough ? 1 : 0) + "')", SQLRequestType.UPDATE);	
+						GameAPI.getAPI().getSqlDatabase().call("INSERT INTO games(gameName, gameTotal, gameEndedNotEnoughPlayers, gameTeamsNotFull) VALUES('" + gameName + "', '1', '" + (outch && notEnough ? "1" : "0") + "', '" + (outch && !notEnough ? "1" : "0") + "')", SQLRequestType.UPDATE);	
 					}
 				}catch(Exception err) {
 					error.printStackTrace();
