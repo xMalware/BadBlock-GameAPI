@@ -34,7 +34,7 @@ public class SpeedUHCSelectorItem extends GameSelectorItem {
 
 	@Override
 	public List<String> getGames() {
-		return Arrays.asList("speeduhcs", "speeduhct");
+		return Arrays.asList("speeduhc", "speeduhcs", "speeduhct");
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class SpeedUHCSelectorItem extends GameSelectorItem {
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
-					service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "speeduhcs", false)),
+					service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "speeduhct", false)),
 							Encodage.UTF8, RabbitPacketType.PUBLISHER, 5000, false);
 					/*if (!player.hasPermission("others.mod.connect")) {
 						SEntryInfosListener.tempPlayers.put(player.getName(), System.currentTimeMillis() + SEntryInfosListener.tempTime);
