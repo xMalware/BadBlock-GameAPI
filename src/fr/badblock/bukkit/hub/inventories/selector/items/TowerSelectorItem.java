@@ -37,32 +37,32 @@ public class TowerSelectorItem extends GameSelectorItem {
 
 	@Override
 	public void onClick(BadblockPlayer player, ItemAction itemAction, Block clickedBlock) {
-		/*if (itemAction.equals(ItemAction.INVENTORY_LEFT_CLICK)) {
-			CustomInventory.get(TowerChooserInventory.class).open(player);
+		if (itemAction.equals(ItemAction.INVENTORY_LEFT_CLICK)) {
+			//CustomInventory.get(TowerChooserInventory.class).open(player);
+			BadBlockHub instance = BadBlockHub.getInstance();
+			RabbitService service = instance.getRabbitService();
+			Gson gson = instance.getGson();
+			Runnable runnable = new Runnable() {
+				@Override
+				public void run() {
+					service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "tower", false)),
+							Encodage.UTF8, RabbitPacketType.PUBLISHER, 5000, false);
+				}
+			};
+			if (player.hasPermission("matchmaking.priority")) runnable.run();
+			else {
+				runnable.run();//TaskManager.runAsyncTaskLater(runnable, new Random().nextInt(20 * 9) + (20 * 3));
+			}
+			player.closeInventory();
 			return;
 		}
-		Location location = ConfigUtils.getLocation(BadBlockHub.getInstance(), "tower");
+		/*Location location = ConfigUtils.getLocation(BadBlockHub.getInstance(), "tower");
 		if (location == null) // player.sendMessage("§cCe jeu est
 								// indisponible.");
 			player.sendTranslatedMessage("hub.gameunavailable");
 		else{
 			player.teleport(location);
 		}*/
-		BadBlockHub instance = BadBlockHub.getInstance();
-		RabbitService service = instance.getRabbitService();
-		Gson gson = instance.getGson();
-		Runnable runnable = new Runnable() {
-			@Override
-			public void run() {
-				service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "tower", false)),
-						Encodage.UTF8, RabbitPacketType.PUBLISHER, 5000, false);
-			}
-		};
-		if (player.hasPermission("matchmaking.priority")) runnable.run();
-		else {
-			runnable.run();//TaskManager.runAsyncTaskLater(runnable, new Random().nextInt(20 * 9) + (20 * 3));
-		}
-		player.closeInventory();
 	}
 
 	@Override
