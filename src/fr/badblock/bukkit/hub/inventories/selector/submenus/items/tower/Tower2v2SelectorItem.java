@@ -45,7 +45,7 @@ public class Tower2v2SelectorItem extends SubGameSelectorItem {
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
-				service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "tower2v2", false)),
+				service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "tower", false)),
 						Encodage.UTF8, RabbitPacketType.PUBLISHER, 5000, false);
 				/*if (!player.hasPermission("others.mod.connect")) {
 					SEntryInfosListener.tempPlayers.put(player.getName(), System.currentTimeMillis() + SEntryInfosListener.tempTime);
