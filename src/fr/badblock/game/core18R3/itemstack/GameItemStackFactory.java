@@ -120,7 +120,7 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	
 	public ItemStackFactory setAsCustomSkull(String url)
 	{
-		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.itemType = GameItemType.CUSTOM_SKULL;
 		this.valueStr = url;
 		
 		return this;
@@ -128,7 +128,7 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	
 	public ItemStackFactory setAsSkull(String user)
 	{
-		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.itemType = GameItemType.SKULL;
 		this.valueStr = user;
 		
 		return this;
@@ -136,7 +136,7 @@ public class GameItemStackFactory implements ItemStackFactory, Cloneable {
 	
 	public ItemStackFactory setAsWool(DyeColor color)
 	{
-		this.itemType = GameItemType.LEATHERED_ARMOR;
+		this.itemType = GameItemType.WOOL;
 		this.valueDyeColor = color;
 		
 		return this;
