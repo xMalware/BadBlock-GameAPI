@@ -34,7 +34,7 @@ public class Tower2v2SelectorItem extends SubGameSelectorItem {
 
 	@Override
 	public List<String> getGames() {
-		return Arrays.asList("tower2v2");
+		return Arrays.asList("tower");
 	}
 
 	@Override

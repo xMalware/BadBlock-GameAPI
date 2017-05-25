@@ -34,7 +34,7 @@ public class Rush2v2SelectorItem extends SubGameSelectorItem {
 
 	@Override
 	public List<String> getGames() {
-		return Arrays.asList("rush2v2wb");
+		return Arrays.asList("rush");
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class Rush2v2SelectorItem extends SubGameSelectorItem {
 		Runnable runnable = new Runnable() {
 			@Override
 			public void run() {
-				service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "rush2v2wb", false)),
+				service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "rush", false)),
 						Encodage.UTF8, RabbitPacketType.PUBLISHER, 5000, false);
 				/*if (!player.hasPermission("others.mod.connect")) {
 					SEntryInfosListener.tempPlayers.put(player.getName(), System.currentTimeMillis() + SEntryInfosListener.tempTime);
