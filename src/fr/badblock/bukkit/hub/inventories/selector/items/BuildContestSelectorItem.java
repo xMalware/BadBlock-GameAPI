@@ -7,13 +7,17 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
+import com.google.gson.Gson;
+
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
-import fr.badblock.bukkit.hub.inventories.abstracts.inventories.CustomInventory;
-import fr.badblock.bukkit.hub.inventories.selector.submenus.inventories.BuildContestChooserInventory;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.run.BadblockGame;
 import fr.badblock.gameapi.utils.ConfigUtils;
+import fr.badblock.rabbitconnector.RabbitPacketType;
+import fr.badblock.rabbitconnector.RabbitService;
+import fr.badblock.sentry.SEntry;
+import fr.badblock.utils.Encodage;
 
 public class BuildContestSelectorItem extends GameSelectorItem {
 
@@ -37,7 +41,12 @@ public class BuildContestSelectorItem extends GameSelectorItem {
 	@Override
 	public void onClick(BadblockPlayer player, ItemAction itemAction, Block clickedBlock) {
 		if (itemAction.equals(ItemAction.INVENTORY_LEFT_CLICK)) {
-			CustomInventory.get(BuildContestChooserInventory.class).open(player);
+			//CustomInventory.get(BuildContestChooserInventory.class).open(player);
+			BadBlockHub instance = BadBlockHub.getInstance();
+			RabbitService service = instance.getRabbitService();
+			Gson gson = instance.getGson();
+			service.sendAsyncPacket("networkdocker.sentry.join", gson.toJson(new SEntry(player.getName(), "buildcontest16", false)), Encodage.UTF8, RabbitPacketType.PUBLISHER, 5000, false);
+			player.closeInventory();
 			return;
 		}
 		Location location = ConfigUtils.getLocation(BadBlockHub.getInstance(), "buildcontest");
