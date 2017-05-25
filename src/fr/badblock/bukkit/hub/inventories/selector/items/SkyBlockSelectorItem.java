@@ -38,9 +38,9 @@ public class SkyBlockSelectorItem extends GameSelectorItem {
 			player.sendTranslatedMessage("hub.gameunavailable");
 			return;
 		}
-		if (itemAction.equals(ItemAction.INVENTORY_LEFT_CLICK)) {
+		if (itemAction.equals(ItemAction.INVENTORY_RIGHT_CLICK)) {
 			player.teleport(location);
-		} else if (itemAction.equals(ItemAction.INVENTORY_RIGHT_CLICK))
+		} else if (itemAction.equals(ItemAction.INVENTORY_LEFT_CLICK))
 			player.sendPlayer("skyb");
 	}
 
