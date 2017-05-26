@@ -274,7 +274,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						if (result.next()) {
 							System.out.println(getName() + " >> C");
 							int id = result.getInt("id");
-							GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_buy WHERE id = '" + id + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+							GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_buy WHERE player = '" + id + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 								@Override
 								public void done(ResultSet result, Throwable error) {
