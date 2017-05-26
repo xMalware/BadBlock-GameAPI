@@ -310,9 +310,11 @@ public class GamePlugin extends GameAPI {
 
 					sqlDatabase = new GameSQLDatabase(sqlConfig.sqlIp, Integer.toString(sqlConfig.sqlPort), sqlConfig.sqlUser, sqlConfig.sqlPassword, sqlConfig.sqlDatabase);
 					((GameSQLDatabase) sqlDatabase).openConnection();
-					
+
+					if(runType != RunType.DEV)
+						GameAPI.logColor("&b[GameAPI] &a=> WEB-SQL : " + webConfig.sqlIp + ":" + webConfig.sqlPort);
 					webDatabase = new GameSQLDatabase(webConfig.sqlIp, Integer.toString(webConfig.sqlPort), webConfig.sqlUser, webConfig.sqlPassword, webConfig.sqlDatabase);
-					((GameSQLDatabase) webDatabase).openConnection();
+					webDatabase.openConnection();
 
 					rabbitSpeaker = new RabbitSpeaker(rabbitMQConfig);
 					new ServerForceKillListener();
