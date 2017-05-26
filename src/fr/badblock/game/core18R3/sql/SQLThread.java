@@ -22,7 +22,7 @@ public class SQLThread extends Thread {
 			while (true) {
 				if (!requests.isEmpty()) {
 					SQLRequest request = requests.poll();
-					request.done();
+					request.done(request.sqlDatabase);
 				}
 				try {
 					this.wait();

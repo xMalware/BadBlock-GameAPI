@@ -3,7 +3,7 @@ package fr.badblock.game.core18R3.sql;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.databases.SQLDatabase;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.utils.general.Callback;
 import lombok.Getter;
@@ -14,16 +14,18 @@ import lombok.Setter;
 	private SQLRequestType 		requestType;
 	public 	String 		   		request;
 	private Callback<ResultSet> callback;
+	public SQLDatabase 			sqlDatabase;
 
-	public SQLRequest(SQLRequestType requestType, String request, Callback<ResultSet> callback) {
+	public SQLRequest(SQLDatabase sqlDatabase, SQLRequestType requestType, String request, Callback<ResultSet> callback) {
+		this.setSqlDatabase(sqlDatabase);
 		this.setRequest(request);
 		this.setRequestType(requestType);
 		this.setCallback(callback);
 	}
 
-	public void done() {
+	public void done(SQLDatabase sqlDatabase) {
 		try {
-			Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
+			Statement statement = sqlDatabase.createStatement();
 			if (requestType.equals(SQLRequestType.QUERY)) {
 				ResultSet resultSet = statement.executeQuery(this.getRequest());
 				this.getCallback().done(resultSet, null);

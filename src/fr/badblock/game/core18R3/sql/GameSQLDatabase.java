@@ -93,8 +93,8 @@ public class GameSQLDatabase implements SQLDatabase {
 				availableThread = sqlThread;
 				break;
 			}else firstThread = sqlThread;
-		if (availableThread != null) availableThread.call(new SQLRequest(requestType, request, callback));
-		else if (firstThread != null) firstThread.call(new SQLRequest(requestType, request, callback));
+		if (availableThread != null) availableThread.call(new SQLRequest(this, requestType, request, callback));
+		else if (firstThread != null) firstThread.call(new SQLRequest(this, requestType, request, callback));
 	}
 	
 	public String mysql_real_escape_string(String str) {
