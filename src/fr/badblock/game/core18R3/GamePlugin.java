@@ -189,6 +189,8 @@ public class GamePlugin extends GameAPI {
 	@Getter
 	private SQLDatabase					sqlDatabase;
 	@Getter
+	private GameSQLDatabase				webDatabase;
+	@Getter
 	private LadderSpeaker				ladderDatabase;
 	@Getter
 	private GameServerManager			gameServerManager;
@@ -281,6 +283,7 @@ public class GamePlugin extends GameAPI {
 			RabbitMQConfig rabbitMQConfig = JsonUtils.load(new File(configFolder, "rabbitmq.json"), RabbitMQConfig.class);
 			ServerConfig serverConfig = JsonUtils.load(new File(configFolder, "server.json"), ServerConfig.class);
 			SQLConfig sqlConfig = JsonUtils.load(new File(configFolder, "sql.json"), SQLConfig.class);
+			SQLConfig webConfig = JsonUtils.load(new File(configFolder, "web.json"), SQLConfig.class);
 			
 			i18nFolder = serverConfig.getI18nPath();
 			if (i18nFolder == null || i18nFolder.isEmpty()) i18nFolder = getDataFolder().getAbsolutePath() + "/i18n/";
@@ -307,6 +310,9 @@ public class GamePlugin extends GameAPI {
 
 					sqlDatabase = new GameSQLDatabase(sqlConfig.sqlIp, Integer.toString(sqlConfig.sqlPort), sqlConfig.sqlUser, sqlConfig.sqlPassword, sqlConfig.sqlDatabase);
 					((GameSQLDatabase) sqlDatabase).openConnection();
+					
+					webDatabase = new GameSQLDatabase(webConfig.sqlIp, Integer.toString(webConfig.sqlPort), webConfig.sqlUser, webConfig.sqlPassword, webConfig.sqlDatabase);
+					((GameSQLDatabase) webDatabase).openConnection();
 
 					rabbitSpeaker = new RabbitSpeaker(rabbitMQConfig);
 					new ServerForceKillListener();

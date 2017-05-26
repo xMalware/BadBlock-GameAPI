@@ -3,6 +3,7 @@ package fr.badblock.game.core18R3.players;
 import java.lang.reflect.Type;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -53,6 +54,7 @@ import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.BadblockInjector;
 import fr.badblock.game.core18R3.watchers.MetadataIndex;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.disguise.Disguise;
 import fr.badblock.gameapi.events.PartyJoinEvent;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
@@ -102,6 +104,7 @@ import fr.badblock.gameapi.utils.reflection.Reflector;
 import fr.badblock.gameapi.utils.selections.CuboidSelection;
 import fr.badblock.gameapi.utils.selections.Vector3f;
 import fr.badblock.gameapi.utils.threading.TaskManager;
+import fr.badblock.permissions.PermissibleGroup;
 import fr.badblock.permissions.PermissiblePlayer;
 import fr.badblock.permissions.PermissionManager;
 import fr.badblock.utils.CommonFilter;
@@ -261,6 +264,72 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		if (object.has("permissions")) {
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
+			System.out.println(getName() + " >> A");
+			GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+				@Override
+				public void done(ResultSet result, Throwable error) {
+					try {
+						System.out.println(getName() + " >> B");
+						if (result.next()) {
+							System.out.println(getName() + " >> C");
+							int id = result.getInt("id");
+							GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_buy WHERE id = '" + id + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+								@Override
+								public void done(ResultSet result, Throwable error) {
+									try {
+										System.out.println(getName() + " >> C");
+										while (result.next()) {
+											System.out.println(getName() + " >> D");
+											int offer = result.getInt("offer");
+											GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_offers WHERE id = '" + offer + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+												@Override
+												public void done(ResultSet result, Throwable error) {
+													try {
+														System.out.println(getName() + " >> E");
+														while (result.next()) {
+															System.out.println(getName() + " >> F");
+															String displayName = result.getString("displayName");
+															displayName = displayName.toLowerCase();
+															displayName = displayName.replace("old ", "");
+															if (displayName.contains("grade")) {
+																System.out.println(getName() + " >> G");
+																displayName = displayName.replace("grade", "");
+																displayName = displayName.replace(" ", "");
+																if (!permissions.getSuperGroup().equalsIgnoreCase(displayName) && !permissions.getAlternateGroups().containsKey(displayName)) 
+																	System.out.println(getName() + " >> H");{
+																	PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
+																	if (group != null) {
+																		System.out.println(getName() + " >> I");
+																		dataFetch = true;
+																		permissions.addParent(-1, group);
+																		saveGameData();
+																		System.out.println("add " + displayName);
+																	}
+																}
+															}
+														}
+													}catch(Exception err) {
+														err.printStackTrace();
+													}
+												}
+											});
+										}
+									}catch(Exception err) {
+										err.printStackTrace();
+									}
+								}
+							});
+						}
+					}catch(Exception err) {
+						error.printStackTrace();
+					}
+				}
+				
+			});
+			
 		}
 		if (object.has("shoppoints")) {
 			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
