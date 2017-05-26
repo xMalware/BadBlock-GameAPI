@@ -305,7 +305,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 																		System.out.println(getName() + " >> I");
 																		dataFetch = true;
 																		permissions.addParent(-1, group);
-																		saveGameData();
+																		GameAPI.getAPI().getLadderDatabase().updatePlayerData(GameBadblockPlayer.this, permissions.saveAsJson());
 																		System.out.println("add " + displayName);
 																	}
 																}
@@ -468,8 +468,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void saveGameData() {
-		if (isDataFetch())
+		if (isDataFetch()) {
 			GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, getPlayerData().saveData());
+		}
 	}
 
 	@Override
