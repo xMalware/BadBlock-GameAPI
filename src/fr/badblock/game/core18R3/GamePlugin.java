@@ -243,6 +243,10 @@ public class GamePlugin extends GameAPI {
 	public PlayerBooster				booster;
 	@Getter@Setter
 	public boolean						finished;
+	@Getter
+	public String						ladderIp;
+	@Getter
+	public int							ladderPort;
 
 	@Override
 	public void onEnable() {
@@ -295,8 +299,11 @@ public class GamePlugin extends GameAPI {
 
 				runType = gameServerConfig.runType;
 
-				if(runType != RunType.DEV)
+				if(runType != RunType.DEV) {
+					ladderIp = ladderConfig.ladderIp;
+					ladderPort = ladderConfig.ladderPort;
 					GameAPI.logColor("&b[GameAPI] &a=> Ladder : " + ladderConfig.ladderIp + ":" + ladderConfig.ladderPort);
+				}
 				GameAPI.logColor("&b[GameAPI] &aConnecting to Ladder...");
 
 				new PermissionManager(new JsonArray());

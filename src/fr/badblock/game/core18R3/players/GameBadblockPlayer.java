@@ -1,6 +1,11 @@
 package fr.badblock.game.core18R3.players;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.SecureRandom;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -264,51 +269,61 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		if (object.has("permissions")) {
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
-			System.out.println(getName() + " >> A");
 			GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 				@Override
 				public void done(ResultSet result, Throwable error) {
 					try {
-						System.out.println(getName() + " >> B");
 						if (result.next()) {
-							System.out.println(getName() + " >> C");
 							int id = result.getInt("id");
 							GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_buy WHERE player = '" + id + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 								@Override
 								public void done(ResultSet result, Throwable error) {
 									try {
-										System.out.println(getName() + " >> C");
 										while (result.next()) {
-											System.out.println(getName() + " >> D");
 											int offer = result.getInt("offer");
 											GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_offers WHERE id = '" + offer + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 												@Override
 												public void done(ResultSet result, Throwable error) {
 													try {
-														System.out.println(getName() + " >> E");
 														while (result.next()) {
-															System.out.println(getName() + " >> F");
 															String displayName = result.getString("displayName");
 															displayName = displayName.toLowerCase();
 															displayName = displayName.replace("old ", "");
 															if (displayName.contains("grade")) {
-																System.out.println(getName() + " >> G");
 																displayName = displayName.replace("grade", "");
 																displayName = displayName.replace(" ", "");
-																if (!permissions.getSuperGroup().equalsIgnoreCase(displayName) && !permissions.getAlternateGroups().containsKey(displayName)) 
-																	System.out.println(getName() + " >> H");{
+																if (!permissions.getSuperGroup().equalsIgnoreCase(displayName) && !permissions.getAlternateGroups().containsKey(displayName)) {
 																	PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
 																	if (group != null) {
 																		System.out.println(getName() + " >> I");
-																		dataFetch = true;
-																		permissions.addParent(-1, group);
-																		JsonObject object = new JsonObject();
-																		object.add("permissions", permissions.saveAsJson());
-																		GameAPI.getAPI().getLadderDatabase().updatePlayerData(GameBadblockPlayer.this, object);
-																		System.out.println("add " + displayName);
+																		String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
+																		URL obj = new URL(url);
+																		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+																		con.setRequestMethod("POST");
+																		con.setRequestProperty("User-Agent", "Mozilla/5.0");
+																		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+																		String urlParameters = "name=" + getName().replace("&", "") + "&group=" + displayName + "&duration=-1";
+																		con.setDoOutput(true);
+																		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+																		wr.writeBytes(urlParameters);
+																		wr.flush();
+																		wr.close();
+																		int responseCode = con.getResponseCode();
+																		System.out.println("\nSending 'POST' request to URL : " + url);
+																		System.out.println("Post parameters : " + urlParameters);
+																		System.out.println("Response Code : " + responseCode);
+																		BufferedReader in = new BufferedReader(
+																		        new InputStreamReader(con.getInputStream()));
+																		String inputLine;
+																		StringBuffer response = new StringBuffer();
+																		while ((inputLine = in.readLine()) != null) {
+																			response.append(inputLine);
+																		}
+																		in.close();
+																		System.out.println(response.toString());
 																	}
 																}
 															}
