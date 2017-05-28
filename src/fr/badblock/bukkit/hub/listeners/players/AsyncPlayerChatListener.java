@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.players;
 
 import java.util.Iterator;
 
@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import fr.badblock.bukkit.hub.listeners._HubListener;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.bukkit.hub.objects.HubStoredPlayer;
 import fr.badblock.game.core18R3.listeners.ChatListener;

@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.protectors;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;

@@ -1,8 +1,9 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.players;
 
 import org.bukkit.event.EventHandler;
 
 import fr.badblock.bukkit.hub.inventories.market.properties.CustomProperty;
+import fr.badblock.bukkit.hub.listeners._HubListener;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.xmalware.badblock.shoplinker.api.ShopData;

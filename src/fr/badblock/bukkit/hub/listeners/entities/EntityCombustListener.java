@@ -1,8 +1,10 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.entities;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityCombustByBlockEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+
+import fr.badblock.bukkit.hub.listeners._HubListener;
 
 public class EntityCombustListener extends _HubListener {
 

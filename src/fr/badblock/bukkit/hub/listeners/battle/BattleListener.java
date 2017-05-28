@@ -7,8 +7,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
-import fr.badblock.bukkit.hub.listeners.PlayerJoinListener;
 import fr.badblock.bukkit.hub.listeners._HubListener;
+import fr.badblock.bukkit.hub.listeners.players.PlayerJoinListener;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.ConfigUtils;
 

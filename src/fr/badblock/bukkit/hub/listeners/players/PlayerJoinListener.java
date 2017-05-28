@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.players;
 
 import java.security.SecureRandom;
 
@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.inventories.join.PlayerCustomInventory;
+import fr.badblock.bukkit.hub.listeners._HubListener;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.bukkit.hub.objects.HubScoreboard;
 import fr.badblock.bukkit.hub.objects.HubStoredPlayer;

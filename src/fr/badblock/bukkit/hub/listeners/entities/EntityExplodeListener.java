@@ -1,9 +1,11 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.entities;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.util.Vector;
+
+import fr.badblock.bukkit.hub.listeners._HubListener;
 
 public class EntityExplodeListener extends _HubListener {
 

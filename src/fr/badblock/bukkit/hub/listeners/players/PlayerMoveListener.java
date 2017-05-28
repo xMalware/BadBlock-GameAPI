@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.players;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
+import fr.badblock.bukkit.hub.listeners._HubListener;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.bukkit.hub.objects.HubStoredPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;

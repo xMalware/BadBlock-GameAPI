@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.players;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -14,6 +14,7 @@ import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.inventories.market.cosmetics.chests.objects.ChestLoader;
 import fr.badblock.bukkit.hub.inventories.market.cosmetics.chests.objects.ChestOpener;
+import fr.badblock.bukkit.hub.listeners._HubListener;
 import fr.badblock.bukkit.hub.listeners.vipzone.RaceListener;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;

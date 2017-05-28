@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.players;
 
 import java.util.UUID;
 
@@ -8,6 +8,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.inventories.selector.googleauth.AuthUtils;
+import fr.badblock.bukkit.hub.listeners._HubListener;
 import fr.badblock.bukkit.hub.listeners.vipzone.RaceListener;
 import fr.badblock.bukkit.hub.listeners.vipzone.RaceListener.RaceState;
 import fr.badblock.gameapi.players.BadblockPlayer;

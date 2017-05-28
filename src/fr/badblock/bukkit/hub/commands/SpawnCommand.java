@@ -3,7 +3,7 @@ package fr.badblock.bukkit.hub.commands;
 import org.bukkit.command.CommandSender;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
-import fr.badblock.bukkit.hub.listeners.PlayerJoinListener;
+import fr.badblock.bukkit.hub.listeners.players.PlayerJoinListener;
 import fr.badblock.gameapi.command.AbstractCommand;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;

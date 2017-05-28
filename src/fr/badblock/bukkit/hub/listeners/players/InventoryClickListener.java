@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.listeners;
+package fr.badblock.bukkit.hub.listeners.players;
 
 import java.util.Arrays;
 
@@ -18,6 +18,7 @@ import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.inventories.hubchanger.HubChangerInventory;
 import fr.badblock.bukkit.hub.inventories.join.PlayerCustomInventory;
 import fr.badblock.bukkit.hub.inventories.selector.SelectorInventory;
+import fr.badblock.bukkit.hub.listeners._HubListener;
 import fr.badblock.bukkit.hub.listeners.vipzone.RaceListener;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
 import fr.badblock.bukkit.hub.rabbitmq.Hub;
