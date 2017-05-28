@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.christmas;
+package fr.badblock.bukkit.hub.eventstime.christmas;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;

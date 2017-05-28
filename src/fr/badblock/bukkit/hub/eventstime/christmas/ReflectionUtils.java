@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.christmas;
+package fr.badblock.bukkit.hub.eventstime.christmas;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;

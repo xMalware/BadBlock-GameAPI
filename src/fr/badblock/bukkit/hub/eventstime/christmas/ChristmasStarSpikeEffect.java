@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.christmas;
+package fr.badblock.bukkit.hub.eventstime.christmas;
 
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
