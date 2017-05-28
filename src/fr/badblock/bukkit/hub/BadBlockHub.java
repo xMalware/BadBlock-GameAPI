@@ -253,25 +253,6 @@ public class BadBlockHub extends BadblockPlugin {
 		GameAPI.getAPI().setLightChunks(cuboid2, false);
 		GameAPI.getAPI().setEmptyChunks(cuboid2, true);
 		GameAPI.getAPI().loadChunks(cuboid2, 1);
-		/*System.out.println("[ChunkLoader] Searching chunks...");
-		World world = Bukkit.getWorld("world");
-		HashSet<Chunk> chunks = new HashSet<>();
-		for (int x = -243; x < 244; x += 4) {
-			for (int z = -223; z < 223; z += 4) {
-				Chunk chunk = world.getChunkAt(x, z);
-				if (!chunks.contains(chunk)) chunks.add(chunk);
-			}
-		}
-		System.out.println("[ChunkLoader] Found " + chunks.size() + " chunks!");
-		System.out.println("[ChunkLoader] Loading chunks...");
-		int i = 0;
-		for (Chunk chunk : chunks) {
-			while (!chunk.isLoaded()) {
-				chunk.load(false);
-			}
-			i++;
-			System.out.println("Loaded chunk " + i + " (" + chunk.getX() + ";" + chunk.getZ() + ")");
-		}*/
 		System.out.println("[ChunkLoader] Loaded chunks");
 		
 		/*TaskManager.scheduleAsyncRepeatingTask("christmas_starparticles", new Runnable() {
