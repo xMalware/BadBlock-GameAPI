@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
+import fr.badblock.bukkit.hub.rabbitmq.factories.HubAliveFactory;
 import fr.badblock.game.core18R3.players.ingamedata.CommandInGameData;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.threading.TaskManager;

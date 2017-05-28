@@ -1,6 +1,8 @@
-package fr.badblock.bukkit.hub.rabbitmq;
+package fr.badblock.bukkit.hub.rabbitmq.listeners;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
+import fr.badblock.bukkit.hub.rabbitmq.Hub;
+import fr.badblock.bukkit.hub.rabbitmq.factories.HubAliveFactory;
 import fr.badblock.rabbitconnector.RabbitListener;
 import fr.badblock.rabbitconnector.RabbitListenerType;
 

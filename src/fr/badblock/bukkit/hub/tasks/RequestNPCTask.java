@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.npc.NPCData;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.SEntryInfosListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.players.BadblockPlayer;

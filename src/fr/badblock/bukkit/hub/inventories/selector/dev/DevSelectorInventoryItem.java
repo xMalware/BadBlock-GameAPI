@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.inventories.abstracts.actions.ItemAction;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
-import fr.badblock.bukkit.hub.rabbitmq.DevAliveFactory;
+import fr.badblock.bukkit.hub.rabbitmq.factories.DevAliveFactory;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.i18n.Locale;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;

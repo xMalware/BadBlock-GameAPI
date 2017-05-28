@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.inventories.market.cosmetics.boosters.inventories.RealTimeBoosterManager;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.SEntryInfosListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;

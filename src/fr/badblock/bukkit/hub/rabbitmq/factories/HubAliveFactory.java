@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.rabbitmq;
+package fr.badblock.bukkit.hub.rabbitmq.factories;
 
 import java.util.Map;
 

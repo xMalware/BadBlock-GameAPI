@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import fr.badblock.bukkit.hub.inventories.abstracts.inventories.CustomInventory;
 import fr.badblock.bukkit.hub.inventories.abstracts.items.CustomItem;
 import fr.badblock.bukkit.hub.objects.HubPlayer;
-import fr.badblock.bukkit.hub.rabbitmq.DevAliveFactory;
+import fr.badblock.bukkit.hub.rabbitmq.factories.DevAliveFactory;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
 

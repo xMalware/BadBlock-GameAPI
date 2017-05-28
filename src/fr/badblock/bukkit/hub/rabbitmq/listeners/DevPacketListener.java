@@ -1,7 +1,8 @@
-package fr.badblock.bukkit.hub.rabbitmq;
+package fr.badblock.bukkit.hub.rabbitmq.listeners;
 
 import fr.badblock.bukkit.hub.BadBlockHub;
 import fr.badblock.bukkit.hub.inventories.selector.dev.DevSelectorInventory;
+import fr.badblock.bukkit.hub.rabbitmq.factories.DevAliveFactory;
 import fr.badblock.rabbitconnector.RabbitListener;
 import fr.badblock.rabbitconnector.RabbitListenerType;
 

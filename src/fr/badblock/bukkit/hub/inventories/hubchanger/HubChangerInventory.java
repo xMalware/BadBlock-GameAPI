@@ -22,10 +22,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import fr.badblock.bukkit.hub.inventories.abstracts.inventories.CustomUniqueInventory;
-import fr.badblock.bukkit.hub.rabbitmq.BungeeWorkerListener;
 import fr.badblock.bukkit.hub.rabbitmq.Hub;
 import fr.badblock.bukkit.hub.rabbitmq.HubPacketThread;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.BungeeWorkerListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.SEntryInfosListener;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.itemstack.ItemStackUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;

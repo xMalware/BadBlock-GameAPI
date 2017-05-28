@@ -37,14 +37,13 @@ import fr.badblock.bukkit.hub.listeners.PlayerMoveListener;
 import fr.badblock.bukkit.hub.listeners.PlayerQuitListener;
 import fr.badblock.bukkit.hub.listeners.ServerSchedulerListener;
 import fr.badblock.bukkit.hub.listeners.vipzone.RaceListener;
-import fr.badblock.bukkit.hub.rabbitmq.BoosterUpdateListener;
-import fr.badblock.bukkit.hub.rabbitmq.BungeeWorkerListener;
-import fr.badblock.bukkit.hub.rabbitmq.DevPacketListener;
-import fr.badblock.bukkit.hub.rabbitmq.HubPacketListener;
 import fr.badblock.bukkit.hub.rabbitmq.HubPacketThread;
-import fr.badblock.bukkit.hub.rabbitmq.QuitListener;
-import fr.badblock.bukkit.hub.rabbitmq.SEntryInfosListener;
-import fr.badblock.bukkit.hub.rabbitmq.WorkerListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.BoosterUpdateListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.BungeeWorkerListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.DevPacketListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.HubPacketListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.SEntryInfosListener;
+import fr.badblock.bukkit.hub.rabbitmq.listeners.WorkerListener;
 import fr.badblock.bukkit.hub.tasks.BossBarTask;
 import fr.badblock.bukkit.hub.tasks.RebootTask;
 import fr.badblock.bukkit.hub.tasks.RequestBoosterTask;
@@ -159,7 +158,6 @@ public class BadBlockHub extends BadblockPlugin {
 		new BoosterUpdateListener();
 		new BungeeWorkerListener();
 		new WorkerListener();
-		new QuitListener();
 		// SEntry
 		new SEntryInfosListener();
 		// Inventories interactions by fake-entities

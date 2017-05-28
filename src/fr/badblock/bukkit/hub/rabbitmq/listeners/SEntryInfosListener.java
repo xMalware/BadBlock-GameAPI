@@ -1,4 +1,4 @@
-package fr.badblock.bukkit.hub.rabbitmq;
+package fr.badblock.bukkit.hub.rabbitmq.listeners;
 
 import java.util.concurrent.ConcurrentMap;
 
