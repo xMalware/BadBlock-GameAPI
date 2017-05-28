@@ -176,9 +176,9 @@ public class HubPlayer implements InGameData {
 					return;
 				}
 				if (lastMove < System.currentTimeMillis()) {
-					if (player.getPlayerData().getBadcoins() <= 0 && player.getPlayerData().getLevel() <= 1 && player.getPlayerData().getXp() <= 0) {
+					/*if (player.getPlayerData().getBadcoins() <= 0 && player.getPlayerData().getLevel() <= 1 && player.getPlayerData().getXp() <= 0) {
 						player.kickPlayer("§cVous êtes resté trop longtemps inactif sur le hub.");
-					}
+					}*/
 				}
 				if (getLastVipCuboid() != -1 && getLastVipCuboid() < System.currentTimeMillis()) {
 					setLastVipCuboid(-1);
