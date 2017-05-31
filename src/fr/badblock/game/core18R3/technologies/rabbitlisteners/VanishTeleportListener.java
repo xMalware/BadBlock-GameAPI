@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -39,8 +41,9 @@ public class VanishTeleportListener extends RabbitListener {
 	public static void manage(BadblockPlayer player, String[] splitter) {
 		if (player == null) return;
 		if (GameAPI.getAPI().getRunType().equals(RunType.LOBBY)) return;
-		//player.sendTranslatedMessage("game.youjoinedinvanish");
+		player.sendTranslatedMessage("game.youjoinedinvanish");
 		player.closeInventory();
+		player.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
 		player.setVisible(false, pl -> !pl.hasPermission("others.mod.ghostconnect"));
 		player.setVisible(true, pl -> pl.hasPermission("others.mod.ghostconnect"));
 		player.setBadblockMode(BadblockMode.SPECTATOR);
