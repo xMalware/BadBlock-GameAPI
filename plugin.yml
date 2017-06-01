@@ -1,6 +1,4 @@
-name: BadBlockHub
-main: fr.badblock.bukkit.hub.BadBlockHub
-version: 1.0
-author: xMalware
-depend: [BadblockGameAPI]
-description: A hub plugin for BadBlock
+name: BadblockGameAPI
+main: fr.badblock.game.core18R3.GamePlugin
+version: 2.0
+authors: ['LeLanN', 'xMalware']
