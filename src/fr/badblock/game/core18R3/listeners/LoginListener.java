@@ -119,7 +119,7 @@ public class LoginListener extends BadListener {
 	@EventHandler
 	public void whenLoaded(PlayerLoadedEvent event) {
 		GameBadblockPlayer player = (GameBadblockPlayer) event.getPlayer();
-		if (player.isGhostConnect()) {
+		if (player.isGhostConnect() || (VanishTeleportListener.time.containsKey(player.getName().toLowerCase()) && VanishTeleportListener.time.get(player.getName().toLowerCase()) > System.currentTimeMillis())) {
 			player.setVisible(false, pl -> !pl.hasPermission("others.mod.ghostconnect"));
 			player.setVisible(true, pl -> pl.hasPermission("others.mod.ghostconnect"));
 			player.sendTranslatedMessage("game.youjoinedinvanish");
