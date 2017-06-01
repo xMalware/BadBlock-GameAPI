@@ -47,6 +47,8 @@ public class VanishTeleportListener extends RabbitListener {
 		player.setGameMode(GameMode.SURVIVAL);
 		player.setAllowFlight(true);
 		player.setFlying(true);
+		player.setVisible(false, pl -> !pl.hasPermission("others.mod.ghostconnect"));
+		player.setVisible(true, pl -> pl.hasPermission("others.mod.ghostconnect"));
 		if (splitter == null) return;
 		if (splitter.length > 1 && splitter[1] != null && !splitter[1].isEmpty()) {
 			BadblockPlayer otherPlayer = BukkitUtils.getPlayer(splitter[1]);
