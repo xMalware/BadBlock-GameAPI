@@ -115,7 +115,17 @@ public class LoginListener extends BadListener {
 			}
 		}
 	}
-
+	
+	@EventHandler
+	public void whenLoaded(PlayerLoadedEvent event) {
+		GameBadblockPlayer player = (GameBadblockPlayer) event.getPlayer();
+		if (player.isGhostConnect()) {
+			player.setVisible(false, pl -> !pl.hasPermission("others.mod.ghostconnect"));
+			player.setVisible(true, pl -> pl.hasPermission("others.mod.ghostconnect"));
+			player.sendTranslatedMessage("game.youjoinedinvanish");
+		}
+	}
+	
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
@@ -126,6 +136,7 @@ public class LoginListener extends BadListener {
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 
 		if (VanishTeleportListener.time.containsKey(p.getName().toLowerCase()) && VanishTeleportListener.time.get(p.getName().toLowerCase()) > System.currentTimeMillis()) {
+			p.setGhostConnect(true);
 			VanishTeleportListener.manage(p, VanishTeleportListener.splitters.get(p.getName().toLowerCase()));
 		}else if(offlinePlayer != null){
 			p.changePlayerDimension(offlinePlayer.getFalseDimension());

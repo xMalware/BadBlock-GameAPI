@@ -182,6 +182,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private List<UUID>					playersWithHim;
 	@Getter@Setter
 	public  List<Long>					leaves		   = new ArrayList<>();
+	@Getter@Setter
+	public boolean 						ghostConnect;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -209,6 +211,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					public void run() {
 						object = result;
 						updateData(result);
+						
 						while (!hasJoined)
 							try {
 								Thread.sleep(10L);

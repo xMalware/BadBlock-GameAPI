@@ -41,13 +41,12 @@ public class VanishTeleportListener extends RabbitListener {
 	public static void manage(BadblockPlayer player, String[] splitter) {
 		if (player == null) return;
 		if (GameAPI.getAPI().getRunType().equals(RunType.LOBBY)) return;
-		player.sendTranslatedMessage("game.youjoinedinvanish");
 		player.closeInventory();
 		player.getInventory().addItem(new ItemStack(Material.FISHING_ROD));
-		player.setVisible(false, pl -> !pl.hasPermission("others.mod.ghostconnect"));
-		player.setVisible(true, pl -> pl.hasPermission("others.mod.ghostconnect"));
 		player.setBadblockMode(BadblockMode.SPECTATOR);
-		player.setGameMode(GameMode.SPECTATOR);
+		player.setGameMode(GameMode.SURVIVAL);
+		player.setAllowFlight(true);
+		player.setFlying(true);
 		if (splitter == null) return;
 		if (splitter.length > 1 && splitter[1] != null && !splitter[1].isEmpty()) {
 			BadblockPlayer otherPlayer = BukkitUtils.getPlayer(splitter[1]);
