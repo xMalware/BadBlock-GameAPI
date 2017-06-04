@@ -16,6 +16,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -291,6 +294,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 												@Override
 												public void done(ResultSet result, Throwable error) {
 													try {
+														TreeMap<Integer, String> groups = new TreeMap<>();
 														while (result.next()) {
 															String displayName = result.getString("displayName");
 															displayName = displayName.toLowerCase();
@@ -301,36 +305,71 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 																if (!permissions.getSuperGroup().equalsIgnoreCase(displayName) && !permissions.getAlternateGroups().containsKey(displayName)) {
 																	PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
 																	if (group != null) {
-																		System.out.println(getName() + " >> I");
-																		String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
-																		URL obj = new URL(url);
-																		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-																		con.setRequestMethod("POST");
-																		con.setRequestProperty("User-Agent", "Mozilla/5.0");
-																		con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-																		String urlParameters = "name=" + getName().replace("&", "") + "&group=" + displayName + "&duration=-1";
-																		con.setDoOutput(true);
-																		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-																		wr.writeBytes(urlParameters);
-																		wr.flush();
-																		wr.close();
-																		int responseCode = con.getResponseCode();
-																		System.out.println("\nSending 'POST' request to URL : " + url);
-																		System.out.println("Post parameters : " + urlParameters);
-																		System.out.println("Response Code : " + responseCode);
-																		BufferedReader in = new BufferedReader(
-																		        new InputStreamReader(con.getInputStream()));
-																		String inputLine;
-																		StringBuffer response = new StringBuffer();
-																		while ((inputLine = in.readLine()) != null) {
-																			response.append(inputLine);
-																		}
-																		in.close();
-																		System.out.println(response.toString());
+																		groups.put(group.getPower(), group.getName());
 																	}
 																}
 															}
 														}
+														NavigableMap<Integer, String> map = groups.descendingMap();
+														Entry<Integer, String> entry = map.firstEntry();
+														if (entry != null) {
+															PermissibleGroup group = PermissionManager.getInstance().getGroup(entry.getValue());
+															if (group != null) {
+																permissions.addParent(-1, group);
+															}
+															String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
+															URL obj = new URL(url);
+															HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+															con.setRequestMethod("POST");
+															con.setRequestProperty("User-Agent", "Mozilla/5.0");
+															con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+															String urlParameters = "name=" + getName().replace("&", "") + "&group=" + entry.getValue() + "&duration=-1";
+															con.setDoOutput(true);
+															DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+															wr.writeBytes(urlParameters);
+															wr.flush();
+															wr.close();
+															@SuppressWarnings("unused")
+															int responseCode = con.getResponseCode();
+															BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+															String inputLine;
+															StringBuffer response = new StringBuffer();
+															while ((inputLine = in.readLine()) != null) {
+																response.append(inputLine);
+															}
+															in.close();
+														}
+														int i = 0;
+														for (Entry<Integer, String> entries : map.entrySet()) {
+															i++;
+															if (i <= 1) continue;
+															if (permissions.getSuperGroup().equalsIgnoreCase(entries.getValue()) || permissions.getAlternateGroups().containsKey(entries.getValue())) {
+																permissions.removeParent(entries.getValue());
+															}
+														}
+														JsonObject object = new JsonObject();
+														object.add("permissions", permissions.saveAsJson());
+														String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
+														URL obj = new URL(url);
+														HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+														con.setRequestMethod("POST");
+														con.setRequestProperty("User-Agent", "Mozilla/5.0");
+														con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+														String urlParameters = "name=" + getName().replace("&", "") + "&permission=" + permissions.saveAsJson().toString();
+														con.setDoOutput(true);
+														DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+														wr.writeBytes(urlParameters);
+														wr.flush();
+														wr.close();
+														@SuppressWarnings("unused")
+														int responseCode = con.getResponseCode();
+														BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+														String inputLine;
+														StringBuffer response = new StringBuffer();
+														while ((inputLine = in.readLine()) != null) {
+															response.append(inputLine);
+														}
+														in.close();
 													}catch(Exception err) {
 														err.printStackTrace();
 													}
