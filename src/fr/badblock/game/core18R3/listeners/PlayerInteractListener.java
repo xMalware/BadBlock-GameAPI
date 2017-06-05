@@ -68,7 +68,11 @@ public class PlayerInteractListener extends BadListener {
 					double s = o / 1000.0D;
 					String f = String.format("%.2f", s);
 					BadblockPlayer badblockPlayer = (BadblockPlayer) player;
-					badblockPlayer.sendTranslatedMessage("game.bowspam", f);
+					long t = BowSpamListener.alert.containsKey(name) ? BowSpamListener.alert.get(name) : 0;
+					if (t < current) {
+						badblockPlayer.sendTranslatedMessage("game.bowspam", f);		
+						BowSpamListener.alert.put(name, current + 500);
+					}
 				}
 			}
 		}
