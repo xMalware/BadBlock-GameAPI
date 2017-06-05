@@ -55,7 +55,6 @@ import com.mojang.authlib.properties.PropertyMap;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.internalutils.Base64Url;
-import fr.badblock.game.core18R3.listeners.BowSpamListener;
 import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
@@ -205,22 +204,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			inGameData = offlinePlayer.getInGameData();
 			return;
 		}else object = new JsonObject();
-
-		TaskManager.scheduleSyncRepeatingTask("bowspam_" + getName(), new Runnable() {
-			@Override
-			public void run() {
-				if (!isOnline()) {
-					TaskManager.cancelTaskByName("bowspam_" + getName());
-					return;
-				}
-				String o = getName().toLowerCase();
-				long t = BowSpamListener.shoot.containsKey(o) ? BowSpamListener.shoot.get(o) : 0;
-				t += 10000;
-				if (t > System.currentTimeMillis()) {
-					sendTranslatedActionBar("game.youcanbow");		
-				}
-			}
-		}, 1, 1);
 		if (getRealName() == null) setRealName(CommonFilter.reverseFilterNames(this.getName()));
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
@@ -230,7 +213,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					public void run() {
 						object = result;
 						updateData(result);
-						
+
 						while (!hasJoined)
 							try {
 								Thread.sleep(10L);
@@ -299,10 +282,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						if (result.next()) {
 							int id = result.getInt("id");
 							GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_buy WHERE player = '" + id + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
-
 								@Override
 								public void done(ResultSet result, Throwable error) {
 									try {
+										TreeMap<Integer, String> groups = new TreeMap<>();
 										while (result.next()) {
 											int offer = result.getInt("offer");
 											GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_offers WHERE id = '" + offer + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
@@ -310,7 +293,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 												@Override
 												public void done(ResultSet result, Throwable error) {
 													try {
-														TreeMap<Integer, String> groups = new TreeMap<>();
 														while (result.next()) {
 															String displayName = result.getString("displayName");
 															displayName = displayName.toLowerCase();
@@ -326,72 +308,72 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 																}
 															}
 														}
-														NavigableMap<Integer, String> map = groups.descendingMap();
-														Entry<Integer, String> entry = map.firstEntry();
-														if (entry != null) {
-															PermissibleGroup group = PermissionManager.getInstance().getGroup(entry.getValue());
-															if (group != null) {
-																permissions.addParent(-1, group);
-															}
-															String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
-															URL obj = new URL(url);
-															HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-															con.setRequestMethod("POST");
-															con.setRequestProperty("User-Agent", "Mozilla/5.0");
-															con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-															String urlParameters = "name=" + getName().replace("&", "") + "&group=" + entry.getValue() + "&duration=-1";
-															con.setDoOutput(true);
-															DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-															wr.writeBytes(urlParameters);
-															wr.flush();
-															wr.close();
-															@SuppressWarnings("unused")
-															int responseCode = con.getResponseCode();
-															BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-															String inputLine;
-															StringBuffer response = new StringBuffer();
-															while ((inputLine = in.readLine()) != null) {
-																response.append(inputLine);
-															}
-															in.close();
-														}
-														int i = 0;
-														for (Entry<Integer, String> entries : map.entrySet()) {
-															i++;
-															if (i <= 1) continue;
-															if (permissions.getSuperGroup().equalsIgnoreCase(entries.getValue()) || permissions.getAlternateGroups().containsKey(entries.getValue())) {
-																permissions.removeParent(entries.getValue());
-															}
-														}
-														JsonObject object = new JsonObject();
-														object.add("permissions", permissions.saveAsJson());
-														String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
-														URL obj = new URL(url);
-														HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-														con.setRequestMethod("POST");
-														con.setRequestProperty("User-Agent", "Mozilla/5.0");
-														con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-														String urlParameters = "name=" + getName().replace("&", "") + "&permission=" + permissions.saveAsJson().toString();
-														con.setDoOutput(true);
-														DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-														wr.writeBytes(urlParameters);
-														wr.flush();
-														wr.close();
-														@SuppressWarnings("unused")
-														int responseCode = con.getResponseCode();
-														BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-														String inputLine;
-														StringBuffer response = new StringBuffer();
-														while ((inputLine = in.readLine()) != null) {
-															response.append(inputLine);
-														}
-														in.close();
 													}catch(Exception err) {
 														err.printStackTrace();
 													}
 												}
 											});
 										}
+										NavigableMap<Integer, String> map = groups.descendingMap();
+										Entry<Integer, String> entry = map.firstEntry();
+										if (entry != null) {
+											PermissibleGroup group = PermissionManager.getInstance().getGroup(entry.getValue());
+											if (group != null) {
+												permissions.addParent(-1, group);
+											}
+											String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
+											URL obj = new URL(url);
+											HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+											con.setRequestMethod("POST");
+											con.setRequestProperty("User-Agent", "Mozilla/5.0");
+											con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+											String urlParameters = "name=" + getName().replace("&", "") + "&group=" + entry.getValue() + "&duration=-1";
+											con.setDoOutput(true);
+											DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+											wr.writeBytes(urlParameters);
+											wr.flush();
+											wr.close();
+											@SuppressWarnings("unused")
+											int responseCode = con.getResponseCode();
+											BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+											String inputLine;
+											StringBuffer response = new StringBuffer();
+											while ((inputLine = in.readLine()) != null) {
+												response.append(inputLine);
+											}
+											in.close();
+										}
+										int i = 0;
+										for (Entry<Integer, String> entries : map.entrySet()) {
+											i++;
+											if (i <= 1) continue;
+											if (permissions.getSuperGroup().equalsIgnoreCase(entries.getValue()) || permissions.getAlternateGroups().containsKey(entries.getValue())) {
+												permissions.removeParent(entries.getValue());
+											}
+										}
+										JsonObject object = new JsonObject();
+										object.add("permissions", permissions.saveAsJson());
+										String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
+										URL obj = new URL(url);
+										HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+										con.setRequestMethod("POST");
+										con.setRequestProperty("User-Agent", "Mozilla/5.0");
+										con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+										String urlParameters = "name=" + getName().replace("&", "") + "&permission=" + permissions.saveAsJson().toString();
+										con.setDoOutput(true);
+										DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+										wr.writeBytes(urlParameters);
+										wr.flush();
+										wr.close();
+										@SuppressWarnings("unused")
+										int responseCode = con.getResponseCode();
+										BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+										String inputLine;
+										StringBuffer response = new StringBuffer();
+										while ((inputLine = in.readLine()) != null) {
+											response.append(inputLine);
+										}
+										in.close();
 									}catch(Exception err) {
 										err.printStackTrace();
 									}
@@ -402,14 +384,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						error.printStackTrace();
 					}
 				}
-				
 			});
-			
 		}
 		if (object.has("shoppoints")) {
 			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
 		}
 	}
+
 
 	@Override
 	public EntityPlayer getHandle() {
