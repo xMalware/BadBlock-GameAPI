@@ -177,6 +177,8 @@ public class GamePlugin extends GameAPI {
 	private MapProtector				mapProtector		= new DefaultMapProtector();
 	@Getter
 	private boolean						antiSpawnKill		= false;
+	@Getter
+	private long						antiBowSpam			= 0;
 	@Getter@Setter@NonNull
 	private PlayerKitContentManager     kitContentManager	= new DefaultKitContentManager(true);
 	@Getter
@@ -756,6 +758,11 @@ public class GamePlugin extends GameAPI {
 	@Override
 	public void enableAntiSpawnKill() {
 		antiSpawnKill = true;
+	}
+
+	@Override
+	public void enableAntiBowSpam(long milliseconds) {
+		antiBowSpam = milliseconds;
 	}
 
 	@Override

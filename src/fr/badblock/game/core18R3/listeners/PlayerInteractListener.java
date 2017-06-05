@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
+import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
@@ -51,6 +52,24 @@ public class PlayerInteractListener extends BadListener {
 				}
 				
 				e.setCancelled(true);
+			}
+		}
+		if (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
+			if (player.getInventory().getItemInHand() != null && player.getInventory().getItemInHand().getType() == Material.BOW) {
+				long antiBowSpam = GamePlugin.getInstance().getAntiBowSpam();
+				if (antiBowSpam == 0) return;
+				String name = player.getName().toLowerCase();
+				long time = BowSpamListener.shoot.containsKey(name) ? BowSpamListener.shoot.get(name) : 0;
+				long current = System.currentTimeMillis();
+				if (time > current) {
+					e.setCancelled(true);
+					double o = (time - current);
+					double s = o / 1000.0D;
+					String f = String.format("%.2f", s);
+					BadblockPlayer badblockPlayer = (BadblockPlayer) player;
+					badblockPlayer.sendTranslatedMessage("game.bowspam", f);
+				}
 			}
 		}
 	}
