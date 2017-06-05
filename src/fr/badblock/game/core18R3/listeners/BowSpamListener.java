@@ -14,8 +14,8 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class BowSpamListener extends BadListener {
 
-	static Map<String, Long> shoot = new HashMap<>();
-	static Map<String, Long> alert = new HashMap<>();
+	public static Map<String, Long> shoot = new HashMap<>();
+	public static Map<String, Long> alert = new HashMap<>();
 	
 	@EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
 	public void onBowSpam(EntityShootBowEvent e){
@@ -39,7 +39,8 @@ public class BowSpamListener extends BadListener {
 			if (t < current) {
 				badblockPlayer.sendTranslatedMessage("game.bowspam", f);		
 				alert.put(name, current + 500);
-			}
+				badblockPlayer.sendTranslatedActionBar("game.bowspam", f);
+			}else badblockPlayer.sendTranslatedActionBar("game.bowspam", f);
 		}
 	}
 		

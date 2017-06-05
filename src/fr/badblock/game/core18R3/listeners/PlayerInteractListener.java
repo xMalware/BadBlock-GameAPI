@@ -72,8 +72,9 @@ public class PlayerInteractListener extends BadListener {
 					if (t < current) {
 						badblockPlayer.sendTranslatedMessage("game.bowspam", f);		
 						BowSpamListener.alert.put(name, current + 500);
-					}
-				}
+						player.sendTranslatedActionBar("game.bowspam", f);
+					}else player.sendTranslatedActionBar("game.bowspam", f);
+				}else player.sendTranslatedActionBar("game.youcanbow");
 			}
 		}
 	}

@@ -55,6 +55,7 @@ import com.mojang.authlib.properties.PropertyMap;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.internalutils.Base64Url;
+import fr.badblock.game.core18R3.listeners.BowSpamListener;
 import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
@@ -205,6 +206,21 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			return;
 		}else object = new JsonObject();
 
+		TaskManager.scheduleSyncRepeatingTask("bowspam_" + getName(), new Runnable() {
+			@Override
+			public void run() {
+				if (!isOnline()) {
+					TaskManager.cancelTaskByName("bowspam_" + getName());
+					return;
+				}
+				String o = getName().toLowerCase();
+				long t = BowSpamListener.shoot.containsKey(o) ? BowSpamListener.shoot.get(o) : 0;
+				t += 10000;
+				if (t > System.currentTimeMillis()) {
+					sendTranslatedActionBar("game.youcanbow");		
+				}
+			}
+		}, 1, 1);
 		if (getRealName() == null) setRealName(CommonFilter.reverseFilterNames(this.getName()));
 		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
 			@Override
