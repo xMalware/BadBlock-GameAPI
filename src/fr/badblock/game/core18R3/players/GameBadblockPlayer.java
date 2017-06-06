@@ -6,10 +6,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.security.SecureRandom;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -54,7 +52,6 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
 import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.internalutils.Base64Url;
 import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
@@ -187,6 +184,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public  List<Long>					leaves		   = new ArrayList<>();
 	@Getter@Setter
 	public boolean 						ghostConnect;
+	@Getter@Setter
+	private boolean						resultDone;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -279,109 +278,85 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				@Override
 				public void done(ResultSet result, Throwable error) {
 					try {
+						TreeMap<Integer, String> groups = new TreeMap<>();
 						if (result.next()) {
 							int id = result.getInt("id");
-							GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_buy WHERE player = '" + id + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
-								@Override
-								public void done(ResultSet result, Throwable error) {
-									try {
-										TreeMap<Integer, String> groups = new TreeMap<>();
-										while (result.next()) {
-											int offer = result.getInt("offer");
-											GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM boutique_offers WHERE id = '" + offer + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
-
-												@Override
-												public void done(ResultSet result, Throwable error) {
-													try {
-														while (result.next()) {
-															String displayName = result.getString("displayName");
-															displayName = displayName.toLowerCase();
-															displayName = displayName.replace("old ", "");
-															if (displayName.contains("grade")) {
-																displayName = displayName.replace("grade", "");
-																displayName = displayName.replace(" ", "");
-																if (!permissions.getSuperGroup().equalsIgnoreCase(displayName) && !permissions.getAlternateGroups().containsKey(displayName)) {
-																	PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
-																	if (group != null) {
-																		groups.put(group.getPower(), group.getName());
-																	}
-																}
-															}
-														}
-													}catch(Exception err) {
-														err.printStackTrace();
-													}
-												}
-											});
-										}
-										NavigableMap<Integer, String> map = groups.descendingMap();
-										Entry<Integer, String> entry = map.firstEntry();
-										if (entry != null) {
-											PermissibleGroup group = PermissionManager.getInstance().getGroup(entry.getValue());
+							try {
+								Statement statement = GamePlugin.getInstance().getWebDatabase().createStatement();
+								ResultSet resultSet = statement.executeQuery("SELECT * FROM boutique_buy WHERE player = '" + id + "'");
+								while (resultSet.next()) {
+									int offer = resultSet.getInt("offer");
+									Statement statement2 = GamePlugin.getInstance().getWebDatabase().createStatement();
+									ResultSet result2 = statement2.executeQuery("SELECT * FROM boutique_offers WHERE id = '" + offer + "'");
+									while (result2.next()) {
+										String displayName = result2.getString("displayName");
+										displayName = displayName.toLowerCase();
+										displayName = displayName.replace("old ", "");
+										if (displayName.contains("grade")) {
+											displayName = displayName.replace("grade", "");
+											displayName = displayName.replace(" ", "");
+											PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
 											if (group != null) {
-												permissions.addParent(-1, group);
-											}
-											String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
-											URL obj = new URL(url);
-											HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-											con.setRequestMethod("POST");
-											con.setRequestProperty("User-Agent", "Mozilla/5.0");
-											con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-											String urlParameters = "name=" + getName().replace("&", "") + "&group=" + entry.getValue() + "&duration=-1";
-											con.setDoOutput(true);
-											DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-											wr.writeBytes(urlParameters);
-											wr.flush();
-											wr.close();
-											@SuppressWarnings("unused")
-											int responseCode = con.getResponseCode();
-											BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-											String inputLine;
-											StringBuffer response = new StringBuffer();
-											while ((inputLine = in.readLine()) != null) {
-												response.append(inputLine);
-											}
-											in.close();
-										}
-										int i = 0;
-										for (Entry<Integer, String> entries : map.entrySet()) {
-											i++;
-											if (i <= 1) continue;
-											if (permissions.getSuperGroup().equalsIgnoreCase(entries.getValue()) || permissions.getAlternateGroups().containsKey(entries.getValue())) {
-												permissions.removeParent(entries.getValue());
+												groups.put(group.getPower(), group.getName());
 											}
 										}
-										JsonObject object = new JsonObject();
-										object.add("permissions", permissions.saveAsJson());
-										String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
-										URL obj = new URL(url);
-										HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-										con.setRequestMethod("POST");
-										con.setRequestProperty("User-Agent", "Mozilla/5.0");
-										con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-										String urlParameters = "name=" + getName().replace("&", "") + "&permission=" + permissions.saveAsJson().toString();
-										con.setDoOutput(true);
-										DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-										wr.writeBytes(urlParameters);
-										wr.flush();
-										wr.close();
-										@SuppressWarnings("unused")
-										int responseCode = con.getResponseCode();
-										BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-										String inputLine;
-										StringBuffer response = new StringBuffer();
-										while ((inputLine = in.readLine()) != null) {
-											response.append(inputLine);
-										}
-										in.close();
-									}catch(Exception err) {
-										err.printStackTrace();
 									}
+									result2.close();
 								}
-							});
+								resultSet.close();
+							}catch(Exception err) {
+								err.printStackTrace();
+							}
+						}
+						result.close();
+						NavigableMap<Integer, String> map = groups.descendingMap();
+						Entry<Integer, String> entry = map.firstEntry();
+						if (entry != null) {
+							PermissibleGroup group = PermissionManager.getInstance().getGroup(entry.getValue());
+							if (!permissions.getSuperGroup().equalsIgnoreCase(entry.getValue()) && !permissions.getAlternateGroups().containsKey(entry.getValue())) {
+								if (group != null) {
+									permissions.addParent(-1, group);
+								}
+								String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
+								URL obj = new URL(url);
+								HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+								con.setRequestMethod("POST");
+								con.setRequestProperty("User-Agent", "Mozilla/5.0");
+								con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+								String urlParameters = "name=" + getName().replace("&", "") + "&group=" + entry.getValue() + "&duration=-1";
+								con.setDoOutput(true);
+								DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+								wr.writeBytes(urlParameters);
+								wr.flush();
+								wr.close();
+								@SuppressWarnings("unused")
+								int responseCode = con.getResponseCode();
+								BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+								String inputLine;
+								StringBuffer response = new StringBuffer();
+								while ((inputLine = in.readLine()) != null) {
+									response.append(inputLine);
+								}
+							}
+						}
+						int i = 0;
+						boolean bool = false;
+						for (Entry<Integer, String> entries : map.entrySet()) {
+							i++;
+							if (i <= 1) continue;
+							System.out.println("Remove " + entries.getValue());
+							if (permissions.getSuperGroup().equalsIgnoreCase(entries.getValue()) || permissions.getAlternateGroups().containsKey(entries.getValue())) {
+								bool = true;
+								permissions.removeParent(entries.getValue());
+							}
+						}
+						if (bool) {
+							JsonObject object = new JsonObject();
+							object.add("permissions", permissions.saveAsJson());
+							GameAPI.getAPI().getLadderDatabase().updatePlayerData(GameBadblockPlayer.this, object);
 						}
 					}catch(Exception err) {
-						error.printStackTrace();
+						err.printStackTrace();
 					}
 				}
 			});
@@ -531,19 +506,19 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void postResult(Result toPost) {
-		long   id	    = new SecureRandom().nextLong();
+		/*long   id	    = new SecureRandom().nextLong();
 		long   party    = GamePlugin.getInstance().getGameServer().getGameId();
 		String player   = getName().toLowerCase();
 		UUID   playerId = getUniqueId();
 		String gameType = GameAPI.getGameName();
-		String server   = Bukkit.getServerName();
-		String result   = GameAPI.getGson().toJson(toPost);
+		String server   = Bukkit.getServerName();*/
+		//String result   = GameAPI.getGson().toJson(toPost);
 
 
-		PreparedStatement statement = null;
+	//	PreparedStatement statement = null;
 
 		try {
-			statement = GameAPI.getAPI().getSqlDatabase().preparedStatement("INSERT INTO parties(id, party, player, playerId, gametype, servername, day, result)"
+			/*statement = GameAPI.getAPI().getSqlDatabase().preparedStatement("INSERT INTO parties(id, party, player, playerId, gametype, servername, day, result)"
 					+ " VALUES(?, ?, ?, ?, ?, ?, NOW(), ?)");
 			statement.setLong(1, id);
 			statement.setLong(2, party);
@@ -553,40 +528,42 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			statement.setString(6, server);
 			statement.setString(7, result);
 
-			statement.executeUpdate();
+			statement.executeUpdate();*/
 
-			int percent = (int) Math.round(((double)getPlayerData().getXp() / (double)getPlayerData().getXpUntilNextLevel()) * 100);
+			if (!resultDone) {
+				int percent = (int) Math.round(((double)getPlayerData().getXp() / (double)getPlayerData().getXpUntilNextLevel()) * 100);
 
-			String line = "&a";
+				String line = "&a";
 
-			for(int i=0;i<100;i++){
-				if(i == percent)
-					line += "&8";
-				line += "|";
+				for(int i=0;i<100;i++){
+					if(i == percent)
+						line += "&8";
+					line += "|";
+				}
+				sendTranslatedMessage("game.result", 
+						getPlayerData().getBadcoins(), getPlayerData().getLevel(), percent, getPlayerData().getXp(),
+						getPlayerData().getXpUntilNextLevel(), line, "", getPlayerData().getAddedBadcoins(), 
+						getPlayerData().getAddedLevels(), getPlayerData().getAddedXP(), getPlayerData().getAddedShopPoints());
+				TextComponent message = new TextComponent( GameAPI.i18n().get("chat.replay")[0] );
+				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/replay") );
+				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", Bukkit.getServerName().split("_")[0])[0]).create() ) );
+				TextComponent textComponent = new TextComponent();
+				textComponent.setText(" - ");
+				TextComponent message2 = new TextComponent( GameAPI.i18n().get("chat.hub")[0] );
+				message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/hub") );
+				message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.hub_hover")[0]).create() ) );
+				this.sendMessage(message, textComponent, message2);
+				resultDone = true;
 			}
-
-			sendTranslatedMessage("game.result", 
-					getPlayerData().getBadcoins(), getPlayerData().getLevel(), percent, getPlayerData().getXp(),
-					getPlayerData().getXpUntilNextLevel(), line, Base64Url.encode(id), getPlayerData().getAddedBadcoins(), 
-					getPlayerData().getAddedLevels(), getPlayerData().getAddedXP(), getPlayerData().getAddedShopPoints());
-			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.replay")[0] );
-			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/replay") );
-			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", Bukkit.getServerName().split("_")[0])[0]).create() ) );
-			TextComponent textComponent = new TextComponent();
-			textComponent.setText(" - ");
-			TextComponent message2 = new TextComponent( GameAPI.i18n().get("chat.hub")[0] );
-			message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/hub") );
-			message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.hub_hover")[0]).create() ) );
-			this.sendMessage(message, textComponent, message2);
-
+			
 			saveGameData();
 		} catch(Exception e){
 			e.printStackTrace();
 		} finally {
-			if(statement != null)
+			/*if(statement != null)
 				try {
 					statement.close();
-				} catch (SQLException e){}
+				} catch (SQLException e){}*/
 		}
 
 	}
