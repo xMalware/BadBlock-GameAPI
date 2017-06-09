@@ -212,7 +212,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			for(Entity entity : player.getNearbyEntities(16.0d, 16.0d, 16.0d)){
 				if(entity.getType() == EntityType.PLAYER){
 					BadblockPlayer viewer = (BadblockPlayer) entity;
-					viewer.showFloatingText(ChatColor.RED + "-" + (int) e.getDamage(), player.getLocation().add(0, 2.3, 0), 10, 0.1d);
+					viewer.showFloatingText(ChatColor.RED + "-" + (int) e.getDamage(), player.getLocation().add(0, 4, 0), 10, 0.1d);
 				}
 
 			}
