@@ -214,6 +214,7 @@ public class GamePlayerData implements PlayerData {
 			state.progress(1.0d);
 			state.trySucceed(player, achievement);
 		}		
+		player.saveGameData();
 	}
 
 	@Override
