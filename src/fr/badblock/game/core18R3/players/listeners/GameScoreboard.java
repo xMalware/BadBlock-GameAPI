@@ -465,7 +465,14 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if (max != null && max.getKey().getInternalName().equals("random")) {
 			List<Entry<VoteElement, Integer>> list = new ArrayList<>(votes.entrySet());
 			list.remove(max);
-			max = list.get(new SecureRandom().nextInt(votes.size()));
+			boolean o = false;
+			for (Entry<VoteElement, Integer> entry : votes.entrySet()) {
+				if (entry.getKey().getInternalName().equalsIgnoreCase("classique")) {
+					max = entry;
+					o = true;
+				}
+			}
+			if (!o) max = list.get(new SecureRandom().nextInt(votes.size()));
 		}
 
 		return max == null ? null : max.getKey();
