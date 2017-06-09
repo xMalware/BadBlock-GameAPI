@@ -1,6 +1,5 @@
 package fr.badblock.game.core18R3.players.listeners;
 
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -465,14 +464,17 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if (max != null && max.getKey().getInternalName().equals("random")) {
 			List<Entry<VoteElement, Integer>> list = new ArrayList<>(votes.entrySet());
 			list.remove(max);
-			boolean o = false;
+		}
+		
+		boolean voted = false;
+		for (Entry<VoteElement, Integer> value : votes.entrySet())
+			if (value.getValue() > 0) voted = true;
+		if (!voted) {
 			for (Entry<VoteElement, Integer> entry : votes.entrySet()) {
-				if (entry.getKey().getInternalName().equalsIgnoreCase("classique")) {
+				if (entry.getKey().getInternalName().contains("classique")) {
 					max = entry;
-					o = true;
 				}
 			}
-			if (!o) max = list.get(new SecureRandom().nextInt(votes.size()));
 		}
 
 		return max == null ? null : max.getKey();
