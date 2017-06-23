@@ -15,7 +15,6 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameServer;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.run.RunType;
-import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,14 +47,11 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 	}
 
 	private boolean isJoinable() {
-		System.out.println("isJoinableA> " + (BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) + " / " + BukkitUtils.getPlayers().size() + " / " + Bukkit.getMaxPlayers());
-		if (BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) return false;
 		GameState gameState = GamePlugin.getInstance().getGameServer().getGameState();
 		if (gameState.equals(GameState.RUNNING) && GameAPI.getAPI().getGameServer().isJoinableWhenRunning()) {
 			if (!GameAPI.getAPI().getTeams().isEmpty()) {
 				// team pas full mais team avec > 0
 				long count = GameAPI.getAPI().getTeams().stream().filter(team -> team.playersCurrentlyOnline() < team.getMaxPlayers() && team.playersCurrentlyOnline() > 0 && !team.isDead()).count();
-				System.out.println("isJoinableB> " + count);
 				if (count == 0) return false;
 				return GameAPI.isJoinable();
 			}
