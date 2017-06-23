@@ -1,11 +1,6 @@
 package fr.badblock.game.core18R3.listeners;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
-import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,13 +11,14 @@ import org.bukkit.event.player.PlayerVelocityEvent;
 import org.bukkit.util.Vector;
 
 import fr.badblock.gameapi.BadListener;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityVelocity;
 
 public class KnockFixListener extends BadListener
 {
-	private Field fieldPlayerConnection;
+	/*private Field fieldPlayerConnection;
 	private Method sendPacket;
 	private Constructor<?> packetVelocity;
-	private String craftBukkitVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+	private String craftBukkitVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];*/
 	
 	// Conf
 	private static double horMultiplier = 1.2;
@@ -30,7 +26,7 @@ public class KnockFixListener extends BadListener
 	
 	public KnockFixListener()
 	{
-		try
+		/*try
 		{
 			Class<?> entityPlayerClass = Class.forName("net.minecraft.server." + craftBukkitVersion + ".EntityPlayer");
 			Class<?> packetVelocityClass = Class.forName("net.minecraft.server." + craftBukkitVersion + ".PacketPlayOutEntityVelocity");
@@ -43,7 +39,7 @@ public class KnockFixListener extends BadListener
 		catch (ClassNotFoundException|NoSuchFieldException|SecurityException|NoSuchMethodException e)
 		{
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	@EventHandler
@@ -83,16 +79,7 @@ public class KnockFixListener extends BadListener
 		knockback.setX((knockback.getX() * sprintMultiplier + kbMultiplier) * horMultiplier);
 		knockback.setY(0.35D * airMultiplier * verMultiplier);
 		knockback.setZ((knockback.getZ() * sprintMultiplier + kbMultiplier) * horMultiplier);
-		try
-		{
-			Object entityPlayer = damaged.getClass().getMethod("getHandle", new Class[0]).invoke(damaged, new Object[0]);
-			Object playerConnection = this.fieldPlayerConnection.get(entityPlayer);
-			Object packet = this.packetVelocity.newInstance(new Object[] { Integer.valueOf(damaged.getEntityId()), Double.valueOf(knockback.getX()), Double.valueOf(knockback.getY()), Double.valueOf(knockback.getZ()) });
-			this.sendPacket.invoke(playerConnection, new Object[] { packet });
-		}
-		catch (SecurityException|IllegalArgumentException|IllegalAccessException|InvocationTargetException|NoSuchMethodException|InstantiationException e)
-		{
-			e.printStackTrace();
-		}
+		CraftPlayer craftPlayer = (CraftPlayer) damaged;
+		craftPlayer.getHandle().playerConnection.sendPacket(new PacketPlayOutEntityVelocity(damaged.getEntityId(), knockback.getX(), knockback.getY(), knockback.getZ()));
 	}
 }
