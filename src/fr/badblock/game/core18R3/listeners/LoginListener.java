@@ -5,20 +5,29 @@ import java.sql.SQLException;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
+import fr.badblock.game.core18R3.listeners.packets.SkullExploitListener;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.MojangAPI;
@@ -135,7 +144,7 @@ public class LoginListener extends BadListener {
 	}
 
 	private HashMap<Player, Integer> lastBookTick = new HashMap<>();
-	  
+
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
@@ -315,6 +324,60 @@ public class LoginListener extends BadListener {
 		}
 		Bukkit.getPluginManager().callEvent(new PlayerGameInitEvent(player));
 		player.setVisible(true);
+	}
+
+	@EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=false)
+	public void onInteract(PlayerInteractEvent e)
+	{
+		if (SkullExploitListener.isExploit(e.getItem()))
+		{
+			e.setCancelled(true);
+			System.out.println("Removing exploit from inventory, " + e.getPlayer().getName());
+		}
+	}
+
+	@EventHandler(priority=EventPriority.LOWEST, ignoreCancelled=false)
+	public void onJoine(PlayerJoinEvent e)
+	{
+		for (ItemStack item : e.getPlayer().getInventory().getContents()) {
+			if (SkullExploitListener.isExploit(item)) {
+				System.out.println("Removing exploit from inventory, " + e.getPlayer().getName());
+			}
+		}
+	}
+
+	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
+	public void onItemDrop(PlayerDropItemEvent e)
+	{
+		if (SkullExploitListener.isExploit(e.getItemDrop().getItemStack()))
+		{
+			e.setCancelled(true);
+			System.out.println("Removing exploit from inventory, " + e.getPlayer().getName());
+		}
+	}
+
+	@EventHandler(priority=EventPriority.HIGHEST, ignoreCancelled=true)
+	public void onItemDrop(InventoryClickEvent e)
+	{
+		if ((e.getWhoClicked().getType() == EntityType.PLAYER) && (SkullExploitListener.isExploit(e.getCurrentItem())))
+		{
+			e.setCancelled(true);
+			System.out.println("Removing exploit from inventory, " + e.getWhoClicked().getName());
+		}
+	}
+
+	@EventHandler
+	public void onLoad(ChunkLoadEvent e)
+	{
+		SkullExploitListener.cleanChunk(e.getChunk());
+	}
+
+	@EventHandler
+	public void onLoad2(WorldLoadEvent e)
+	{
+		for (Chunk c : e.getWorld().getLoadedChunks()) {
+			SkullExploitListener.cleanChunk(c);
+		}
 	}
 
 }
