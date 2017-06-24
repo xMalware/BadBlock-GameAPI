@@ -2,9 +2,11 @@ package fr.badblock.game.core18R3.listeners;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -44,7 +46,13 @@ import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.reflection.ReflectionUtils;
 import fr.badblock.gameapi.utils.reflection.Reflector;
 import fr.badblock.gameapi.utils.threading.TaskManager;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
 
 /**
  * Listener servant � remplac� la classe CraftPlayer par GameBadblockPlayer et � demander � Ladder les informations joueur.
@@ -54,7 +62,7 @@ public class LoginListener extends BadListener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e){
 		System.out.println("PlayerLoginEvent: " + e.getPlayer().getName());
-		
+
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
@@ -115,7 +123,7 @@ public class LoginListener extends BadListener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void whenLoaded(PlayerLoadedEvent event) {
 		GameBadblockPlayer player = (GameBadblockPlayer) event.getPlayer();
@@ -125,13 +133,67 @@ public class LoginListener extends BadListener {
 			player.sendTranslatedMessage("game.youjoinedinvanish");
 		}
 	}
-	
+
+	private HashMap<Player, Integer> lastBookTick = new HashMap<>();
+	  
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
 
 		p.loadInjector();
 		p.setHasJoined(true);
+
+		Channel channel = ((CraftPlayer)p).getHandle().playerConnection.networkManager.channel;
+		if (channel.pipeline().get("bookpacketexploitfix_listener") == null)
+		{
+			ChannelDuplexHandler channelDuplexHandler = new ChannelDuplexHandler()
+			{
+				public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)
+						throws Exception
+				{
+					super.write(ctx, msg, promise);
+				}
+
+				public void channelRead(ChannelHandlerContext ctx, Object msg)
+						throws Exception
+				{
+					if ((msg instanceof PacketPlayInCustomPayload))
+					{
+						PacketPlayInCustomPayload packet = (PacketPlayInCustomPayload)msg;
+						if ((packet.a().equals("MC|BEdit")) || (packet.a().equals("MC|BSign")))
+						{
+							if ((lastBookTick.containsKey(p)) && (lastBookTick.get(p) + 20 > MinecraftServer.currentTick))
+							{
+								Bukkit.getScheduler().runTask(GameAPI.getAPI(), new Runnable()
+								{
+									public void run()
+									{
+										if (p.isOnline())
+										{
+											p.kickPlayer("Book edited too quickly!");
+											System.out.println("Book edited too quickly by " + p.getName() + "!");
+										}
+									}
+								});
+							}
+							else
+							{
+								lastBookTick.put(p, MinecraftServer.currentTick);
+								super.channelRead(ctx, msg);
+							}
+						}
+						else {
+							super.channelRead(ctx, msg);
+						}
+					}
+					else
+					{
+						super.channelRead(ctx, msg);
+					}
+				}
+			};
+			channel.pipeline().addBefore("packet_handler", "bookpacketexploitfix_listener", channelDuplexHandler);
+		}
 
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 
