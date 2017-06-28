@@ -189,7 +189,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
-
 		this.inGameData  = Maps.newConcurrentMap();
 
 		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recr�� � la r�c�ptions des donn�es
