@@ -84,7 +84,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 			if(equipment.containsKey(slot)){
 				GameAPI.getAPI().createPacket(PlayEntityEquipment.class)
 								.setEntityId(id)
-								.setSlot(slot.ordinal())
+								//.setSlot(slot.ordinal())
 								.setItemStack(equipment.get(slot))
 								.send(player);
 			}
@@ -156,7 +156,7 @@ public abstract class GameFakeEntity<T extends WatcherEntity> implements FakeEnt
 		
 		broadcastPacket(GameAPI.getAPI().createPacket(PlayEntityEquipment.class)
 										.setEntityId(id)
-										.setSlot(equipmentSlot.ordinal())
+										//.setSlot(equipmentSlot.ordinal())
 										.setItemStack(itemstack));
 	}
 
