@@ -2,7 +2,9 @@ package fr.badblock.game.core18R3.listeners;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -68,6 +70,9 @@ import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
  * @author LeLanN
  */
 public class LoginListener extends BadListener {
+	
+	public static List<String> l = new ArrayList<>();
+	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e){
 		System.out.println("PlayerLoginEvent: " + e.getPlayer().getName());
@@ -282,7 +287,7 @@ public class LoginListener extends BadListener {
 				}
 			});
 		}
-		GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM buyhearts WHERE playerName = '" + p.getName() + "' AND timestamp >= '" + (System.currentTimeMillis() - (86400 * 31 * 1000)) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+		GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM buyhearts WHERE playerName = '" + p.getName() + "' AND timestamp >= '" + (System.currentTimeMillis() - 2678400000L) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 			@Override
 			public void done(ResultSet result, Throwable error) {
 				try {
@@ -293,6 +298,7 @@ public class LoginListener extends BadListener {
 								@Override
 								public void run() {
 									if (p.isOnline()) {
+										l.add(p.getName());
 										p.setMaxHealth(22);
 									}
 								}

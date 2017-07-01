@@ -39,6 +39,7 @@ public class DisconnectListener extends BadListener {
 
 		player.removeBossBars();
 		player.undisguise();
+		LoginListener.l.add(player.getName());
 
 		if(GameAPI.getAPI().getRunType().equals(RunType.GAME) && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
 			List<Long> leaves = player.getLeaves();
