@@ -282,7 +282,7 @@ public class LoginListener extends BadListener {
 				}
 			});
 		}
-		GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM buyhearts WHERE playerName = '" + p.getName() + "' AND timestmap >= '" + (System.currentTimeMillis() - (86400 * 31 * 1000)) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+		GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM buyhearts WHERE playerName = '" + p.getName() + "' AND timestamp >= '" + (System.currentTimeMillis() - (86400 * 31 * 1000)) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 			@Override
 			public void done(ResultSet result, Throwable error) {
 				try {
