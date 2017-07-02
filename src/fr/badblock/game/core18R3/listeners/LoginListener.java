@@ -294,16 +294,17 @@ public class LoginListener extends BadListener {
 					if (result.next()) {
 						int count = result.getInt("count");
 						if (count > 0) {
+							System.out.println("Add " + p.getName());
+							l.add(p.getName());
 							Bukkit.getScheduler().runTask(GameAPI.getAPI(), new Runnable() {
 								@Override
 								public void run() {
 									if (p.isOnline()) {
-										l.add(p.getName());
 										p.setMaxHealth(22);
 									}
 								}
 							});
-						}
+						}else l.remove(p.getName());
 					}
 				}catch(Exception err) {
 					error.printStackTrace();
