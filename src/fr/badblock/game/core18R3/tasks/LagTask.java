@@ -21,7 +21,7 @@ public class LagTask implements Runnable {
 			d /= 1000;
 			new SlackMessage("SpigotLag : " + GameAPI.getServerName() + " | Lag de " + String.format("%.2f", d) + " secondes", "Monitoring - Spigot", "http://icon-icons.com/icons2/822/PNG/512/alert_icon-icons.com_66469.png", false).run();
 		}
-		this.time = difference;
+		this.time = time;
 	}
 	
 }
