@@ -203,11 +203,11 @@ public class GamePlugin extends GameAPI {
 
 	// Packet system
 	@Getter
-	private Map<Class<? extends BadblockInPacket>, Set<InPacketListener<?>>>		packetInListeners	= Maps.newConcurrentMap();
+	private Map<Class<? extends BadblockInPacket>, Set<InPacketListener<?>>>		packetInListeners	  = Maps.newConcurrentMap();
 	@Getter
-	private Map<Class<? extends BadblockOutPacket>, Set<OutPacketListener<?>>>		packetOutListeners	= Maps.newConcurrentMap();
+	private Map<Class<? extends BadblockOutPacket>, Set<OutPacketListener<?>>>		packetOutListeners	  = Maps.newConcurrentMap();
 	@Getter
-	private Map<Class<? extends BadblockOutPacket>, Set<GlobalPacketListener>>		packetGlobalListeners	= Maps.newConcurrentMap();
+	private Set<GlobalPacketListener>												packetGlobalListeners = new HashSet<>();
 
 	@Getter
 	private List<String>				whitelist;
@@ -758,6 +758,11 @@ public class GamePlugin extends GameAPI {
 
 		list.add(listener);
 		packetOutListeners.put(packet, list);
+	}
+
+	@Override
+	public void listenAllPackets(@NonNull GlobalPacketListener listener) {
+		packetGlobalListeners.add(listener);
 	}
 
 	@Override

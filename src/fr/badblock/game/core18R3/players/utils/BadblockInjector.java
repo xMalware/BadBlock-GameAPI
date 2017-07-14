@@ -37,7 +37,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
 
 				Set<InPacketListener<?>> listeners = GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz());
-				Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners().get(packet.getClazz());
+				Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners();
 				
 				// Aucun listener pour ce packet
 				if((listeners == null || listeners.isEmpty()) && (globalListeners == null || globalListeners.isEmpty())) break;
@@ -88,7 +88,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				if (packet == null || packet.getNmsClazz() == null) continue;
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
 				Set<OutPacketListener<?>> listeners = GamePlugin.getInstance().getPacketOutListeners().get(packet.getClazz());
-				Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners().get(packet.getClazz());
+				Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners();
 
 				// Aucun listener pour ce packet
 				if((listeners == null || listeners.isEmpty()) && (globalListeners == null || globalListeners.isEmpty())) break;
