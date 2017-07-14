@@ -761,7 +761,7 @@ public class GamePlugin extends GameAPI {
 	}
 
 	@Override
-	public void listenAllPackets(@NonNull GlobalPacketListener listener) {
+	public void listenAllPackets(GlobalPacketListener listener) {
 		packetGlobalListeners.add(listener);
 	}
 

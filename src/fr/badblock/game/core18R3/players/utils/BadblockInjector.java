@@ -26,11 +26,11 @@ import net.minecraft.server.v1_8_R3.Packet;
 @AllArgsConstructor
 public class BadblockInjector extends ChannelDuplexHandler {
 	private GameBadblockPlayer player;
-	
+
 	@Override
 	public void channelRead(ChannelHandlerContext channelHandlerContext, Object msg) throws Exception {
 		boolean cancel = false;
-		
+
 		for (GameBadblockInPackets packet : GameBadblockInPackets.values()) {
 			try {
 				// Le packet recherch� dans la boucle est pas celui qui est re�u
@@ -38,26 +38,27 @@ public class BadblockInjector extends ChannelDuplexHandler {
 
 				Set<InPacketListener<?>> listeners = GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz());
 				Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners();
-				
+
 				// Aucun listener pour ce packet
 				if((listeners == null || listeners.isEmpty()) && (globalListeners == null || globalListeners.isEmpty())) break;
-				
+
 				// Cr�ation de notre packet sp�cial
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
 				GameBadblockInPacket inPacket = (GameBadblockInPacket) constructor.newInstance(pack);
 
-				
+
 				Method method = InPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockInPacket.class);
 
-				listeners.forEach(listener -> {
-					try {
-						method.invoke(listener, player, (BadblockInPacket) inPacket);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				});
-				
+				if (listeners != null && !listeners.isEmpty())
+					listeners.forEach(listener -> {
+						try {
+							method.invoke(listener, player, (BadblockInPacket) inPacket);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					});
+
 				globalListeners.forEach(listener -> {
 					try {
 						listener.listen(player, inPacket);
@@ -72,12 +73,12 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				error.printStackTrace();
 			}
 		}
-		
+
 		if(!cancel) {
 			super.channelRead(channelHandlerContext, msg);
 		}
 	}
-	
+
 	@Override
 	public void write(ChannelHandlerContext channelHandlerContext, Object msg, final ChannelPromise promise) throws Exception {
 		boolean cancel = false;
@@ -95,17 +96,18 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
 				GameBadblockOutPacket outPacket = (GameBadblockOutPacket) constructor.newInstance(pack);
-				
+
 				Method method = OutPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockOutPacket.class);
-				
-				listeners.forEach(listener -> {
-					try {
-						method.invoke(listener, player, (BadblockOutPacket) outPacket);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				});
-				
+
+				if (listeners != null && !listeners.isEmpty())
+					listeners.forEach(listener -> {
+						try {
+							method.invoke(listener, player, (BadblockOutPacket) outPacket);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					});
+
 				globalListeners.forEach(listener -> {
 					try {
 						listener.listen(player, outPacket);
@@ -120,7 +122,7 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				error.printStackTrace();
 			}
 		}
-		
+
 		if(!cancel) {
 			super.write(channelHandlerContext, msg, promise);
 		}
