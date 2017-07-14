@@ -12,6 +12,7 @@ import fr.badblock.game.core18R3.packets.GameBadblockOutPacket.GameBadblockOutPa
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.packets.BadblockInPacket;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
+import fr.badblock.gameapi.packets.GlobalPacketListener;
 import fr.badblock.gameapi.packets.InPacketListener;
 import fr.badblock.gameapi.packets.OutPacketListener;
 import fr.badblock.gameapi.players.BadblockPlayer;
@@ -34,11 +35,12 @@ public class BadblockInjector extends ChannelDuplexHandler {
 			try {
 				// Le packet recherch� dans la boucle est pas celui qui est re�u
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
-				
+
 				Set<InPacketListener<?>> listeners = GamePlugin.getInstance().getPacketInListeners().get(packet.getClazz());
+				Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners().get(packet.getClazz());
 				
 				// Aucun listener pour ce packet
-				if(listeners == null || listeners.isEmpty()) break;
+				if((listeners == null || listeners.isEmpty()) && (globalListeners == null || globalListeners.isEmpty())) break;
 				
 				// Cr�ation de notre packet sp�cial
 				Packet<?> pack = (Packet<?>) msg;
@@ -47,10 +49,18 @@ public class BadblockInjector extends ChannelDuplexHandler {
 
 				
 				Method method = InPacketListener.class.getMethod("listen", BadblockPlayer.class, BadblockInPacket.class);
-				
+
 				listeners.forEach(listener -> {
 					try {
 						method.invoke(listener, player, (BadblockInPacket) inPacket);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+				
+				globalListeners.forEach(listener -> {
+					try {
+						listener.listen(player, inPacket);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -78,9 +88,10 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				if (packet == null || packet.getNmsClazz() == null) continue;
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
 				Set<OutPacketListener<?>> listeners = GamePlugin.getInstance().getPacketOutListeners().get(packet.getClazz());
-				
+				Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners().get(packet.getClazz());
+
 				// Aucun listener pour ce packet
-				if(listeners == null || listeners.isEmpty()) break;
+				if((listeners == null || listeners.isEmpty()) && (globalListeners == null || globalListeners.isEmpty())) break;
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
 				GameBadblockOutPacket outPacket = (GameBadblockOutPacket) constructor.newInstance(pack);
@@ -90,6 +101,14 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				listeners.forEach(listener -> {
 					try {
 						method.invoke(listener, player, (BadblockOutPacket) outPacket);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				});
+				
+				globalListeners.forEach(listener -> {
+					try {
+						listener.listen(player, outPacket);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

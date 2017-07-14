@@ -129,7 +129,8 @@ public class LoginListener extends BadListener {
 	public void onInventoryClose(InventoryCloseEvent event) {
 		BadblockPlayer player = (BadblockPlayer) event.getPlayer();
 		if (player.getBadblockMode().equals(BadblockMode.SPECTATOR)) {
-			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning()) {
+			GameBadblockPlayer p = (GameBadblockPlayer) player;
+			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && !p.isGhostConnect()) {
 				Inventory inventory = event.getInventory();
 				if (inventory != null && inventory.getName() != null && inventory.getSize() < 9 * 2) {
 					manageRunningJoin(player);
@@ -226,7 +227,7 @@ public class LoginListener extends BadListener {
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 			p.sendTranslatedMessage("game.closetheinventorytoplaywiththedefaultkit");
-			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && BukkitUtils.getPlayers().size() <= Bukkit.getMaxPlayers()) {
+			if (GameAPI.getAPI().getGameServer().isJoinableWhenRunning() && BukkitUtils.getPlayers().size() <= Bukkit.getMaxPlayers() && !p.isGhostConnect()) {
 				TaskManager.runTaskLater(new Runnable() {
 					@Override
 					public void run() {
@@ -337,6 +338,8 @@ public class LoginListener extends BadListener {
 	}
 
 	public static void manageRunningJoin(BadblockPlayer player) {
+		GameBadblockPlayer p = (GameBadblockPlayer) player;
+		if (p.isGhostConnect()) return;
 		GameMessages.joinMessage(GameAPI.getGameName(), player.getName(), Bukkit.getOnlinePlayers().size(), Bukkit.getMaxPlayers()).broadcast();
 		player.setBadblockMode(BadblockMode.PLAYER);
 		if (!GameAPI.getAPI().getTeams().isEmpty()) {

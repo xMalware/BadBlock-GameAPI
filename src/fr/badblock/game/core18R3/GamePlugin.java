@@ -105,6 +105,7 @@ import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent.JoinReason;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.packets.BadblockInPacket;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
+import fr.badblock.gameapi.packets.GlobalPacketListener;
 import fr.badblock.gameapi.packets.InPacketListener;
 import fr.badblock.gameapi.packets.OutPacketListener;
 import fr.badblock.gameapi.packets.out.play.PlayPlayerInfo.PlayerInfo;
@@ -205,6 +206,8 @@ public class GamePlugin extends GameAPI {
 	private Map<Class<? extends BadblockInPacket>, Set<InPacketListener<?>>>		packetInListeners	= Maps.newConcurrentMap();
 	@Getter
 	private Map<Class<? extends BadblockOutPacket>, Set<OutPacketListener<?>>>		packetOutListeners	= Maps.newConcurrentMap();
+	@Getter
+	private Map<Class<? extends BadblockOutPacket>, Set<GlobalPacketListener>>		packetGlobalListeners	= Maps.newConcurrentMap();
 
 	@Getter
 	private List<String>				whitelist;
