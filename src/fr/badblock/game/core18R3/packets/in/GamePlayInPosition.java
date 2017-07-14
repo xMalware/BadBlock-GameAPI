@@ -6,7 +6,6 @@ import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying.PacketPlayInPosition;
 
 @Getter public class GamePlayInPosition extends GamePlayInFlying implements PlayInPosition {
-	private Vector3f position;
 
 	public GamePlayInPosition(PacketPlayInPosition packet){
 		super(packet);

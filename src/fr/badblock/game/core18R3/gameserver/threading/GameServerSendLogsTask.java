@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPSClient;
+import org.bukkit.Bukkit;
 
 import fr.badblock.game.core18R3.jsonconfiguration.data.FTPConfig;
 import fr.badblock.game.core18R3.jsonconfiguration.data.GameServerConfig;
@@ -46,6 +47,7 @@ public class GameServerSendLogsTask extends GameServerTask {
 	public void doLog() {
 		// Removed logs if it's a lobby
 		if (GameAPI.getAPI().getRunType().equals(RunType.LOBBY)) return;
+		if (Bukkit.getServer().getIp().equals("127.0.0.1")) return;
 		File file = new File("./logs/latest.log");
 		if (file.exists()) {
 			FTPSClient ftpClient = new FTPSClient("TLS", false);

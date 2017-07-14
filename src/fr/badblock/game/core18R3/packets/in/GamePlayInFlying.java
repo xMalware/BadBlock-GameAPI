@@ -7,7 +7,7 @@ import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying;
 
 @Getter public class GamePlayInFlying extends GameBadblockInPacket implements PlayInFlying {
-	private Vector3f position;
+	protected Vector3f position;
 	private boolean  hasPosition;
 	private boolean  hasLook;
 	private boolean  onGround;

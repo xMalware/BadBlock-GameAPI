@@ -6,7 +6,6 @@ import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInFlying.PacketPlayInPositionLook;
 
 @Getter public class GamePlayInPositionLook extends GamePlayInFlying implements PlayInPositionLook {
-	private Vector3f position;
 	private float 	 yaw;
 	private float    pitch;
 

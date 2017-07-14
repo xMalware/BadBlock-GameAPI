@@ -41,6 +41,9 @@ public class BadblockInjector extends ChannelDuplexHandler {
 
 				// Aucun listener pour ce packet
 				if((listeners == null || listeners.isEmpty()) && (globalListeners == null || globalListeners.isEmpty())) break;
+				if (listeners == null || listeners.isEmpty()) {
+					if (packet.name().contains("SPAWN")) continue;
+				}
 
 				// Cr�ation de notre packet sp�cial
 				Packet<?> pack = (Packet<?>) msg;
@@ -89,10 +92,13 @@ public class BadblockInjector extends ChannelDuplexHandler {
 				if (packet == null || packet.getNmsClazz() == null) continue;
 				if (!packet.getNmsClazz().equals(msg.getClass())) continue;
 				Set<OutPacketListener<?>> listeners = GamePlugin.getInstance().getPacketOutListeners().get(packet.getClazz());
-				Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners();
+				//Set<GlobalPacketListener> globalListeners = GamePlugin.getInstance().getPacketGlobalListeners();
 
 				// Aucun listener pour ce packet
-				if((listeners == null || listeners.isEmpty()) && (globalListeners == null || globalListeners.isEmpty())) break;
+				if((listeners == null || listeners.isEmpty())/* && (globalListeners == null || globalListeners.isEmpty())*/) break;
+				/*if (listeners == null || listeners.isEmpty()) {
+					if (packet.name().contains("SPAWN")) continue;
+				}*/
 				Packet<?> pack = (Packet<?>) msg;
 				Constructor<?> constructor = ReflectionUtils.getConstructor(packet.getGameClazz(), pack.getClass());						
 				GameBadblockOutPacket outPacket = (GameBadblockOutPacket) constructor.newInstance(pack);
@@ -108,18 +114,17 @@ public class BadblockInjector extends ChannelDuplexHandler {
 						}
 					});
 
-				globalListeners.forEach(listener -> {
+				/*globalListeners.forEach(listener -> {
 					try {
 						listener.listen(player, outPacket);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-				});
+				});*/
 
 				cancel = outPacket.isCancelled();
 				msg = outPacket.buildPacket(player);
 			} catch(Exception error) {
-				error.printStackTrace();
 			}
 		}
 
