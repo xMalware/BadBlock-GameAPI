@@ -41,7 +41,7 @@ public class KnockFixListener extends BadListener
 			e.printStackTrace();
 		}*/
 	}
-
+/*
 	@EventHandler
 	public void onPlayerVelocity(PlayerVelocityEvent event)
 	{
@@ -81,5 +81,5 @@ public class KnockFixListener extends BadListener
 		knockback.setZ((knockback.getZ() * sprintMultiplier + kbMultiplier) * horMultiplier);
 		CraftPlayer craftPlayer = (CraftPlayer) damaged;
 		craftPlayer.getHandle().playerConnection.sendPacket(new PacketPlayOutEntityVelocity(damaged.getEntityId(), knockback.getX(), knockback.getY(), knockback.getZ()));
-	}
+	}*/
 }
