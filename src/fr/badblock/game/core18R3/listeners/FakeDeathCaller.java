@@ -255,7 +255,7 @@ public class FakeDeathCaller extends BadListener {
 		p.feed();
 		p.removePotionEffects();
 
-		p.playEffect(EntityEffect.HURT);
+		p.playEffect(EntityEffect.DEATH);
 
 		if(!e.isKeepInventory()){
 			p.clearInventory();
@@ -302,7 +302,8 @@ public class FakeDeathCaller extends BadListener {
 					if(!p.isOnline()){
 						cancel(); return;
 					}
-					if(first && time > 0){
+					
+					if(first && time > 0) {
 						if(e.getWhileRespawnPlace() != null)
 							p.teleport(e.getWhileRespawnPlace());
 						
