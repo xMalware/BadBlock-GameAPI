@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -153,6 +152,7 @@ public class FakeDeathCaller extends BadListener {
 			if(fData.alert < 0) fData.alert = 0;
 
 			boolean changed = false;
+
 			// Si un joueur a �t� tap� r�cemment
 			if(fData.lastKill.containsKey(player.getUniqueId())){
 				long delta = System.currentTimeMillis() - fData.lastKill.get(player.getUniqueId());
@@ -250,8 +250,6 @@ public class FakeDeathCaller extends BadListener {
 	}
 
 	private void death(BadblockPlayer p, FakeDeathEvent e){
-		for(Player pl : Bukkit.getOnlinePlayers())
-		    pl.spigot().playEffect(p.getLocation(), Effect.CLOUD, 0, 0, 0f, 0f, 0f, 0.1f, 20, 1);
 		p.inGameData(CommandInGameData.class).lastLocation = p.getLocation();
 		p.heal();
 		p.feed();
