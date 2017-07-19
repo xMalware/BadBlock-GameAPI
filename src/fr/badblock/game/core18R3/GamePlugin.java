@@ -95,6 +95,7 @@ import fr.badblock.game.core18R3.tasks.GameStatisticsTask;
 import fr.badblock.game.core18R3.tasks.LagTask;
 import fr.badblock.game.core18R3.technologies.RabbitSpeaker;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.PlayerBoosterRefreshListener;
+import fr.badblock.game.core18R3.technologies.rabbitlisteners.PlayerPingListener;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.game.core18R3.watchers.GameWatchers;
 import fr.badblock.gameapi.GameAPI;
@@ -360,6 +361,7 @@ public class GamePlugin extends GameAPI {
 			new EquipmentListener().register();
 			new UpdateSignListener().register();
 			new VanishTeleportListener();
+			new PlayerPingListener();
 			new PlayerBoosterRefreshListener();
 			
 			//AntiCheat.load();
