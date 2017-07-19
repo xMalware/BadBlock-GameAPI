@@ -1,17 +1,6 @@
 package fr.badblock.game.core18R3.listeners;
 
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerVelocityEvent;
-import org.bukkit.util.Vector;
-
 import fr.badblock.gameapi.BadListener;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityVelocity;
 
 public class KnockFixListener extends BadListener
 {
@@ -21,8 +10,8 @@ public class KnockFixListener extends BadListener
 	private String craftBukkitVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];*/
 	
 	// Conf
-	private static double horMultiplier = 1.2;
-	private static double verMultiplier = 1.0;
+	//private static double horMultiplier = 1.2;
+	//private static double verMultiplier = 1.0;
 	
 	public KnockFixListener()
 	{

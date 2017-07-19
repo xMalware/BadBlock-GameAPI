@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.EntityEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -295,7 +294,6 @@ public class FakeDeathCaller extends BadListener {
 			p.setBadblockMode(BadblockMode.RESPAWNING);
 			new BukkitRunnable(){
 				private int time = e.getTimeBeforeRespawn();
-				private boolean first = true;
 				
 				@Override
 				public void run(){
