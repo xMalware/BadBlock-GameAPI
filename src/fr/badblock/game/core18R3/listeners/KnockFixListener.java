@@ -10,6 +10,7 @@ public class KnockFixListener extends BadListener
 	private String craftBukkitVersion = Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];*/
 	
 	// Conf
+	
 	//private static double horMultiplier = 1.2;
 	//private static double verMultiplier = 1.0;
 	
@@ -22,7 +23,6 @@ public class KnockFixListener extends BadListener
 			Class<?> playerConnectionClass = Class.forName("net.minecraft.server." + craftBukkitVersion + ".PlayerConnection");
 
 			this.fieldPlayerConnection = entityPlayerClass.getField("playerConnection");
-			this.sendPacket = playerConnectionClass.getMethod("sendPacket", new Class[] { packetVelocityClass.getSuperclass() });
 			this.packetVelocity = packetVelocityClass.getConstructor(new Class[] { Integer.TYPE, Double.TYPE, Double.TYPE, Double.TYPE });
 		}
 		catch (ClassNotFoundException|NoSuchFieldException|SecurityException|NoSuchMethodException e)
