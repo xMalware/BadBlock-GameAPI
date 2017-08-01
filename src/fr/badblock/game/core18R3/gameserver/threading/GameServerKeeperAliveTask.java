@@ -72,8 +72,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 	@Override
 	public void run() {
 		this.setFirstServer();
-		if (getJoinTime() < System.currentTimeMillis() && Bukkit.getOnlinePlayers().size() == 0
-				&& !this.isFirstServer()) {
+		if (isJoinable() && getJoinTime() < System.currentTimeMillis() && Bukkit.getOnlinePlayers().size() == 0) {
 			GameAPI.logColor("&b[GameServer] &cNobody during few minutes, shutdown..");
 			Bukkit.shutdown();
 			return;
