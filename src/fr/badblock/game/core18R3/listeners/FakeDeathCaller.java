@@ -207,6 +207,7 @@ public class FakeDeathCaller extends BadListener {
 
 	private List<UUID> cantReconnect = new ArrayList<>();
 
+	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onProposition(PlayerReconnectionPropositionEvent e){
 		if(cantReconnect.contains(e.getPlayer()))
