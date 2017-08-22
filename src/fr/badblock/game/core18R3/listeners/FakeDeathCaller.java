@@ -68,9 +68,9 @@ public class FakeDeathCaller extends BadListener {
 				}
 
 				if(killer != null){
-					event = new FightingDeathEvent(player, killer, type, e.getCause());
+					event = new FightingDeathEvent(player, killer, type, e.getCause(), e.getRecognizer());
 				} else {
-					event = new NormalDeathEvent(player, e.getCause());
+					event = new NormalDeathEvent(player, e.getCause(), e.getRecognizer());
 				}
 
 				event.getDrops().addAll(items(player.getInventory()));
@@ -122,7 +122,7 @@ public class FakeDeathCaller extends BadListener {
 			if(e.getFinalDamage() >= player.getHealth()){
 				e.setCancelled(true);
 
-				event = new FightingDeathEvent(player, killer, type, e.getCause());
+				event = new FightingDeathEvent(player, killer, type, e.getCause(), e.getRecognizer());
 				event.getDrops().addAll(items(player.getInventory()));
 
 				Bukkit.getPluginManager().callEvent(event);
