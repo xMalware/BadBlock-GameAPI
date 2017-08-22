@@ -22,7 +22,7 @@ public class VanishTeleportListener extends RabbitListener {
 	public static Map<String, String[]> splitters = new HashMap<>();
 
 	public VanishTeleportListener() {
-		super(RabbitConnector.getInstance().getService("default"), "vanishTeleport", true, RabbitListenerType.SUBSCRIBER);
+		super(RabbitConnector.getInstance().getService("default"), "vanishTeleport", false, RabbitListenerType.SUBSCRIBER);
 	}
 
 	@Override

@@ -19,7 +19,7 @@ public class PlayerPingListener extends RabbitListener {
 	public static final Type collectionType = new TypeToken<Map<String, Integer>>() {}.getType();
 
 	public PlayerPingListener() {
-		super(RabbitConnector.getInstance().getService("default"), "playerPing", true, RabbitListenerType.SUBSCRIBER);
+		super(RabbitConnector.getInstance().getService("default"), "playerPing", false, RabbitListenerType.SUBSCRIBER);
 	}
 
 	@Override
