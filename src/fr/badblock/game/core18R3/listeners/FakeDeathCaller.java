@@ -43,7 +43,7 @@ import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import lombok.NoArgsConstructor;
 
 public class FakeDeathCaller extends BadListener {
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
 	public void onDamage(EntityDamageEvent e){
 		if(e.getCause() == DamageCause.ENTITY_ATTACK) return;
 
@@ -88,7 +88,7 @@ public class FakeDeathCaller extends BadListener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
 	public void onDamage(EntityDamageByEntityEvent e){
 		if(e.getEntityType() == EntityType.PLAYER){
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
@@ -207,7 +207,6 @@ public class FakeDeathCaller extends BadListener {
 
 	private List<UUID> cantReconnect = new ArrayList<>();
 
-	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onProposition(PlayerReconnectionPropositionEvent e){
 		if(cantReconnect.contains(e.getPlayer()))

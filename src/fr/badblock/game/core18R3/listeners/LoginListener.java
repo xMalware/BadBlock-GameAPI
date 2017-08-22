@@ -151,7 +151,6 @@ public class LoginListener extends BadListener {
 
 	private HashMap<Player, Integer> lastBookTick = new HashMap<>();
 
-	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
