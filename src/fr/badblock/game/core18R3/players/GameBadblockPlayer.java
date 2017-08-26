@@ -111,6 +111,7 @@ import fr.badblock.gameapi.utils.selections.Vector3f;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.permissions.PermissibleGroup;
 import fr.badblock.permissions.PermissiblePlayer;
+import fr.badblock.permissions.Permission;
 import fr.badblock.permissions.PermissionManager;
 import fr.badblock.utils.CommonFilter;
 import io.netty.channel.Channel;
@@ -195,7 +196,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		this.playerData.setGameBadblockPlayer(this);
 
 		this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
-
+		this.permissions.removePermission(new Permission("animation.gamecommand"));
+		
 		if(offlinePlayer != null) {
 			object = offlinePlayer.getObject();
 			team 	   = offlinePlayer.getTeam();

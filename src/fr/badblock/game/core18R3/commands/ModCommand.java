@@ -11,7 +11,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 public class ModCommand extends AbstractCommand {
 	
 	public ModCommand() {
-		super("mod", new TranslatableString("commands.mod.usage"), GamePermission.ADMIN, GamePermission.MODERATOR, GamePermission.ADMIN, "modo", "md");
+		super("mod", new TranslatableString("commands.mod.usage"), GamePermission.ADMIN, GamePermission.MODERATOR, GamePermission.ADMIN, "md");
 	}
 
 	@Override
