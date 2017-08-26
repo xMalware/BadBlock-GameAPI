@@ -196,7 +196,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		this.playerData.setGameBadblockPlayer(this);
 
 		this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
-		this.permissions.removePermission(new Permission("animation.gamecommand"));
 		
 		if(offlinePlayer != null) {
 			object = offlinePlayer.getObject();
