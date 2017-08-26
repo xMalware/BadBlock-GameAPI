@@ -74,7 +74,7 @@ public class LoginListener extends BadListener {
 	public static List<String> l = new ArrayList<>();
 	
 	@EventHandler(priority=EventPriority.MONITOR)
-	public void onLogin(PlayerLoginEvent e){
+	public void onLogin(PlayerLoginEvent e) {
 		System.out.println("PlayerLoginEvent: " + e.getPlayer().getName());
 
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {

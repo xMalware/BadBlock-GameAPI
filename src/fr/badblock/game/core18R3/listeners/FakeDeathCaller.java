@@ -43,7 +43,7 @@ import fr.badblock.gameapi.utils.i18n.messages.GameMessages;
 import lombok.NoArgsConstructor;
 
 public class FakeDeathCaller extends BadListener {
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
 	public void onDamage(EntityDamageEvent e){
 		if(e.getCause() == DamageCause.ENTITY_ATTACK) return;
 
@@ -68,9 +68,9 @@ public class FakeDeathCaller extends BadListener {
 				}
 
 				if(killer != null){
-					event = new FightingDeathEvent(player, killer, type, e.getCause());
+					event = new FightingDeathEvent(player, killer, type, e.getCause(), e.getRecognizer());
 				} else {
-					event = new NormalDeathEvent(player, e.getCause());
+					event = new NormalDeathEvent(player, e.getCause(), e.getRecognizer());
 				}
 
 				event.getDrops().addAll(items(player.getInventory()));
@@ -88,7 +88,7 @@ public class FakeDeathCaller extends BadListener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled=true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
 	public void onDamage(EntityDamageByEntityEvent e){
 		if(e.getEntityType() == EntityType.PLAYER){
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
@@ -122,7 +122,7 @@ public class FakeDeathCaller extends BadListener {
 			if(e.getFinalDamage() >= player.getHealth()){
 				e.setCancelled(true);
 
-				event = new FightingDeathEvent(player, killer, type, e.getCause());
+				event = new FightingDeathEvent(player, killer, type, e.getCause(), e.getRecognizer());
 				event.getDrops().addAll(items(player.getInventory()));
 
 				Bukkit.getPluginManager().callEvent(event);

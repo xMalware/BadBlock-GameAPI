@@ -19,7 +19,7 @@ import fr.badblock.rabbitconnector.RabbitListenerType;
 public class PlayerBoosterRefreshListener extends RabbitListener {
 
 	public PlayerBoosterRefreshListener() {
-		super(RabbitConnector.getInstance().getService("default"), "boosterRefresh", true, RabbitListenerType.SUBSCRIBER);
+		super(RabbitConnector.getInstance().getService("default"), "boosterRefresh", false, RabbitListenerType.SUBSCRIBER);
 	}
 
 	@Override
