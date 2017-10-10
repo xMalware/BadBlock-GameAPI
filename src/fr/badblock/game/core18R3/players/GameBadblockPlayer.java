@@ -263,7 +263,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					playersWithHim = new ArrayList<>();
 				}else playersWithHim.clear();
 				playersStringWithHim.forEach(playerString -> playersWithHim.add(UUID.fromString(playerString)));
-				if (playersStringWithHim.contains(getUniqueId())) playersWithHim.clear();
+				if (playersStringWithHim.contains(getUniqueId().toString())) playersWithHim.clear();
 			} catch(Exception e){
 				e.printStackTrace();
 			}

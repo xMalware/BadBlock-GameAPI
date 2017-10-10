@@ -89,6 +89,21 @@ public class PlayerMapProtectorListener extends BadListener {
 	}
 
 	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageEvent e){
+		if(e.getEntityType() == EntityType.PLAYER){
+			BadblockPlayer player = (BadblockPlayer) e.getEntity();
+
+			if(!GameAPI.getAPI().getMapProtector().canBeingDamaged(player)){
+				e.setCancelled(true);
+			}
+		} else {
+			if(!GameAPI.getAPI().getMapProtector().canEntityBeingDamaged(e.getEntity())){
+				e.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
 	public void onHangingBreakEntity(HangingBreakByEntityEvent e) {
 		if(e.getEntity().getType() == EntityType.ITEM_FRAME && e.getRemover().getType() == EntityType.PLAYER){
 			BadblockPlayer player = (BadblockPlayer) e.getRemover();
@@ -181,8 +196,6 @@ public class PlayerMapProtectorListener extends BadListener {
 
 	@EventHandler
 	public void onDamage(EntityDamageEvent e){
-		if(e.getCause() == DamageCause.ENTITY_ATTACK) return;
-		
 		if(e.getEntityType() == EntityType.PLAYER){
 			BadblockPlayer player = (BadblockPlayer) e.getEntity();
 

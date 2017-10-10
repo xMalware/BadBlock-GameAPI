@@ -1,9 +1,5 @@
 package fr.badblock.game.core18R3.gameserver.threading;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.OptionalInt;
-
 import org.bukkit.Bukkit;
 
 import fr.badblock.docker.factories.GameAliveFactory;
@@ -34,7 +30,6 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		return (openStaff = !openStaff);
 	}
 	
-	private boolean firstServer;
 	private long joinTime;
 
 	public GameServerKeeperAliveTask(GameServerConfig apiConfig) {
@@ -71,7 +66,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 
 	@Override
 	public void run() {
-		this.setFirstServer();
+		GameAPI.logColor("&b[GameServer] &eDEBUG Stop: " + isJoinable() + " | " + Bukkit.getOnlinePlayers().size() + " | " + (System.currentTimeMillis() - getJoinTime()));
 		if (isJoinable() && getJoinTime() < System.currentTimeMillis() && Bukkit.getOnlinePlayers().size() == 0) {
 			GameAPI.logColor("&b[GameServer] &cNobody during few minutes, shutdown..");
 			Bukkit.shutdown();
@@ -100,28 +95,6 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		gameApi.getRabbitSpeaker().cut();
 	}
 
-	public void setFirstServer() {
-		String[] split = GameAPI.getAPI().getServer().getServerName().split("_");
-		if (split.length < 2)
-			return;
-		String af = split[1];
-		try
-		{
-			long serverId = Integer.parseInt(af);
-			OptionalInt optionalInt = Arrays.stream(new File("..").listFiles()).mapToInt((file) -> {
-				if (file.isDirectory())
-					try {
-						return Integer.parseInt(file.getName());
-					} catch (Exception unused) {
-					}
-				return -1;
-			}).filter((value) -> value > 0).min();
-	
-			this.setFirstServer(optionalInt.isPresent() && optionalInt.getAsInt() == serverId);
-		}
-		catch(Exception e){}
-	}
-	
 	public static void sendDevSignal(boolean open, int addedPlayers)
 	{
 		GameAPI gameApi = GameAPI.getAPI();
