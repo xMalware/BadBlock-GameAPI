@@ -19,26 +19,44 @@ import lombok.Setter;
 @Setter
 public class GameServerKeeperAliveTask extends GameServerTask {
 	private static boolean openStaff = false;
-	
+
 	public static boolean isOpenToStaff()
 	{
 		return openStaff;
 	}
-	
+
 	public static boolean switchOpenStaff()
 	{
 		return (openStaff = !openStaff);
 	}
-	
-	private long joinTime;
+
+	private long 	joinTime;
+	private boolean lastJoinable = true;
 
 	public GameServerKeeperAliveTask(GameServerConfig apiConfig) {
 		this.incrementJoinTime();
 		TaskManager.scheduleAsyncRepeatingTask("gameServerKeeperAlive", this, 0, apiConfig.ticksBetweenKeepAlives);
+		TaskManager.scheduleAsyncRepeatingTask("gameServerChange", this, 0, 1);
 	}
 
 	public void incrementJoinTime() {
 		this.setJoinTime(System.currentTimeMillis() + this.getGameServerManager().getGameServerConfig().uselessUntilTime);
+	}
+
+	public Runnable toChange()
+	{
+		return new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (lastJoinable != isJoinable())
+				{
+					lastJoinable = isJoinable();
+					GameAPI.getAPI().getGameServer().keepAlive();
+				}
+			}
+		};
 	}
 
 	private boolean isJoinable() {
@@ -60,8 +78,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 	}
 
 	public void keepAlive(GameState gameState, int addedPlayers) {
-		if (!GameAPI.TEST_MODE)
-			sendKeepAlivePacket(gameState, addedPlayers);
+		sendKeepAlivePacket(gameState, addedPlayers);
 	}
 
 	@Override
@@ -103,7 +120,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 
 		if(gameApi.getRunType() != RunType.DEV)
 			return;
-		
+
 		DevAliveFactory devAliveFactory = new DevAliveFactory(gameApi.getServer().getServerName(), open, Bukkit.getOnlinePlayers().size() + addedPlayers, gameServer.getMaxPlayers(), openStaff);
 		gameApi.getRabbitSpeaker().sendAsyncUTF8Publisher("dev", gameServerManager.getGson().toJson(devAliveFactory), 5000, false);
 	}

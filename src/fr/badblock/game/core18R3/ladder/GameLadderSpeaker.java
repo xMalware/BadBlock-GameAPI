@@ -253,17 +253,15 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 				callback.done(new JsonParser().parse(packet.getData()).getAsJsonObject(), null);
 			} else {
 
-				GameBadblockPlayer player = (GameBadblockPlayer) Bukkit.getPlayer(packet.getKey());
-
+				GameBadblockPlayer player = getRealPlayer(packet.getKey().toLowerCase());
 				if(player != null){
 					player.updateData(new JsonParser().parse(packet.getData()).getAsJsonObject());
 					Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(player));
 				}
 			}
 		}else if(packet.getType() == DataType.PLAYER && packet.getAction() == DataAction.MODIFICATION){
-			Player playerz = Bukkit.getPlayer(packet.getKey());
-			if (playerz == null) return;
-			GameBadblockPlayer player = (GameBadblockPlayer) playerz;
+			GameBadblockPlayer player = getRealPlayer(packet.getKey().toLowerCase());
+			if (player == null) return;
 			JsonElement jsonElement = new JsonParser().parse(packet.getData());
 			if (jsonElement != null) {
 				JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -284,6 +282,21 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 		} else if(packet.getType() == DataType.PERMISSION && packet.getAction() == DataAction.SEND){
 			new PermissionManager(new JsonParser().parse(packet.getData()).getAsJsonArray());
 		}
+	}
+
+	private GameBadblockPlayer getRealPlayer(String playerName)
+	{
+		Player playerz = Bukkit.getPlayer(playerName);
+		if (playerz != null) return (GameBadblockPlayer) playerz;
+		for (BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers())
+		{
+			GameBadblockPlayer gbp = (GameBadblockPlayer) player;
+			if (gbp.getRealName().equalsIgnoreCase(playerName))
+			{
+				return gbp;
+			}
+		}
+		return null;
 	}
 
 	@Override

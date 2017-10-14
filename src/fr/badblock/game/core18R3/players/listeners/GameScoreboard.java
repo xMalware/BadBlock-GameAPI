@@ -86,13 +86,13 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			}
 		}
 	}
-
+	
 	@EventHandler
 	public void onDataReceive(PlayerLoadedEvent e){
 		if(!doGroupsPrefix) return;
-
-		if (groups.get(e.getPlayer().getMainGroup()) != null) {
-			getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
+		GameBadblockPlayer gbp = (GameBadblockPlayer) e.getPlayer();
+		if (groups.get(gbp.getFakeMainGroup()) != null) {
+			getHandler().getTeam( groups.get(gbp.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
 		}
 
 		new BukkitRunnable() {
@@ -115,15 +115,15 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		if(!doGroupsPrefix) return;
 
 		Team team = getHandler().getEntryTeam(e.getPlayer().getName());
-
+		GameBadblockPlayer gbp = (GameBadblockPlayer) e.getPlayer();
 		if (team != null) {
-			if(!team.getName().equals(groups.get(e.getPlayer().getMainGroup()))) {
+			if(!team.getName().equals(groups.get(gbp.getFakeMainGroup()))) {
 				team.removeEntry(e.getPlayer().getName());
 
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						getHandler().getTeam( groups.get(e.getPlayer().getMainGroup()) ).addEntry(e.getPlayer().getName());
+						getHandler().getTeam( groups.get(gbp.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
 					}
 				}.runTaskLater(GameAPI.getAPI(), 5L);
 			}

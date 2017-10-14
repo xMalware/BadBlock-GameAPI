@@ -1,11 +1,12 @@
 package fr.badblock.game.core18R3.players.utils;
 
-import java.security.SignatureException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import org.apache.commons.codec.binary.Base64;
-import java.security.Signature;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+
+import org.apache.commons.codec.binary.Base64;
 
 public class Property
 {
