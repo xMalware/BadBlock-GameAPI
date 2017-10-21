@@ -185,6 +185,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public boolean 						ghostConnect;
 	@Getter@Setter
 	private boolean						resultDone;
+	@Getter@Setter
+	private int							shopPoints;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -250,6 +252,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	public void updateData(JsonObject object) {
+		// Refresh shop points
+		this.refreshShopPoints();
+		// Game
 		if (object.has("game")) {
 			JsonObject game = object.get("game").getAsJsonObject();
 			this.object.add("game", game);
@@ -258,12 +263,16 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			if (object.has("onlyJoinWhileWaiting"))
 				playerData.onlyJoinWhileWaiting = object.get("onlyJoinWhileWaiting").getAsLong();
 		}
+		
+		// LeaverBuster
 		if (object.has("leaves")) {
 			this.leaves = GameAPI.getGson().fromJson(object.get("leaves").toString(), collectType);
 			if (this.leaves == null) this.leaves = new ArrayList<>();
 		}else{
 			this.setLeaves(new ArrayList<>());
 		}
+		
+		// Parties
 		if (object.has("playersWithHim")) {
 			try {
 				List<String> playersStringWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim").getAsString(), collectionType);
@@ -276,7 +285,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				e.printStackTrace();
 			}
 		}
-
+		
 		if (object.has("permissions")) {
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getRealName() != null ? getRealName() : getName(), object);
@@ -376,11 +385,27 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				});
 			}
 		}
-		if (object.has("shoppoints")) {
-			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
-		}
 	}
 
+	@Override
+	public void refreshShopPoints()
+	{
+		String name = getRealName() != null ? getRealName() : getName();
+		GamePlugin.getInstance().getWebDatabase().call("SELECT ptsboutique FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(name) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+			@Override
+			public void done(ResultSet result, Throwable error) {
+				try {
+					if (result.next()) {
+						shopPoints = result.getInt("ptsboutique");
+					}
+					result.close();
+				}catch(Exception err) {
+					err.printStackTrace();
+				}
+			}
+		});
+	}
 
 	@Override
 	public EntityPlayer getHandle() {

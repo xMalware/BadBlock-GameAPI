@@ -35,7 +35,6 @@ public class GamePlayerData implements PlayerData {
 	public Locale								  		  locale	       = DEFAULT_LANGUAGE;
 
 	private int  				 						  badcoins     	   = 0;
-	public int  				 						  shopPoints       = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
 	private List<PlayerBooster>					  		  boosters		   = new ArrayList<>();
@@ -351,31 +350,6 @@ public class GamePlayerData implements PlayerData {
 		result.add("game", object);
 
 		return result;
-	}
-
-	@Override
-	public int getShopPoints() {
-		return shopPoints;
-	}
-
-	@Override
-	public long addShopPoints(long shopPoints) {
-		this.shopPoints += shopPoints;
-		addedBadcoins += shopPoints;
-		// envoi du packet d'update
-		if (getGameBadblockPlayer().isDataFetch())
-			GameAPI.getAPI().getLadderDatabase().updatePlayerData(getGameBadblockPlayer(), this.getObject());
-		return this.shopPoints;
-	}
-
-	@Override
-	public long removeShopPoints(long shopPoints) {
-		this.shopPoints -= shopPoints;
-		addedShopPoints -= shopPoints;
-		// envoi du packet d'update
-		if (getGameBadblockPlayer().isDataFetch())
-			GameAPI.getAPI().getLadderDatabase().updatePlayerData(getGameBadblockPlayer(), this.getObject());
-		return this.shopPoints;
 	}
 
 	@Override
