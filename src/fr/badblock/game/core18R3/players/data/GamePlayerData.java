@@ -2,10 +2,12 @@
 
 package fr.badblock.game.core18R3.players.data;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.bukkit.Sound;
 
@@ -45,6 +47,8 @@ public class GamePlayerData implements PlayerData {
 	private Map<String, Map<String, Double>> 			  stats   	 	   = Maps.newConcurrentMap();
 
 	private transient List<String>						  achloadeds	   = new ArrayList<>();
+	private transient List<Entry<Long, Boolean>>		  xpTemp		   = new ArrayList<>();
+	private transient List<Entry<Long, Boolean>>		  badcoinsTemp 	   = new ArrayList<>();
 
 	private transient Map<String, GameData> 			  datas 		   = Maps.newConcurrentMap();
 	private transient JsonObject 						  data		 	   = new JsonObject();
@@ -108,8 +112,48 @@ public class GamePlayerData implements PlayerData {
 		if (xp < 0) return 0;
 		xp = Math.abs(xp);
 
+		// Application de l'XP avant application du bonus
+		int xpToBonusApply = 0;
+		if (xpTemp != null)
+		{
+			List<Long> list = xpTemp.stream().filter(entry -> entry.getValue().booleanValue()).map(entry -> entry.getKey()).collect(Collectors.toList());
+			if (list != null)
+			{
+				for (long xpToAdd : list)
+				{
+					// pas de bonus sur le global mais bonus sur la partie ajoutée, on ajoute donc le bonus de la fraction d'xp
+					if (!applyBonus)
+					{
+						xpToBonusApply += xpToAdd;
+					}
+					else
+					{
+						xp += xpToAdd;
+					}
+				}
+			}
+		}
+
+		if (xpToBonusApply > 0)
+		{
+			xp += xpToBonusApply * getXpMultiplier();
+		}
+
 		if (applyBonus) {
 			xp *= getXpMultiplier();
+		}
+
+		// Application de l'XP après application du bonus
+		if (xpTemp != null)
+		{
+			List<Long> list = xpTemp.stream().filter(entry -> !entry.getValue().booleanValue()).map(entry -> entry.getKey()).collect(Collectors.toList());
+			if (list != null)
+			{
+				for (long xpToAdd : list)
+				{
+					xp += xpToAdd;
+				}
+			}
 		}
 
 		addedXP += xp;
@@ -438,6 +482,20 @@ public class GamePlayerData implements PlayerData {
 
 		// On retourne le multiplier
 		return multiplier;
+	}
+
+	@Override
+	public void addTempXp(long xp, boolean applyBonus) {
+		if (xpTemp == null) xpTemp = new ArrayList<>();
+		Entry<Long, Boolean> entry = new AbstractMap.SimpleEntry<Long, Boolean>(xp, applyBonus);
+		xpTemp.add(entry);
+	}
+
+	@Override
+	public void addTempBadcoins(long badcoins, boolean applyBonus) {
+		if (badcoinsTemp == null) badcoinsTemp = new ArrayList<>();
+		Entry<Long, Boolean> entry = new AbstractMap.SimpleEntry<Long, Boolean>(badcoins, applyBonus);
+		badcoinsTemp.add(entry);
 	}
 
 }
