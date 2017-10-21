@@ -123,6 +123,13 @@ public class GamePlayerData implements PlayerData {
 				}
 			}
 		}
+		
+		// On vide la totalité des données & on le met à null
+		if (badcoinsTemp != null)
+		{
+			badcoinsTemp.clear();
+			badcoinsTemp = null;
+		}
 
 		addedBadcoins += badcoins;
 		return badcoins;
@@ -200,6 +207,13 @@ public class GamePlayerData implements PlayerData {
 					xp += xpToAdd;
 				}
 			}
+		}
+		
+		// On vide la totalité des données & on le met à null
+		if (xpTemp != null)
+		{
+			xpTemp.clear();
+			xpTemp = null;
 		}
 
 		addedXP += xp;
