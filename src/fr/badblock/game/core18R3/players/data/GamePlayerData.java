@@ -77,7 +77,7 @@ public class GamePlayerData implements PlayerData {
 			badcoins *= getBadcoinsMultiplier();
 		}
 		addedBadcoins += badcoins;
-		return this.badcoins += badcoins;
+		return badcoins;
 	}
 
 	@Override
@@ -118,18 +118,19 @@ public class GamePlayerData implements PlayerData {
 		// pas de passage de niveau
 		if (delta > 0) return this.xp;
 		// passage de niveau jusqu'à ce qu'il y ai suffisament de niveau(x) passé(s) pour avoir une progression
-		while (getXpUntilNextLevel() - (this.xp + xp) <= 0) {
+		long rest = 0;
+		while ((rest = getXpUntilNextLevel() - this.xp) <= 0) {
 			level++;
 			addedLevels++;
 		}
-		this.xp = 0;
+		this.xp = rest;
 
 		if (this.getGameBadblockPlayer() != null) {
 			this.getGameBadblockPlayer().sendTranslatedMessage("game.level", level);
 			this.getGameBadblockPlayer().playSound(Sound.LEVEL_UP);
 		}
 
-		return this.xp;
+		return xp;
 	}
 
 	@Override
@@ -439,4 +440,3 @@ public class GamePlayerData implements PlayerData {
 	}
 
 }
-
