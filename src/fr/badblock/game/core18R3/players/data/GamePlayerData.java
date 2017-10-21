@@ -74,37 +74,7 @@ public class GamePlayerData implements PlayerData {
 		if (badcoins < 0) return 0;
 		badcoins = Math.abs(badcoins);
 		if (applyBonus) {
-			GameAPI api = GameAPI.getAPI();
-			double totalBonus = 1;
-			double playerBonus = 0;
-			PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
-			System.out.println("AA");
-			if (playerBooster != null && playerBooster.getBooster() != null) {
-				System.out.println("BB");
-				playerBonus += playerBooster.getBooster().getCoinsMultiplier();
-				System.out.println("[ENABLED BOOSTER BONUS: " + playerBonus + "]");
-			}
-			if (playerBonus > 0) playerBonus--;
-			double serverBonus = api.getServerBadcoinsBonus() <= 0 ? 1 : api.getServerBadcoinsBonus();
-			if (serverBonus > 0) serverBonus--;
-			totalBonus += serverBonus + playerBonus;
-			System.out.println(serverBonus + " / " + playerBonus + " / " + totalBonus);
-			double v = 0;
-			try {
-				if (this.getGameBadblockPlayer() != null) {
-					Double o = this.getGameBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
-					if (o == null) o = 0.0d;
-					v = o - 1.0d;
-				}else System.out.println("null gamePlayer");
-			}catch(Exception error) {
-				error.printStackTrace();
-				v = 0;
-			}
-			v += v < 0 ? 0 : v;
-			totalBonus += v;
-			System.out.println("AfterV / " + totalBonus);
-			System.out.println("BadCoins: " + badcoins + " / " + (badcoins * totalBonus));
-			badcoins *= totalBonus;
+			badcoins *= getBadcoinsMultiplier();
 		}
 		addedBadcoins += badcoins;
 		return this.badcoins += badcoins;
@@ -138,31 +108,7 @@ public class GamePlayerData implements PlayerData {
 		xp = Math.abs(xp);
 
 		if (applyBonus) {
-			GameAPI api = GameAPI.getAPI();
-			double totalBonus = 1;
-			double playerBonus = 0;
-			PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
-			if (playerBooster != null && playerBooster.getBooster() != null) {
-				playerBonus += playerBooster.getBooster().getXpMultiplier();
-			}
-			if (playerBonus > 0) playerBonus--;
-			double serverBonus = api.getServerXpBonus() <= 0 ? 1 : api.getServerXpBonus();
-			if (serverBonus > 0) serverBonus--;
-			totalBonus += serverBonus + playerBonus;
-			double v = 0;
-			try {
-				if (this.getGameBadblockPlayer() != null) {
-					Double o = this.getGameBadblockPlayer().getPermissionValue("xpboost", Double.class);
-					if (o == null) o = 0.0d;
-					v = o - 1.0d;
-				}else System.out.println("null gamePlayer");
-			}catch(Exception error) {
-				error.printStackTrace();
-				v = 0;
-			}
-			v += v < 0 ? 0 : v;
-			totalBonus += v;
-			xp *= totalBonus;
+			xp *= getXpMultiplier();
 		}
 
 		addedXP += xp;
@@ -368,45 +314,127 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public double getBadcoinsMultiplier() {
-		double multiplier = 1;
-		PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
-		if (playerBooster != null && playerBooster.getBooster() != null) {
-			multiplier += playerBooster.getBooster().getCoinsMultiplier() - 1;
+		GamePlugin api = GamePlugin.getInstance();
+		// Multiplier
+		double multiplier = 1; // On met le x1 de base
+
+		// Booster serveur
+		double serverBonus = api.getServerBadcoinsBonus();
+		// Si le bonus est > que le x1 de base, on l'applique
+		if (serverBonus > 1)
+		{
+			// On ajoute ça au multiplier total sans le 100% de base
+			multiplier += serverBonus - 1;
 		}
-		multiplier += GameAPI.getAPI().getServerXpBonus() <= 0 ? 0 : (GameAPI.getAPI().getServerBadcoinsBonus() - 1);
-		double v = 0;
-		try {
-			if (this.getGameBadblockPlayer() != null) {
-				Double o = this.getGameBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
-				if (o == null) o = 1.0d;
-				v = o - 1;
+
+		// Booster activé par un joueur
+		PlayerBooster playerBooster = api.getBooster();
+		if (playerBooster != null) 
+		{
+			// Booster valide
+			if (playerBooster.getBooster() != null)
+			{
+				double playerBoosterBonus = playerBooster.getBooster().getCoinsMultiplier();
+				// Si le bonus est > que le x1 de base, on l'applique
+				if (playerBoosterBonus > 1)
+				{
+					// On ajoute ça au multiplier total sans le 100% de base
+					multiplier += playerBoosterBonus - 1;
+				}
 			}
-		}catch(Exception error) {
-			v = 0;
 		}
-		multiplier += v;
+
+		// Boost appliqué par le grade du joueur
+		if (this.getGameBadblockPlayer() != null)
+		{
+			Double playerBoostObject = this.getGameBadblockPlayer().getPermissionValue("badcoinsboost", Double.class);
+			// Boost inconnu, on le met à x1 par défaut
+			if (playerBoostObject == null)
+			{
+				playerBoostObject = 1D;
+			}
+			else
+			{
+				// Boost existant, on le prend en valeur primitive
+				double playerBoost = playerBoostObject.doubleValue();
+				// Si le bonus est > que le x1 de base, on l'applique
+				if (playerBoost > 1)
+				{
+					// On ajoute ça au multiplier total sans le 100% de base
+					multiplier += playerBoost - 1;
+				}
+			}
+		}
+		else
+		{
+			// Joueur invalide? Soucis de code à régler dans ce cas, on prévient la console
+			System.out.println("GamePlayer is null. Unable to add BadCoins from his rank. Fix this!");
+		}
+
+		// On retourne le multiplier
 		return multiplier;
 	}
 
 	@Override
 	public double getXpMultiplier() {
-		double multiplier = 1;
-		PlayerBooster playerBooster = GamePlugin.getInstance().getBooster();
-		if (playerBooster != null && playerBooster.getBooster() != null) {
-			multiplier += playerBooster.getBooster().getXpMultiplier() - 1;
+		GamePlugin api = GamePlugin.getInstance();
+		// Multiplier
+		double multiplier = 1; // On met le x1 de base
+
+		// Booster serveur
+		double serverBonus = api.getServerXpBonus();
+		// Si le bonus est > que le x1 de base, on l'applique
+		if (serverBonus > 1)
+		{
+			// On ajoute ça au multiplier total sans le 100% de base
+			multiplier += serverBonus - 1;
 		}
-		multiplier += GameAPI.getAPI().getServerXpBonus() <= 0 ? 0 : (GameAPI.getAPI().getServerXpBonus() - 1);
-		double v = 0;
-		try {
-			if (this.getGameBadblockPlayer() != null) {
-				Double o = this.getGameBadblockPlayer().getPermissionValue("xpboost", Double.class);
-				if (o == null) o = 1.0d;
-				v = o - 1;
+
+		// Booster activé par un joueur
+		PlayerBooster playerBooster = api.getBooster();
+		if (playerBooster != null) 
+		{
+			// Booster valide
+			if (playerBooster.getBooster() != null)
+			{
+				double playerBoosterBonus = playerBooster.getBooster().getXpMultiplier();
+				// Si le bonus est > que le x1 de base, on l'applique
+				if (playerBoosterBonus > 1)
+				{
+					// On ajoute ça au multiplier total sans le 100% de base
+					multiplier += playerBoosterBonus - 1;
+				}
 			}
-		}catch(Exception error) {
-			v = 0;
 		}
-		multiplier += v;
+
+		// Boost appliqué par le grade du joueur
+		if (this.getGameBadblockPlayer() != null)
+		{
+			Double playerBoostObject = this.getGameBadblockPlayer().getPermissionValue("xpboost", Double.class);
+			// Boost inconnu, on le met à x1 par défaut
+			if (playerBoostObject == null)
+			{
+				playerBoostObject = 1D;
+			}
+			else
+			{
+				// Boost existant, on le prend en valeur primitive
+				double playerBoost = playerBoostObject.doubleValue();
+				// Si le bonus est > que le x1 de base, on l'applique
+				if (playerBoost > 1)
+				{
+					// On ajoute ça au multiplier total sans le 100% de base
+					multiplier += playerBoost - 1;
+				}
+			}
+		}
+		else
+		{
+			// Joueur invalide? Soucis de code à régler dans ce cas, on prévient la console
+			System.out.println("GamePlayer is null. Unable to add XP from his rank. Fix this!");
+		}
+
+		// On retourne le multiplier
 		return multiplier;
 	}
 
