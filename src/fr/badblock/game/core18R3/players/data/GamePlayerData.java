@@ -89,12 +89,13 @@ public class GamePlayerData implements PlayerData {
 
 	@Override
 	public long getXpUntilNextLevel() {
-		long base = 200;
-		long add  = 50;
+		long base = 100;
+		long add  = 25;
 
-		for(int i=1;i<level;i++){
+		for(int i=1;i<level;i++)
+		{
 			base += add;
-			add  += 300;
+			add  += 13;
 		}
 
 		//Double doublet = Math.pow(1.2d, level + 1) * 100;
