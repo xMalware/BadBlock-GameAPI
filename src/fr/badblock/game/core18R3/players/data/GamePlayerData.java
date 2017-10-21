@@ -77,9 +77,53 @@ public class GamePlayerData implements PlayerData {
 	public int addBadcoins(int badcoins, boolean applyBonus) {
 		if (badcoins < 0) return 0;
 		badcoins = Math.abs(badcoins);
+
+		// Application des BadCoins avant application du bonus
+		int badCoinsToBonusApply = 0;
+		if (badcoinsTemp != null)
+		{
+			List<Long> list = badcoinsTemp.stream().filter(entry -> entry.getValue().booleanValue()).map(entry -> entry.getKey()).collect(Collectors.toList());
+			if (list != null)
+			{
+				for (long badcoinsToAdd : list)
+				{
+					// pas de bonus sur le global mais bonus sur la partie ajoutée, on ajoute donc le bonus de la fraction de badcoins
+					if (!applyBonus)
+					{
+						badCoinsToBonusApply += badcoinsToAdd;
+					}
+					else
+					{
+						badcoins += badcoinsToAdd;
+					}
+				}
+			}
+		}
+
+		// Application du bonus par fraction
+		if (badCoinsToBonusApply > 0)
+		{
+			badcoins += badCoinsToBonusApply * getBadcoinsMultiplier();
+		}
+
+		// Application du bonus global
 		if (applyBonus) {
 			badcoins *= getBadcoinsMultiplier();
 		}
+
+		// Application des BadCoins après application du bonus
+		if (badcoinsTemp != null)
+		{
+			List<Long> list = badcoinsTemp.stream().filter(entry -> !entry.getValue().booleanValue()).map(entry -> entry.getKey()).collect(Collectors.toList());
+			if (list != null)
+			{
+				for (long badcoinsToAdd : list)
+				{
+					badcoins += badcoinsToAdd;
+				}
+			}
+		}
+
 		addedBadcoins += badcoins;
 		return badcoins;
 	}
@@ -134,11 +178,13 @@ public class GamePlayerData implements PlayerData {
 			}
 		}
 
+		// Application du bonus par fraction
 		if (xpToBonusApply > 0)
 		{
 			xp += xpToBonusApply * getXpMultiplier();
 		}
 
+		// Application du bonus global
 		if (applyBonus) {
 			xp *= getXpMultiplier();
 		}
