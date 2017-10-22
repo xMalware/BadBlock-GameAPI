@@ -132,6 +132,7 @@ public class GamePlayerData implements PlayerData {
 		}
 
 		addedBadcoins += badcoins;
+		this.badcoins += badcoins;
 		return badcoins;
 	}
 
@@ -150,7 +151,7 @@ public class GamePlayerData implements PlayerData {
 		for(int i=1;i<level;i++)
 		{
 			base += add;
-			add  += 13;
+			add  += 30;
 		}
 
 		//Double doublet = Math.pow(1.2d, level + 1) * 100;
@@ -224,6 +225,15 @@ public class GamePlayerData implements PlayerData {
 		if (delta > 0) return this.xp;
 		// passage de niveau jusqu'à ce qu'il y ai suffisament de niveau(x) passé(s) pour avoir une progression
 		long rest = 0;
+		if (level >= 150)
+		{
+			level = level / 3;
+		}
+		else
+		if (level >= 80)
+		{
+			level = level / 2;
+		}
 		while ((rest = getXpUntilNextLevel() - this.xp) <= 0) {
 			level++;
 			addedLevels++;
