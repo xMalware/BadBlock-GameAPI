@@ -10,12 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
-import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.general.Callback;
 
 public class RealRankedManager extends RankedManager {
@@ -59,77 +58,76 @@ public class RealRankedManager extends RankedManager {
 	}
 
 	@Override
-	public void fill(String gameName, BadblockPlayer badblockPlayer, long... data) {
+	public void fill(String gameName) {
 		if (!gameFields.containsKey(gameName))
 		{
 			new RuntimeException("Unknown fields for " + gameName);
 		}
-		List<String> fields = gameFields.get(gameName);
-		if (fields.size() != data.length)
+		if (!temp.containsKey(gameName))
 		{
-			new RuntimeException("Conflict with field length (" + fields.size() + " vs " + data.length + ") for " + gameName);
+			System.out.println("[INFO] Unable to fill ranking data. No data.");
 		}
-		GameBadblockPlayer gameBadBlockPlayer = (GameBadblockPlayer) badblockPlayer;
-		String name = gameBadBlockPlayer.getRealName() != null ? gameBadBlockPlayer.getRealName() : null;
-		String[] tables = new String[] { getTempTableName(gameName), getPermanentTableName(gameName) };
-		for (String table : tables)
+		Map<String, Map<String, Long>> gameValues = temp.get(gameName);
+		gameValues.entrySet().forEach(entry ->
 		{
-			GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(id) AS count FROM " + table + " WHERE playerName = '" + name + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+			String name = entry.getKey();
+			String[] tables = new String[] { getTempTableName(gameName), getPermanentTableName(gameName) };
+			for (String table : tables)
 			{
+				GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(id) AS count FROM " + table + " WHERE playerName = '" + name + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+				{
 
-				@Override
-				public void done(ResultSet result, Throwable error) {
-					System.out.println("[SQL Request] A");
-					try
-					{
-						if (result.next())
+					@Override
+					public void done(ResultSet result, Throwable error) {
+						System.out.println("[SQL Request] A");
+						try
 						{
-							System.out.println("[SQL Request] B");
-							String valuesBuilder = "";
-							int i = 0;
-							Iterator<String> iterator = fields.iterator();
-							while (iterator.hasNext())
+							if (result.next())
 							{
-								String field = iterator.next();
-								long value = data[i];
-								valuesBuilder += field + "=" + field + "+" + value;
-								if (iterator.hasNext())
+								System.out.println("[SQL Request] B");
+								String valuesBuilder = "";
+								Iterator<Entry<String, Long>> iterator = entry.getValue().entrySet().iterator();
+								while (iterator.hasNext())
 								{
-									valuesBuilder += ", ";
+									Entry<String, Long> currentEntry = iterator.next();
+									valuesBuilder += currentEntry.getKey() + "=" + currentEntry.getKey() + "+" + currentEntry.getValue();
+									if (iterator.hasNext())
+									{
+										valuesBuilder += ", ";
+									}
 								}
-								i++;
+								String message = "UPDATE " + table + " SET " + valuesBuilder + " WHERE playerName = '" + name + "'";
+								GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 							}
-							String message = "UPDATE " + table + " SET " + valuesBuilder + " WHERE playerName = '" + name + "'";
-							GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
+							else
+							{
+								String fieldsBuilder = "";
+								Iterator<String> iterator = entry.getValue().keySet().iterator();
+								while (iterator.hasNext())
+								{
+									fieldsBuilder += ", " + iterator.next();
+								}
+								String valuesBuilder = "";
+								for (long part : entry.getValue().values())
+								{
+									valuesBuilder += ", '" + part + "'";
+								}
+								String message = "INSERT INTO " + table + "(playerName" + fieldsBuilder + ") VALUES('" + name + "'" + valuesBuilder + ")";
+								System.out.println("[SQL Request] " + message);
+								GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
+							}
+							result.close();
 						}
-						else
+						catch(Exception exception)
 						{
-							String fieldsBuilder = "";
-							Iterator<String> iterator = fields.iterator();
-							while (iterator.hasNext())
-							{
-								fieldsBuilder += ", " + iterator.next();
-							}
-							String valuesBuilder = "";
-							for (long part : data)
-							{
-								valuesBuilder += ", '" + part + "'";
-							}
-							String message = "INSERT INTO " + table + "(playerName" + fieldsBuilder + ") VALUES('" + badblockPlayer.getName() + "'" + valuesBuilder + ")";
-							System.out.println("[SQL Request] " + message);
-							GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
+							System.out.println("[SQL Request] C");
+							exception.printStackTrace();
 						}
-						result.close();
 					}
-					catch(Exception exception)
-					{
-						System.out.println("[SQL Request] C");
-						exception.printStackTrace();
-					}
-				}
 
-			});
-		}
+				});
+			}
+		});
 	}
 
 	private String getTempTableName(String gameName)
