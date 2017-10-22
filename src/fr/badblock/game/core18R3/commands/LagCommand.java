@@ -6,6 +6,7 @@ import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
+import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.PlayerPingListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.command.AbstractCommand;
@@ -28,8 +29,9 @@ public class LagCommand extends AbstractCommand {
 		String ms = "0";
 		
 		if (sender instanceof BadblockPlayer) {
-			BadblockPlayer player = (BadblockPlayer) sender;
-			int ping = PlayerPingListener.ping.containsKey(player.getName()) ? PlayerPingListener.ping.get(player.getName()) : -1;
+			GameBadblockPlayer player = (GameBadblockPlayer) sender;
+			String realName = player.getRealName() != null ? player.getRealName() : player.getName();
+			int ping = PlayerPingListener.ping.containsKey(realName) ? PlayerPingListener.ping.get(realName) : -1;
 			ms = ping < 80 ? "&a" + ping : ping <= 100 ? "&b" + ping : ping < 200 ? "&e" + ping : ping < 300 ? "&c" + ping : ping < 500 ? "&4" + ping : "&4&l" + ping; 
 		}
 		

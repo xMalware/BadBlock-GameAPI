@@ -53,7 +53,7 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 	private String gameBegin = "";
 
 	private long gameId = new SecureRandom().nextLong();
-	
+
 	@Override
 	public void keepAlive() {
 		GamePlugin.getInstance().getGameServerManager().getGameServerKeeperAliveTask().keepAlive(0);
@@ -126,8 +126,7 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 			gameBegin = dateFormat.format(System.currentTimeMillis()) + " (GMT +1)";
 		}
 
-		if (!GameAPI.TEST_MODE)
-			GamePlugin.getInstance().getGameServerManager().getGameServerKeeperAliveTask().keepAlive(gameState, 0);
+		keepAlive();
 	}
 
 	@Override
@@ -161,5 +160,5 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 	public boolean isJoinableWhenRunning() {
 		return Boolean.parseBoolean(ServerProperties.getProperties().getProperty("docker-runningMatchmaking")) && !Bukkit.getServerName().startsWith("speeduhc") && !Bukkit.getServerName().startsWith("sg");
 	}
-	
+
 }

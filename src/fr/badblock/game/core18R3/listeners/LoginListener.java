@@ -27,6 +27,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.gson.GsonBuilder;
+
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.listeners.packets.SkullExploitListener;
@@ -70,13 +72,14 @@ import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
  * @author LeLanN
  */
 public class LoginListener extends BadListener {
-	
+
 	public static List<String> l = new ArrayList<>();
-	
+
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e) {
-		System.out.println("PlayerLoginEvent: " + e.getPlayer().getName());
-
+		CraftPlayer cp = (CraftPlayer) e.getPlayer();
+		System.out.println("- PlayerLoginEvent: " + e.getPlayer().getName() + " / " + cp.getHandle().getProfile().getName());
+		System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(cp.getProfile()));
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
@@ -151,6 +154,7 @@ public class LoginListener extends BadListener {
 
 	private HashMap<Player, Integer> lastBookTick = new HashMap<>();
 
+	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
@@ -220,7 +224,7 @@ public class LoginListener extends BadListener {
 			p.showCustomObjective(offlinePlayer.getCustomObjective());
 
 			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
-			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(offlinePlayer.getName().toLowerCase());
+			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(p.getPlayerData());
 
 		} else if(GameAPI.getAPI().getGameServer().getGameState() == GameState.RUNNING){
 			p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));

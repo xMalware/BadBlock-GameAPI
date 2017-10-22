@@ -112,7 +112,6 @@ import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.permissions.PermissibleGroup;
 import fr.badblock.permissions.PermissiblePlayer;
 import fr.badblock.permissions.PermissionManager;
-import fr.badblock.utils.CommonFilter;
 import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -186,6 +185,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public boolean 						ghostConnect;
 	@Getter@Setter
 	private boolean						resultDone;
+	@Getter@Setter
+	private int							shopPoints;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -195,15 +196,27 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		this.playerData.setGameBadblockPlayer(this);
 
 		this.permissions = PermissionManager.getInstance().createPlayer(getName(), offlinePlayer == null ? new JsonObject() : offlinePlayer.getObject());
-		
+
 		if(offlinePlayer != null) {
 			object = offlinePlayer.getObject();
 			team 	   = offlinePlayer.getTeam();
 			inGameData = offlinePlayer.getInGameData();
 			return;
 		}else object = new JsonObject();
-		if (getRealName() == null) setRealName(CommonFilter.reverseFilterNames(this.getName()));
-		GameAPI.getAPI().getLadderDatabase().getPlayerData(this, new Callback<JsonObject>() {
+		try {
+			Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
+			ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + this.getName() + "'");
+			if (resultSet.next())
+			{
+				String playerName = resultSet.getString("playerName");
+				setRealName(playerName);
+			}
+			resultSet.close();
+			statement.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : this.getName(), new Callback<JsonObject>() {
 			@Override
 			public void done(JsonObject result, Throwable error) {
 				new Thread() {
@@ -239,9 +252,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	public void updateData(JsonObject object) {
-		if (object.has("realName")) {
-			this.realName = object.get("realName").getAsString();
-		}
+		// Refresh shop points
+		this.refreshShopPoints();
+		// Game
 		if (object.has("game")) {
 			JsonObject game = object.get("game").getAsJsonObject();
 			this.object.add("game", game);
@@ -250,12 +263,16 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			if (object.has("onlyJoinWhileWaiting"))
 				playerData.onlyJoinWhileWaiting = object.get("onlyJoinWhileWaiting").getAsLong();
 		}
+		
+		// LeaverBuster
 		if (object.has("leaves")) {
 			this.leaves = GameAPI.getGson().fromJson(object.get("leaves").toString(), collectType);
 			if (this.leaves == null) this.leaves = new ArrayList<>();
 		}else{
 			this.setLeaves(new ArrayList<>());
 		}
+		
+		// Parties
 		if (object.has("playersWithHim")) {
 			try {
 				List<String> playersStringWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim").getAsString(), collectionType);
@@ -263,108 +280,132 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					playersWithHim = new ArrayList<>();
 				}else playersWithHim.clear();
 				playersStringWithHim.forEach(playerString -> playersWithHim.add(UUID.fromString(playerString)));
-				if (playersStringWithHim.contains(getUniqueId())) playersWithHim.clear();
+				if (playersStringWithHim.contains(getUniqueId().toString())) playersWithHim.clear();
 			} catch(Exception e){
 				e.printStackTrace();
 			}
 		}
-
+		
 		if (object.has("permissions")) {
 			this.object.add("permissions", object.get("permissions"));
-			permissions = PermissionManager.getInstance().createPlayer(getName(), object);
-			GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+			permissions = PermissionManager.getInstance().createPlayer(getRealName() != null ? getRealName() : getName(), object);
+			// nickname not null
+			if (getRealName() != null)
+			{
+				// nothing anymore
+			}
+			else
+			{
+				GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
-				@Override
-				public void done(ResultSet result, Throwable error) {
-					try {
-						TreeMap<Integer, String> groups = new TreeMap<>();
-						if (result.next()) {
-							int id = result.getInt("id");
-							try {
-								Statement statement = GamePlugin.getInstance().getWebDatabase().createStatement();
-								ResultSet resultSet = statement.executeQuery("SELECT * FROM boutique_buy WHERE player = '" + id + "'");
-								while (resultSet.next()) {
-									int offer = resultSet.getInt("offer");
-									Statement statement2 = GamePlugin.getInstance().getWebDatabase().createStatement();
-									ResultSet result2 = statement2.executeQuery("SELECT * FROM boutique_offers WHERE id = '" + offer + "'");
-									while (result2.next()) {
-										String displayName = result2.getString("displayName");
-										displayName = displayName.toLowerCase();
-										displayName = displayName.replace("old ", "");
-										if (displayName.contains("grade")) {
-											displayName = displayName.replace("grade", "");
-											displayName = displayName.replace(" ", "");
-											PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
-											if (group != null) {
-												groups.put(group.getPower(), group.getName());
+					@Override
+					public void done(ResultSet result, Throwable error) {
+						try {
+							TreeMap<Integer, String> groups = new TreeMap<>();
+							if (result.next()) {
+								int id = result.getInt("id");
+								try {
+									Statement statement = GamePlugin.getInstance().getWebDatabase().createStatement();
+									ResultSet resultSet = statement.executeQuery("SELECT * FROM boutique_buy WHERE player = '" + id + "'");
+									while (resultSet.next()) {
+										int offer = resultSet.getInt("offer");
+										Statement statement2 = GamePlugin.getInstance().getWebDatabase().createStatement();
+										ResultSet result2 = statement2.executeQuery("SELECT * FROM boutique_offers WHERE id = '" + offer + "'");
+										while (result2.next()) {
+											String displayName = result2.getString("displayName");
+											displayName = displayName.toLowerCase();
+											displayName = displayName.replace("old ", "");
+											if (displayName.contains("grade")) {
+												displayName = displayName.replace("grade", "");
+												displayName = displayName.replace(" ", "");
+												PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
+												if (group != null) {
+													groups.put(group.getPower(), group.getName());
+												}
 											}
 										}
+										result2.close();
 									}
-									result2.close();
-								}
-								resultSet.close();
-							}catch(Exception err) {
-								err.printStackTrace();
-							}
-						}
-						result.close();
-						NavigableMap<Integer, String> map = groups.descendingMap();
-						Entry<Integer, String> entry = map.firstEntry();
-						if (entry != null) {
-							PermissibleGroup group = PermissionManager.getInstance().getGroup(entry.getValue());
-							if (!permissions.getSuperGroup().equalsIgnoreCase(entry.getValue()) && !permissions.getAlternateGroups().containsKey(entry.getValue())) {
-								if (group != null) {
-									permissions.addParent(-1, group);
-								}
-								String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
-								URL obj = new URL(url);
-								HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-								con.setRequestMethod("POST");
-								con.setRequestProperty("User-Agent", "Mozilla/5.0");
-								con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-								String urlParameters = "name=" + getName().replace("&", "") + "&group=" + entry.getValue() + "&duration=-1";
-								con.setDoOutput(true);
-								DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-								wr.writeBytes(urlParameters);
-								wr.flush();
-								wr.close();
-								@SuppressWarnings("unused")
-								int responseCode = con.getResponseCode();
-								BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-								String inputLine;
-								StringBuffer response = new StringBuffer();
-								while ((inputLine = in.readLine()) != null) {
-									response.append(inputLine);
+									resultSet.close();
+								}catch(Exception err) {
+									err.printStackTrace();
 								}
 							}
-						}
-						int i = 0;
-						boolean bool = false;
-						for (Entry<Integer, String> entries : map.entrySet()) {
-							i++;
-							if (i <= 1) continue;
-							System.out.println("Remove " + entries.getValue());
-							if (permissions.getSuperGroup().equalsIgnoreCase(entries.getValue()) || permissions.getAlternateGroups().containsKey(entries.getValue())) {
-								bool = true;
-								permissions.removeParent(entries.getValue());
+							result.close();
+							NavigableMap<Integer, String> map = groups.descendingMap();
+							Entry<Integer, String> entry = map.firstEntry();
+							if (entry != null) {
+								PermissibleGroup group = PermissionManager.getInstance().getGroup(entry.getValue());
+								if (!permissions.getSuperGroup().equalsIgnoreCase(entry.getValue()) && !permissions.getAlternateGroups().containsKey(entry.getValue())) {
+									if (group != null) {
+										permissions.addParent(-1, group);
+									}
+									String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
+									URL obj = new URL(url);
+									HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+									con.setRequestMethod("POST");
+									con.setRequestProperty("User-Agent", "Mozilla/5.0");
+									con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+									String urlParameters = "name=" + getName().replace("&", "") + "&group=" + entry.getValue() + "&duration=-1";
+									con.setDoOutput(true);
+									DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+									wr.writeBytes(urlParameters);
+									wr.flush();
+									wr.close();
+									@SuppressWarnings("unused")
+									int responseCode = con.getResponseCode();
+									BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+									String inputLine;
+									StringBuffer response = new StringBuffer();
+									while ((inputLine = in.readLine()) != null) {
+										response.append(inputLine);
+									}
+								}
 							}
+							int i = 0;
+							boolean bool = false;
+							for (Entry<Integer, String> entries : map.entrySet()) {
+								i++;
+								if (i <= 1) continue;
+								System.out.println("Remove " + entries.getValue());
+								if (permissions.getSuperGroup().equalsIgnoreCase(entries.getValue()) || permissions.getAlternateGroups().containsKey(entries.getValue())) {
+									bool = true;
+									permissions.removeParent(entries.getValue());
+								}
+							}
+							if (bool) {
+								JsonObject object = new JsonObject();
+								object.add("permissions", permissions.saveAsJson());
+								GameAPI.getAPI().getLadderDatabase().updatePlayerData(GameBadblockPlayer.this, object);
+							}
+						}catch(Exception err) {
+							err.printStackTrace();
 						}
-						if (bool) {
-							JsonObject object = new JsonObject();
-							object.add("permissions", permissions.saveAsJson());
-							GameAPI.getAPI().getLadderDatabase().updatePlayerData(GameBadblockPlayer.this, object);
-						}
-					}catch(Exception err) {
-						err.printStackTrace();
 					}
-				}
-			});
-		}
-		if (object.has("shoppoints")) {
-			this.playerData.shopPoints = object.get("shoppoints").getAsInt();
+				});
+			}
 		}
 	}
 
+	@Override
+	public void refreshShopPoints()
+	{
+		String name = getRealName() != null ? getRealName() : getName();
+		GamePlugin.getInstance().getWebDatabase().call("SELECT ptsboutique FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(name) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+			@Override
+			public void done(ResultSet result, Throwable error) {
+				try {
+					if (result.next()) {
+						shopPoints = result.getInt("ptsboutique");
+					}
+					result.close();
+				}catch(Exception err) {
+					err.printStackTrace();
+				}
+			}
+		});
+	}
 
 	@Override
 	public EntityPlayer getHandle() {
@@ -514,7 +555,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		//String result   = GameAPI.getGson().toJson(toPost);
 
 
-	//	PreparedStatement statement = null;
+		//	PreparedStatement statement = null;
 
 		try {
 			/*statement = GameAPI.getAPI().getSqlDatabase().preparedStatement("INSERT INTO parties(id, party, player, playerId, gametype, servername, day, result)"
@@ -554,7 +595,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				this.sendMessage(message, textComponent, message2);
 				resultDone = true;
 			}
-			
+
 			saveGameData();
 		} catch(Exception e){
 			e.printStackTrace();
@@ -773,7 +814,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			setGameMode(GameMode.SPECTATOR);
 
 			teleport(location);
-
 			fakeJailer = getAPI().spawnFakeLivingEntity(location, EntityType.BAT, WatcherPig.class);
 			fakeJailer.getWatchers().setInvisibile(true);
 			//fakeJailer.show(this); visibility server ?
@@ -925,19 +965,44 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public TranslatableString getGroupPrefix() {
-		return new TranslatableString("permissions.chat." + permissions.getParent().getName());
+		return new TranslatableString("permissions.chat." + getFakeMainGroup());
 	}
 
 	@Override
 	public TranslatableString getGroupSuffix() {
-		return new TranslatableString("permissions.chat_suffix." + permissions.getParent().getName());
+		return new TranslatableString("permissions.chat_suffix." + getFakeMainGroup());
 	}
 
 	@Override
 	public TranslatableString getTabGroupPrefix() {
-		return new TranslatableString("permissions.tab." + permissions.getParent().getName());
+		return new TranslatableString("permissions.tab." + getFakeMainGroup());
 	}
 
+	public String getFakeMainGroup()
+	{
+		String rankName = permissions.getParent().getName();
+		if (getRealName() != null)
+		{
+			List<String> groups = new ArrayList<>(permissions.getAlternateGroups().keySet());
+			groups.add(permissions.getSuperGroup());
+			rankName = "default";
+			int rankLevel = 0;
+			for (String group : groups)
+			{
+				PermissibleGroup g = PermissionManager.getInstance().getGroup(group);
+				if (!g.isStaff())
+				{
+					if (g.getPower() > rankLevel)
+					{
+						rankName = g.getName();
+						rankLevel = g.getPower();
+					}
+				}
+			}
+		}
+		return rankName;
+	}
+	
 	@Override
 	public String getMainGroup() {
 		return permissions.getSuperGroup();
@@ -952,7 +1017,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPlayer(String server) {
 		ByteArrayDataOutput out = ByteStreams.newDataOutput();
 		out.writeUTF("ConnectOther");
-		out.writeUTF(getRealName() != null && !getRealName().isEmpty() ? getRealName() : getName());
+		out.writeUTF(getRealName() != null ? getRealName() : getName());
 		out.writeUTF(server);
 		sendPluginMessage(GameAPI.getAPI(), "BungeeCord", out.toByteArray());
 	}

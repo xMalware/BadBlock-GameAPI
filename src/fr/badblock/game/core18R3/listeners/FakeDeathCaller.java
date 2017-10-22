@@ -209,7 +209,7 @@ public class FakeDeathCaller extends BadListener {
 
 	@EventHandler
 	public void onProposition(PlayerReconnectionPropositionEvent e){
-		if(cantReconnect.contains(e.getPlayer()))
+		if(cantReconnect.contains(e.getPlayer().getUniqueId()))
 			e.setCancelled(true);
 	}
 
