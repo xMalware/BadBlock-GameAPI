@@ -1,8 +1,10 @@
 package fr.badblock.game.core18R3.listeners;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -14,6 +16,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import fr.badblock.game.core18R3.players.data.ChatData;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
@@ -29,6 +32,8 @@ public class ChatListener extends BadListener {
 	public static String  custom  = null;
 	public static Map<Integer, ChatData> messages = new HashMap<>();
 
+	private Set<String> gg = new HashSet<>();
+
 	@EventHandler(priority=EventPriority.HIGHEST,ignoreCancelled=true)
 	public void onChat(AsyncPlayerChatEvent e){
 		if(!enabled) return;
@@ -38,6 +43,31 @@ public class ChatListener extends BadListener {
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
 		protectColor(player, e);
+
+		if (player.getBadblockMode().equals(BadblockMode.PLAYER))
+		{
+			GameState gameState = GameAPI.getAPI().getGameServer().getGameState();
+			if (gameState.equals(GameState.FINISHED) || gameState.equals(GameState.STOPPING))
+			{
+				String message = e.getMessage();
+				if (message.equalsIgnoreCase("gg"))
+				{	
+					String lowerName = player.getName().toLowerCase();
+					if (gg.contains(lowerName))
+					{
+						e.setCancelled(true);
+						player.sendTranslatedMessage("game.gg.youalreadysaythat");
+						return;
+					}
+					int addedBadcoins = player.getPlayerData().addBadcoins(3, true);
+					long addedXp = player.getPlayerData().addXp(3, true);
+					player.saveGameData();
+					player.sendTranslatedMessage("game.gg.win", addedBadcoins, addedXp);
+					gg.add(lowerName);
+				}
+			}
+		}
+
 		if(player.getBadblockMode() == BadblockMode.SPECTATOR){
 			TranslatableString result = new TranslatableString("chat.spectator" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §r" : "") + player.getName(), player.getGroupPrefix(), e.getMessage(), player.getPlayerData().getLevel(), player.getGroupSuffix());
 			int i = new Random().nextInt(Integer.MAX_VALUE);
@@ -209,7 +239,7 @@ public class ChatListener extends BadListener {
 	public static String getLastColors(String input){
 		String result = "";
 		int length = input.length();
-        for (int index = length - 1; index > -1; index--){
+		for (int index = length - 1; index > -1; index--){
 			char section = input.charAt(index);
 			if ((section == '§' || section == '&') && (index < length - 1)){
 				char c = input.charAt(index + 1);
