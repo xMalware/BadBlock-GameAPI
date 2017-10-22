@@ -1054,7 +1054,7 @@ public class GamePlugin extends GameAPI {
 
 										Chunk neighbor = chunks.get(neighCoord);
 
-										if(neighbor != null){
+										if(neighbor != null && chunk != null){
 											neighbor.setNeighborLoaded(-x, -z);
 											chunk.setNeighborLoaded(x, z);
 										}
