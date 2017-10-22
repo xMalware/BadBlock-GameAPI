@@ -55,14 +55,14 @@ public class RealRankedManager extends RankedManager {
 		// Total
 		message = "CREATE TABLE IF NOT EXISTS `" + getPermanentTableName(gameName) + "` (" + 
 				"	`id` INT NULL," + 
-				"	`playerName` VARCHAR(255) NULL,";
+				"	`playerName` VARCHAR(255) NULL";
 		for (String field : fieldList)
 		{
-			message += "	`" + field + "` BIGINT(255) NOT NULL DEFAULT '0',";
+			message += ",	`" + field + "` BIGINT(255) NOT NULL DEFAULT '0'";
 		}
 		message +=
-				")" + 
-						"COLLATE='utf8_general_ci'" + 
+				") " + 
+						"COLLATE='utf8_general_ci' " + 
 						"ENGINE=InnoDB;";
 		System.out.println("[SQL Request] " + message);
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
