@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
@@ -23,6 +24,12 @@ public class RealRankedManager extends RankedManager {
 	//			Nom jeu		Pseudo		// field // value
 	public Map<String, Map<String, Map<String, Long>>> temp = new HashMap<>();
 
+	@Override
+	public String getCurrentRankedGameName()
+	{
+		return GamePlugin.getInstance().getGameServerManager().getRankedConfig().rankedName;
+	}
+	
 	@Override
 	public void initialize(String gameName, String... fields) {
 		// Par mois
