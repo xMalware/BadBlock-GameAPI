@@ -39,6 +39,7 @@ public class RealRankedManager extends RankedManager {
 				")" + 
 						"COLLATE='utf8_general_ci'" + 
 						"ENGINE=InnoDB;";
+		System.out.println("[SQL Request] " + message);
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 		// Total
 		message = "CREATE TABLE IF NOT EXISTS `" + getPermanentTableName(badblockGame) + "` (" + 
@@ -52,6 +53,7 @@ public class RealRankedManager extends RankedManager {
 				")" + 
 						"COLLATE='utf8_general_ci'" + 
 						"ENGINE=InnoDB;";
+		System.out.println("[SQL Request] " + message);
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 	}
 
@@ -76,10 +78,12 @@ public class RealRankedManager extends RankedManager {
 
 				@Override
 				public void done(ResultSet result, Throwable error) {
+					System.out.println("[SQL Request] A");
 					try
 					{
 						if (result.next())
 						{
+							System.out.println("[SQL Request] B");
 							String valuesBuilder = "";
 							int i = 0;
 							Iterator<String> iterator = fields.iterator();
@@ -111,12 +115,14 @@ public class RealRankedManager extends RankedManager {
 								valuesBuilder += ", '" + part + "'";
 							}
 							String message = "INSERT INTO " + table + "(playerName" + fieldsBuilder + ") VALUES('" + badblockPlayer.getName() + "'" + valuesBuilder + ")";
+							System.out.println("[SQL Request] " + message);
 							GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 						}
 						result.close();
 					}
 					catch(Exception exception)
 					{
+						System.out.println("[SQL Request] C");
 						exception.printStackTrace();
 					}
 				}
