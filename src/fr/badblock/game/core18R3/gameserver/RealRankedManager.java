@@ -20,7 +20,9 @@ import fr.badblock.gameapi.utils.general.Callback;
 
 public class RealRankedManager extends RankedManager {
 
-	private Map<String, List<String>> gameFields = new HashMap<>();
+	public Map<String, List<String>> gameFields = new HashMap<>();
+	//			Nom jeu		Pseudo		// field // value
+	public Map<String, Map<String, Map<String, Long>>> temp = new HashMap<>();
 
 	@Override
 	public void initialize(String gameName, String... fields) {

@@ -4,6 +4,7 @@ package fr.badblock.game.core18R3.players.data;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,9 +16,11 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 
 import fr.badblock.game.core18R3.GamePlugin;
+import fr.badblock.game.core18R3.gameserver.RealRankedManager;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.achievements.PlayerAchievement;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.data.GameData;
 import fr.badblock.gameapi.players.data.PlayerAchievementState;
@@ -566,6 +569,16 @@ public class GamePlayerData implements PlayerData {
 		if (badcoinsTemp == null) badcoinsTemp = new ArrayList<>();
 		Entry<Long, Boolean> entry = new AbstractMap.SimpleEntry<Long, Boolean>(badcoins, applyBonus);
 		badcoinsTemp.add(entry);
+	}
+
+	@Override
+	public void incrementTempRankedData(String gameName, String fieldName, long data) {
+		RealRankedManager realRankedManager = (RealRankedManager) RankedManager.instance;
+		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.getOrDefault(gameName, new HashMap<>());
+		Map<String, Long> playerValues = gameValues.getOrDefault(gameValues.get(this.getGameBadblockPlayer().getName()), new HashMap<>());
+		playerValues.put(fieldName, playerValues.getOrDefault(fieldName, 0L) + data);
+		gameValues.put(this.getGameBadblockPlayer().getName(), playerValues);
+		realRankedManager.temp.put(gameName, gameValues);
 	}
 
 }
