@@ -40,7 +40,8 @@ public class RealRankedManager extends RankedManager {
 		List<String> fieldList = Arrays.asList(fields);
 		gameFields.put(gameName, fieldList);
 		String message = "CREATE TABLE IF NOT EXISTS `" + getTempTableName(gameName) + "` (" + 
-				"	`id` INT NULL," + 
+				"	`id` INT(255) NOT NULL AUTO_INCREMENT, " + 
+				"	PRIMARY KEY (`id`) " + 
 				"	`playerName` VARCHAR(255) NULL";
 		for (String field : fieldList)
 		{
@@ -54,7 +55,8 @@ public class RealRankedManager extends RankedManager {
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 		// Total
 		message = "CREATE TABLE IF NOT EXISTS `" + getPermanentTableName(gameName) + "` (" + 
-				"	`id` INT NULL," + 
+				"	`id` INT(255) NOT NULL AUTO_INCREMENT, " + 
+				"	PRIMARY KEY (`id`) " + 
 				"	`playerName` VARCHAR(255) NULL";
 		for (String field : fieldList)
 		{
