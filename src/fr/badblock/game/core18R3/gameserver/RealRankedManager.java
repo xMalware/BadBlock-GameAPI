@@ -32,6 +32,10 @@ public class RealRankedManager extends RankedManager {
 	
 	@Override
 	public void initialize(String gameName, String... fields) {
+		if (!GamePlugin.getInstance().getGameServerManager().getRankedConfig().ranked)
+		{
+			System.out.println("No rankeds. Cancelled initializing.");
+		}
 		// Par mois
 		List<String> fieldList = Arrays.asList(fields);
 		gameFields.put(gameName, fieldList);
