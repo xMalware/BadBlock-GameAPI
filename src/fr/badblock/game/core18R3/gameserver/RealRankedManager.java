@@ -16,19 +16,18 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
-import fr.badblock.gameapi.run.BadblockGame;
 import fr.badblock.gameapi.utils.general.Callback;
 
 public class RealRankedManager extends RankedManager {
 
-	private Map<BadblockGame, List<String>> gameFields = new HashMap<>();
+	private Map<String, List<String>> gameFields = new HashMap<>();
 
 	@Override
-	public void initialize(BadblockGame badblockGame, String... fields) {
+	public void initialize(String gameName, String... fields) {
 		// Par mois
 		List<String> fieldList = Arrays.asList(fields);
-		gameFields.put(badblockGame, fieldList);
-		String message = "CREATE TABLE IF NOT EXISTS `" + getTempTableName(badblockGame) + "` (" + 
+		gameFields.put(gameName, fieldList);
+		String message = "CREATE TABLE IF NOT EXISTS `" + getTempTableName(gameName) + "` (" + 
 				"	`id` INT NULL," + 
 				"	`playerName` VARCHAR(255) NULL,";
 		for (String field : fieldList)
@@ -42,7 +41,7 @@ public class RealRankedManager extends RankedManager {
 		System.out.println("[SQL Request] " + message);
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 		// Total
-		message = "CREATE TABLE IF NOT EXISTS `" + getPermanentTableName(badblockGame) + "` (" + 
+		message = "CREATE TABLE IF NOT EXISTS `" + getPermanentTableName(gameName) + "` (" + 
 				"	`id` INT NULL," + 
 				"	`playerName` VARCHAR(255) NULL,";
 		for (String field : fieldList)
@@ -58,19 +57,19 @@ public class RealRankedManager extends RankedManager {
 	}
 
 	@Override
-	public void fill(BadblockGame badblockGame, BadblockPlayer badblockPlayer, long... data) {
-		if (!gameFields.containsKey(badblockGame))
+	public void fill(String gameName, BadblockPlayer badblockPlayer, long... data) {
+		if (!gameFields.containsKey(gameName))
 		{
-			new RuntimeException("Unknown fields for " + badblockGame.getInternalGameName());
+			new RuntimeException("Unknown fields for " + gameName);
 		}
-		List<String> fields = gameFields.get(badblockGame);
+		List<String> fields = gameFields.get(gameName);
 		if (fields.size() != data.length)
 		{
-			new RuntimeException("Conflict with field length (" + fields.size() + " vs " + data.length + ") for " + badblockGame.getInternalGameName());
+			new RuntimeException("Conflict with field length (" + fields.size() + " vs " + data.length + ") for " + gameName);
 		}
 		GameBadblockPlayer gameBadBlockPlayer = (GameBadblockPlayer) badblockPlayer;
 		String name = gameBadBlockPlayer.getRealName() != null ? gameBadBlockPlayer.getRealName() : null;
-		String[] tables = new String[] { getTempTableName(badblockGame), getPermanentTableName(badblockGame )};
+		String[] tables = new String[] { getTempTableName(gameName), getPermanentTableName(gameName) };
 		for (String table : tables)
 		{
 			GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(id) AS count FROM " + table + " WHERE playerName = '" + name + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
@@ -131,19 +130,19 @@ public class RealRankedManager extends RankedManager {
 		}
 	}
 
-	private String getTempTableName(BadblockGame badblockGame)
+	private String getTempTableName(String gameName)
 	{
 		Date date = new Date();
 		@SuppressWarnings("deprecation")
 		String month = DateFormatSymbols.getInstance(Locale.FRENCH).getMonths()[date.getMonth()];
 		SimpleDateFormat ffr = new SimpleDateFormat("yyyy", new Locale("fr"));
 		String year = ffr.format(date);
-		return "rankeds." + badblockGame.getInternalGameName() + "_" + month + "-" + year;
+		return "rankeds." + gameName + "_" + month + "-" + year;
 	}
 
-	private String getPermanentTableName(BadblockGame badblockGame)
+	private String getPermanentTableName(String gameName)
 	{
-		return "rankeds." + badblockGame.getInternalGameName() + "_all";
+		return "rankeds." + gameName + "_all";
 	}
 
 }
