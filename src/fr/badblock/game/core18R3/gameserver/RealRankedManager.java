@@ -39,7 +39,7 @@ public class RealRankedManager extends RankedManager {
 		// Par mois
 		List<String> fieldList = Arrays.asList(fields);
 		gameFields.put(gameName, fieldList);
-		String message = "CREATE TABLE IF NOT EXISTS `" + getTempTableName(gameName) + "` (" + 
+		String message = "CREATE TABLE IF NOT EXISTS " + getTempTableName(gameName) + " (" + 
 				"	`id` INT(255) NOT NULL AUTO_INCREMENT, " + 
 				"	PRIMARY KEY (`id`)," + 
 				"	`playerName` VARCHAR(255) NULL";
@@ -54,7 +54,7 @@ public class RealRankedManager extends RankedManager {
 		System.out.println("[SQL Request] " + message);
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 		// Total
-		message = "CREATE TABLE IF NOT EXISTS `" + getPermanentTableName(gameName) + "` (" + 
+		message = "CREATE TABLE IF NOT EXISTS " + getPermanentTableName(gameName) + " (" + 
 				"	`id` INT(255) NOT NULL AUTO_INCREMENT, " + 
 				"	PRIMARY KEY (`id`)," + 
 				"	`playerName` VARCHAR(255) NULL";
@@ -87,6 +87,7 @@ public class RealRankedManager extends RankedManager {
 			String[] tables = new String[] { getTempTableName(gameName), getPermanentTableName(gameName) };
 			for (String table : tables)
 			{
+				System.out.println("[SQL Request] SELECT COUNT(id) AS count FROM " + table + " WHERE playerName = '" + name + "'");
 				GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(id) AS count FROM " + table + " WHERE playerName = '" + name + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
 				{
 
