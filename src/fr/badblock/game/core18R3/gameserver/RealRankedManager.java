@@ -88,9 +88,11 @@ public class RealRankedManager extends RankedManager {
 		GameBadblockPlayer gameBadBlockPlayer = (GameBadblockPlayer) player;
 		String playerName = gameBadBlockPlayer.getRealName() != null ? gameBadBlockPlayer.getRealName() : gameBadBlockPlayer.getName();
 		RealRankedManager realRankedManager = (RealRankedManager) RankedManager.instance;
-		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.getOrDefault(gameName, new HashMap<>());
-		Map<String, Long> playerValues = gameValues.getOrDefault(gameValues.get(playerName), new HashMap<>());
-		long data = playerValues.getOrDefault(fieldName, 0L);
+		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.get(gameName);
+		if (gameValues == null) gameValues = new HashMap<>();
+		Map<String, Long> playerValues = gameValues.get(playerName);
+		if (playerValues == null) playerValues = new HashMap<>();
+		long data = playerValues.containsKey(fieldName) ? playerValues.get(fieldName) : 0;
 		return data;
 	}
 	
