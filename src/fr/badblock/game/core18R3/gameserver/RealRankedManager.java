@@ -152,7 +152,7 @@ public class RealRankedManager extends RankedManager {
 		String month = DateFormatSymbols.getInstance(Locale.FRENCH).getMonths()[date.getMonth()];
 		SimpleDateFormat ffr = new SimpleDateFormat("yyyy", new Locale("fr"));
 		String year = ffr.format(date);
-		return "rankeds." + gameName + "_" + month + "-" + year;
+		return "rankeds." + gameName + "_" + month + "_" + year;
 	}
 
 	private String getPermanentTableName(String gameName)
