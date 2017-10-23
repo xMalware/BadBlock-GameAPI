@@ -50,7 +50,10 @@ public class ChatListener extends BadListener {
 			if (gameState.equals(GameState.FINISHED) || gameState.equals(GameState.STOPPING))
 			{
 				String message = e.getMessage();
-				if (message.toLowerCase().startsWith("gg "))
+				if (message.toLowerCase().startsWith("gg ")
+						|| message.toLowerCase().equalsIgnoreCase("gg")
+						|| message.toLowerCase().equalsIgnoreCase("gg.")
+						|| message.toLowerCase().equalsIgnoreCase("gg!"))
 				{	
 					String lowerName = player.getName().toLowerCase();
 					if (gg.contains(lowerName))
