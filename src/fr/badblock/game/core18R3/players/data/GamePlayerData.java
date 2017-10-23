@@ -582,5 +582,17 @@ public class GamePlayerData implements PlayerData {
 		gameValues.put(name, playerValues);
 		realRankedManager.temp.put(gameName, gameValues);
 	}
+	
+	@Override
+	public void setTempRankedData(String gameName, String fieldName, long data) {
+		// un gros pâté moche
+		String name = this.getGameBadblockPlayer().getRealName() != null ? this.getGameBadblockPlayer().getRealName() : this.getGameBadblockPlayer().getName();
+		RealRankedManager realRankedManager = (RealRankedManager) RankedManager.instance;
+		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.getOrDefault(gameName, new HashMap<>());
+		Map<String, Long> playerValues = gameValues.getOrDefault(gameValues.get(name), new HashMap<>());
+		playerValues.put(fieldName, data);
+		gameValues.put(name, playerValues);
+		realRankedManager.temp.put(gameName, gameValues);
+	}
 
 }

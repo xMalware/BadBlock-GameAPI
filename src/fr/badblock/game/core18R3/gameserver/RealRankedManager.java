@@ -3,6 +3,7 @@ package fr.badblock.game.core18R3.gameserver;
 import java.sql.ResultSet;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +16,9 @@ import java.util.Map.Entry;
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
+import fr.badblock.gameapi.game.rankeds.RankedCalc;
 import fr.badblock.gameapi.game.rankeds.RankedManager;
+import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.general.Callback;
 
 public class RealRankedManager extends RankedManager {
@@ -29,7 +32,7 @@ public class RealRankedManager extends RankedManager {
 	{
 		return GamePlugin.getInstance().getGameServerManager().getRankedConfig().rankedName;
 	}
-	
+
 	@Override
 	public void initialize(String gameName, String... fields) {
 		if (!GamePlugin.getInstance().getGameServerManager().getRankedConfig().ranked)
@@ -37,7 +40,9 @@ public class RealRankedManager extends RankedManager {
 			System.out.println("No rankeds. Cancelled initializing.");
 		}
 		// Par mois
-		List<String> fieldList = Arrays.asList(fields);
+		List<String> fieldList = new ArrayList<>();
+		fieldList.add("_points");
+		fieldList.addAll(Arrays.asList(fields));
 		gameFields.put(gameName, fieldList);
 		String message = "CREATE TABLE IF NOT EXISTS " + getTempTableName(gameName) + " (" + 
 				"	`id` INT(255) NOT NULL AUTO_INCREMENT, " + 
@@ -70,6 +75,21 @@ public class RealRankedManager extends RankedManager {
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 	}
 
+	public void calcPoints(String gameName, BadblockPlayer player, RankedCalc calc)
+	{
+		long points = calc.done();
+		player.getPlayerData().setTempRankedData(gameName, "_points", points);
+	}
+
+	@Override
+	public long getData(String gameName, String playerName, String fieldName) {
+		RealRankedManager realRankedManager = (RealRankedManager) RankedManager.instance;
+		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.getOrDefault(gameName, new HashMap<>());
+		Map<String, Long> playerValues = gameValues.getOrDefault(gameValues.get(playerName), new HashMap<>());
+		long data = playerValues.getOrDefault(fieldName, 0L);
+		return data;
+	}
+	
 	@Override
 	public void fill(String gameName) {
 		if (!gameFields.containsKey(gameName))
