@@ -576,9 +576,11 @@ public class GamePlayerData implements PlayerData {
 		// un gros pâté moche
 		String name = this.getGameBadblockPlayer().getRealName() != null ? this.getGameBadblockPlayer().getRealName() : this.getGameBadblockPlayer().getName();
 		RealRankedManager realRankedManager = (RealRankedManager) RankedManager.instance;
-		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.getOrDefault(gameName, new HashMap<>());
-		Map<String, Long> playerValues = gameValues.getOrDefault(gameValues.get(name), new HashMap<>());
-		playerValues.put(fieldName, playerValues.getOrDefault(fieldName, 0L) + data);
+		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.get(gameName);
+		if (gameValues == null) gameValues = new HashMap<>();
+		Map<String, Long> playerValues = gameValues.get(name);
+		if (playerValues == null) playerValues = new HashMap<>();
+		playerValues.put(fieldName, playerValues.containsKey(fieldName) ? playerValues.get(fieldName) + data : data);
 		gameValues.put(name, playerValues);
 		realRankedManager.temp.put(gameName, gameValues);
 		System.out.println("RANKED-DATA: INCREMENT " + fieldName + " > " + data);
@@ -589,8 +591,10 @@ public class GamePlayerData implements PlayerData {
 		// un gros pâté moche
 		String name = this.getGameBadblockPlayer().getRealName() != null ? this.getGameBadblockPlayer().getRealName() : this.getGameBadblockPlayer().getName();
 		RealRankedManager realRankedManager = (RealRankedManager) RankedManager.instance;
-		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.getOrDefault(gameName, new HashMap<>());
-		Map<String, Long> playerValues = gameValues.getOrDefault(gameValues.get(name), new HashMap<>());
+		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.get(gameName);
+		if (gameValues == null) gameValues = new HashMap<>();
+		Map<String, Long> playerValues = gameValues.get(name);
+		if (playerValues == null) playerValues = new HashMap<>();
 		playerValues.put(fieldName, data);
 		gameValues.put(name, playerValues);
 		realRankedManager.temp.put(gameName, gameValues);
