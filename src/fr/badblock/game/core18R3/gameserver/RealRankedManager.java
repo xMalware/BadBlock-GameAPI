@@ -95,7 +95,7 @@ public class RealRankedManager extends RankedManager {
 						System.out.println("[SQL Request] A");
 						try
 						{
-							if (result.next())
+							if (result.next() && result.getInt("count") > 0)
 							{
 								System.out.println("[SQL Request] B");
 								String valuesBuilder = "";
@@ -110,6 +110,7 @@ public class RealRankedManager extends RankedManager {
 									}
 								}
 								String message = "UPDATE " + table + " SET " + valuesBuilder + " WHERE playerName = '" + name + "'";
+								System.out.println("[SQL Request] " + message);
 								GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 							}
 							else
