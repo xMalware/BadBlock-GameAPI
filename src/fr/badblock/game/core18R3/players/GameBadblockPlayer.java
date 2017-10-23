@@ -260,6 +260,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.object.add("game", game);
 			playerData = GameAPI.getGson().fromJson(game, GamePlayerData.class);
 			playerData.setData(game);
+			playerData.setGameBadblockPlayer(this);
 			if (object.has("onlyJoinWhileWaiting"))
 				playerData.onlyJoinWhileWaiting = object.get("onlyJoinWhileWaiting").getAsLong();
 		}
