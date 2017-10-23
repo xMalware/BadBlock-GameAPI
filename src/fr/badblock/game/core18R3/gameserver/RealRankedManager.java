@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import fr.badblock.game.core18R3.GamePlugin;
+import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.game.rankeds.RankedCalc;
@@ -83,7 +84,9 @@ public class RealRankedManager extends RankedManager {
 	}
 
 	@Override
-	public long getData(String gameName, String playerName, String fieldName) {
+	public long getData(String gameName, BadblockPlayer player, String fieldName) {
+		GameBadblockPlayer gameBadBlockPlayer = (GameBadblockPlayer) player;
+		String playerName = gameBadBlockPlayer.getRealName() != null ? gameBadBlockPlayer.getRealName() : gameBadBlockPlayer.getName();
 		RealRankedManager realRankedManager = (RealRankedManager) RankedManager.instance;
 		Map<String, Map<String, Long>> gameValues = realRankedManager.temp.getOrDefault(gameName, new HashMap<>());
 		Map<String, Long> playerValues = gameValues.getOrDefault(gameValues.get(playerName), new HashMap<>());
