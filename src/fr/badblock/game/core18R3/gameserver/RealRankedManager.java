@@ -75,6 +75,7 @@ public class RealRankedManager extends RankedManager {
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 	}
 
+	@Override
 	public void calcPoints(String gameName, BadblockPlayer player, RankedCalc calc)
 	{
 		long points = calc.done();
