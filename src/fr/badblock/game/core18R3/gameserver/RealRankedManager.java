@@ -127,15 +127,21 @@ public class RealRankedManager extends RankedManager {
 								System.out.println("[SQL Request] B");
 								String valuesBuilder = "";
 								Iterator<Entry<String, Long>> iterator = entry.getValue().entrySet().iterator();
+								boolean points = false;
 								while (iterator.hasNext())
 								{
 									Entry<String, Long> currentEntry = iterator.next();
+									if (currentEntry.getKey().equals("_points"))
+									{
+										points = true;
+									}
 									valuesBuilder += currentEntry.getKey() + "=" + currentEntry.getKey() + "+" + currentEntry.getValue();
 									if (iterator.hasNext())
 									{
 										valuesBuilder += ", ";
 									}
 								}
+								if (!points) return;
 								String message = "UPDATE " + table + " SET " + valuesBuilder + " WHERE playerName = '" + name + "'";
 								System.out.println("[SQL Request] " + message);
 								GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
@@ -144,15 +150,22 @@ public class RealRankedManager extends RankedManager {
 							{
 								String fieldsBuilder = "";
 								Iterator<String> iterator = entry.getValue().keySet().iterator();
+								boolean points = false;
 								while (iterator.hasNext())
 								{
-									fieldsBuilder += ", " + iterator.next();
+									String o = iterator.next();
+									if (o.equals("_points"))
+									{
+										points = true;
+									}
+									fieldsBuilder += ", " + o;
 								}
 								String valuesBuilder = "";
 								for (long part : entry.getValue().values())
 								{
 									valuesBuilder += ", '" + part + "'";
 								}
+								if (!points) return;
 								String message = "INSERT INTO " + table + "(playerName" + fieldsBuilder + ") VALUES('" + name + "'" + valuesBuilder + ")";
 								System.out.println("[SQL Request] " + message);
 								GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
