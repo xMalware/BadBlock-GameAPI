@@ -89,12 +89,13 @@ public class ChatListener extends BadListener {
 				String text = result.get((BadblockPlayer) p)[0];
 				String coloredResult = "";
 				String base = "";
+				String pb = getLastColors(text);
 				// Messages colorisés (mentions)
 				if (!p.getName().equalsIgnoreCase(player.getName()))
 				{
 					if (text.toLowerCase().contains(p.getName().toLowerCase()))
 					{
-						text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName());
+						text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName() + pb);
 						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
 					}
 				}
@@ -134,12 +135,13 @@ public class ChatListener extends BadListener {
 				String text = result.get((BadblockPlayer) p)[0];
 				String coloredResult = "";
 				String base = "";
+				String pb = getLastColors(text);
 				// Messages colorisés (mentions)
 				if (!p.getName().equalsIgnoreCase(player.getName()))
 				{
 					if (text.toLowerCase().contains(p.getName().toLowerCase()))
 					{
-						text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName());
+						text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName() + pb);
 						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
 					}
 				}
@@ -183,12 +185,13 @@ public class ChatListener extends BadListener {
 				String text = s.get((BadblockPlayer) pl)[0];
 				String coloredResult = "";
 				String base = "";
+				String p = getLastColors(text);
 				// Messages colorisés (mentions)
 				if (!pl.getName().equalsIgnoreCase(player.getName()))
 				{
 					if (text.toLowerCase().contains(pl.getName().toLowerCase()))
 					{
-						text = text.replaceAll("(?i)" + pl.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + pl.getName());
+						text = text.replaceAll("(?i)" + pl.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + pl.getName() + p);
 						pl.playSound(pl.getLocation(), Sound.ORB_PICKUP, 100, 1);
 					}
 				}
@@ -243,12 +246,14 @@ public class ChatListener extends BadListener {
 						String text = result.get((BadblockPlayer) p)[0];
 						String coloredResult = "";
 						String base = "";
+						String bc = getLastColors(text);
 						// Messages colorisés (mentions)
 						if (!p.getName().equalsIgnoreCase(player.getName()))
 						{
 							if (text.toLowerCase().contains(p.getName().toLowerCase()))
 							{
-								text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName());
+								text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD +
+										p.getName() + bc);
 								p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
 							}
 						}
