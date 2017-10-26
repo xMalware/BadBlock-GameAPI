@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -88,6 +89,15 @@ public class ChatListener extends BadListener {
 				String text = result.get((BadblockPlayer) p)[0];
 				String coloredResult = "";
 				String base = "";
+				// Messages colorisés (mentions)
+				if (!p.getName().equalsIgnoreCase(player.getName()))
+				{
+					if (text.toLowerCase().contains(p.getName().toLowerCase()))
+					{
+						text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName());
+						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
+					}
+				}
 				int length = text.length();
 				boolean wasColor = true;
 				for (int index = 0; index < length; index++){
@@ -124,6 +134,15 @@ public class ChatListener extends BadListener {
 				String text = result.get((BadblockPlayer) p)[0];
 				String coloredResult = "";
 				String base = "";
+				// Messages colorisés (mentions)
+				if (!p.getName().equalsIgnoreCase(player.getName()))
+				{
+					if (text.toLowerCase().contains(p.getName().toLowerCase()))
+					{
+						text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName());
+						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
+					}
+				}
 				int length = text.length();
 				boolean wasColor = true;
 				for (int index = 0; index < length; index++){
@@ -164,6 +183,15 @@ public class ChatListener extends BadListener {
 				String text = s.get((BadblockPlayer) pl)[0];
 				String coloredResult = "";
 				String base = "";
+				// Messages colorisés (mentions)
+				if (!pl.getName().equalsIgnoreCase(player.getName()))
+				{
+					if (text.toLowerCase().contains(pl.getName().toLowerCase()))
+					{
+						text = text.replaceAll("(?i)" + pl.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + pl.getName());
+						pl.playSound(pl.getLocation(), Sound.ORB_PICKUP, 100, 1);
+					}
+				}
 				int length = text.length();
 				boolean wasColor = true;
 				for (int index = 0; index < length; index++){
@@ -215,6 +243,15 @@ public class ChatListener extends BadListener {
 						String text = result.get((BadblockPlayer) p)[0];
 						String coloredResult = "";
 						String base = "";
+						// Messages colorisés (mentions)
+						if (!p.getName().equalsIgnoreCase(player.getName()))
+						{
+							if (text.toLowerCase().contains(p.getName().toLowerCase()))
+							{
+								text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName());
+								p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
+							}
+						}
 						int length = text.length();
 						boolean wasColor = true;
 						for (int index = 0; index < length; index++){
