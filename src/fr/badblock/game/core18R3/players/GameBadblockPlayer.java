@@ -203,41 +203,48 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			inGameData = offlinePlayer.getInGameData();
 			return;
 		}else object = new JsonObject();
-		try {
-			Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
-			ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + this.getName() + "'");
-			if (resultSet.next())
-			{
-				String playerName = resultSet.getString("playerName");
-				setRealName(playerName);
-			}
-			resultSet.close();
-			statement.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : this.getName(), new Callback<JsonObject>() {
+		GameAPI.getAPI().getSqlDatabase().call("SELECT playerName FROM nick WHERE nick = '" + this.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+		{
 			@Override
-			public void done(JsonObject result, Throwable error) {
-				new Thread() {
-					@Override
-					public void run() {
-						object = result;
-						updateData(result);
-
-						while (!hasJoined)
-							try {
-								Thread.sleep(10L);
-							} catch (InterruptedException unused) {}
-
-						dataFetch = true;
-						synchronized (Bukkit.getServer()) {
-							if (playersWithHim != null && !playersWithHim.isEmpty())
-								Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
-							Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
-						}
+			public void done(ResultSet resultSet, Throwable error)
+			{
+				try 
+				{
+					if (resultSet.next())
+					{
+						String playerName = resultSet.getString("playerName");
+						setRealName(playerName);
 					}
-				}.start();
+					resultSet.close();
+				}
+				catch (Exception err)
+				{
+					error.printStackTrace();
+				}
+				GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : getName(), new Callback<JsonObject>() {
+					@Override
+					public void done(JsonObject result, Throwable error) {
+						new Thread() {
+							@Override
+							public void run() {
+								object = result;
+								updateData(result);
+
+								while (!hasJoined)
+									try {
+										Thread.sleep(10L);
+									} catch (InterruptedException unused) {}
+
+								dataFetch = true;
+								synchronized (Bukkit.getServer()) {
+									if (playersWithHim != null && !playersWithHim.isEmpty())
+										Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
+									Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
+								}
+							}
+						}.start();
+					}
+				});
 			}
 		});
 	}
@@ -264,7 +271,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			if (object.has("onlyJoinWhileWaiting"))
 				playerData.onlyJoinWhileWaiting = object.get("onlyJoinWhileWaiting").getAsLong();
 		}
-		
+
 		// LeaverBuster
 		if (object.has("leaves")) {
 			this.leaves = GameAPI.getGson().fromJson(object.get("leaves").toString(), collectType);
@@ -272,7 +279,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}else{
 			this.setLeaves(new ArrayList<>());
 		}
-		
+
 		// Parties
 		if (object.has("playersWithHim")) {
 			try {
@@ -286,7 +293,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				e.printStackTrace();
 			}
 		}
-		
+
 		if (object.has("permissions")) {
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getRealName() != null ? getRealName() : getName(), object);
@@ -1003,7 +1010,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 		return rankName;
 	}
-	
+
 	@Override
 	public String getMainGroup() {
 		return permissions.getSuperGroup();

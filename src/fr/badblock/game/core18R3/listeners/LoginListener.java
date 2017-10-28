@@ -27,8 +27,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.gson.GsonBuilder;
-
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.listeners.packets.SkullExploitListener;
@@ -77,9 +75,6 @@ public class LoginListener extends BadListener {
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e) {
-		CraftPlayer cp = (CraftPlayer) e.getPlayer();
-		System.out.println("- PlayerLoginEvent: " + e.getPlayer().getName() + " / " + cp.getHandle().getProfile().getName());
-		System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(cp.getProfile()));
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
