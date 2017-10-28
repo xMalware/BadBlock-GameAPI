@@ -83,7 +83,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 
 	@Override
 	public void run() {
-		//GameAPI.logColor("&b[GameServer] &eDEBUG Stop: " + isJoinable() + " | " + Bukkit.getOnlinePlayers().size() + " | " + (System.currentTimeMillis() - getJoinTime()));
+		GameAPI.logColor("&b[GameServer] &eDEBUG Stop: " + isJoinable() + " | " + Bukkit.getOnlinePlayers().size() + " | " + (getJoinTime() - System.currentTimeMillis()));
 		if (getJoinTime() < System.currentTimeMillis() && Bukkit.getOnlinePlayers().size() == 0) {
 			GameAPI.logColor("&b[GameServer] &cNobody during few minutes, shutdown..");
 			Bukkit.shutdown();
