@@ -41,13 +41,13 @@ public class GamePlayChat extends GameBadblockOutPacket implements PlayChat {
 
 	@Override
 	public PlayChat setContent(BaseComponent... components) {
-		setContent(TextComponent.toLegacyText(components));
+		this.content = TextComponent.toLegacyText(components);
 		return this;
 	}
 
 	@Override
 	public PlayChat setContent(String content) {
-		setContent(content);
+		this.content = content;
 		return this;
 	}
 
