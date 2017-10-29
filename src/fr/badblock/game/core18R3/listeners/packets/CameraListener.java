@@ -22,7 +22,7 @@ public class CameraListener extends OutPacketListener<PlayCamera> {
 		}
 		
 		if(entity == null){
-			// Il s'agit d'une fake entité, donc fait par un plugin, on laisse
+			// Il s'agit d'une fake entitÃ©, donc fait par un plugin, on laisse
 		} else {
 			PlayerSpectateEvent e = new PlayerSpectateEvent(player, entity);
 			

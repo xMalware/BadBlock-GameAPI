@@ -36,7 +36,7 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 	public GameServerKeeperAliveTask(GameServerConfig apiConfig) {
 		this.incrementJoinTime();
 		TaskManager.scheduleAsyncRepeatingTask("gameServerKeeperAlive", this, 0, apiConfig.ticksBetweenKeepAlives);
-		TaskManager.scheduleAsyncRepeatingTask("gameServerChange", this, 0, 1);
+		TaskManager.scheduleAsyncRepeatingTask("gameServerChange", toChange(), 0, 1);
 	}
 
 	public void incrementJoinTime() {

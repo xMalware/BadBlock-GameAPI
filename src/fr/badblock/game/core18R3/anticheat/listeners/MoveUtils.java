@@ -24,7 +24,7 @@ public class MoveUtils {
 			}
 			
 			if(ac.lastCount >= 20){
-				ac.kick(player, "Good bye Jésus !");
+				ac.kick(player, "Good bye JÃ©sus !");
 			}
 		}
 

@@ -33,6 +33,7 @@ import fr.badblock.game.core18R3.listeners.packets.SkullExploitListener;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.MojangAPI;
+import fr.badblock.game.core18R3.players.utils.Property;
 import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
@@ -102,14 +103,33 @@ public class LoginListener extends BadListener {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
 		}
-		try {
-			SkinFactory.applySkin(player, MojangAPI.getSkinPropertyObject(player.getName()));
-			//String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
-			//player.setTextureProperty(props[0], props[1]);
-		} catch (Exception exception) {
-			System.out.println("Impossible de mettre le skin au joueur : ");
-			exception.printStackTrace();
-		}
+		final GameBadblockPlayer fP = player;
+		new Thread()
+		{
+			@Override
+			public void run()
+			{
+				try {
+					MojangAPI.getSkinPropertyObject(fP.getName(), new Callback<Property>()
+					{
+						@Override
+						public void done(Property result, Throwable error)
+						{
+							Bukkit.getScheduler().runTask(GameAPI.getAPI(), new Runnable()
+							{
+								@Override
+								public void run() {
+									SkinFactory.applySkin(fP, result);
+								}
+							});
+						}
+					});
+				} catch (Exception exception) {
+					System.out.println("Impossible de mettre le skin au joueur : ");
+					exception.printStackTrace();
+				}
+			}
+		}.start();
 	}
 
 	@EventHandler
