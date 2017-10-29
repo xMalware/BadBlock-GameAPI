@@ -57,7 +57,7 @@ public class LagCommand extends AbstractCommand
 				continue;
 			}
 			String version = getManifestInfo(plugin.getClass());
-			if (version.length() > 8)
+			if (version != null && version.length() > 8)
 			{
 				version = version.substring(0, 7);
 			}
@@ -102,7 +102,7 @@ public class LagCommand extends AbstractCommand
 			Manifest manifest = new Manifest(new URL(manifestPath).openStream());
 			Attributes attr = manifest.getMainAttributes();
 			String value = attr.getValue("Implementation-Version");
-			return value;
+			return value == null ? "unknown" : "";
 		}
 		catch (Exception error)
 		{
