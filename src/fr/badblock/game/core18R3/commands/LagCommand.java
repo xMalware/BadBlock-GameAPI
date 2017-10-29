@@ -20,20 +20,25 @@ import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import net.md_5.bungee.api.ChatColor;
 
-public class LagCommand extends AbstractCommand {
-	public LagCommand() {
+public class LagCommand extends AbstractCommand
+{
+	
+	public LagCommand()
+	{
 		super("lag", new TranslatableString("commands.lag.usage"), GamePermission.PLAYER, GamePermission.PLAYER, GamePermission.PLAYER, "tps", "gc", "bug");
 	}
 
 	private static SimpleDateFormat		simpleDateFormat			= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	public static void send(CommandSender sender) {
+	public static void send(CommandSender sender)
+	{
 		double lagPercent = (GameAPI.getAPI().getGameServer().getPassmarkTps() / 20.0D * 100.0D);
 		double speed = MathsUtils.round(lagPercent, 2);
 		String rapidity = speed >= 90 ? "&a" + speed : speed >= 80 ? "&b" + speed : speed >= 50 ? "&e" + speed : speed >= 30 ? "&c" + speed : speed >= 20 ? "&4" + speed : "&4&l" + speed;
 		String ms = "0";
 
-		if (sender instanceof BadblockPlayer) {
+		if (sender instanceof BadblockPlayer)
+		{
 			GameBadblockPlayer player = (GameBadblockPlayer) sender;
 			String realName = player.getRealName() != null ? player.getRealName() : player.getName();
 			int ping = PlayerPingListener.ping.containsKey(realName) ? PlayerPingListener.ping.get(realName) : -1;
@@ -79,7 +84,8 @@ public class LagCommand extends AbstractCommand {
 	}
 
 	@Override
-	public boolean executeCommand(CommandSender sender, String[] args) {
+	public boolean executeCommand(CommandSender sender, String[] args)
+	{
 		send(sender);
 		return true;
 	}
