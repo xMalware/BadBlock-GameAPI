@@ -341,10 +341,10 @@ public class LoginListener extends BadListener {
 					/*if(bp.isDisguised()){
 						bp.getDisguiseEntity().show(p);
 					} else */
-					if(bp.getInvisiblePredicate().test(p)){
+					if(bp.getInvisiblePredicate() != null && bp.getInvisiblePredicate().test(p)){
 						p.hidePlayer(bp);
 					}
-					if(bp.getVisiblePredicate().test(p)){
+					if(bp.getVisiblePredicate() != null && bp.getVisiblePredicate().test(p)){
 						p.showPlayer(bp);
 					}
 					/*if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
