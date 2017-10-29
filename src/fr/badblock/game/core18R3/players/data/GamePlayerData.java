@@ -45,7 +45,7 @@ public class GamePlayerData implements PlayerData {
 	@Getter@Setter
 	private boolean										  aura;
 	@Getter@Setter
-	private boolean										  auraVisible;
+	private boolean										  auraVisible	   = true;
 	private List<PlayerBooster>					  		  boosters		   = new ArrayList<>();
 	private Map<String, Integer> 						  kits 		 	   = Maps.newConcurrentMap();
 	private Map<String, String>							  lastUsedKits 	   = Maps.newConcurrentMap();

@@ -1537,7 +1537,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						{
 							continue;
 						}
-						fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.REDSTONE.display(player, new OrdinaryColor(255, 255, 255), loc2, 64);
+						fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.REDSTONE.display(player, new OrdinaryColor(255, 0, 0), loc2, 64);
 					}
 				}
 				radius = y / 3;
@@ -1558,7 +1558,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						{
 							continue;
 						}
-						fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.REDSTONE.display(player, new OrdinaryColor(255, 255, 255), loc3, 64);
+						fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.REDSTONE.display(player, new OrdinaryColor(255, 0, 0), loc3, 64);
 					}
 				}
 			}
