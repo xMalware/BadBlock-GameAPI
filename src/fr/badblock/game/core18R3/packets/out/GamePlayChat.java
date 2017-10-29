@@ -36,20 +36,19 @@ public class GamePlayChat extends GameBadblockOutPacket implements PlayChat {
 
 	@Override
 	public BaseComponent[] getContentAsComponent() {
-		// TODO Auto-generated method stub
-		return null;
+		return TextComponent.fromLegacyText(content);
 	}
 
 	@Override
 	public PlayChat setContent(BaseComponent... components) {
-		// TODO Auto-generated method stub
-		return null;
+		setContent(TextComponent.toLegacyText(components));
+		return this;
 	}
 
 	@Override
 	public PlayChat setContent(String content) {
-		// TODO Auto-generated method stub
-		return null;
+		setContent(content);
+		return this;
 	}
 
 }
