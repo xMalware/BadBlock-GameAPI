@@ -57,6 +57,7 @@ import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.BadblockInjector;
+import fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.OrdinaryColor;
 import fr.badblock.game.core18R3.watchers.MetadataIndex;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
@@ -96,6 +97,7 @@ import fr.badblock.gameapi.players.bossbars.BossBarStyle;
 import fr.badblock.gameapi.players.data.InGameData;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.run.RunType;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.general.StringUtils;
@@ -187,6 +189,14 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private boolean						resultDone;
 	@Getter@Setter
 	private int							shopPoints;
+
+	// Caca aura
+	private Location locN;
+	double radius2 = 2;
+	double y = 3;
+	double x = radius2 * Math.cos(3 * y);
+	double z = radius2 * Math.sin(3 * y);
+	double y2 = 3 - y;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -1481,4 +1491,78 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	{
 		return new PlayerInfo(getUniqueId(), getName(), getHandle().getProfile().getProperties(), getGameMode(), getPing(), getDisplayName());
 	}
+
+	public void enableAura()
+	{
+		String taskName = "aura_" + getName();
+		TaskManager.scheduleAsyncRepeatingTask(taskName, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (!isOnline())
+				{
+					TaskManager.cancelTaskByName(taskName);
+					return;
+				}
+				if (!getPlayerData().isAura())
+				{
+					TaskManager.cancelTaskByName(taskName);
+					return;	
+				}
+				if (isSneaking())
+				{
+					return;
+				}
+				double d = 0.15;
+				Location loc = getLocation().add(0, 0.02, 0);
+				locN = loc;
+				double radius = 2;
+				y -= d;
+				if (y <= 0) {
+					y = 3;
+					return;
+				}
+				radius = y / 3;
+				x = radius * Math.cos(3 * y);
+				z = radius * Math.sin(3 * y);
+				y2 = 3 - y;
+				Location loc2 = new Location(locN.getWorld(), locN.getX() + x,
+						locN.getY() + y2, locN.getZ() + z);
+				for (int i = 0; i < 5; i++)
+				{
+					for (BadblockPlayer player : BukkitUtils.getAllPlayers())
+					{
+						if (!getPlayerData().isAuraVisible() && player.getName().equals(getName()))
+						{
+							continue;
+						}
+						fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.REDSTONE.display(player, new OrdinaryColor(255, 255, 255), loc2, 64);
+					}
+				}
+				radius = y / 3;
+				x = -(radius * Math.cos(3 * y));
+				z = -(radius * Math.sin(3 * y));
+				y2 = 3 - y;
+				if (y <= 0) {
+					y = 3;
+					return;
+				}
+				Location loc3 = new Location(locN.getWorld(), locN.getX() + x,
+						locN.getY() + y2, locN.getZ() + z);
+				for (int i = 0; i < 5; i++)
+				{
+					for (BadblockPlayer player : BukkitUtils.getAllPlayers())
+					{
+						if (!getPlayerData().isAuraVisible() && player.getName().equals(getName()))
+						{
+							continue;
+						}
+						fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.REDSTONE.display(player, new OrdinaryColor(255, 255, 255), loc3, 64);
+					}
+				}
+			}
+		}, 0, 1);
+	}
+
 }
