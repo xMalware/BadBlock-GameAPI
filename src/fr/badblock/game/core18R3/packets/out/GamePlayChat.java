@@ -38,7 +38,7 @@ public class GamePlayChat extends GameBadblockOutPacket implements PlayChat {
 	public BaseComponent[] getContentAsComponent() {
 		return TextComponent.fromLegacyText(content);
 	}
-
+ 
 	@Override
 	public PlayChat setContent(BaseComponent... components) {
 		this.content = TextComponent.toLegacyText(components);
