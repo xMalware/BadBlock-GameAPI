@@ -120,7 +120,11 @@ public class ChatListener extends BadListener {
 				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR)
 					p.sendMessage(message, textComponent);
 			}
-		} else if(team && player.getTeam() != null && e.getMessage().startsWith("!")){
+		} else if(team && player.getTeam() != null && (
+				e.getMessage().charAt(0) == '!'
+				|| e.getMessage().charAt(0) == '$'
+				|| e.getMessage().charAt(0) == '@')
+				){
 			player.performCommand("team " + e.getMessage().substring(1, e.getMessage().length() - 1));
 		} else {
 			Object team = "";
