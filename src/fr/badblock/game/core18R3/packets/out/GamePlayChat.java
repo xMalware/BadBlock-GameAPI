@@ -28,7 +28,7 @@ public class GamePlayChat extends GameBadblockOutPacket implements PlayChat {
 			content	   = TextComponent.toLegacyText(fromChat((IChatBaseComponent) reflector.getFieldValue("a")));
 		} catch(Exception e){}
 	}
-	
+
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		return new PacketPlayOutChat(getChat(content), type.getValue());
