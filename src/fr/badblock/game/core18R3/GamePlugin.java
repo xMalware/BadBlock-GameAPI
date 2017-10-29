@@ -161,6 +161,7 @@ import net.minecraft.server.v1_8_R3.World;
 import net.minecraft.server.v1_8_R3.WorldServer;
 
 public class GamePlugin extends GameAPI {
+	
 	public static final String
 	FOLDER_CONFIG 	  = "config",
 	FOLDER_KITS		  = "kits",
