@@ -120,50 +120,8 @@ public class ChatListener extends BadListener {
 				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR)
 					p.sendMessage(message, textComponent);
 			}
-		} else if(team && player.getTeam() != null && e.getMessage().startsWith("$")){
-			TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §c" : "") + player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().substring(1), player.getPlayerData().getLevel(), player.getGroupSuffix());
-			int i = new Random().nextInt(Integer.MAX_VALUE);
-			while (messages.containsKey(i)) {
-				i = new Random().nextInt(Integer.MAX_VALUE);
-			}
-			messages.put(i, new ChatData(player.getName(), e.getMessage()));
-			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
-			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
-			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
-			for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
-				TextComponent textComponent = new TextComponent();
-				String text = result.get((BadblockPlayer) p)[0];
-				String coloredResult = "";
-				String base = "";
-				String pb = getLastColors(text);
-				// Messages colorisés (mentions)
-				if (!p.getName().equalsIgnoreCase(player.getName()))
-				{
-					if (text.toLowerCase().contains(p.getName().toLowerCase()))
-					{
-						text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD + p.getName() + pb);
-						p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
-					}
-				}
-				int length = text.length();
-				boolean wasColor = true;
-				for (int index = 0; index < length; index++){
-					char character = text.charAt(index);
-					boolean b = false;
-					if (character == '&' || character == '§') {
-						wasColor = true;
-						b = true;
-					}
-					base += character;
-					if (!wasColor) coloredResult += getLastColors(base);
-					coloredResult += character;
-					if (!b)
-						wasColor = false;
-				}
-				textComponent.setText(" " + coloredResult);
-				if (e.getRecipients().contains(p))
-					p.sendMessage(message, textComponent);
-			}
+		} else if(team && player.getTeam() != null && e.getMessage().startsWith("!")){
+			player.performCommand("team " + e.getMessage().substring(1, e.getMessage().length() - 1));
 		} else {
 			Object team = "";
 
@@ -250,11 +208,11 @@ public class ChatListener extends BadListener {
 						// Messages colorisés (mentions)
 						if (!p.getName().equalsIgnoreCase(player.getName()))
 						{
+							p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
 							if (text.toLowerCase().contains(p.getName().toLowerCase()))
 							{
 								text = text.replaceAll("(?i)" + p.getName().toLowerCase(), ChatColor.AQUA + "" + ChatColor.BOLD +
 										p.getName() + bc);
-								p.playSound(p.getLocation(), Sound.ORB_PICKUP, 100, 1);
 							}
 						}
 						int length = text.length();
