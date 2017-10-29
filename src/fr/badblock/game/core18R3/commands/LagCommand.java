@@ -22,7 +22,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class LagCommand extends AbstractCommand
 {
-	
+
 	public LagCommand()
 	{
 		super("lag", new TranslatableString("commands.lag.usage"), GamePermission.PLAYER, GamePermission.PLAYER, GamePermission.PLAYER, "tps", "gc", "bug");
@@ -44,7 +44,7 @@ public class LagCommand extends AbstractCommand
 			int ping = PlayerPingListener.ping.containsKey(realName) ? PlayerPingListener.ping.get(realName) : -1;
 			ms = ping < 80 ? "&a" + ping : ping <= 100 ? "&b" + ping : ping < 200 ? "&e" + ping : ping < 300 ? "&c" + ping : ping < 500 ? "&4" + ping : "&4&l" + ping; 
 		}
-		
+
 		StringBuilder versioning = new StringBuilder();
 		for (Plugin plugin : Bukkit.getPluginManager().getPlugins())
 		{
@@ -70,16 +70,17 @@ public class LagCommand extends AbstractCommand
 				rapidity,
 				ms,
 				Bukkit.getVersion());
-		
+
 		String string = versioning.toString();
 		if (!string.isEmpty())
 		{
-			GameAPI.i18n().sendMessage(sender, "commands.lag.plugins");
 			String[] s = string.split(System.lineSeparator());
-		    for (String m : s)
-		    {
-		      sender.sendMessage(ChatColor.translateAlternateColorCodes('&', m));
-		    }
+			GameAPI.i18n().sendMessage(sender, "commands.lag.plugins", s.length);
+			for (String m : s)
+			{
+				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', m));
+			}
+			sender.sendMessage(" ");
 		}
 	}
 
