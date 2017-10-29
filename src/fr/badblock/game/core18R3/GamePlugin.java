@@ -256,6 +256,8 @@ public class GamePlugin extends GameAPI {
 	public String						ladderIp;
 	@Getter
 	public int							ladderPort;
+	@Getter
+	public String						reverseDNS;
 
 	@Override
 	public void onEnable() {
@@ -448,7 +450,7 @@ public class GamePlugin extends GameAPI {
 			ms = MathsUtils.round(ms, 3);
 
 			//Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
-
+			
 			GameAPI.logColor("&b[GameAPI] &aAPI loaded! (" + ms + "ms)");
 
 			File plugins = new File("plugins" + File.separator + "apiPlugins");

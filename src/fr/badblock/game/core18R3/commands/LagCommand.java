@@ -35,21 +35,13 @@ public class LagCommand extends AbstractCommand {
 			ms = ping < 80 ? "&a" + ping : ping <= 100 ? "&b" + ping : ping < 200 ? "&e" + ping : ping < 300 ? "&c" + ping : ping < 500 ? "&4" + ping : "&4&l" + ping; 
 		}
 		
-		GameAPI.i18n().sendMessage(sender, "commands.lag.message", Bukkit.getServerName(), simpleDateFormat.format(new Date()), rapidity, ms);
-		/*sender.sendMessage("&8&l«&b&l-&8&l»&m------&f&8&l«&b&l-&8&l»&b &b&lLag &8&l«&b&l-&8&l»&m------&f&8&l«&b&l-&8&l»");
-		sender.sendMessage("&c> &7Nom du serveur: &b" + Bukkit.getServerName());
-		sender.sendMessage("&c> &7Heure: &b" + simpleDateFormat.format(new Date()));
-		double lagPercent = (getPassMarkTps() / 20.0D * 100.0D);
-		double speed = round(lagPercent, 2);
-		String rapidity = speed >= 90 ? "&a" + speed : speed >= 80 ? "&b" + speed : speed >= 50 ? "&e" + speed : speed >= 30 ? "&c" + speed : speed >= 20 ? "&4" + speed : "&4&l" + speed; 
-		sender.sendMessage("&c> &7Fluidité: " + rapidity + " %");
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
-			int ping = ((CraftPlayer) player).getHandle().ping;
-			String ms = ping < 80 ? "&a" + ping : ping <= 100 ? "&b" + ping : ping < 200 ? "&e" + ping : ping < 300 ? "&c" + ping : ping < 500 ? "&4" + ping : "&4&l" + ping; 
-			sender.sendMessage("&c> &7Ping: " + ms + " &7ms");
-		}
-		sender.sendMessage("&8&l«&b&l-&8&l»&m----------------------&f&8&l«&b&l-&8&l»&b");*/
+		GameAPI.i18n().sendMessage(sender, "commands.lag.message", 
+				Bukkit.getServerName(),
+				simpleDateFormat.format(new Date()),
+				rapidity,
+				ms,
+				Bukkit.getVersion(),
+				Bukkit.getVersion());
 	}
 
 	@Override

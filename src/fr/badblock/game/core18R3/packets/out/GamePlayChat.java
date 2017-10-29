@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -31,6 +32,24 @@ public class GamePlayChat extends GameBadblockOutPacket implements PlayChat {
 	@Override
 	public Packet<?> buildPacket() throws Exception {
 		return new PacketPlayOutChat(getChat(content), type.getValue());
+	}
+
+	@Override
+	public BaseComponent[] getContentAsComponent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlayChat setContent(BaseComponent... components) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PlayChat setContent(String content) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
