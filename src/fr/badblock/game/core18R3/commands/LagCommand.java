@@ -101,7 +101,7 @@ public class LagCommand extends AbstractCommand
 					"/META-INF/MANIFEST.MF";
 			Manifest manifest = new Manifest(new URL(manifestPath).openStream());
 			Attributes attr = manifest.getMainAttributes();
-			String value = attr.getValue("Commit");
+			String value = attr.getValue("Implementation-Version");
 			return value;
 		}
 		catch (Exception error)
