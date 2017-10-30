@@ -57,12 +57,14 @@ public class LagCommand extends AbstractCommand
 				continue;
 			}
 			String version = getManifestInfo(plugin.getClass());
-			if (version != null 
-					&& version.length() > 8)
+			String commitName = "?";
+			if (version != null)
 			{
-				version = version.substring(0, 7);
+				String[] splitter = version.split(";");
+				version = splitter[0].length() > 8 ? splitter[0].substring(0, 7) : splitter[0];
+				commitName = splitter[1];
 			}
-			versioning.append(GameAPI.i18n().get(sender, "commands.lag.plugin", plugin.getName(), version)[0] + System.lineSeparator());
+			versioning.append(GameAPI.i18n().get(sender, "commands.lag.plugin", plugin.getName(), version, commitName)[0] + System.lineSeparator());
 		}
 
 		GameAPI.i18n().sendMessage(sender, "commands.lag.message", 
