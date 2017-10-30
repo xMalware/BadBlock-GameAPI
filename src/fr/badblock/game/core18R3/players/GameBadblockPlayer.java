@@ -403,6 +403,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				});
 			}
 		}
+		// Aura
+		if (getPlayerData().isAura())
+		{
+			this.enableAura();
+		}
 	}
 
 	@Override
