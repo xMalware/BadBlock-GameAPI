@@ -58,7 +58,7 @@ public class LagCommand extends AbstractCommand
 			}
 			String version = getManifestInfo(plugin.getClass());
 			String commitName = "?";
-			if (version != null)
+			if (version != null && version.contains(";"))
 			{
 				String[] splitter = version.split(";");
 				version = splitter[0].length() > 8 ? splitter[0].substring(0, 7) : splitter[0];
