@@ -105,7 +105,7 @@ public class LagCommand extends AbstractCommand
 			Manifest manifest = new Manifest(new URL(manifestPath).openStream());
 			Attributes attr = manifest.getMainAttributes();
 			String value = attr.getValue("Implementation-Version");
-			return value == null ? "unknown" : "";
+			return value == null ? "unknown" : value;
 		}
 		catch (Exception error)
 		{
