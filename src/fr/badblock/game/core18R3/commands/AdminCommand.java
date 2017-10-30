@@ -8,9 +8,11 @@ import fr.badblock.gameapi.players.BadblockPlayer.GamePermission;
 import fr.badblock.gameapi.utils.general.StringUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
 
-public class AdminCommand extends AbstractCommand {
+public class AdminCommand extends AbstractCommand
+{
 	
-	public AdminCommand() {
+	public AdminCommand()
+	{
 		super("admin", new TranslatableString("commands.admin.usage"), GamePermission.ADMIN, GamePermission.ADMIN, GamePermission.ADMIN, "adm");
 	}
 
