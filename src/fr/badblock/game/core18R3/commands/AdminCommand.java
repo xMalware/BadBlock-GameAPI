@@ -17,7 +17,8 @@ public class AdminCommand extends AbstractCommand
 	}
 
 	@Override
-	public boolean executeCommand(CommandSender sender, String[] args) {
+	public boolean executeCommand(CommandSender sender, String[] args)
+	{
 		if (args.length == 0) return true;
 		GameAPI.i18n().sendMessage(sender, "chat.admin", sender.getName(), StringUtils.join(args, " ", 0));
 		return true;
