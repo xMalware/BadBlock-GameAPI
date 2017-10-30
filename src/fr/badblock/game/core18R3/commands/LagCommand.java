@@ -62,7 +62,7 @@ public class LagCommand extends AbstractCommand
 			{
 				version = version.substring(0, 7);
 			}
-			versioning.append(GameAPI.i18n().get(sender, "commands.lag.plugin", plugin.getName(), version) + System.lineSeparator());
+			versioning.append(GameAPI.i18n().get(sender, "commands.lag.plugin", plugin.getName(), version)[0] + System.lineSeparator());
 		}
 
 		GameAPI.i18n().sendMessage(sender, "commands.lag.message", 
@@ -81,7 +81,9 @@ public class LagCommand extends AbstractCommand
 			{
 				sender.sendMessage(ChatColor.translateAlternateColorCodes('&', m));
 			}
-			sender.sendMessage(" ");
+			sender.sendMessage(
+					ChatColor.translateAlternateColorCodes('&', "&8&l&m---------------------------------------------")
+					);
 		}
 	}
 
