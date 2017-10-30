@@ -57,7 +57,8 @@ public class LagCommand extends AbstractCommand
 				continue;
 			}
 			String version = getManifestInfo(plugin.getClass());
-			if (version != null && version.length() > 8)
+			if (version != null 
+					&& version.length() > 8)
 			{
 				version = version.substring(0, 7);
 			}
