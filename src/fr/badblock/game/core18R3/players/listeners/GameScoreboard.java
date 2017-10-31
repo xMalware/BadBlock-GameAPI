@@ -84,6 +84,9 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				System.out.println("Loaded " + p.getName());
 				if(doGroupsPrefix){
 					System.out.println("ADQKO " + p.getName());
+					if (groups.get(p.getFakeMainGroup()) != null) {
+						getHandler().getTeam( groups.get(p.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
+					}
 					p.setVisible(false, player -> true);
 					sendTeams(p);
 				} else if(doTeamsPrefix){
@@ -96,9 +99,6 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 					}
 				}
 				if(!doGroupsPrefix) return;
-				if (groups.get(p.getFakeMainGroup()) != null) {
-					getHandler().getTeam( groups.get(p.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
-				}
 
 				e.getPlayer().setVisible(true);
 
