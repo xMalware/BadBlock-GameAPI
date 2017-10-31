@@ -2,6 +2,7 @@ package fr.badblock.game.core18R3.players.utils;
 import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -21,8 +22,13 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.properties.PropertyMap;
 
+import fr.badblock.game.core18R3.GamePlugin;
+import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
+import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.players.BadblockPlayer;
+
 public class SkinFactory {
-	
+
 	public static void applySkin(Player p, Property props)
 	{
 		try
@@ -36,20 +42,20 @@ public class SkinFactory {
 			ReflectionUtil.invokeMethod(propmap, "clear");
 			ReflectionUtil.invokeMethod(propmap.getClass(), propmap, "put", 
 					new Class[] { Object.class, Object.class }, new Object[] { "textures", props });
-			 WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(p);
-			 Multimap<String, WrappedSignedProperty> properties = gameProfile.getProperties();
-			 properties.clear();
-			 properties.put("textures", convertToProperty(props) );
-			 sendUpdate(p, gameProfile);
+			WrappedGameProfile gameProfile = WrappedGameProfile.fromPlayer(p);
+			Multimap<String, WrappedSignedProperty> properties = gameProfile.getProperties();
+			properties.clear();
+			properties.put("textures", convertToProperty(props) );
+			sendUpdate(p, gameProfile);
 		}
 		catch (Exception localException) {}
 	}
-	
-	  public static WrappedSignedProperty convertToProperty(Property property)
-	  {
-	    return WrappedSignedProperty.fromValues("textures", property.getValue(), property.getSignature());
-	  }
-	
+
+	public static WrappedSignedProperty convertToProperty(Property property)
+	{
+		return WrappedSignedProperty.fromValues("textures", property.getValue(), property.getSignature());
+	}
+
 	public static PropertyMap getPropertyMap(Player p)
 	{
 		try
@@ -63,88 +69,108 @@ public class SkinFactory {
 		return null;
 	}
 	private static void sendUpdate(Player player, WrappedGameProfile gameProfile)
-			    throws FieldAccessException
-			  {
-			    sendUpdateSelf(player, gameProfile);
-			    for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-			      if ((!onlinePlayer.equals(player)) && (onlinePlayer.canSee(player)))
-			      {
-			        onlinePlayer.hidePlayer(player);
-			        onlinePlayer.showPlayer(player);
-			      }
-			    }
-			  }
-			  
-			  @SuppressWarnings("deprecation")
-			private static void sendUpdateSelf(Player player, WrappedGameProfile gameProfile)
-			    throws FieldAccessException
-			  {
-			    Entity vehicle = player.getVehicle();
-			    if (vehicle != null) {
-			      vehicle.eject();
-			    }
-			    ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-			    EnumWrappers.NativeGameMode gamemode = EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode());
-			    
-			    PacketContainer removeInfo = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
-			    removeInfo.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
-			    
-			    WrappedChatComponent displayName = WrappedChatComponent.fromText(player.getPlayerListName());
-			    PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
-			    removeInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(new PlayerInfoData[] { playerInfoData }));
-			    
-			    PacketContainer addInfo = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
-			    addInfo.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-			    addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(new PlayerInfoData[] { playerInfoData }));
-			    
-			    PacketContainer respawn = protocolManager.createPacket(PacketType.Play.Server.RESPAWN);
-			    respawn.getIntegers().write(0, Integer.valueOf(player.getWorld().getEnvironment().getId()));
-			    respawn.getDifficulties().write(0, EnumWrappers.Difficulty.valueOf(player.getWorld().getDifficulty().toString()));
-			    respawn.getGameModes().write(0, gamemode);
-			    respawn.getWorldTypeModifier().write(0, player.getWorld().getWorldType());
-			    
-			    Location location = player.getLocation().clone();
-			    
-			    PacketContainer teleport = protocolManager.createPacket(PacketType.Play.Server.POSITION);
-			    teleport.getModifier().writeDefaults();
-			    teleport.getDoubles().write(0, Double.valueOf(location.getX()));
-			    teleport.getDoubles().write(1, Double.valueOf(location.getY()));
-			    teleport.getDoubles().write(2, Double.valueOf(location.getZ()));
-			    teleport.getFloat().write(0, Float.valueOf(location.getYaw()));
-			    teleport.getFloat().write(1, Float.valueOf(location.getPitch()));
-			    
-			    teleport.getIntegers().writeSafely(0, Integer.valueOf(64199));
-			    try
-			    {
-			      protocolManager.sendServerPacket(player, removeInfo);
-			      
-			      protocolManager.sendServerPacket(player, addInfo);
-			      
-			      protocolManager.sendServerPacket(player, respawn);
-			      
-			      protocolManager.sendServerPacket(player, teleport);
-			      
-			      player.updateInventory();
-			      
-			      PlayerInventory inventory = player.getInventory();
-			      inventory.setHeldItemSlot(inventory.getHeldItemSlot());
-			      
-			      player.setHealth(player.getHealth());
-			      player.setMaxHealth(player.getMaxHealth() + 1.0D);
-			      player.setMaxHealth(player.getMaxHealth() - 1.0D);
-			      
-			      player.setItemInHand(player.getItemInHand());
-			      
-			      player.setWalkSpeed(player.getWalkSpeed());
-			    }
-			    catch (InvocationTargetException ex)
-			    {
-			      System.out.println("Exception sending instant skin change packet");
-			      ex.printStackTrace();
-			    }
-			  }
-	
-	public static void updateSkin(Player p)
+			throws FieldAccessException
+	{
+		sendUpdateSelf(player, gameProfile);
+		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+			if ((!onlinePlayer.equals(player)) && (onlinePlayer.canSee(player)))
+			{
+				onlinePlayer.hidePlayer(player);
+				onlinePlayer.showPlayer(player);
+			}
+		}
+		BadblockPlayer badblockPlayer = (BadblockPlayer) player;
+		GameScoreboard gameScoreboard = GamePlugin.getInstance().getBadblockScoreboard();
+		if (gameScoreboard.hasShownGroupPrefix())
+		{
+			badblockPlayer.setVisible(false, p -> true);
+			gameScoreboard.sendTeams(badblockPlayer);
+		}
+		else if (gameScoreboard.doTeamsPrefix)
+		{
+			if (badblockPlayer.getTeam() != null)
+			{
+				gameScoreboard.joinTeam(badblockPlayer, null, badblockPlayer.getTeam());
+			}
+			else
+			{
+				GameAPI.getAPI().getTeams().forEach(knowTeam -> {
+					gameScoreboard.sendTeam(badblockPlayer, knowTeam, ChatColor.GRAY);
+				});
+			}
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private static void sendUpdateSelf(Player player, WrappedGameProfile gameProfile)
+			throws FieldAccessException
+	{
+		Entity vehicle = player.getVehicle();
+		if (vehicle != null) {
+			vehicle.eject();
+		}
+		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+		EnumWrappers.NativeGameMode gamemode = EnumWrappers.NativeGameMode.fromBukkit(player.getGameMode());
+
+		PacketContainer removeInfo = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
+		removeInfo.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
+
+		WrappedChatComponent displayName = WrappedChatComponent.fromText(player.getPlayerListName());
+		PlayerInfoData playerInfoData = new PlayerInfoData(gameProfile, 0, gamemode, displayName);
+		removeInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(new PlayerInfoData[] { playerInfoData }));
+
+		PacketContainer addInfo = protocolManager.createPacket(PacketType.Play.Server.PLAYER_INFO);
+		addInfo.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
+		addInfo.getPlayerInfoDataLists().write(0, Lists.newArrayList(new PlayerInfoData[] { playerInfoData }));
+
+		PacketContainer respawn = protocolManager.createPacket(PacketType.Play.Server.RESPAWN);
+		respawn.getIntegers().write(0, Integer.valueOf(player.getWorld().getEnvironment().getId()));
+		respawn.getDifficulties().write(0, EnumWrappers.Difficulty.valueOf(player.getWorld().getDifficulty().toString()));
+		respawn.getGameModes().write(0, gamemode);
+		respawn.getWorldTypeModifier().write(0, player.getWorld().getWorldType());
+
+		Location location = player.getLocation().clone();
+
+		PacketContainer teleport = protocolManager.createPacket(PacketType.Play.Server.POSITION);
+		teleport.getModifier().writeDefaults();
+		teleport.getDoubles().write(0, Double.valueOf(location.getX()));
+		teleport.getDoubles().write(1, Double.valueOf(location.getY()));
+		teleport.getDoubles().write(2, Double.valueOf(location.getZ()));
+		teleport.getFloat().write(0, Float.valueOf(location.getYaw()));
+		teleport.getFloat().write(1, Float.valueOf(location.getPitch()));
+
+		teleport.getIntegers().writeSafely(0, Integer.valueOf(64199));
+		try
+		{
+			for (Player pl : Bukkit.getOnlinePlayers())
+			{
+				protocolManager.sendServerPacket(pl, removeInfo);
+				protocolManager.sendServerPacket(pl, addInfo);
+				protocolManager.sendServerPacket(pl, respawn);
+				protocolManager.sendServerPacket(pl, teleport);
+			}
+
+			player.updateInventory();
+
+			PlayerInventory inventory = player.getInventory();
+			inventory.setHeldItemSlot(inventory.getHeldItemSlot());
+
+			player.setHealth(player.getHealth());
+			player.setMaxHealth(player.getMaxHealth() + 1.0D);
+			player.setMaxHealth(player.getMaxHealth() - 1.0D);
+
+			player.setItemInHand(player.getItemInHand());
+
+			player.setWalkSpeed(player.getWalkSpeed());
+		}
+		catch (InvocationTargetException ex)
+		{
+			System.out.println("Exception sending instant skin change packet");
+			ex.printStackTrace();
+		}
+	}
+
+	public static void updatefSkin(Player p)
 	{
 		/*try
 		{
