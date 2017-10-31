@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -65,14 +66,18 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	public GameScoreboard(){
 
 	}
-	
+
+	@EventHandler
+	public void onJoin(PlayerJoinEvent e){
+		e.getPlayer().setScoreboard(board);
+	}
+
 	@EventHandler
 	public void onDataReceive(PlayerLoadedEvent e){
-		e.getPlayer().setScoreboard(board);
-
-		BadblockPlayer p = (BadblockPlayer) e.getPlayer();
-
+		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
+		System.out.println("Loaded " + p.getName());
 		if(doGroupsPrefix){
+			System.out.println("ADQKO " + p.getName());
 			p.setVisible(false, player -> true);
 			sendTeams(p);
 		} else if(doTeamsPrefix){
@@ -85,9 +90,8 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			}
 		}
 		if(!doGroupsPrefix) return;
-		GameBadblockPlayer gbp = (GameBadblockPlayer) e.getPlayer();
-		if (groups.get(gbp.getFakeMainGroup()) != null) {
-			getHandler().getTeam( groups.get(gbp.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
+		if (groups.get(p.getFakeMainGroup()) != null) {
+			getHandler().getTeam( groups.get(p.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
 		}
 
 		new BukkitRunnable() {
@@ -331,7 +335,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	@Override
 	public void beginVote(JsonArray maps) {
 		List<VoteElement> elements = new ArrayList<VoteElement>();
-		
+
 		for(int i=0;i<maps.size();i++){
 			JsonElement element = maps.get(i);
 
@@ -340,7 +344,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				elements.add(vote);
 			}
 		}
-		
+
 		beginVote(elements);
 	}
 
@@ -460,7 +464,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			List<Entry<VoteElement, Integer>> list = new ArrayList<>(votes.entrySet());
 			list.remove(max);
 		}
-		
+
 		boolean voted = false;
 		for (Entry<VoteElement, Integer> value : votes.entrySet())
 			if (value.getValue() > 0) voted = true;
