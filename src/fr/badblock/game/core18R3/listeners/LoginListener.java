@@ -89,8 +89,10 @@ public class LoginListener extends BadListener {
 				e.disallow(Result.KICK_FULL, "§cCette partie est en cours.");
 			}
 		}
-		if(GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName())){
-			e.setResult(Result.KICK_WHITELIST); return;
+		if (GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName()))
+		{
+			e.setResult(Result.KICK_WHITELIST);
+			return;
 		}
 
 		Reflector 			  reflector 	= new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
