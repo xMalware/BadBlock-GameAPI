@@ -132,9 +132,21 @@ public class LoginListener extends BadListener {
 		}.start();
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onDataReceived(PlayerLoadedEvent e)
 	{
+		BadblockPlayer p = e.getPlayer();
+		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
+		if(offlinePlayer != null){
+			p.changePlayerDimension(offlinePlayer.getFalseDimension());
+			p.showCustomObjective(offlinePlayer.getCustomObjective());
+
+			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
+			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(p.getPlayerData());
+
+		}
+		
 		if(GameAPI.getAPI().getRunType() != RunType.DEV || GameServerKeeperAliveTask.isOpenToStaff())
 			return;
 
@@ -169,7 +181,6 @@ public class LoginListener extends BadListener {
 
 	private HashMap<Player, Integer> lastBookTick = new HashMap<>();
 
-	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
@@ -229,19 +240,10 @@ public class LoginListener extends BadListener {
 			channel.pipeline().addBefore("packet_handler", "bookpacketexploitfix_listener", channelDuplexHandler);
 		}
 
-		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
-
 		if (VanishTeleportListener.time.containsKey(p.getName().toLowerCase()) && VanishTeleportListener.time.get(p.getName().toLowerCase()) > System.currentTimeMillis()) {
 			p.setGhostConnect(true);
 			VanishTeleportListener.manage(p, VanishTeleportListener.splitters.get(p.getName().toLowerCase()));
-		}else if(offlinePlayer != null){
-			p.changePlayerDimension(offlinePlayer.getFalseDimension());
-			p.showCustomObjective(offlinePlayer.getCustomObjective());
-
-			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
-			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(p.getPlayerData());
-
-		} else if(GameAPI.getAPI().getGameServer().getGameState() == GameState.RUNNING){
+		}else if(GameAPI.getAPI().getGameServer().getGameState() == GameState.RUNNING){
 			p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
