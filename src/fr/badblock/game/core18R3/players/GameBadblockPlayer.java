@@ -189,6 +189,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private boolean						resultDone;
 	@Getter@Setter
 	private int							shopPoints;
+	@Getter@Setter
+	private long						joinTime;
 
 	// Caca aura
 	private Location locN;
@@ -200,6 +202,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
+		setJoinTime(System.currentTimeMillis());
 		this.inGameData  = Maps.newConcurrentMap();
 
 		this.playerData  = offlinePlayer == null ? new GamePlayerData() : offlinePlayer.getPlayerData(); // On initialise pour ne pas provoquer de NullPointerException, mais sera recr�� � la r�c�ptions des donn�es
@@ -213,50 +216,46 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			inGameData = offlinePlayer.getInGameData();
 			return;
 		}else object = new JsonObject();
-		GameAPI.getAPI().getSqlDatabase().call("SELECT playerName FROM nick WHERE nick = '" + this.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+		try 
 		{
-			@Override
-			public void done(ResultSet resultSet, Throwable error)
+		Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
+		ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + getName() + "'");
+			if (resultSet.next())
 			{
-				try 
-				{
-					if (resultSet.next())
-					{
-						String playerName = resultSet.getString("playerName");
-						setRealName(playerName);
-					}
-					resultSet.close();
-				}
-				catch (Exception err)
-				{
-					error.printStackTrace();
-				}
-				GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : getName(), new Callback<JsonObject>() {
-					@Override
-					public void done(JsonObject result, Throwable error) {
-						new Thread() {
-							@Override
-							public void run() {
-								object = result;
-								updateData(result);
-
-								while (!hasJoined)
-									try {
-										Thread.sleep(10L);
-									} catch (InterruptedException unused) {}
-
-								dataFetch = true;
-								synchronized (Bukkit.getServer()) {
-									if (playersWithHim != null && !playersWithHim.isEmpty())
-										Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
-									Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
-								}
-							}
-						}.start();
-					}
-				});
+				String playerName = resultSet.getString("playerName");
+				setRealName(playerName);
 			}
-		});
+			resultSet.close();
+			statement.close();
+			GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : getName(), new Callback<JsonObject>() {
+				@Override
+				public void done(JsonObject result, Throwable error) {
+					new Thread() {
+						@Override
+						public void run() {
+							object = result;
+							updateData(result);
+
+							while (!hasJoined)
+								try {
+									Thread.sleep(10L);
+								} catch (InterruptedException unused) {}
+
+							dataFetch = true;
+							synchronized (Bukkit.getServer()) {
+								if (playersWithHim != null && !playersWithHim.isEmpty())
+									Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
+								Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
+							}
+						}
+					}.start();
+				}
+			});
+		}
+		catch (Exception error)
+		{
+			error.printStackTrace();
+		}
 	}
 
 	public void loadInjector() {
@@ -407,6 +406,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		if (getPlayerData().isAura())
 		{
 			this.enableAura();
+		}
+		if (getJoinTime() != -1)
+		{
+			long difference = System.currentTimeMillis() - getJoinTime();
+			System.out.println("[API] Loaded player " + getName() + " in " + difference + " ms.");
+			setJoinTime(-1);
 		}
 	}
 

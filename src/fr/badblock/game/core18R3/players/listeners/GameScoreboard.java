@@ -85,6 +85,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				if(doGroupsPrefix){
 					System.out.println("ADQKO " + p.getName());
 					if (groups.get(p.getFakeMainGroup()) != null) {
+						System.out.println("Group: " + p.getFakeMainGroup() + ": " + p.getName());
 						getHandler().getTeam( groups.get(p.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
 					}
 					p.setVisible(false, player -> true);
