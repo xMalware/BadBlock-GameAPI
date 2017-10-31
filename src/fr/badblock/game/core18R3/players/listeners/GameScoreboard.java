@@ -48,6 +48,7 @@ import fr.badblock.gameapi.utils.i18n.TranslatableString;
 import fr.badblock.gameapi.utils.itemstack.CustomInventory;
 import fr.badblock.gameapi.utils.itemstack.ItemAction;
 import fr.badblock.gameapi.utils.itemstack.ItemEvent;
+import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.permissions.PermissibleGroup;
 import fr.badblock.permissions.PermissionManager;
 
@@ -75,38 +76,40 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	@EventHandler
 	public void onDataReceive(PlayerLoadedEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
-		System.out.println("Loaded " + p.getName());
-		if(doGroupsPrefix){
-			System.out.println("ADQKO " + p.getName());
-			p.setVisible(false, player -> true);
-			sendTeams(p);
-		} else if(doTeamsPrefix){
-			if(p.getTeam() != null){
-				joinTeam(p, null, p.getTeam());
-			} else {
-				GameAPI.getAPI().getTeams().forEach((knowTeam) -> {
-					sendTeam(p, knowTeam, ChatColor.GRAY);
-				});
-			}
-		}
-		if(!doGroupsPrefix) return;
-		if (groups.get(p.getFakeMainGroup()) != null) {
-			getHandler().getTeam( groups.get(p.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
-		}
-
-		new BukkitRunnable() {
+		TaskManager.runTask(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
+				System.out.println("Loaded " + p.getName());
+				if(doGroupsPrefix){
+					System.out.println("ADQKO " + p.getName());
+					p.setVisible(false, player -> true);
+					sendTeams(p);
+				} else if(doTeamsPrefix){
+					if(p.getTeam() != null){
+						joinTeam(p, null, p.getTeam());
+					} else {
+						GameAPI.getAPI().getTeams().forEach((knowTeam) -> {
+							sendTeam(p, knowTeam, ChatColor.GRAY);
+						});
+					}
+				}
+				if(!doGroupsPrefix) return;
+				if (groups.get(p.getFakeMainGroup()) != null) {
+					getHandler().getTeam( groups.get(p.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
+				}
+
 				e.getPlayer().setVisible(true);
+
+				GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
+
+				if(player.isDisguised()){
+					player.getDisguiseEntity().getWatchers().setCustomName(getUsedName(player));
+					player.getDisguiseEntity().updateWatchers();
+				}
 			}
-		}.runTask(GameAPI.getAPI());
-
-		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
-
-		if(player.isDisguised()){
-			player.getDisguiseEntity().getWatchers().setCustomName(getUsedName(player));
-			player.getDisguiseEntity().updateWatchers();
-		}
+		});
 	}
 
 	@EventHandler
