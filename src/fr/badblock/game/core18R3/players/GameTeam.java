@@ -194,7 +194,11 @@ public class GameTeam implements BadblockTeam {
 		playersAtStart.put(player.getUniqueId(), player.getName());
 
 		if(reason == JoinReason.WHILE_WAITING)
-			player.sendTranslatedTitle("teams.joinTeam", getChatName());
+			player.sendTranslatedMessage("teams.joinTeam", getChatName());
+		else if(reason == JoinReason.REBALANCING)
+			player.sendTranslatedMessage("teams.rebalancedTeam", getChatName());
+		
+		
 		player.sendTimings(10, 40, 10);
 
 		return true;

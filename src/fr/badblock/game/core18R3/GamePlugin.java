@@ -647,6 +647,8 @@ public class GamePlugin extends GameAPI {
 		int playersByTeam = getOnlinePlayers().size() / getTeams().size() + 1;
 
 		if(sameSize) {
+			
+			// New
 			List<BadblockTeam> less = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() < playersByTeam; }).collect(Collectors.toList());
 			List<BadblockTeam> more = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() > playersByTeam; }).collect(Collectors.toList());
 
