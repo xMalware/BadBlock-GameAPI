@@ -57,7 +57,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	private Objective  belowNameHealth = null;
 	private Objective  voteObjective   = null;
 
-	private boolean    doTeamsPrefix   = false;
+	public boolean    doTeamsPrefix   = false;
 	private boolean    doGroupsPrefix  = false;
 	private boolean	   doDamageHolo    = false;
 
@@ -218,7 +218,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		}
 	}
 
-	protected void joinTeam(BadblockPlayer p, BadblockTeam previous, BadblockTeam team){
+	public void joinTeam(BadblockPlayer p, BadblockTeam previous, BadblockTeam team){
 		if(!getHandler().getTeam(team.getKey()).hasEntry(p.getName()))
 			getHandler().getTeam(team.getKey()).addEntry(p.getName());
 
@@ -242,7 +242,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		}
 	}
 
-	protected void sendTeams(BadblockPlayer player){
+	public void sendTeams(BadblockPlayer player){
 		for(PermissibleGroup group : PermissionManager.getInstance().getGroups()){
 			sendTeamData(groups.get( group.getName() ), new TranslatableString("permissions.tab." + group.getName()).getAsLine(player), player);
 		}
@@ -253,7 +253,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	/*
 	 * Envoit le nouveau pr�fixe via packet, pour l'avoir custom sans le d�clarer dans un scoreboard personnel (opti)
 	 */
-	protected void sendTeam(BadblockPlayer p, BadblockTeam team, ChatColor color){
+	public void sendTeam(BadblockPlayer p, BadblockTeam team, ChatColor color){
 		String displayName = team.getTabPrefix(color).getAsLine(p);
 		sendTeamData(team.getKey(), displayName, p);
 	}
