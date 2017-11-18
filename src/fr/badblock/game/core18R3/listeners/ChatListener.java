@@ -83,6 +83,10 @@ public class ChatListener extends BadListener {
 			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
 			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
 
+			TextComponent message2 = new TextComponent( GameAPI.i18n().get("chat.bab_icon")[0] );
+			message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/bab " + player.getName()) );
+			message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.bab_hover", player.getName())[0]).create() ) );
+
 			for(Player p : e.getRecipients()){
 				BadblockPlayer bPlayer = (BadblockPlayer) p;
 				TextComponent textComponent = new TextComponent();
@@ -116,7 +120,7 @@ public class ChatListener extends BadListener {
 				}
 				textComponent.setText(" " + coloredResult);
 				if (player.hasPermission(GamePermission.MODERATOR))
-					p.sendMessage(message, textComponent);
+					p.sendMessage(message, message2, textComponent);
 				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR)
 					p.sendMessage(message, textComponent);
 			}
@@ -142,9 +146,14 @@ public class ChatListener extends BadListener {
 			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
 			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
 
+			TextComponent message2 = new TextComponent( GameAPI.i18n().get("chat.bab_icon")[0] );
+			message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/bab " + player.getName()) );
+			message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.bab_hover", player.getName())[0]).create() ) );
+
 			for(Player pl : e.getRecipients()) {
 				TextComponent textComponent = new TextComponent();
-				String text = s.get((BadblockPlayer) pl)[0];
+				BadblockPlayer blp = (BadblockPlayer) pl;
+				String text = s.get(blp)[0];
 				String coloredResult = "";
 				String base = "";
 				String p = getLastColors(text);
@@ -173,7 +182,10 @@ public class ChatListener extends BadListener {
 						wasColor = false;
 				}
 				textComponent.setText(" " + coloredResult);
-				pl.sendMessage(message, textComponent);
+				if (blp.hasPermission(GamePermission.MODERATOR))
+					blp.sendMessage(message, message2, textComponent);
+				else
+					blp.sendMessage(message, textComponent);
 			}
 		}
 
@@ -202,6 +214,11 @@ public class ChatListener extends BadListener {
 					TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
 					message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
 					message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
+
+					TextComponent message2 = new TextComponent( GameAPI.i18n().get("chat.bab_icon")[0] );
+					message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/bab " + player.getName()) );
+					message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.bab_hover", player.getName())[0]).create() ) );
+
 					TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §c" : "") + player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace(e.getMessage().split(" ")[0], ""), player.getPlayerData().getLevel());
 					for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 						TextComponent textComponent = new TextComponent();
@@ -236,7 +253,14 @@ public class ChatListener extends BadListener {
 						}
 						textComponent.setText(" " + coloredResult);
 						if (e.getRecipients().contains(p))
-							p.sendMessage(message, textComponent);
+							if (p.hasPermission(GamePermission.MODERATOR))
+							{
+								p.sendMessage(message, message2, textComponent);
+							}
+							else
+							{
+								p.sendMessage(message, textComponent);
+							}
 					}
 				}
 			}

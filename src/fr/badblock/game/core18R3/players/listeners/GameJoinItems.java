@@ -39,6 +39,7 @@ import lombok.NonNull;
 import net.md_5.bungee.api.ChatColor;
 
 public class GameJoinItems extends BadListener implements JoinItems {
+	
 	private int 			       kitItemSlot   = -1;
 	private int 			       teamItemSlot  = -1;
 	private int 			       voteItemSlot  = -1;
@@ -50,6 +51,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	private boolean				   teamInGroup	 = false;
 	private boolean				   voteInGroup   = false;
 	private boolean				   achieInGroup  = false;
+	private boolean				   shop			 = false;
 	
 	private Map<Integer, ItemStackInfo> customItems = new HashMap<>();
 	
@@ -101,6 +103,12 @@ public class GameJoinItems extends BadListener implements JoinItems {
 			if(groupItemSlot != -1 && teamInGroup){
 				inv.addClickableItem(teamItemSlot, item);
 			} else e.getPlayer().getInventory().setItem(teamItemSlot, item.getHandler());
+		}
+		
+		if (shop) {
+			ItemStackExtra item = createShopItem(e.getPlayer(), locale, ItemPlaces.INVENTORY_CLICKABLE);
+			
+			e.getPlayer().getInventory().addItem(item.getHandler());
 		}
 		
 		if(voteItemSlot != -1){
@@ -179,6 +187,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 	
 	@Override
 	public void registerKitItem(int slot, Map<String, PlayerKit> kits, File kitListConfig) {
+		shop = true;
 		this.kitItemSlot = slot;
 		
 		this.kits 	  = new ArrayList<>();
@@ -215,6 +224,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 
 	@Override
 	public void registerTeamItem(int slot, File teamListConfig) {
+		shop = true;
 		this.teamItemSlot = slot;
 		
 		this.teams = new ArrayList<>();
@@ -252,17 +262,20 @@ public class GameJoinItems extends BadListener implements JoinItems {
 
 	@Override
 	public void registerAchievementsItem(int slot, BadblockGame game) {
+		shop = true;
 		this.achieItemSlot = slot;
 		this.game 		   = game;
 	}
 	
 	@Override
 	public void registerVoteItem(int slot) {
+		shop = true;
 		this.voteItemSlot = slot;
 	}
 
 	@Override
 	public void registerLeaveItem(int slot, @NonNull String fallbackServer) {
+		shop = true;
 		this.leaveItemSlot  = slot;
 		this.fallbackServer = fallbackServer;
 	}
@@ -317,7 +330,7 @@ public class GameJoinItems extends BadListener implements JoinItems {
 												 .asExtra(1)
 												 .listenAs(event, place);
 	}
-	
+
 	public ItemStackExtra createKitItem(BadblockPlayer player, Locale locale, ItemPlaces place){
 		String lastUsedKit = player.getPlayerData().getLastUsedKit(GameAPI.getInternalGameName());
 		
@@ -363,6 +376,23 @@ public class GameJoinItems extends BadListener implements JoinItems {
 												 .doWithI18n(locale)
 												 .displayName("joinitems.kit.displayname")
 												 .lore("joinitems.kit.lore")
+												 .asExtra(1)
+												 .listenAs(event, place);
+	}
+	
+	public ItemStackExtra createShopItem(BadblockPlayer player, Locale locale, ItemPlaces place) {
+		ItemEvent event = new ItemEvent(){
+			@Override
+			public boolean call(ItemAction action, BadblockPlayer player) {
+				player.performCommand("sl opi default");
+				return true;
+			}
+		};
+		
+		return GameAPI.getAPI().createItemStackFactory().type(Material.GOLD_INGOT)
+												 .doWithI18n(locale)
+												 .displayName("hub.items.shopplayeritem")
+												 .lore("hub.items.shopplayeritem.lore")
 												 .asExtra(1)
 												 .listenAs(event, place);
 	}
