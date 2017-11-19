@@ -1,5 +1,7 @@
 package fr.badblock.game.core18R3.commands;
 
+import java.util.ArrayList;
+
 import org.bukkit.command.CommandSender;
 
 import fr.badblock.gameapi.GameAPI;
@@ -38,6 +40,10 @@ public class AutoReplayCommand extends AbstractCommand {
 		}
 		else
 		{
+			if (player.getPlayerData().getReplay() != null)
+			{
+				player.getPlayerData().setReplay(new ArrayList<>());
+			}
 			player.getPlayerData().getReplay().add(game);
 			player.saveGameData();
 			player.sendTranslatedMessage("commands.autoreplay.setreplay");
