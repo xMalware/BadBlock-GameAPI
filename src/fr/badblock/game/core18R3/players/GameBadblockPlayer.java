@@ -97,6 +97,7 @@ import fr.badblock.gameapi.players.bossbars.BossBarStyle;
 import fr.badblock.gameapi.players.data.InGameData;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.run.RunType;
+import fr.badblock.gameapi.sentry.SEntry;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.MathsUtils;
@@ -573,7 +574,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
-	public void postResult(Result toPost) {
+	public void postResult(Result ztoPost) {
 		/*long   id	    = new SecureRandom().nextLong();
 		long   party    = GamePlugin.getInstance().getGameServer().getGameId();
 		String player   = getName().toLowerCase();
@@ -629,16 +630,32 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/hub") );
 				message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.hub_hover")[0]).create() ) );
 				this.sendMessage(message, textComponent, messageAuto, textComponent2, message2);
-				if (getPlayerData().getReplay() != null && getPlayerData().getReplay().contains(serverTypeName))
+				GameBadblockPlayer leader = null;
+				resultDone = true;
+				for (BadblockPlayer bpo : BukkitUtils.getAllPlayers())
+				{
+					GameBadblockPlayer player = (GameBadblockPlayer) bpo;
+					for (UUID uuid : player.getPlayersWithHim())
+					{
+						if (uuid.toString().equals(getUniqueId().toString()))
+						{
+							leader = player;
+						}
+					}
+				}
+				if (leader == null && getPlayerData().getReplay() != null && getPlayerData().getReplay().contains(serverTypeName))
 				{
 					boolean autoReplay = true;
 					for (UUID uuid : getPlayersWithHim())
 					{
 						GameBadblockPlayer player = (GameBadblockPlayer) BukkitUtils.getPlayer(uuid);
-						if (!player.isResultDone())
+						if (player.getTeam() == null || (player.getTeam() != null && !player.getTeam().isDead()))
 						{
-							autoReplay = false;
-							break;
+							if (!player.isResultDone())
+							{
+								autoReplay = false;
+								break;
+							}
 						}
 					}
 					if (autoReplay)
@@ -648,47 +665,41 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 							@Override
 							public void run() {
-								performCommand("replay");
+								GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.sentry.join", GameAPI.getGson().toJson(new SEntry(getName(), serverTypeName, true)), 5000, false);
 							}
 
 						}, 5);
 					}
 				}
-				else
+				else if (leader != null && leader.getPlayerData().getReplay() != null && leader.getPlayerData().getReplay().contains(serverTypeName))
 				{
-					for (UUID uuid : getPlayersWithHim())
+					boolean autoReplay = true;
+					for (UUID uuid : leader.getPlayersWithHim())
 					{
 						GameBadblockPlayer player = (GameBadblockPlayer) BukkitUtils.getPlayer(uuid);
-						if (player.getPlayerData().getReplay() != null && player.getPlayerData().getReplay().contains(serverTypeName))
+						if (player.getTeam() == null || (player.getTeam() != null && !player.getTeam().isDead()))
 						{
-							boolean autoReplay = true;
-							for (UUID u2 : getPlayersWithHim())
+							if (!player.isResultDone())
 							{
-								GameBadblockPlayer plo = (GameBadblockPlayer) BukkitUtils.getPlayer(u2);
-								if (!plo.isResultDone())
-								{
-									autoReplay = false;
-									break;
-								}
-							}
-							if (autoReplay)
-							{
-								Bukkit.getScheduler().runTaskLater(GameAPI.getAPI(), new Runnable()
-								{
-
-									@Override
-									public void run() {
-										player.performCommand("replay");
-										performCommand("replay");
-									}
-
-								}, 5);
+								autoReplay = false;
 								break;
 							}
 						}
 					}
+					if (autoReplay)
+					{
+						final GameBadblockPlayer fLeader = leader;
+						Bukkit.getScheduler().runTaskLater(GameAPI.getAPI(), new Runnable()
+						{
+
+							@Override
+							public void run() {
+								GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.sentry.join", GameAPI.getGson().toJson(new SEntry(fLeader.getName(), serverTypeName, true)), 5000, false);
+							}
+
+						}, 5);
+					}
 				}
-				resultDone = true;
 			}
 
 			saveGameData();
