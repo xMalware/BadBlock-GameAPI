@@ -639,6 +639,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						if (!player.isResultDone())
 						{
 							autoReplay = false;
+							break;
 						}
 					}
 					if (autoReplay)
