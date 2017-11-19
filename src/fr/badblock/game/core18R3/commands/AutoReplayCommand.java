@@ -40,7 +40,7 @@ public class AutoReplayCommand extends AbstractCommand {
 		}
 		else
 		{
-			if (player.getPlayerData().getReplay() != null)
+			if (player.getPlayerData().getReplay() == null)
 			{
 				player.getPlayerData().setReplay(new ArrayList<>());
 			}
