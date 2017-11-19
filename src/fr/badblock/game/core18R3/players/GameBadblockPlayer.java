@@ -615,12 +615,17 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				TextComponent message = new TextComponent( GameAPI.i18n().get("chat.replay")[0] );
 				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/replay") );
 				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", Bukkit.getServerName().split("_")[0])[0]).create() ) );
+				TextComponent messageAuto = new TextComponent( GameAPI.i18n().get("chat.autoreplay")[0] );
+				messageAuto.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/autoreplay") );
+				messageAuto.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.autoreplay_hover", Bukkit.getServerName().split("_")[0])[0]).create() ) );
 				TextComponent textComponent = new TextComponent();
 				textComponent.setText(" - ");
+				TextComponent textComponent2 = new TextComponent();
+				textComponent2.setText(" - ");
 				TextComponent message2 = new TextComponent( GameAPI.i18n().get("chat.hub")[0] );
 				message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/hub") );
 				message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.hub_hover")[0]).create() ) );
-				this.sendMessage(message, textComponent, message2);
+				this.sendMessage(message, textComponent, messageAuto, textComponent2, message2);
 				resultDone = true;
 			}
 
