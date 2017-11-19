@@ -117,18 +117,17 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 					}
 				}
 
-				if (res != null)
+				if (res == null)
 				{
 					for (ChestMapItemStack item : config.itemStacks)
 					{
-						if (item.probability != -1)
+						if (item.probability != -1 && res == null)
 						{
 							curr += item.probability;	
 
 							if (value <= curr)
 							{
 								res = item.getHandle(player.getPlayerData().getLocale());
-								break;
 							}
 						}
 					}
@@ -145,7 +144,10 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 					}
 				}
 
-				while(true){
+				int z = 0;
+				int o = 9  * 8;
+				while(z < o){
+					z++;
 					int pos = random.nextInt(result.length);
 
 					if(result[pos] == null){
