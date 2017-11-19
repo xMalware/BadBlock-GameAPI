@@ -615,9 +615,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				TextComponent message = new TextComponent( GameAPI.i18n().get("chat.replay")[0] );
 				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/replay") );
 				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", Bukkit.getServerName().split("_")[0])[0]).create() ) );
-				TextComponent messageAuto = new TextComponent( GameAPI.i18n().get("chat.autoreplay")[0] );
-				messageAuto.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/autoreplay") );
-				messageAuto.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.autoreplay_hover", Bukkit.getServerName().split("_")[0])[0]).create() ) );
+				String autoreplayName = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "cheat.autoreplay_disable" : "cheat.autoreplay_enable";
+				String autoreplayCommand = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "" : " " + Bukkit.getServerName().split("_")[0];
+				String autoreplayHover = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "cheat.autoreplay_disable_hover" : "cheat.autoreplay_enable_hover";
+				TextComponent messageAuto = new TextComponent( GameAPI.i18n().get(autoreplayName)[0] );
+				messageAuto.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/autoreplay" + autoreplayCommand) );
+				messageAuto.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get(autoreplayHover, Bukkit.getServerName().split("_")[0])[0]).create() ) );
 				TextComponent textComponent = new TextComponent();
 				textComponent.setText(" - ");
 				TextComponent textComponent2 = new TextComponent();
