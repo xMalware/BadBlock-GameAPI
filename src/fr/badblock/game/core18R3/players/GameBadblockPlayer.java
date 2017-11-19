@@ -682,8 +682,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 									}
 
 								}, 5);
+								break;
 							}
-							break;
 						}
 					}
 				}
