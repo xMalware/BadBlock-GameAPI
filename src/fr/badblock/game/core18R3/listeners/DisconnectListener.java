@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,7 +42,7 @@ public class DisconnectListener extends BadListener {
 		player.undisguise();
 		LoginListener.l.add(player.getName());
 
-		if(GameAPI.getAPI().getRunType().equals(RunType.GAME) && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && GameAPI.getAPI().isLeaverBusterEnabled() && player.getBadblockMode() != BadblockMode.SPECTATOR && !player.hasPermission("api.leaverbuster.bypass")){
+		if (!player.getGameMode().equals(GameMode.SPECTATOR) && GameAPI.getAPI().getRunType().equals(RunType.GAME) && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && GameAPI.getAPI().isLeaverBusterEnabled() && !player.getBadblockMode().equals(BadblockMode.SPECTATOR) && !player.hasPermission("api.leaverbuster.bypass")){
 			List<Long> leaves = player.getLeaves();
 			leaves.add(System.currentTimeMillis());
 			JsonObject jsonObject = new JsonObject();
