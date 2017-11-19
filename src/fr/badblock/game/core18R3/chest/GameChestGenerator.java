@@ -63,7 +63,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	private boolean			   individualChest = false;
 	@Getter@Setter
 	private Function<BadblockPlayer, List<ISProb>> alternateItemsProvider = (p -> new ArrayList<>());
-	
+
 	@Override
 	public void setConfigurationFile(File file) {
 		if(isConfigurated())
@@ -83,7 +83,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		cloned.itemStacks	   = config.itemStacks.stream().filter(item -> {
 			return item.keep;
 		}).collect(Collectors.toList());
-		
+
 		JsonUtils.save(configFile, cloned, true);
 	}
 
@@ -95,10 +95,12 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		ItemStack[] result = new ItemStack[lines * 9];
 
 		List<ISProb> alternate = alternateItemsProvider.apply(player);
-		
+
 		int max = config.itemStacks.stream().mapToInt(item -> { return item.probability; }).sum();
 		max += alternate.stream().mapToInt(item -> item.prob).sum();
-		
+
+		List<ChestMapItemStack> itemsToAdd = new ArrayList<>();
+
 		if(max > 0)
 			for(int i=0;i<items;i++){
 				int value = new Random().nextInt(max);
@@ -106,15 +108,29 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 				ItemStack res = null;
 
-				for(ChestMapItemStack item : config.itemStacks){
-					curr += item.probability;
+				for (ChestMapItemStack item : config.itemStacks)
+				{
+					boolean right = false;
+					if (item.probability == -1)
+					{
+						if (itemsToAdd.contains(item))
+						{
+							continue;
+						}
+						right = true;
+					}
+					else
+					{
+						curr += item.probability;	
+					}
 
-					if(value <= curr){
+					if (value <= curr || right)
+					{
 						res = item.getHandle(player.getPlayerData().getLocale());
 						break;
 					}
 				}
-				
+
 				if(res == null){
 					for(ISProb is : alternate){
 						curr += is.prob;
@@ -125,7 +141,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 						}
 					}
 				}
-				
+
 				while(true){
 					int pos = random.nextInt(result.length);
 
@@ -153,7 +169,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	public void resetChests() {
 		filledChests.clear();
 		chests.clear();
-		
+
 		for(RemovedChest chest : removedChest){
 			Block block = chest.location.getBlock();
 			block.setType(Material.CHEST);
@@ -169,7 +185,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 			return;
 
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-		
+
 		Block block = e.getClickedBlock();
 
 		if(block.getType() != Material.CHEST || filledChests.contains(block.getLocation()))
@@ -179,11 +195,11 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		{
 			e.setCancelled(true);
 			ItemStack[] is = null;
-			
+
 			if(mustGenerateOwnChest(player, block.getLocation()))
 			{
 				Block relative = getNearbyChest(block);
-			
+
 				int size = (relative == null ? 3 : 6);
 
 				is = generateChest(player, size);
@@ -193,18 +209,18 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 			{
 				is = getChest(player, block.getLocation());
 			}
-			
+
 			Inventory inv = Bukkit.createInventory((Chest) block.getState(), is.length);
 			inv.setContents(is);
-			
+
 			player.openInventory(inv);
 			player.playChestAnimation(block, true);
-			
+
 			return;
 		}
-		
+
 		generate0( player, (Chest) block.getState() );
- 
+
 		Block relative = getNearbyChest(block);
 
 		if(relative != null)
@@ -215,7 +231,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	public void onInventoryClose(InventoryCloseEvent e){
 		if(isWorking() && isRemoveOnOpen() && e.getPlayer().getType() == EntityType.PLAYER){
 			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-			
+
 			if(player.getGameMode().equals(GameMode.SPECTATOR)) return;
 			if(e.getInventory().getHolder() instanceof Chest){
 				Chest c = (Chest) e.getInventory().getHolder();
@@ -223,11 +239,11 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 				remove0(c);
 			} else if(e.getInventory().getHolder() instanceof DoubleChest){
 				DoubleChest c = (DoubleChest) e.getInventory().getHolder();
-			
+
 				Block block = c.getLocation().getBlock();
 
 				remove0( (Chest) block.getState() );
-				
+
 				Block relative = getNearbyChest(block);
 
 				if(relative != null)
@@ -237,11 +253,11 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		else if(isWorking() && isIndividualChest() && e.getPlayer().getType() == EntityType.PLAYER)
 		{
 			BadblockPlayer player = (BadblockPlayer) e.getPlayer();
-			
+
 			if(player.getGameMode().equals(GameMode.SPECTATOR)) return;
 			if(e.getInventory().getHolder() instanceof Chest){
 				Chest c = (Chest) e.getInventory().getHolder();
-				
+
 				player.playChestAnimation(c.getBlock(), false);
 				updateChest(player, c.getLocation(), e.getInventory().getContents());
 			}
@@ -253,16 +269,16 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		removedChest.add( new RemovedChest(c.getBlock().getLocation(), container.getFacing()) );
 
 		Set<ItemStack> toDrop = Arrays.stream(c.getInventory().getContents()).filter(item -> { return ItemStackUtils.isValid(item); }).collect(Collectors.toSet());
-		
+
 		//c.getBlock().getDrops().remove(new ItemStack(Material.CHEST));
 		//c.getBlock().breakNaturally();
-		
+
 		Location spawn = c.getBlock().getLocation().add(0d, 0.3d, 0d);
 
 		toDrop.forEach(item -> {
 			spawn.getWorld().dropItem(spawn, item);
 		});
-		
+
 		c.getInventory().clear();
 		c.getBlock().setType(Material.AIR);
 	}
@@ -275,17 +291,17 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		config.itemStacks.add(new ChestMapItemStack(item, probability, save));
 		saveConfig();
 	}
-	
+
 	private void generate0(BadblockPlayer player, Chest chest){
 		Inventory inv = chest.getBlockInventory();
 		if (!empty(inv)) return;
 		inv.setContents(generateChest(player, 3));
 	}
-	
+
 	private boolean empty(Inventory inventory) {
 		for(ItemStack item : inventory.getContents()) {
-		    if(item != null && !item.getType().equals(Material.AIR))
-		      return false;
+			if(item != null && !item.getType().equals(Material.AIR))
+				return false;
 		}
 		return true;
 	}
@@ -302,32 +318,32 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 		return null;
 	}
-	
+
 	private boolean mustGenerateOwnChest(BadblockPlayer player, Location loc){
 		if(!chests.containsKey(player.getName()))
 			return true;
-		
+
 		return !chests.get( player.getName() ).has( loc );
 	}
-	
+
 	private void updateChest(BadblockPlayer player, Location loc, ItemStack[] is){
 		ChestGenData data = chests.get(player.getName());
-		
+
 		if(data == null)
 		{
 			data = new ChestGenData();
 			chests.put(player.getName(), data);
 		}
-		
+
 		data.chestUpdated(loc, is);
 	}
-	
+
 	private ItemStack[] getChest(BadblockPlayer player, Location loc){
 		ChestGenData data = chests.get(player.getName());
-		
+
 		if(data == null)
 			data = chests.put(player.getName(), new ChestGenData());
-			
+
 		return data.chests.get(loc);
 	}
 
@@ -347,61 +363,61 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 	public static class ChestMapItemStack extends MapItemStack {
 		private 		  int 	  probability;
 		private transient boolean keep;
-		
+
 		private 		  String  optional_i18n_displayname;
 		private 		  String  optional_i18n_lore;
-		
+
 		public ChestMapItemStack(){
 			this.keep = true;
 		}
-		
+
 		public ChestMapItemStack(ItemStack is, int prob){
 			super(is);
 
 			this.probability = prob;
 			this.keep		 = true;
 		}
-		
+
 		public ChestMapItemStack(ItemStack is, int prob, boolean keep){
 			super(is);
 
 			this.probability = prob;
 			this.keep		 = keep;
 		}
-		
+
 		public ItemStack getHandle(Locale locale){
 			ItemStack stack = getHandle();
-			
+
 			ItemMeta meta = stack.getItemMeta();
-			
+
 			if(optional_i18n_displayname != null)
 			{
 				meta.setDisplayName( GameAPI.i18n().get(optional_i18n_displayname)[0] );
 			}
-			
+
 			if(optional_i18n_lore != null)
 			{
 				meta.setDisplayName( GameAPI.i18n().get(optional_i18n_lore)[0] );
 			}
-			
+
 			stack.setItemMeta(meta);
-			
+
 			return stack;
 		}
 	}
-	
+
 	private class ChestGenData {
 		public Map<Location, ItemStack[]> chests = new HashMap<>();
-		
+
 		public void chestUpdated(Location loc, ItemStack[] is){
 			chests.put(loc, is);
-		
+
 			Block relative = getNearbyChest( loc.getBlock() );
-			
+
 			if(relative != null)
 				chests.put(relative.getLocation(), is);
 		}
-		
+
 		public boolean has(Location loc){
 			return chests.containsKey(loc);
 		}
