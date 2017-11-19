@@ -654,6 +654,38 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						}, 5);
 					}
 				}
+				else
+				{
+					for (UUID uuid : getPlayersWithHim())
+					{
+						GameBadblockPlayer player = (GameBadblockPlayer) BukkitUtils.getPlayer(uuid);
+						if (player.getPlayerData().getReplay() != null && player.getPlayerData().getReplay().contains(serverTypeName))
+						{
+							boolean autoReplay = true;
+							for (UUID u2 : player.getPlayersWithHim())
+							{
+								GameBadblockPlayer plo = (GameBadblockPlayer) BukkitUtils.getPlayer(u2);
+								if (!plo.isResultDone())
+								{
+									autoReplay = false;
+									break;
+								}
+							}
+							if (autoReplay)
+							{
+								Bukkit.getScheduler().runTaskLater(GameAPI.getAPI(), new Runnable()
+								{
+
+									@Override
+									public void run() {
+										player.performCommand("replay");
+									}
+
+								}, 5);
+							}
+						}
+					}
+				}
 				resultDone = true;
 			}
 
