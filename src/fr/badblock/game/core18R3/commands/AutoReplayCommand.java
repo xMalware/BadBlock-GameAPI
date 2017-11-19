@@ -22,44 +22,25 @@ public class AutoReplayCommand extends AbstractCommand {
 
 		BadblockPlayer player = (BadblockPlayer) sender;
 
-		if (args.length != 2)
+		if (args.length != 1)
 		{
 			player.sendTranslatedMessage("commands.autoreplay.usage");
 			return true;
 		}
 
-		String type = args[0];
-		String game = args[1];
-		
-		switch (type)
+		String game = args[0];
+
+		if (player.getPlayerData().getReplay() != null && player.getPlayerData().getReplay().contains(game))
 		{
-		case "on":
-			if (player.getPlayerData().getReplay() != null && player.getPlayerData().getReplay().contains(game))
-			{
-				player.getPlayerData().getReplay().remove(type);
-				player.saveGameData();
-				player.sendTranslatedMessage("commands.autoreplay.removereplay");
-			}
-			else
-			{
-				player.sendTranslatedMessage("commands.autoreplay.unknownreplay");
-			}
-			break;
-		case "off":
-			if (player.getPlayerData().getReplay() == null || !player.getPlayerData().getReplay().contains(game))
-			{
-				player.getPlayerData().getReplay().add(type);
-				player.saveGameData();
-				player.sendTranslatedMessage("commands.autoreplay.setreplay");
-			}
-			else
-			{
-				player.sendTranslatedMessage("commands.autoreplay.already");
-			}
-			break;
-		default:
-			player.sendTranslatedMessage("commands.autoreplay.usage");
-			break;
+			player.getPlayerData().getReplay().remove(game);
+			player.saveGameData();
+			player.sendTranslatedMessage("commands.autoreplay.removereplay");
+		}
+		else
+		{
+			player.getPlayerData().getReplay().add(game);
+			player.saveGameData();
+			player.sendTranslatedMessage("commands.autoreplay.setreplay");
 		}
 
 		return true;

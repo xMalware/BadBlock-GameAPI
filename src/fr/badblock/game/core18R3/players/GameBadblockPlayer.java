@@ -617,10 +617,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/replay") );
 				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", serverTypeName)[0]).create() ) );
 				String autoreplayName = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "chat.autoreplay_disable" : "chat.autoreplay_enable";
-				String autoreplayCommand = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "" : " " + serverTypeName;
 				String autoreplayHover = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "chat.autoreplay_disable_hover" : "chat.autoreplay_enable_hover";
 				TextComponent messageAuto = new TextComponent( GameAPI.i18n().get(autoreplayName)[0] );
-				messageAuto.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/autoreplay" + autoreplayCommand) );
+				messageAuto.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/autoreplay " + serverTypeName) );
 				messageAuto.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get(autoreplayHover, serverTypeName)[0]).create() ) );
 				TextComponent textComponent = new TextComponent();
 				textComponent.setText(" - ");
