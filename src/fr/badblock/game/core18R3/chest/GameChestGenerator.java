@@ -110,11 +110,10 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 				for (ChestMapItemStack item : config.itemStacks)
 				{
-					if (item.probability == -1 && !itemsToAdd.contains(item))
+					if (item.probability == -1 && !itemsToAdd.contains(item) && res == null)
 					{
 						res = item.getHandle(player.getPlayerData().getLocale());
 						itemsToAdd.add(item);
-						break;
 					}
 				}
 
@@ -122,16 +121,15 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 				{
 					for (ChestMapItemStack item : config.itemStacks)
 					{
-						if (item.probability == -1)
+						if (item.probability != -1)
 						{
-							continue;
-						}
-						curr += item.probability;	
+							curr += item.probability;	
 
-						if (value <= curr)
-						{
-							res = item.getHandle(player.getPlayerData().getLocale());
-							break;
+							if (value <= curr)
+							{
+								res = item.getHandle(player.getPlayerData().getLocale());
+								break;
+							}
 						}
 					}
 				}
