@@ -117,6 +117,7 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 						{
 							continue;
 						}
+						itemsToAdd.add(item);
 						right = true;
 					}
 					else
