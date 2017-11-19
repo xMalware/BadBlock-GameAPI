@@ -57,6 +57,9 @@ public class GamePlayerData implements PlayerData {
 	private transient List<Entry<Long, Boolean>>		  xpTemp		   = new ArrayList<>();
 	private transient List<Entry<Long, Boolean>>		  badcoinsTemp 	   = new ArrayList<>();
 
+	@Getter@Setter
+	private String										  replay;
+	
 	private transient Map<String, GameData> 			  datas 		   = Maps.newConcurrentMap();
 	private transient JsonObject 						  data		 	   = new JsonObject();
 	private transient JsonObject 						  object		   = new JsonObject();
