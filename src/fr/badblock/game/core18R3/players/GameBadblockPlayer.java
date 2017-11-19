@@ -679,6 +679,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 									@Override
 									public void run() {
 										player.performCommand("replay");
+										performCommand("replay");
 									}
 
 								}, 5);
