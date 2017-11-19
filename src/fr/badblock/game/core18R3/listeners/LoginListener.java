@@ -65,6 +65,8 @@ import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
 /**
  * Listener servant � remplac� la classe CraftPlayer par GameBadblockPlayer et � demander � Ladder les informations joueur.
@@ -119,6 +121,26 @@ public class LoginListener extends BadListener {
 			System.out.println("Impossible de mettre le skin au joueur : ");
 			exception.printStackTrace();
 		}
+	}
+	
+	public void reSendPlayerJoined(Player player) {
+		// Test de renvois du packet
+		final String playerName = player.getName();
+		TaskManager.runTaskLater(new Runnable() {
+			@Override
+			public void run() {
+				Player p = Bukkit.getPlayer(playerName);
+				if (p == null) return;
+				EntityPlayer[] e = new EntityPlayer[]{((CraftPlayer) p).getHandle()};
+				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, e);
+				for (BadblockPlayer online : BukkitUtils.getAllPlayers()) {
+					if (online.getUniqueId().equals(p.getUniqueId())) continue;
+					EntityPlayer ep = ((CraftPlayer) online).getHandle();
+					if (ep.playerConnection != null && !ep.playerConnection.isDisconnected())
+						ep.playerConnection.sendPacket(packet);
+				}
+			}
+		}, 20);
 	}
 
 	@SuppressWarnings("unlikely-arg-type")
@@ -331,12 +353,20 @@ public class LoginListener extends BadListener {
 					GameBadblockPlayer bp = (GameBadblockPlayer) player;
 					/*if(bp.isDisguised()){
 						bp.getDisguiseEntity().show(p);
-					} else */
+					} else */ 
+					if (!GameAPI.getServerName().startsWith("sw"))
+					{
 					if(bp.getInvisiblePredicate() != null && bp.getInvisiblePredicate().test(p)){
 						p.hidePlayer(bp);
 					}
 					if(bp.getVisiblePredicate() != null && bp.getVisiblePredicate().test(p)){
 						p.showPlayer(bp);
+					}
+					}
+					else
+					{
+						p.showPlayer(bp);
+						bp.showPlayer(p);
 					}
 					/*if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
 						p.hidePlayer(bp);
@@ -345,6 +375,7 @@ public class LoginListener extends BadListener {
 
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
+		reSendPlayerJoined(p);
 	}
 
 	public static void manageRunningJoin(BadblockPlayer player) {

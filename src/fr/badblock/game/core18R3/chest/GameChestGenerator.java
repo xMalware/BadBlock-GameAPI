@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -99,7 +100,9 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		int max = config.itemStacks.stream().mapToInt(item -> { return item.probability; }).sum();
 		max += alternate.stream().mapToInt(item -> item.prob).sum();
 
-		List<ChestMapItemStack> itemsToAdd = new ArrayList<>();
+		List<Material> itemsToAdd = new ArrayList<>();
+		List<ChestMapItemStack> needed = config.itemStacks.stream().filter(item -> item.probability == -1).collect(Collectors.toList());
+		Iterator<ChestMapItemStack> iterator = needed.iterator();
 
 		if(max > 0)
 			for(int i=0;i<items;i++){
@@ -108,12 +111,14 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 
 				ItemStack res = null;
 
-				for (ChestMapItemStack item : config.itemStacks)
+				while (iterator.hasNext())
 				{
-					if (item.probability == -1 && !itemsToAdd.contains(item) && res == null)
+					ChestMapItemStack item = iterator.next();
+					if (!itemsToAdd.contains(item.getType()))
 					{
 						res = item.getHandle(player.getPlayerData().getLocale());
-						itemsToAdd.add(item);
+						itemsToAdd.add(item.getType());
+						break;
 					}
 				}
 
