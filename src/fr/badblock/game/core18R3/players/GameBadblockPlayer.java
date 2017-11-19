@@ -218,8 +218,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}else object = new JsonObject();
 		try 
 		{
-		Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
-		ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + getName() + "'");
+			Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
+			ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + getName() + "'");
 			if (resultSet.next())
 			{
 				String playerName = resultSet.getString("playerName");
@@ -612,15 +612,16 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						getPlayerData().getBadcoins(), getPlayerData().getLevel(), percent, getPlayerData().getXp(),
 						getPlayerData().getXpUntilNextLevel(), line, "", getPlayerData().getAddedBadcoins(), 
 						getPlayerData().getAddedLevels(), getPlayerData().getAddedXP(), getPlayerData().getAddedShopPoints());
+				String serverTypeName = Bukkit.getServerName().split("_")[0];
 				TextComponent message = new TextComponent( GameAPI.i18n().get("chat.replay")[0] );
 				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/replay") );
-				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", Bukkit.getServerName().split("_")[0])[0]).create() ) );
+				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", serverTypeName)[0]).create() ) );
 				String autoreplayName = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "cheat.autoreplay_disable" : "cheat.autoreplay_enable";
-				String autoreplayCommand = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "" : " " + Bukkit.getServerName().split("_")[0];
+				String autoreplayCommand = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "" : " " + serverTypeName;
 				String autoreplayHover = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "cheat.autoreplay_disable_hover" : "cheat.autoreplay_enable_hover";
 				TextComponent messageAuto = new TextComponent( GameAPI.i18n().get(autoreplayName)[0] );
 				messageAuto.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/autoreplay" + autoreplayCommand) );
-				messageAuto.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get(autoreplayHover, Bukkit.getServerName().split("_")[0])[0]).create() ) );
+				messageAuto.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get(autoreplayHover, serverTypeName)[0]).create() ) );
 				TextComponent textComponent = new TextComponent();
 				textComponent.setText(" - ");
 				TextComponent textComponent2 = new TextComponent();
@@ -629,6 +630,30 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/hub") );
 				message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.hub_hover")[0]).create() ) );
 				this.sendMessage(message, textComponent, messageAuto, textComponent2, message2);
+				if (getPlayerData().getReplay() != null && getPlayerData().getReplay().equalsIgnoreCase(serverTypeName))
+				{
+					boolean autoReplay = true;
+					for (UUID uuid : getPlayersWithHim())
+					{
+						GameBadblockPlayer player = (GameBadblockPlayer) BukkitUtils.getPlayer(uuid);
+						if (!player.isResultDone())
+						{
+							autoReplay = false;
+						}
+					}
+					if (autoReplay)
+					{
+						Bukkit.getScheduler().runTaskLater(GameAPI.getAPI(), new Runnable()
+						{
+
+							@Override
+							public void run() {
+								performCommand("replay");
+							}
+
+						}, 5);
+					}
+				}
 				resultDone = true;
 			}
 
