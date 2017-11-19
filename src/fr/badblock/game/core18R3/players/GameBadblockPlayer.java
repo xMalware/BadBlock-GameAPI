@@ -662,7 +662,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						if (player.getPlayerData().getReplay() != null && player.getPlayerData().getReplay().contains(serverTypeName))
 						{
 							boolean autoReplay = true;
-							for (UUID u2 : player.getPlayersWithHim())
+							for (UUID u2 : getPlayersWithHim())
 							{
 								GameBadblockPlayer plo = (GameBadblockPlayer) BukkitUtils.getPlayer(u2);
 								if (!plo.isResultDone())
