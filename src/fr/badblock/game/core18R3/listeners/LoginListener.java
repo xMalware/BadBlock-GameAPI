@@ -130,6 +130,7 @@ public class LoginListener extends BadListener {
 		}
 		// Test de renvois du packet
 		final String playerName = player.getName();
+		final GameBadblockPlayer fP = (GameBadblockPlayer) player;
 		TaskManager.runTaskLater(new Runnable() {
 			@Override
 			public void run() {
@@ -143,6 +144,14 @@ public class LoginListener extends BadListener {
 					if (ep.playerConnection != null && !ep.playerConnection.isDisconnected())
 						ep.playerConnection.sendPacket(packet);
 				}
+				MojangAPI.getSkinPropertyObject(fP.getName(), new Callback<Property>()
+				{
+					@Override
+					public void done(Property result, Throwable error)
+					{
+						SkinFactory.applySkin(fP, result);
+					}
+				});
 			}
 		}, 20);
 	}
