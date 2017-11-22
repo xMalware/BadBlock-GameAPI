@@ -65,8 +65,6 @@ import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
 /**
  * Listener servant � remplac� la classe CraftPlayer par GameBadblockPlayer et � demander � Ladder les informations joueur.
@@ -114,6 +112,7 @@ public class LoginListener extends BadListener {
 				@Override
 				public void done(Property result, Throwable error)
 				{
+					System.out.println("Applying skin for " + fP.getName());
 					SkinFactory.applySkin(fP, result);
 				}
 			});
@@ -129,9 +128,8 @@ public class LoginListener extends BadListener {
 			return;
 		}
 		// Test de renvois du packet
-		final String playerName = player.getName();
-		final GameBadblockPlayer fP = (GameBadblockPlayer) player;
-		TaskManager.runTaskLater(new Runnable() {
+		//final GameBadblockPlayer fP = (GameBadblockPlayer) player;
+		/*TaskManager.runTaskLater(new Runnable() {
 			@Override
 			public void run() {
 				Player p = Bukkit.getPlayer(playerName);
@@ -153,7 +151,7 @@ public class LoginListener extends BadListener {
 					}
 				});
 			}
-		}, 20);
+		}, 20 * 5);*/
 	}
 
 	@SuppressWarnings("unlikely-arg-type")

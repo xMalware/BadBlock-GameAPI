@@ -12,20 +12,11 @@ import fr.badblock.gameapi.utils.general.Callback;
 
 public class MojangAPI
 {
-
-	public static String[] getSkinProperty(String name)
-	{
-		List<String> output = readSURL("https://extdata.badblock-network.fr/skin.php?name=" + name);
-		if (output.size() >= 2) {
-			String value = output.get(0);
-			String signature = output.get(1);
-			return new String[]{value, signature};
-		}else return new String[]{"", ""};
-	}
 	
 	public static void getSkinPropertyObject(String name, Callback<Property> callback)
 	{
 		List<String> output = readSURL("https://extdata.badblock-network.fr/skin.php?name=" + name);
+		System.out.println("Output SKIN : " + output.size());
 		if (output.size() >= 2) {
 			String value = output.get(0);
 			String signature = output.get(1);
@@ -42,8 +33,8 @@ public class MojangAPI
 
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			con.setConnectTimeout(500);
-			con.setReadTimeout(500);
+			con.setConnectTimeout(2000);
+			con.setReadTimeout(2000);
 			con.setDoOutput(true);
 
 
@@ -56,7 +47,10 @@ public class MojangAPI
 			in.close();
 
 		}
-		catch (Exception e) {}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 		return result;
 	}
 	
