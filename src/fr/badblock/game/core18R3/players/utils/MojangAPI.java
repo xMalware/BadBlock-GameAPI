@@ -8,20 +8,27 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import fr.badblock.gameapi.utils.general.Callback;
-
 public class MojangAPI
 {
-	
-	public static void getSkinPropertyObject(String name, Callback<Property> callback)
+
+	public static String[] getSkinProperty(String name)
 	{
 		List<String> output = readSURL("https://extdata.badblock-network.fr/skin.php?name=" + name);
-		System.out.println("Output SKIN : " + output.size());
 		if (output.size() >= 2) {
 			String value = output.get(0);
 			String signature = output.get(1);
-			callback.done(createProperty("textures", value, signature), null);
-		}else callback.done(createProperty("textures", "", ""), null);
+			return new String[]{value, signature};
+		}else return new String[]{"", ""};
+	}
+	
+	public static Property getSkinPropertyObject(String name)
+	{
+		List<String> output = readSURL("https://extdata.badblock-network.fr/skin.php?name=" + name);
+		if (output.size() >= 2) {
+			String value = output.get(0);
+			String signature = output.get(1);
+			return createProperty("textures", value, signature);
+		}else return createProperty("textures", "", "");
 	}
 
 	private static List<String> readSURL(String url)
@@ -33,8 +40,8 @@ public class MojangAPI
 
 			con.setRequestMethod("GET");
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			con.setConnectTimeout(2000);
-			con.setReadTimeout(2000);
+			con.setConnectTimeout(500);
+			con.setReadTimeout(500);
 			con.setDoOutput(true);
 
 
@@ -47,10 +54,7 @@ public class MojangAPI
 			in.close();
 
 		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		catch (Exception e) {}
 		return result;
 	}
 	

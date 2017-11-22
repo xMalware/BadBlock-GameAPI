@@ -27,13 +27,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.google.gson.GsonBuilder;
+
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.listeners.packets.SkullExploitListener;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.MojangAPI;
-import fr.badblock.game.core18R3.players.utils.Property;
 import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
@@ -76,6 +77,9 @@ public class LoginListener extends BadListener {
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e) {
+		CraftPlayer cp = (CraftPlayer) e.getPlayer();
+		System.out.println("- PlayerLoginEvent: " + e.getPlayer().getName() + " / " + cp.getHandle().getProfile().getName());
+		System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(cp.getProfile()));
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
@@ -89,10 +93,8 @@ public class LoginListener extends BadListener {
 				e.disallow(Result.KICK_FULL, "§cCette partie est en cours.");
 			}
 		}
-		if (GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName()))
-		{
-			e.setResult(Result.KICK_WHITELIST);
-			return;
+		if(GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName())){
+			e.setResult(Result.KICK_WHITELIST); return;
 		}
 
 		Reflector 			  reflector 	= new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
@@ -105,70 +107,19 @@ public class LoginListener extends BadListener {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
 		}
-		final GameBadblockPlayer fP = player;
 		try {
-			MojangAPI.getSkinPropertyObject(fP.getName(), new Callback<Property>()
-			{
-				@Override
-				public void done(Property result, Throwable error)
-				{
-					System.out.println("Applying skin for " + fP.getName());
-					SkinFactory.applySkin(fP, result);
-				}
-			});
+			SkinFactory.applySkin(player, MojangAPI.getSkinPropertyObject(player.getName()));
+			//String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
+			//player.setTextureProperty(props[0], props[1]);
 		} catch (Exception exception) {
 			System.out.println("Impossible de mettre le skin au joueur : ");
 			exception.printStackTrace();
 		}
 	}
-	
-	public void reSendPlayerJoined(Player player) {
-		if (GameAPI.getAPI().getRunType().equals(RunType.LOBBY))
-		{
-			return;
-		}
-		// Test de renvois du packet
-		//final GameBadblockPlayer fP = (GameBadblockPlayer) player;
-		/*TaskManager.runTaskLater(new Runnable() {
-			@Override
-			public void run() {
-				Player p = Bukkit.getPlayer(playerName);
-				if (p == null) return;
-				EntityPlayer[] e = new EntityPlayer[]{((CraftPlayer) p).getHandle()};
-				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, e);
-				for (BadblockPlayer online : BukkitUtils.getAllPlayers()) {
-					if (online.getUniqueId().equals(p.getUniqueId())) continue;
-					EntityPlayer ep = ((CraftPlayer) online).getHandle();
-					if (ep.playerConnection != null && !ep.playerConnection.isDisconnected())
-						ep.playerConnection.sendPacket(packet);
-				}
-				MojangAPI.getSkinPropertyObject(fP.getName(), new Callback<Property>()
-				{
-					@Override
-					public void done(Property result, Throwable error)
-					{
-						SkinFactory.applySkin(fP, result);
-					}
-				});
-			}
-		}, 20 * 5);*/
-	}
 
-	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onDataReceived(PlayerLoadedEvent e)
 	{
-		BadblockPlayer p = e.getPlayer();
-		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
-		if(offlinePlayer != null){
-			p.changePlayerDimension(offlinePlayer.getFalseDimension());
-			p.showCustomObjective(offlinePlayer.getCustomObjective());
-
-			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
-			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(p.getPlayerData());
-
-		}
-
 		if(GameAPI.getAPI().getRunType() != RunType.DEV || GameServerKeeperAliveTask.isOpenToStaff())
 			return;
 
@@ -203,6 +154,7 @@ public class LoginListener extends BadListener {
 
 	private HashMap<Player, Integer> lastBookTick = new HashMap<>();
 
+	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
@@ -262,10 +214,19 @@ public class LoginListener extends BadListener {
 			channel.pipeline().addBefore("packet_handler", "bookpacketexploitfix_listener", channelDuplexHandler);
 		}
 
+		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
+
 		if (VanishTeleportListener.time.containsKey(p.getName().toLowerCase()) && VanishTeleportListener.time.get(p.getName().toLowerCase()) > System.currentTimeMillis()) {
 			p.setGhostConnect(true);
 			VanishTeleportListener.manage(p, VanishTeleportListener.splitters.get(p.getName().toLowerCase()));
-		}else if(GameAPI.getAPI().getGameServer().getGameState() == GameState.RUNNING){
+		}else if(offlinePlayer != null){
+			p.changePlayerDimension(offlinePlayer.getFalseDimension());
+			p.showCustomObjective(offlinePlayer.getCustomObjective());
+
+			GamePlugin.getInstance().getGameServer().getPlayers().remove(offlinePlayer.getName().toLowerCase());
+			GamePlugin.getInstance().getGameServer().getSavedPlayers().remove(p.getPlayerData());
+
+		} else if(GameAPI.getAPI().getGameServer().getGameState() == GameState.RUNNING){
 			p.setVisible(false, player -> !player.getBadblockMode().equals(BadblockMode.SPECTATOR));
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
@@ -364,20 +325,12 @@ public class LoginListener extends BadListener {
 					GameBadblockPlayer bp = (GameBadblockPlayer) player;
 					/*if(bp.isDisguised()){
 						bp.getDisguiseEntity().show(p);
-					} else */ 
-					if (!GameAPI.getServerName().startsWith("sw"))
-					{
-					if(bp.getInvisiblePredicate() != null && bp.getInvisiblePredicate().test(p)){
+					} else */
+					if(bp.getInvisiblePredicate().test(p)){
 						p.hidePlayer(bp);
 					}
-					if(bp.getVisiblePredicate() != null && bp.getVisiblePredicate().test(p)){
+					if(bp.getVisiblePredicate().test(p)){
 						p.showPlayer(bp);
-					}
-					}
-					else
-					{
-						p.showPlayer(bp);
-						bp.showPlayer(p);
 					}
 					/*if(bp.inGameData(CommandInGameData.class).vanish && !p.hasPermission(GamePermission.BMODERATOR)){
 						p.hidePlayer(bp);
@@ -386,7 +339,6 @@ public class LoginListener extends BadListener {
 
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
-		reSendPlayerJoined(p);
 	}
 
 	public static void manageRunningJoin(BadblockPlayer player) {

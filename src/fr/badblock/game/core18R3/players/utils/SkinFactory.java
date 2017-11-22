@@ -2,7 +2,6 @@ package fr.badblock.game.core18R3.players.utils;
 import java.lang.reflect.InvocationTargetException;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -21,11 +20,6 @@ import com.comphenix.protocol.wrappers.WrappedSignedProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.mojang.authlib.properties.PropertyMap;
-
-import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
-import fr.badblock.gameapi.GameAPI;
-import fr.badblock.gameapi.players.BadblockPlayer;
 
 public class SkinFactory {
 
@@ -79,26 +73,6 @@ public class SkinFactory {
 				onlinePlayer.showPlayer(player);
 			}
 		}
-		BadblockPlayer badblockPlayer = (BadblockPlayer) player;
-		GameScoreboard gameScoreboard = GamePlugin.getInstance().getBadblockScoreboard();
-		if (gameScoreboard.hasShownGroupPrefix())
-		{
-			badblockPlayer.setVisible(false, p -> true);
-			gameScoreboard.sendTeams(badblockPlayer);
-		}
-		else if (gameScoreboard.doTeamsPrefix)
-		{
-			if (badblockPlayer.getTeam() != null)
-			{
-				gameScoreboard.joinTeam(badblockPlayer, null, badblockPlayer.getTeam());
-			}
-			else
-			{
-				GameAPI.getAPI().getTeams().forEach(knowTeam -> {
-					gameScoreboard.sendTeam(badblockPlayer, knowTeam, ChatColor.GRAY);
-				});
-			}
-		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -142,13 +116,13 @@ public class SkinFactory {
 		teleport.getIntegers().writeSafely(0, Integer.valueOf(64199));
 		try
 		{
-			for (Player pl : Bukkit.getOnlinePlayers())
-			{
-				protocolManager.sendServerPacket(pl, removeInfo);
-				protocolManager.sendServerPacket(pl, addInfo);
-				protocolManager.sendServerPacket(pl, respawn);
-				protocolManager.sendServerPacket(pl, teleport);
-			}
+			protocolManager.sendServerPacket(player, removeInfo);
+
+			protocolManager.sendServerPacket(player, addInfo);
+
+			protocolManager.sendServerPacket(player, respawn);
+
+			protocolManager.sendServerPacket(player, teleport);
 
 			player.updateInventory();
 
@@ -170,7 +144,7 @@ public class SkinFactory {
 		}
 	}
 
-	public static void updatefSkin(Player p)
+	public static void updateSkin(Player p)
 	{
 		/*try
 		{
