@@ -205,6 +205,8 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		{
 			e.setCancelled(true);
 			ItemStack[] is = null;
+			
+			filledChests.add(block.getLocation());
 
 			if(mustGenerateOwnChest(player, block.getLocation()))
 			{
