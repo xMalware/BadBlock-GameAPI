@@ -36,7 +36,7 @@ public class MoveListener extends BadListener {
 
 		if(e.getFrom().getBlock().equals(e.getTo().getBlock())) return;
 
-		if (!hasMoved(e.getFrom(), e.getTo()))
+		if (hasMoved(e.getFrom(), e.getTo()))
 		{
 			double dist = Math.abs(e.getTo().getX() - e.getFrom().getX()) + Math.abs(e.getTo().getZ() - e.getFrom().getZ());
 			player.setMoveDist(player.getMoveDist() + dist);
