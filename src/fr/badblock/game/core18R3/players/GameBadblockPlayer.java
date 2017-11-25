@@ -617,8 +617,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				TextComponent message = new TextComponent( GameAPI.i18n().get("chat.replay")[0] );
 				message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/replay") );
 				message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.replay_hover", serverTypeName)[0]).create() ) );
-				String autoreplayName = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "chat.autoreplay_disable" : "chat.autoreplay_enable";
-				String autoreplayHover = getPlayerData().getReplay() != null && !getPlayerData().getReplay().isEmpty() ? "chat.autoreplay_disable_hover" : "chat.autoreplay_enable_hover";
+				String autoreplayName = getPlayerData().getReplay() == null || (getPlayerData().getReplay() != null && !getPlayerData().getReplay().contains(serverTypeName)) ? "chat.autoreplay_disable" : "chat.autoreplay_enable";
+				String autoreplayHover = getPlayerData().getReplay() == null || (getPlayerData().getReplay() != null && !getPlayerData().getReplay().contains(serverTypeName)) ? "chat.autoreplay_disable_hover" : "chat.autoreplay_enable_hover";
 				TextComponent messageAuto = new TextComponent( GameAPI.i18n().get(autoreplayName)[0] );
 				messageAuto.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/autoreplay " + serverTypeName) );
 				messageAuto.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get(autoreplayHover, serverTypeName)[0]).create() ) );
@@ -643,7 +643,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						}
 					}
 				}
-				if (leader == null && getPlayerData().getReplay() != null && getPlayerData().getReplay().contains(serverTypeName))
+				if (leader == null && (getPlayerData().getReplay() == null || (getPlayerData().getReplay() != null && !getPlayerData().getReplay().contains(serverTypeName))))
 				{
 					boolean autoReplay = true;
 					for (UUID uuid : getPlayersWithHim())
@@ -671,7 +671,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						}, 5);
 					}
 				}
-				else if (leader != null && leader.getPlayerData().getReplay() != null && leader.getPlayerData().getReplay().contains(serverTypeName))
+				else if (leader != null && (leader.getPlayerData().getReplay() == null || (leader.getPlayerData().getReplay() != null && !leader.getPlayerData().getReplay().contains(serverTypeName))))
 				{
 					boolean autoReplay = true;
 					for (UUID uuid : leader.getPlayersWithHim())

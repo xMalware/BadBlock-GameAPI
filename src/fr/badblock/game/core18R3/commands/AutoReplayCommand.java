@@ -36,7 +36,7 @@ public class AutoReplayCommand extends AbstractCommand {
 		{
 			player.getPlayerData().getReplay().remove(game);
 			player.saveGameData();
-			player.sendTranslatedMessage("commands.autoreplay.removereplay");
+			player.sendTranslatedMessage("commands.autoreplay.setreplay");
 		}
 		else
 		{
@@ -46,7 +46,7 @@ public class AutoReplayCommand extends AbstractCommand {
 			}
 			player.getPlayerData().getReplay().add(game);
 			player.saveGameData();
-			player.sendTranslatedMessage("commands.autoreplay.setreplay");
+			player.sendTranslatedMessage("commands.autoreplay.removereplay");
 		}
 
 		return true;
