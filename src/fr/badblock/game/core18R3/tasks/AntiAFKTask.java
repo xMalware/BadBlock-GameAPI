@@ -43,6 +43,7 @@ public class AntiAFKTask implements Runnable {
 
 			if (gamePlayer.getVlAfk() >= 6)
 			{
+				gamePlayer.sendTranslatedMessage("antiafk.k");
 				gamePlayer.sendPlayer("lobby");
 				new TranslatableString("antiafk.kick", gamePlayer.getTabGroupPrefix().get(gamePlayer) + gamePlayer.getName()).broadcast();
 			}
