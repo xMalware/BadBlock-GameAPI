@@ -2,6 +2,8 @@ package fr.badblock.game.core18R3.tasks;
 
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
+import fr.badblock.gameapi.GameAPI;
+import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.i18n.TranslatableString;
@@ -31,7 +33,7 @@ public class AntiAFKTask implements Runnable {
 				continue;
 			}
 			
-			if (gamePlayer.getMoveDist() <= 3)
+			if (gamePlayer.getMoveDist() <= 3 && GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING))
 			{
 				gamePlayer.setVlAfk(gamePlayer.getVlAfk() + 1);
 			}
