@@ -36,6 +36,12 @@ public class MoveListener extends BadListener {
 
 		if(e.getFrom().getBlock().equals(e.getTo().getBlock())) return;
 
+		if (!hasMoved(e.getFrom(), e.getTo()))
+		{
+			double dist = Math.abs(e.getTo().getX() - e.getFrom().getX()) + Math.abs(e.getTo().getZ() - e.getFrom().getZ());
+			player.setMoveDist(player.getMoveDist() + dist);
+		}
+
 		Portal portal = GameAPI.getAPI().getPortal(e.getTo());
 
 		if(portal != null && portal.canUsePortal(player, e.getTo())){
@@ -43,7 +49,7 @@ public class MoveListener extends BadListener {
 		}
 	}
 
- 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onTeleport(PlayerTeleportEvent e){
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
@@ -52,4 +58,10 @@ public class MoveListener extends BadListener {
 		}
 		player.inGameData(CommandInGameData.class).lastLocation = e.getFrom();
 	}
+
+	private boolean hasMoved(Location from, Location to)
+	{
+		return from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ();
+	}
+
 }

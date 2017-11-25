@@ -92,6 +92,7 @@ import fr.badblock.game.core18R3.signs.GameSignManager;
 import fr.badblock.game.core18R3.signs.UpdateSignListener;
 import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
 import fr.badblock.game.core18R3.sql.GameSQLDatabase;
+import fr.badblock.game.core18R3.tasks.AntiAFKTask;
 import fr.badblock.game.core18R3.tasks.GameStatisticsTask;
 import fr.badblock.game.core18R3.tasks.LagTask;
 import fr.badblock.game.core18R3.technologies.RabbitSpeaker;
@@ -259,6 +260,8 @@ public class GamePlugin extends GameAPI {
 	public int							ladderPort;
 	@Getter
 	public String						reverseDNS;
+	@Getter @Setter
+	public boolean						antiAfk;
 
 	@Override
 	public void onEnable() {
@@ -505,6 +508,7 @@ public class GamePlugin extends GameAPI {
 				}, 20, 20);
 				new GameStatisticsTask();
 				new LagTask();
+				new AntiAFKTask(this);
 			}
 		} catch (Throwable t){
 			t.printStackTrace();

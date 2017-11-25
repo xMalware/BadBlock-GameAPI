@@ -192,6 +192,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private int							shopPoints;
 	@Getter@Setter
 	private long						joinTime;
+	@Getter@Setter
+	private double						moveDist;
+	@Getter@Setter
+	private long						vlAfk;
 
 	// Caca aura
 	private Location locN;
