@@ -51,7 +51,7 @@ public class AntiAFKTask implements Runnable {
 			}
 			else if (gamePlayer.getVlAfk() >= 2)
 			{
-				gamePlayer.sendTranslatedMessage("antiafk.warn", gamePlayer.getVlAfk() / 2);
+				gamePlayer.sendTranslatedMessage("antiafk.warn", gamePlayer.getVlAfk() - 1);
 			}
 
 		}
