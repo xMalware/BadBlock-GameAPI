@@ -201,12 +201,12 @@ public class GameChestGenerator extends BadListener implements ChestGenerator {
 		if(block.getType() != Material.CHEST || filledChests.contains(block.getLocation()))
 			return;
 
+		filledChests.add(block.getLocation());
+		
 		if( this.isIndividualChest() )
 		{
 			e.setCancelled(true);
 			ItemStack[] is = null;
-			
-			filledChests.add(block.getLocation());
 
 			if(mustGenerateOwnChest(player, block.getLocation()))
 			{
