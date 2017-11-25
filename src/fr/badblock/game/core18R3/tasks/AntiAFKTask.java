@@ -31,7 +31,7 @@ public class AntiAFKTask implements Runnable {
 				continue;
 			}
 			
-			if (gamePlayer.getMoveDist() >= 3)
+			if (gamePlayer.getMoveDist() <= 3)
 			{
 				gamePlayer.setVlAfk(gamePlayer.getVlAfk() + 1);
 			}
