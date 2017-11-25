@@ -462,6 +462,7 @@ public class GamePlugin extends GameAPI {
 			Arrays.stream(Bukkit.getPluginManager().loadPlugins(plugins)).forEach(plugin -> Bukkit.getPluginManager().enablePlugin(plugin));
 
 			if (this.getRunType().equals(RunType.GAME)) {
+				setAntiAfk(true);
 				TaskManager.scheduleAsyncRepeatingTask("boosterr", new Runnable() {
 					@Override
 					public void run() {
