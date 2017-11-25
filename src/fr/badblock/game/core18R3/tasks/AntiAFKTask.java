@@ -44,11 +44,11 @@ public class AntiAFKTask implements Runnable {
 			if (gamePlayer.getVlAfk() >= 6)
 			{
 				gamePlayer.sendPlayer("lobby");
-					new TranslatableString("antiafk.kick", gamePlayer.getTabGroupPrefix().get(gamePlayer) + gamePlayer.getName()).broadcast();
+				new TranslatableString("antiafk.kick", gamePlayer.getTabGroupPrefix().get(gamePlayer) + gamePlayer.getName()).broadcast();
 			}
 			else if (gamePlayer.getVlAfk() >= 2)
 			{
-				gamePlayer.sendTranslatedMessage("antiafk.warn");
+				gamePlayer.sendTranslatedMessage("antiafk.warn", gamePlayer.getVlAfk() / 2);
 			}
 
 		}
