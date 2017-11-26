@@ -30,8 +30,9 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 		return (openStaff = !openStaff);
 	}
 
-	private long 	joinTime;
-	private boolean lastJoinable = true;
+	private long 		joinTime;
+	private boolean 	lastJoinable = true;
+	private GameState	gameState;
 
 	public GameServerKeeperAliveTask(GameServerConfig apiConfig) {
 		this.incrementJoinTime();
@@ -50,9 +51,10 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 			@Override
 			public void run()
 			{
-				if (lastJoinable != isJoinable())
+				if (lastJoinable != isJoinable() || gameState != GameAPI.getAPI().getGameServer().getGameState())
 				{
 					lastJoinable = isJoinable();
+					gameState = GameAPI.getAPI().getGameServer().getGameState();
 					GameAPI.getAPI().getGameServer().keepAlive();
 				}
 			}
