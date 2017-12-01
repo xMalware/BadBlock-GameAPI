@@ -66,6 +66,8 @@ import io.netty.channel.ChannelPromise;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayInCustomPayload;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo.EnumPlayerInfoAction;
 
 /**
  * Listener servant � remplac� la classe CraftPlayer par GameBadblockPlayer et � demander � Ladder les informations joueur.
@@ -339,6 +341,28 @@ public class LoginListener extends BadListener {
 
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
+		
+		reSendPlayerJoined(p);
+		
+	}
+	
+	public void reSendPlayerJoined(Player player) {
+		// Test de renvois du packet
+		final String playerName = player.getName();
+		TaskManager.runTaskLater(new Runnable() {
+			@Override
+			public void run() {
+				Player p = Bukkit.getPlayer(playerName);
+				if (p == null) return;
+				EntityPlayer[] e = new EntityPlayer[]{((CraftPlayer) p).getHandle()};
+				PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(EnumPlayerInfoAction.ADD_PLAYER, e);
+				for (BadblockPlayer online : BukkitUtils.getAllPlayers()) {
+					if (online.getUniqueId().equals(p.getUniqueId())) continue;
+					EntityPlayer ep = ((GameBadblockPlayer) online).getHandle();
+					if (ep.playerConnection != null && !ep.playerConnection.isDisconnected()) ep.playerConnection.sendPacket(packet);
+				}
+			}
+		}, 20);
 	}
 
 	public static void manageRunningJoin(BadblockPlayer player) {
