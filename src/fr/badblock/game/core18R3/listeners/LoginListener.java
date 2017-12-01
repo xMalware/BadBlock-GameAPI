@@ -341,12 +341,16 @@ public class LoginListener extends BadListener {
 
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
-		
+
 		reSendPlayerJoined(p);
-		
+
 	}
-	
-	public void reSendPlayerJoined(Player player) {
+
+	public void reSendPlayerJoined(BadblockPlayer player) {
+		if (GameAPI.getAPI().getRunType().equals(RunType.LOBBY))
+		{
+			return;
+		}
 		// Test de renvois du packet
 		final String playerName = player.getName();
 		TaskManager.runTaskLater(new Runnable() {
