@@ -159,6 +159,14 @@ public class DoubleJumpListener extends BadListener {
 							{
 								return;
 							}
+							if (!GamePlugin.getAPI().getRunType().equals(RunType.GAME))
+							{
+								return;
+							}
+							if (GamePlugin.getAPI().getGameServer().getGameState().equals(GameState.RUNNING))
+							{
+								return;
+							}
 							player.setAllowFlight(true);
 						}
 
