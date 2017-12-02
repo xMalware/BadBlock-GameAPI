@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.util.Vector;
 
@@ -17,6 +18,7 @@ import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.run.RunType;
 import fr.badblock.gameapi.utils.general.Flags;
 import fr.badblock.gameapi.utils.threading.TaskManager;
@@ -26,6 +28,29 @@ public class DoubleJumpListener extends BadListener {
 	public Map<String, Integer> timesJumped = new HashMap<>();
 	public Map<String, Long>    lastTime    = new HashMap<>();
 
+	@EventHandler
+	public void onPlayerTeleport(PlayerTeleportEvent event)
+	{
+		BadblockPlayer player = (BadblockPlayer) event.getPlayer();
+		if (!GamePlugin.getAPI().getRunType().equals(RunType.GAME))
+		{
+			return;
+		}
+		if (!GamePlugin.getAPI().getGameServer().getGameState().equals(GameState.RUNNING))
+		{
+			return;
+		}
+		if (player.getGameMode().equals(GameMode.SPECTATOR))
+		{
+			return;
+		}
+		if (!player.getBadblockMode().equals(BadblockMode.PLAYER))
+		{
+			return;
+		}
+		player.setAllowFlight(false);
+	}
+	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void join(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
