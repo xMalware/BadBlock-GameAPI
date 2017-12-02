@@ -8,6 +8,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.util.Vector;
@@ -25,7 +26,7 @@ public class DoubleJumpListener extends BadListener {
 	public Map<String, Integer> timesJumped = new HashMap<>();
 	public Map<String, Long>    lastTime    = new HashMap<>();
 
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void join(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		if (!GamePlugin.getAPI().getRunType().equals(RunType.GAME))

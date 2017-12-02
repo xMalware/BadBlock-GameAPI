@@ -2,6 +2,7 @@ package fr.badblock.game.core18R3.gameserver.threading;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 
 import fr.badblock.docker.factories.GameAliveFactory;
 import fr.badblock.game.core18R3.GamePlugin;
@@ -62,7 +63,12 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 							@Override
 							public void run()
 							{
-								BukkitUtils.getPlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).forEach(player -> player.setAllowFlight(false));
+								for (Player player : BukkitUtils.getPlayers())
+								{
+									if (player.getGameMode().equals(GameMode.SPECTATOR))
+										continue;
+									player.setAllowFlight(false);
+								}
 							}
 						});
 					}
