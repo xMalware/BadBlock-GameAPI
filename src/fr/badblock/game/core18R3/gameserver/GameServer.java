@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -26,6 +27,8 @@ import fr.badblock.gameapi.players.BadblockOfflinePlayer;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayerData;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.ServerProperties;
 import lombok.Getter;
 import lombok.Setter;
@@ -124,6 +127,18 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 		if (gameState == GameState.RUNNING) {
 			DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 			gameBegin = dateFormat.format(System.currentTimeMillis()) + " (GMT +1)";
+			for (BadblockPlayer player : BukkitUtils.getAllPlayers())
+			{
+				if (player.getGameMode().equals(GameMode.SPECTATOR))
+				{
+					continue;
+				}
+				if (player.getBadblockMode().equals(BadblockMode.SPECTATOR))
+				{
+					continue;
+				}
+				player.setAllowFlight(false);
+			}
 		}
 
 		keepAlive();
