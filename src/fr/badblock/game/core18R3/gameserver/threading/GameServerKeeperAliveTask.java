@@ -1,6 +1,7 @@
 package fr.badblock.game.core18R3.gameserver.threading;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 
 import fr.badblock.docker.factories.GameAliveFactory;
 import fr.badblock.game.core18R3.GamePlugin;
@@ -11,6 +12,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.game.GameServer;
 import fr.badblock.gameapi.game.GameState;
 import fr.badblock.gameapi.run.RunType;
+import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,6 +55,17 @@ public class GameServerKeeperAliveTask extends GameServerTask {
 			{
 				if (lastJoinable != isJoinable() || gameState != GameAPI.getAPI().getGameServer().getGameState())
 				{
+					if (GameAPI.getAPI().getGameServer().getGameState().equals(GameState.RUNNING) && (gameState == null || gameState.equals(GameState.WAITING)))
+					{
+						TaskManager.runTask(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								BukkitUtils.getPlayers().stream().filter(player -> !player.getGameMode().equals(GameMode.SPECTATOR)).forEach(player -> player.setAllowFlight(false));
+							}
+						});
+					}
 					lastJoinable = isJoinable();
 					gameState = GameAPI.getAPI().getGameServer().getGameState();
 					GameAPI.getAPI().getGameServer().keepAlive();
