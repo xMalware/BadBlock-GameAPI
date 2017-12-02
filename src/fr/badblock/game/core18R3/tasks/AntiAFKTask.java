@@ -15,7 +15,7 @@ public class AntiAFKTask implements Runnable {
 
 	public AntiAFKTask(GamePlugin gamePlugin) {
 		this.gamePlugin = gamePlugin;
-		TaskManager.scheduleSyncRepeatingTask("antiAfk", this, 20 * 30, 20 * 30);
+		TaskManager.scheduleSyncRepeatingTask("antiAfk", this, 20 * 60, 20 * 60);
 	}
 
 	@Override
