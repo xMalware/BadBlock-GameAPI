@@ -145,14 +145,15 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 	@Override
 	public void getPlayerData(BadblockPlayer player, Callback<JsonObject> callback) {
-		getPlayerData(player.getName(), callback);
+		getPlayerData(player.getName().toLowerCase(), callback);
 	}
 
 	@Override
 	public void getPlayerData(String player, Callback<JsonObject> callback) {
 		player = CommonFilter.reverseFilterNames(player);
 		requestedPlayers.put(player.toLowerCase(), callback);
-		sendPacket(new PacketPlayerData(DataType.PLAYER, DataAction.REQUEST, player, "*"));
+		player = player.toLowerCase();
+		sendPacket(new PacketPlayerData(DataType.PLAYER, DataAction.REQUEST, player.toLowerCase(), "*"));
 	}
 
 	@Override
@@ -161,7 +162,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 
 		if(GameAPI.getAPI().getRunType() == RunType.DEV) return;
 		if (!player.isDataFetch()) return;
-		updatePlayerData(player.getName(), toUpdate);
+		updatePlayerData(player.getName().toLowerCase(), toUpdate);
 	}
 
 	@Override
@@ -172,7 +173,10 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 		//	System.out.println(stackTrace.toString());
 		if(GameAPI.getAPI().getRunType() == RunType.DEV) return;
 		if(toUpdate != null)
-			sendPacket(new PacketPlayerData(DataType.PLAYER, DataAction.MODIFICATION, player, toUpdate.toString()));
+		{
+			player = player.toLowerCase();
+			sendPacket(new PacketPlayerData(DataType.PLAYER, DataAction.MODIFICATION, player.toLowerCase(), toUpdate.toString()));
+		}
 	}
 
 	@Override
@@ -182,7 +186,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 		String ip = player.getAddress().getAddress().getHostAddress();
 
 		requestedIps.put(ip, callback);
-		sendPacket(new PacketPlayerData(DataType.IP, DataAction.REQUEST, ip, "*"));
+		sendPacket(new PacketPlayerData(DataType.IP, DataAction.REQUEST, ip.toLowerCase(), "*"));
 	}
 
 	@Override
@@ -193,7 +197,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 		if (!player.isDataFetch()) return;
 		String ip = player.getAddress().getAddress().getHostAddress();
 		if(toUpdate != null)
-			sendPacket(new PacketPlayerData(DataType.IP, DataAction.MODIFICATION, ip, toUpdate.toString()));
+			sendPacket(new PacketPlayerData(DataType.IP, DataAction.MODIFICATION, ip.toLowerCase(), toUpdate.toString()));
 	}
 
 	@Override
