@@ -289,9 +289,5 @@ public class GameTeam implements BadblockTeam {
 	@Override
 	public void die() {
 		this.setDead(true);
-		for (BadblockPlayer pl : this.getOnlinePlayers())
-		{
-			pl.postResult(null);
-		}
 	}
 }
