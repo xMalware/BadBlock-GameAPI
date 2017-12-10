@@ -340,6 +340,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 											if (displayName.contains("grade")) {
 												displayName = displayName.replace("grade", "");
 												displayName = displayName.replace(" ", "");
+												displayName = displayName.replace("-50%", "");
 												PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
 												if (group != null) {
 													groups.put(group.getPower(), group.getName());
