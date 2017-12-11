@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -162,7 +163,7 @@ import net.minecraft.server.v1_8_R3.World;
 import net.minecraft.server.v1_8_R3.WorldServer;
 
 public class GamePlugin extends GameAPI {
-	
+
 	public static final String
 	FOLDER_CONFIG 	  = "config",
 	FOLDER_KITS		  = "kits",
@@ -454,7 +455,7 @@ public class GamePlugin extends GameAPI {
 			ms = MathsUtils.round(ms, 3);
 
 			//Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "whitelist off");
-			
+
 			GameAPI.logColor("&b[GameAPI] &aAPI loaded! (" + ms + "ms)");
 
 			File plugins = new File("plugins" + File.separator + "apiPlugins");
@@ -644,37 +645,63 @@ public class GamePlugin extends GameAPI {
 
 	@Override
 	public void balanceTeams(boolean sameSize) {
+		System.out.println("balanceTeams : A : " + sameSize);
 		if(teams.size() == 0)
 			return;
+		System.out.println("balanceTeams : B : " + teams.size() + " / " + sameSize);
 
 		getOnlinePlayers().stream().filter(player -> { return player.getTeam() == null; }).forEach(player -> addPlayerInTeam(player, sameSize));
 
-		int playersByTeam = getOnlinePlayers().size() / getTeams().size() + 1;
+		int playersByTeam = (int) Math.ceil((double) getOnlinePlayers().size() / (double)getTeams().size());
+		System.out.println("balanceTeams : C : " + teams.size() + " / " + playersByTeam);
 
 		if(sameSize) {
-			
+			System.out.println("balanceTeams : D : " + teams.size() + " / " + playersByTeam);
+
 			// New
-			List<BadblockTeam> less = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() < playersByTeam; }).collect(Collectors.toList());
-			List<BadblockTeam> more = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() > playersByTeam; }).collect(Collectors.toList());
+			List<BadblockTeam> tooManyPlayers = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() > playersByTeam; }).collect(Collectors.toList());
 
-			if(less.isEmpty() || more.isEmpty())
-				return;
-
-			for(BadblockTeam m : more){
-				GameTeam gm = (GameTeam) m;
-
-				while(m.getOnlinePlayers().size() > playersByTeam){
-					BadblockTeam t = less.get(0);
-					t.joinTeam(gm.getRandomPlayer(), JoinReason.REBALANCING);
-
-					if(t.getOnlinePlayers().size() >= playersByTeam)
-						less.remove(0);
+			while (tooManyPlayers.size() >= 1)
+			{
+				BadblockTeam mostFilledTeam = null;
+				for (BadblockTeam team : tooManyPlayers)
+				{
+					if (mostFilledTeam == null || (mostFilledTeam != null && mostFilledTeam.getOnlinePlayers().size() < team.getOnlinePlayers().size()))
+					{
+						mostFilledTeam = team;
+					}
 				}
-			}
-		}
 
-		Set<BadblockTeam> toRemove = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() == 0; }).collect(Collectors.toSet());
-		toRemove.forEach(this::unregisterTeam);
+				if (mostFilledTeam != null)
+				{
+					BadblockTeam smallestFilledTeam = null;
+					for (BadblockTeam team : getTeams())
+					{
+						if (smallestFilledTeam == null || (smallestFilledTeam != null && smallestFilledTeam.getOnlinePlayers().size() > team.getOnlinePlayers().size()))
+						{
+							smallestFilledTeam = team;
+						}
+					}
+
+					if (smallestFilledTeam != null)
+					{
+						Iterator<BadblockPlayer> iterator = mostFilledTeam.getOnlinePlayers().iterator();
+						if (iterator.hasNext())
+						{
+							BadblockPlayer player = iterator.next();
+							mostFilledTeam.leaveTeam(player);
+							smallestFilledTeam.joinTeam(player, JoinReason.REBALANCING);
+						}
+					}
+
+				}
+
+				tooManyPlayers = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() > playersByTeam; }).collect(Collectors.toList());
+			}
+
+			Set<BadblockTeam> toRemove = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() == 0; }).collect(Collectors.toSet());
+			toRemove.forEach(this::unregisterTeam);
+		}
 	}
 
 	private void addPlayerInTeam(BadblockPlayer player, boolean sameSize){

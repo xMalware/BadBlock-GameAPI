@@ -26,6 +26,8 @@ import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.events.api.PlayerReconnectionPropositionEvent;
 import fr.badblock.gameapi.game.GameServer.WhileRunningConnectionTypes;
 import fr.badblock.gameapi.game.GameState;
+import fr.badblock.gameapi.game.rankeds.RankedCalc;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.players.data.boosters.PlayerBooster;
@@ -143,11 +145,28 @@ public class DisconnectListener extends BadListener {
 				}
 			}
 		}
-		
+
 		if(GameAPI.getAPI().getGameServer().getGameState() != GameState.RUNNING) {
 			if(player.getTeam() != null)
 				player.getTeam().leaveTeam(player);
 		} else {
+			// TODO something else
+			if (GamePlugin.getAPI().getRunType().equals(RunType.GAME))
+			{
+				player.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), "looses", 1);
+				player.getPlayerData().incrementTempRankedData(RankedManager.instance.getCurrentRankedGameName(), "deaths", 1);
+				RankedManager.instance.calcPoints(RankedManager.instance.getCurrentRankedGameName(), player, new RankedCalc()
+				{
+
+					@Override
+					public long done() {
+						return -2;
+					}
+
+				});
+				RankedManager.instance.fill(RankedManager.instance.getCurrentRankedGameName(), player.getName());
+			}
+
 			GameServer server = GamePlugin.getInstance().getGameServer();
 
 			if(server.isSaving() && server.getPlay().contains(player.getUniqueId())){
