@@ -132,6 +132,7 @@ public class GameLanguage implements Language {
 		
 		if(!file.exists()){
 			message = new GameMessage(ChatColor.RED + key);
+			System.out.println("Unknown message : " + key);
 			JsonUtils.save(file, message, true);
 			try {
 				final String finalKey = key;

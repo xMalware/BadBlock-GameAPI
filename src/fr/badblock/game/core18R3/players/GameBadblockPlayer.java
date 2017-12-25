@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -121,6 +122,7 @@ import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -278,6 +280,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	public void updateData(JsonObject object) {
 		// Refresh shop points
+		GameBadblockPlayer gbp = this;
 		this.refreshShopPoints();
 		// Game
 		if (object.has("game")) {
@@ -426,21 +429,30 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 								System.out.println("CUSTOMRANK: D");
 								if (result.next()) {
 									System.out.println("CUSTOMRANK: E");
-									customRank = result.getString("gradePerso");
+									customRank = ChatColor.translateAlternateColorCodes('&', result.getString("gradeperso"));
 									// find group
-									String rank = null;
-									for (Entry<String, String> entry : GameScoreboard.customRanks.entrySet())
-									{
-										if (entry.getValue() == null)
-										{
-											rank = entry.getKey();
-											break;
-										}
+									String rank = GameScoreboard.customRankId;
+									String id = GameScoreboard.gsb.generateForId(GameScoreboard.customRanks.size()) + "";
+									rank += id;
+									GameScoreboard.customRanks.put(rank, new SimpleEntry<String, String>(customRank, getName()));
+									GameScoreboard.groups.put(rank, rank);
+
+									if (GameScoreboard.board.getTeam(rank) == null){
+										GameScoreboard.board.registerNewTeam(rank);
 									}
-									System.out.println("CUSTOMRANK: F " + rank);
+
+									Team teamHandler = GameScoreboard.board.getTeam(rank);
+
+									teamHandler.setAllowFriendlyFire(true);
+									for (BadblockPlayer plo : BukkitUtils.getAllPlayers())
+									{
+										GameScoreboard.gsb.sendTeamData(rank, customRank, plo);
+									}
+									GameScoreboard.gsb.sendTeamData(rank, customRank, gbp);
+									System.out.println("CUSTOMRANK: F " + rank + " " + gbp + " " + customRank);
 									if (rank != null)
 									{
-										System.out.println("CUSTOMRANK: G");
+										System.out.println("CUSTOMRANK: G " + customRank);
 										Team team = GameScoreboard.board.getEntryTeam(getName());
 										if(team != null && !team.getName().equals(rank)) {
 											team.removeEntry(getName());
@@ -450,12 +462,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 											@Override
 											public void run() {
 												System.out.println("CUSTOMRANK: H");
-												GameScoreboard gsb = (GameScoreboard) GameScoreboard.board;
-												for (BadblockPlayer plo : BukkitUtils.getAllPlayers())
-												{
-													gsb.sendTeamData(GameScoreboard.groups.get(ranke), customRank, plo);
-												}
-												GameScoreboard.board.getTeam(GameScoreboard.groups.get(ranke)).addEntry(getName());
+												GameScoreboard.gsb.sendTeamData(ranke, customRank, gbp);
+												GameScoreboard.board.getTeam(ranke).addEntry(getName());
 											}
 										}.runTaskLater(GameAPI.getAPI(), 5L);
 									}
@@ -1092,6 +1100,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPacket(BadblockOutPacket packet) {
 		try {
 			Packet<?> nmsPacket = ((GameBadblockOutPacket) packet).buildPacket(this);
+			System.out.println("DEBUG DU TURFU : " + getHandle() + " / " + getHandle().playerConnection + " / " + nmsPacket);
 			getHandle().playerConnection.sendPacket(nmsPacket);
 		} catch (Exception e) {
 			e.printStackTrace();
