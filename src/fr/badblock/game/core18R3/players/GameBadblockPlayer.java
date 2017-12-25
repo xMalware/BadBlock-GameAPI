@@ -429,7 +429,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 								System.out.println("CUSTOMRANK: D");
 								if (result.next()) {
 									System.out.println("CUSTOMRANK: E");
-									customRank = ChatColor.translateAlternateColorCodes('&', result.getString("gradeperso"));
+									customRank = ChatColor.translateAlternateColorCodes('&', result.getString("gradeperso")) + " ";
 									// find group
 									String rank = GameScoreboard.customRankId;
 									String id = GameScoreboard.gsb.generateForId(GameScoreboard.customRanks.size()) + "";
