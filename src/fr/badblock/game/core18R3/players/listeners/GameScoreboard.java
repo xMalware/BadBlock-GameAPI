@@ -92,7 +92,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	public void onDataReceive(PlayerLoadedEvent e){
 		if(!doGroupsPrefix) return;
 		GameBadblockPlayer gbp = (GameBadblockPlayer) e.getPlayer();
-		if (groups.get(gbp.getFakeMainGroup()) != null) {
+		if (groups.get(gbp.getFakeMainGroup()) != null && !gbp.getFakeMainGroup().equalsIgnoreCase("gradeperso")) {
 			getHandler().getTeam( groups.get(gbp.getFakeMainGroup()) ).addEntry(e.getPlayer().getName());
 		}
 
@@ -117,7 +117,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 		Team team = getHandler().getEntryTeam(e.getPlayer().getName());
 		GameBadblockPlayer gbp = (GameBadblockPlayer) e.getPlayer();
-		if (team != null && !gbp.getMainGroup().equalsIgnoreCase("gradeperso")) {
+		if (team != null && !gbp.getFakeMainGroup().equalsIgnoreCase("gradeperso")) {
 			if(!team.getName().equals(groups.get(gbp.getFakeMainGroup()))) {
 				team.removeEntry(e.getPlayer().getName());
 
