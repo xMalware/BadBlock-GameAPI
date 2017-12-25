@@ -2,6 +2,7 @@ package fr.badblock.game.core18R3.players.listeners;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -86,7 +87,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onDataReceive(PlayerLoadedEvent e){
 		if(!doGroupsPrefix) return;
@@ -116,7 +117,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 		Team team = getHandler().getEntryTeam(e.getPlayer().getName());
 		GameBadblockPlayer gbp = (GameBadblockPlayer) e.getPlayer();
-		if (team != null) {
+		if (team != null && !gbp.getMainGroup().equalsIgnoreCase("gradeperso")) {
 			if(!team.getName().equals(groups.get(gbp.getFakeMainGroup()))) {
 				team.removeEntry(e.getPlayer().getName());
 
@@ -244,11 +245,21 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 
 	public void sendTeams(BadblockPlayer player){
 		for(PermissibleGroup group : PermissionManager.getInstance().getGroups()){
-			sendTeamData(groups.get( group.getName() ), new TranslatableString("permissions.tab." + group.getName()).getAsLine(player), player);
+			String display = null;
+			if (group.getName().startsWith("gradeperso"))
+			{
+				display = "§c";
+			}
+			else
+			{
+				display = new TranslatableString("permissions.tab." + group.getName()).getAsLine(player);
+			}
+			sendTeamData(groups.get( group.getName() ), display, player);
 		}
 	}
 
 	public static Map<String, String> groups = new HashMap<>();
+	public static Map<String, String> customRanks = new HashMap<>();
 
 	/*
 	 * Envoit le nouveau pr�fixe via packet, pour l'avoir custom sans le d�clarer dans un scoreboard personnel (opti)
@@ -258,7 +269,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		sendTeamData(team.getKey(), displayName, p);
 	}
 
-	private void sendTeamData(String teamName, String displayName, BadblockPlayer p){
+	public void sendTeamData(String teamName, String displayName, BadblockPlayer p){
 		GameAPI.getAPI().createPacket(PlayScoreboardTeam.class)	
 		.setMode(TeamMode.UPDATE)
 		.setTeamName(teamName)
@@ -284,18 +295,41 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		PermissionManager.getInstance().getGroups().stream().sorted((a, b) -> {
 			return Integer.compare(b.getPower(), a.getPower());
 		}).forEach(group -> {
-			String id = generateForId(i) + "";
+			if (group.getName().equalsIgnoreCase("gradeperso"))
+			{
+				int slots = 100;// todo do something better
+				for (int o = 0; o < slots; o++)
+				{
+					String id = generateForId(i) + "";
 
-			groups.put(group.getName(), id);
+					groups.put(group.getName() + o, id);
+					customRanks.put(group.getName() + o, null);
 
-			if(getHandler().getTeam(id) == null){
-				getHandler().registerNewTeam(id);
+					if(getHandler().getTeam(id) == null){
+						getHandler().registerNewTeam(id);
+					}
+
+					Team teamHandler = getHandler().getTeam(id);
+
+					teamHandler.setAllowFriendlyFire(true);
+					i++;
+				}
 			}
+			else
+			{
+				String id = generateForId(i) + "";
 
-			Team teamHandler = getHandler().getTeam(id);
+				groups.put(group.getName(), id);
 
-			teamHandler.setAllowFriendlyFire(true);
-			i++;
+				if(getHandler().getTeam(id) == null){
+					getHandler().registerNewTeam(id);
+				}
+
+				Team teamHandler = getHandler().getTeam(id);
+
+				teamHandler.setAllowFriendlyFire(true);
+				i++;
+			}
 		});
 	}
 
@@ -336,7 +370,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	@Override
 	public void beginVote(JsonArray maps) {
 		List<VoteElement> elements = new ArrayList<VoteElement>();
-		
+
 		for(int i=0;i<maps.size();i++){
 			JsonElement element = maps.get(i);
 
@@ -345,7 +379,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 				elements.add(vote);
 			}
 		}
-		
+
 		beginVote(elements);
 	}
 
@@ -436,6 +470,21 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	public void onQuit(PlayerQuitEvent e){
 		BadblockPlayer player = (BadblockPlayer) e.getPlayer();
 
+		Iterator<Entry<String, String>> iterator = customRanks.entrySet().iterator();
+		List<String> toNull = new ArrayList<>();
+		while (iterator.hasNext())
+		{
+			Entry<String, String> entry = iterator.next();
+			if (entry.getValue() != null && entry.getValue().equalsIgnoreCase(player.getName()))
+			{
+				toNull.add(entry.getKey());
+			}
+		}
+		for (String string : toNull)
+		{
+			customRanks.put(string, null);
+		}
+		
 		VoteInGameData data = player.inGameData(VoteInGameData.class);
 
 		if(data.getElement() != null && votes.containsKey(data.getElement()) && voteObjective != null){
@@ -465,7 +514,7 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			List<Entry<VoteElement, Integer>> list = new ArrayList<>(votes.entrySet());
 			list.remove(max);
 		}
-		
+
 		boolean voted = false;
 		for (Entry<VoteElement, Integer> value : votes.entrySet())
 			if (value.getValue() > 0) voted = true;

@@ -40,6 +40,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Maps;
@@ -56,6 +57,7 @@ import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
+import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
 import fr.badblock.game.core18R3.players.utils.BadblockInjector;
 import fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.OrdinaryColor;
 import fr.badblock.game.core18R3.watchers.MetadataIndex;
@@ -409,18 +411,54 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					}
 				});
 			}
+			System.out.println("CUSTOMRANK: A");
 			if (permissions != null && permissions.getParent() != null)
 			{
+				System.out.println("CUSTOMRANK: B");
 				if (permissions.getParent().getName().equalsIgnoreCase("gradeperso"))
 				{
+					System.out.println("CUSTOMRANK: C");
 					GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 						@Override
 						public void done(ResultSet result, Throwable error) {
 							try {
+								System.out.println("CUSTOMRANK: D");
 								if (result.next()) {
+									System.out.println("CUSTOMRANK: E");
 									customRank = result.getString("gradePerso");
-									
+									// find group
+									String rank = null;
+									for (Entry<String, String> entry : GameScoreboard.customRanks.entrySet())
+									{
+										if (entry.getValue() == null)
+										{
+											rank = entry.getKey();
+											break;
+										}
+									}
+									System.out.println("CUSTOMRANK: F " + rank);
+									if (rank != null)
+									{
+										System.out.println("CUSTOMRANK: G");
+										Team team = GameScoreboard.board.getEntryTeam(getName());
+										if(team != null && !team.getName().equals(rank)) {
+											team.removeEntry(getName());
+										}
+										final String ranke = rank;
+										new BukkitRunnable() {
+											@Override
+											public void run() {
+												System.out.println("CUSTOMRANK: H");
+												GameScoreboard gsb = (GameScoreboard) GameScoreboard.board;
+												for (BadblockPlayer plo : BukkitUtils.getAllPlayers())
+												{
+													gsb.sendTeamData(GameScoreboard.groups.get(ranke), customRank, plo);
+												}
+												GameScoreboard.board.getTeam(GameScoreboard.groups.get(ranke)).addEntry(getName());
+											}
+										}.runTaskLater(GameAPI.getAPI(), 5L);
+									}
 								}
 								result.close();
 							}
