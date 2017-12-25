@@ -257,7 +257,10 @@ public class GameLanguage implements Language {
 			return ((TranslatableWord) object).getWord(getLocale());
 		} else if(object instanceof TranslatableString){
 			TranslatableString str = ((TranslatableString) object);
-			
+			if (str.getOverrideString() != null)
+			{
+				return str.getOverrideString();
+			}
 			return get(str.getKey(), str.getObjects())[0];
 		} else return object.toString();
 	}
