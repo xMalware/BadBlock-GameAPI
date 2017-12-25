@@ -45,11 +45,17 @@ public class GamePlayerData implements PlayerData {
 	@Getter@Setter
 	private boolean										  aura;
 	@Getter@Setter
-	private int										      auraRed		   = 255;
+	private int										      auraRed1		   = 255;
 	@Getter@Setter
-	private int										      auraGreen;
+	private int										      auraGreen1;
 	@Getter@Setter
-	private int										      auraBlue;
+	private int										      auraBlue1;
+	@Getter@Setter
+	private int										      auraRed2		   = 255;
+	@Getter@Setter
+	private int										      auraGreen2;
+	@Getter@Setter
+	private int										      auraBlue2;
 	@Getter@Setter
 	private boolean										  auraVisible	   = true;
 	private List<PlayerBooster>					  		  boosters		   = new ArrayList<>();
