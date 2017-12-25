@@ -196,6 +196,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private double						moveDist;
 	@Getter@Setter
 	private long						vlAfk;
+	@Getter@Setter
+	private String						customRank;
 
 	// Caca aura
 	private Location locN;
@@ -406,6 +408,29 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						}
 					}
 				});
+			}
+			if (permissions != null && permissions.getParent() != null)
+			{
+				if (permissions.getParent().getName().equalsIgnoreCase("gradeperso"))
+				{
+					GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+
+						@Override
+						public void done(ResultSet result, Throwable error) {
+							try {
+								if (result.next()) {
+									customRank = result.getString("gradePerso");
+									
+								}
+								result.close();
+							}
+							catch (Exception error34)
+							{
+								error34.printStackTrace();
+							}
+						}
+					});
+				}
 			}
 		}
 		// Aura
@@ -1076,6 +1101,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public TranslatableString getGroupPrefix() {
+		if (customRank != null && !customRank.isEmpty())
+		{
+			TranslatableString result = new TranslatableString(null);
+			result.setOverrideString(customRank);
+			return result;
+		}
 		return new TranslatableString("permissions.chat." + getFakeMainGroup());
 	}
 
@@ -1086,6 +1117,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public TranslatableString getTabGroupPrefix() {
+		if (customRank != null && !customRank.isEmpty())
+		{
+			TranslatableString result = new TranslatableString(null);
+			result.setOverrideString(customRank);
+			return result;
+		}
 		return new TranslatableString("permissions.tab." + getFakeMainGroup());
 	}
 
