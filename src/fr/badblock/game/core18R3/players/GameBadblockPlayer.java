@@ -418,7 +418,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			if (permissions != null && permissions.getParent() != null)
 			{
 				System.out.println("CUSTOMRANK: B");
-				if (permissions.getParent().getName().equalsIgnoreCase("gradeperso"))
+				if (permissions.getParent().getName().equalsIgnoreCase("gradeperso") || permissions.getAlternateGroups().containsKey("gradeperso"))
 				{
 					System.out.println("CUSTOMRANK: C");
 					GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
