@@ -1178,6 +1178,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		String rankName = permissions.getParent().getName();
 		if (getRealName() != null)
 		{
+			if (rankName.equalsIgnoreCase("gradeperso"))
+			{
+				return rankName;
+			}
 			List<String> groups = new ArrayList<>(permissions.getAlternateGroups().keySet());
 			groups.add(permissions.getSuperGroup());
 			rankName = "default";
