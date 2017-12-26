@@ -202,6 +202,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private long						vlAfk;
 	@Getter@Setter
 	private String						customRank;
+	@Getter@Setter
+	private String						customColor;
 
 	// Caca aura
 	private Location locN;
@@ -421,7 +423,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				if (permissions.getParent().getName().equalsIgnoreCase("gradeperso") || permissions.getAlternateGroups().containsKey("gradeperso"))
 				{
 					System.out.println("CUSTOMRANK: C");
-					GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
+					GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso, customcolor FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 						@Override
 						public void done(ResultSet result, Throwable error) {
@@ -430,6 +432,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 								if (result.next()) {
 									System.out.println("CUSTOMRANK: E");
 									customRank = ChatColor.translateAlternateColorCodes('&', result.getString("gradeperso")) + " ";
+									customColor = ChatColor.translateAlternateColorCodes('&', result.getString("customcolor"));
 									// find group
 									String rank = GameScoreboard.customRankId;
 									String id = GameScoreboard.gsb.generateForId(GameScoreboard.customRanks.size()) + "";
@@ -1159,6 +1162,12 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public TranslatableString getGroupSuffix() {
+		if (customColor != null && !customColor.isEmpty())
+		{
+			TranslatableString result = new TranslatableString(null);
+			result.setOverrideString(customColor);
+			return result;
+		}
 		return new TranslatableString("permissions.chat_suffix." + getFakeMainGroup());
 	}
 
