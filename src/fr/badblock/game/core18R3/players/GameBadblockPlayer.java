@@ -839,7 +839,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			enderdragon.setVisibility(Visibility.PLAYER);
 			enderdragon.addPlayer(EntityViewList.WHITELIST, this);
 
-			new BossBarRunnable().runTaskTimer(getAPI(), 0, 1L);
+			new BossBarRunnable().runTaskTimer(getAPI(), 0, 20L);
 		}
 	}
 
