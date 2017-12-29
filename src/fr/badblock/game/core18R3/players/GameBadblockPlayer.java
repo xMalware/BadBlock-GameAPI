@@ -1103,7 +1103,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPacket(BadblockOutPacket packet) {
 		try {
 			Packet<?> nmsPacket = ((GameBadblockOutPacket) packet).buildPacket(this);
-			System.out.println("DEBUG DU TURFU : " + getHandle() + " / " + getHandle().playerConnection + " / " + nmsPacket);
 			getHandle().playerConnection.sendPacket(nmsPacket);
 		} catch (Exception e) {
 			e.printStackTrace();

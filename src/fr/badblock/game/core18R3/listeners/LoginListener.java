@@ -27,14 +27,13 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.gson.GsonBuilder;
-
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.listeners.packets.SkullExploitListener;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.MojangAPI;
+import fr.badblock.game.core18R3.players.utils.Property;
 import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
@@ -79,9 +78,8 @@ public class LoginListener extends BadListener {
 
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onLogin(PlayerLoginEvent e) {
-		CraftPlayer cp = (CraftPlayer) e.getPlayer();
-		System.out.println("- PlayerLoginEvent: " + e.getPlayer().getName() + " / " + cp.getHandle().getProfile().getName());
-		System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(cp.getProfile()));
+		long time = System.currentTimeMillis();
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 1 : " + e.getPlayer().getName());
 		if (GameAPI.getAPI().getRunType().equals(RunType.GAME)) {
 			if (e.getResult().equals(Result.KICK_FULL) || BukkitUtils.getPlayers().size() >= Bukkit.getMaxPlayers()) {
 				if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) 
@@ -89,19 +87,24 @@ public class LoginListener extends BadListener {
 				else e.disallow(Result.ALLOWED, "");
 			}
 		}
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 2 : " + e.getPlayer().getName());
 		if (!GameAPI.isJoinable()) {
 			if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) {
 				GameAPI.getAPI().getGameServer().keepAlive();
 				e.disallow(Result.KICK_FULL, "§cCette partie est en cours.");
 			}
 		}
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 3 : " + e.getPlayer().getName());
 		if(GameAPI.getAPI().getWhitelistStatus() && !GameAPI.getAPI().isWhitelisted(e.getPlayer().getName())){
 			e.setResult(Result.KICK_WHITELIST); return;
 		}
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 4 : " + e.getPlayer().getName());
 
 		Reflector 			  reflector 	= new Reflector(ReflectionUtils.getHandle(e.getPlayer()));
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 5 : " + e.getPlayer().getName());
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
 		GameBadblockPlayer    player        = null;
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 6 : " + e.getPlayer().getName());
 		try {
 			player = new GameBadblockPlayer((CraftServer) Bukkit.getServer(), (EntityPlayer) reflector.getReflected(), (GameOfflinePlayer) offlinePlayer);
 			reflector.setFieldValue("bukkitEntity", player);
@@ -109,14 +112,29 @@ public class LoginListener extends BadListener {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
 		}
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 7 : " + e.getPlayer().getName());
 		try {
-			SkinFactory.applySkin(player, MojangAPI.getSkinPropertyObject(player.getName()));
+			TaskManager.runTaskAsync(new Runnable()
+			{
+				@Override
+				public void run() {
+					Property property = MojangAPI.getSkinPropertyObject(e.getPlayer().getName());
+					TaskManager.runTask(new Runnable()
+					{
+						@Override
+						public void run() {
+							SkinFactory.applySkin(e.getPlayer(), property);
+						}
+					});
+				}
+			});
 			//String[] props = MojangAPI.getSkinProperty(e.getPlayer().getName());
 			//player.setTextureProperty(props[0], props[1]);
 		} catch (Exception exception) {
 			System.out.println("Impossible de mettre le skin au joueur : ");
 			exception.printStackTrace();
 		}
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 8 : " + e.getPlayer().getName());
 	}
 
 	@EventHandler
