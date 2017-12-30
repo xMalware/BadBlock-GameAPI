@@ -229,41 +229,55 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			inGameData = offlinePlayer.getInGameData();
 			return;
 		}else object = new JsonObject();
-		try 
+		try
 		{
-			Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
-			ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + getName() + "'");
-			if (resultSet.next())
+			new Thread("loadPlayer-" + getName())
 			{
-				String playerName = resultSet.getString("playerName");
-				setRealName(playerName);
-			}
-			resultSet.close();
-			statement.close();
-			GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : getName(), new Callback<JsonObject>() {
 				@Override
-				public void done(JsonObject result, Throwable error) {
-					new Thread() {
-						@Override
-						public void run() {
-							object = result;
-							updateData(result);
-
-							while (!hasJoined)
-								try {
-									Thread.sleep(10L);
-								} catch (InterruptedException unused) {}
-
-							dataFetch = true;
-							synchronized (Bukkit.getServer()) {
-								if (playersWithHim != null && !playersWithHim.isEmpty())
-									Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
-								Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
-							}
+				public void run()
+				{
+					try
+					{
+						Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
+						ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + getName() + "'");
+						if (resultSet.next())
+						{
+							String playerName = resultSet.getString("playerName");
+							setRealName(playerName);
 						}
-					}.start();
+						resultSet.close();
+						statement.close();
+						GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : getName(), new Callback<JsonObject>() {
+							@Override
+							public void done(JsonObject result, Throwable error) {
+								new Thread() {
+									@Override
+									public void run() {
+										object = result;
+										updateData(result);
+
+										while (!hasJoined)
+											try {
+												Thread.sleep(10L);
+											} catch (InterruptedException unused) {}
+
+										dataFetch = true;
+										synchronized (Bukkit.getServer()) {
+											if (playersWithHim != null && !playersWithHim.isEmpty())
+												Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
+											Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
+										}
+									}
+								}.start();
+							}
+						});
+					}
+					catch (Exception error)
+					{
+						error.printStackTrace();
+					}
 				}
-			});
+			}.start();
 		}
 		catch (Exception error)
 		{

@@ -40,6 +40,7 @@ import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.events.PlayerGameInitEvent;
+import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent.JoinReason;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
@@ -112,6 +113,7 @@ public class LoginListener extends BadListener {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
 		}
+		final BadblockPlayer bbPlayer = player;
 		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerLoginEvent / Step 7 : " + e.getPlayer().getName());
 		try {
 			TaskManager.runTaskAsync(new Runnable()
@@ -124,6 +126,7 @@ public class LoginListener extends BadListener {
 						@Override
 						public void run() {
 							SkinFactory.applySkin(e.getPlayer(), property);
+							Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(bbPlayer));
 						}
 					});
 				}
