@@ -66,6 +66,7 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.disguise.Disguise;
 import fr.badblock.gameapi.events.PartyJoinEvent;
+import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.fakeentities.FakeEntity.EntityViewList;
@@ -430,6 +431,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					}
 				});
 			}
+			boolean hasCustomRank = false;
 			System.out.println("CUSTOMRANK: A");
 			if (permissions != null && permissions.getParent() != null)
 			{
@@ -437,6 +439,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				if (permissions.getParent().getName().equalsIgnoreCase("gradeperso") || permissions.getAlternateGroups().containsKey("gradeperso"))
 				{
 					System.out.println("CUSTOMRANK: C");
+					hasCustomRank = true;
 					GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso, customcolor FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 						@Override
@@ -495,6 +498,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					});
 				}
 			}
+		}
+		if (!hasCustomRank)
+		{
+			GameScoreboard.gsb.sendTeams(this);
+			Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(this));
 		}
 		// Aura
 		if (getPlayerData().isAura())
