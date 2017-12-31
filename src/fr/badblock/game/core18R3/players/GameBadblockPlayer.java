@@ -498,11 +498,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					});
 				}
 			}
-		}
-		if (!hasCustomRank)
-		{
-			GameScoreboard.gsb.sendTeams(this);
-			Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(this));
+			if (!hasCustomRank)
+			{
+				GameScoreboard.gsb.sendTeams(this);
+				Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(this));
+			}
 		}
 		// Aura
 		if (getPlayerData().isAura())
