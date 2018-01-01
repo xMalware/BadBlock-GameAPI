@@ -180,11 +180,15 @@ public class LoginListener extends BadListener {
 	@SuppressWarnings("unlikely-arg-type")
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
+		long time = System.currentTimeMillis();
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
-
-		p.loadInjector();
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 1 : " + e.getPlayer().getName());
+		
+		//p.loadInjector();
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 2 : " + e.getPlayer().getName());
 		p.setHasJoined(true);
-
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 3 : " + e.getPlayer().getName());
+		
 		Channel channel = ((CraftPlayer)p).getHandle().playerConnection.networkManager.channel;
 		if (channel.pipeline().get("bookpacketexploitfix_listener") == null)
 		{
@@ -236,9 +240,11 @@ public class LoginListener extends BadListener {
 			};
 			channel.pipeline().addBefore("packet_handler", "bookpacketexploitfix_listener", channelDuplexHandler);
 		}
-
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 4 : " + e.getPlayer().getName());
+		
 		BadblockOfflinePlayer offlinePlayer = GameAPI.getAPI().getOfflinePlayer(e.getPlayer().getName());
-
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 5 : " + e.getPlayer().getName());
+		
 		if (VanishTeleportListener.time.containsKey(p.getName().toLowerCase()) && VanishTeleportListener.time.get(p.getName().toLowerCase()) > System.currentTimeMillis()) {
 			p.setGhostConnect(true);
 			VanishTeleportListener.manage(p, VanishTeleportListener.splitters.get(p.getName().toLowerCase()));
@@ -293,6 +299,8 @@ public class LoginListener extends BadListener {
 			Bukkit.getPluginManager().callEvent(new SpectatorJoinEvent(p));
 			p.setBadblockMode(BadblockMode.SPECTATOR);
 		}
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 6 : " + e.getPlayer().getName());
+		
 		if (GamePlugin.getInstance().getGameServerManager().getRankedConfig().isRanked()) {
 			GamePlugin.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM rankeds WHERE playerName = '" + p.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
@@ -315,6 +323,7 @@ public class LoginListener extends BadListener {
 				}
 			});
 		}
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 7 : " + e.getPlayer().getName());
 		GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(*) AS count FROM buyhearts WHERE playerName = '" + p.getName() + "' AND timestamp >= '" + (System.currentTimeMillis() - 2678400000L) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 			@Override
 			public void done(ResultSet result, Throwable error) {
@@ -339,7 +348,7 @@ public class LoginListener extends BadListener {
 				}
 			}
 		});
-
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 8 : " + e.getPlayer().getName());
 		new BukkitRunnable(){
 			@Override
 			public void run(){
@@ -362,9 +371,11 @@ public class LoginListener extends BadListener {
 
 			}
 		}.runTaskLater(GameAPI.getAPI(), 10L);
-
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 9 : " + e.getPlayer().getName());
+		
 		reSendPlayerJoined(p);
-
+		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 10 : " + e.getPlayer().getName());
+		
 	}
 
 	public void reSendPlayerJoined(BadblockPlayer player) {

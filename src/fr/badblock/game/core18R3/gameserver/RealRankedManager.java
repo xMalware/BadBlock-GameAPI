@@ -149,7 +149,7 @@ public class RealRankedManager extends RankedManager {
 								{
 									points = true;
 								}
-								fieldsBuilder += ", " + o;
+								fieldsBuilder += ", " + o.getKey();
 							}
 							String valuesBuilder = "";
 							for (Entry<String, Long> part : entry)
