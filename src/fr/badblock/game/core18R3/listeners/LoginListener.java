@@ -184,7 +184,7 @@ public class LoginListener extends BadListener {
 		GameBadblockPlayer p = (GameBadblockPlayer) e.getPlayer();
 		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 1 : " + e.getPlayer().getName());
 		
-		//p.loadInjector();
+		p.loadInjector();
 		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 2 : " + e.getPlayer().getName());
 		p.setHasJoined(true);
 		System.out.println("- (" + (System.currentTimeMillis() - time) + " ms) PlayerJoinEvent / Step 3 : " + e.getPlayer().getName());
