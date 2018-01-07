@@ -204,7 +204,7 @@ public class RealRankedManager extends RankedManager {
 	}
 
 	@Override
-	public void getTotalPoints(String gameName, BadblockPlayer player, Callback<Integer> callback) {
+	public void getTotalRank(String gameName, BadblockPlayer player, Callback<Integer> callback) {
 		GameAPI.getAPI().getSqlDatabase().call("SELECT FIND_IN_SET( _points, (    " + 
 				"SELECT GROUP_CONCAT( _points" + 
 				"ORDER BY _points DESC ) " + 
@@ -236,7 +236,7 @@ public class RealRankedManager extends RankedManager {
 	}
 
 	@Override
-	public void getMonthPoints(String gameName, BadblockPlayer player, Callback<Integer> callback) {
+	public void getMonthRank(String gameName, BadblockPlayer player, Callback<Integer> callback) {
 		GameAPI.getAPI().getSqlDatabase().call("SELECT FIND_IN_SET( _points, (    " + 
 				"SELECT GROUP_CONCAT( _points" + 
 				"ORDER BY _points DESC ) " + 
