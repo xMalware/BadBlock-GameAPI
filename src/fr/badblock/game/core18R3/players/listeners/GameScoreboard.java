@@ -301,12 +301,12 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			return Integer.compare(b.getPower(), a.getPower());
 		}).forEach(group -> {
 			String id = generateForId(i) + "";
-			
+
 			if (group.getName().equalsIgnoreCase("gradeperso"))
 			{
 				customRankId = id;
 			}
-			
+
 			groups.put(group.getName(), id);
 
 			if(getHandler().getTeam(id) == null){
@@ -462,9 +462,12 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		while (iterator.hasNext())
 		{
 			Entry<String, Entry<String, String>> entry = iterator.next();
-			if (entry.getValue().getValue() != null && entry.getValue().getValue().equalsIgnoreCase(player.getName()))
+			if (entry != null && entry.getValue() != null)
 			{
-				toNull.add(entry.getKey());
+				if (entry.getValue().getValue() != null && entry.getValue().getValue().equalsIgnoreCase(player.getName()))
+				{
+					toNull.add(entry.getKey());
+				}
 			}
 		}
 		for (String string : toNull)

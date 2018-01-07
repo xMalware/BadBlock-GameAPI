@@ -244,15 +244,21 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					try
 					{
 						Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
-						ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + getName() + "'");
+						ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + GameBadblockPlayer.this.getName() + "'");
+						String realName = null;
 						if (resultSet.next())
 						{
 							String playerName = resultSet.getString("playerName");
-							setRealName(playerName);
+							if (!playerName.isEmpty())
+							{
+								realName = playerName;
+							}
 						}
+						System.out.println("Set real name for " + GameBadblockPlayer.this.getName() + " : " + realName);
+						setRealName(realName);
 						resultSet.close();
 						statement.close();
-						GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : getName(), new Callback<JsonObject>() {
+						GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : GameBadblockPlayer.this.getName(), new Callback<JsonObject>() {
 							@Override
 							public void done(JsonObject result, Throwable error) {
 								new Thread() {
@@ -504,8 +510,13 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			}
 			if (!hasCustomRank)
 			{
-				GameScoreboard.gsb.sendTeams(this);
-				Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(this));
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						GameScoreboard.gsb.sendTeams(gbp);
+						Bukkit.getPluginManager().callEvent(new PlayerDataChangedEvent(gbp));
+					}
+				}.runTaskLater(GameAPI.getAPI(), 5L);
 			}
 		}
 		// Aura
@@ -1129,6 +1140,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPacket(BadblockOutPacket packet) {
 		try {
 			Packet<?> nmsPacket = ((GameBadblockOutPacket) packet).buildPacket(this);
+			if (getName().equals("xMalware"))
+			{
+				System.out.println(packet);
+			}
 			getHandle().playerConnection.sendPacket(nmsPacket);
 		} catch (Exception e) {
 			e.printStackTrace();
