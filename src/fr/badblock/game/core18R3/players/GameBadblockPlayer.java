@@ -71,6 +71,7 @@ import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.fakeentities.FakeEntity.EntityViewList;
 import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
+import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.game.result.Result;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
 import fr.badblock.gameapi.packets.out.play.PlayBlockAction;
@@ -96,6 +97,7 @@ import fr.badblock.gameapi.packets.watchers.WatcherWither;
 import fr.badblock.gameapi.particles.ParticleEffect;
 import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.players.BadblockTeam;
+import fr.badblock.gameapi.players.RankedPlayer;
 import fr.badblock.gameapi.players.bossbars.BossBarColor;
 import fr.badblock.gameapi.players.bossbars.BossBarStyle;
 import fr.badblock.gameapi.players.data.InGameData;
@@ -205,6 +207,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private String						customRank;
 	@Getter@Setter
 	private String						customColor;
+	@Getter@Setter
+	private RankedPlayer				ranked;
 
 	// Caca aura
 	private Location locN;
