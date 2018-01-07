@@ -237,7 +237,7 @@ public class RealRankedManager extends RankedManager {
 
 	@Override
 	public void getTotalPoints(String gameName, BadblockPlayer player, Callback<Integer> callback) {
-		GameAPI.getAPI().getSqlDatabase().call("SELECT _points FROM " + getPermanentTableName(gameName)  + " FROM " + getPermanentTableName(gameName) + " WHERE playerName =  '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+		GameAPI.getAPI().getSqlDatabase().call("SELECT _points FROM " + getPermanentTableName(gameName)  + " WHERE playerName =  '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
 		{
 
 			@Override
