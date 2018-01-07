@@ -282,6 +282,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 								}.start();
 							}
 						});
+						loadRanked();
 					}
 					catch (Exception error)
 					{
@@ -294,6 +295,48 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		{
 			error.printStackTrace();
 		}
+	}
+
+	int monthRank = -1;
+	int totalRank = -1;
+	int totalPoints = -1;
+	
+	public void loadRanked()
+	{
+		if (!GameAPI.getAPI().getRunType().equals(RunType.GAME))
+		{
+			return;
+		}
+		RankedManager rm = RankedManager.instance;
+		String game = rm.getCurrentRankedGameName();
+		rm.getMonthRank(game, this, new Callback<Integer>()
+		{
+
+			@Override
+			public void done(Integer result, Throwable error) {
+				monthRank = result.intValue();
+			}
+
+		});
+		rm.getTotalRank(game, this, new Callback<Integer>()
+		{
+
+			@Override
+			public void done(Integer result, Throwable error) {
+				totalRank = result.intValue();
+			}
+
+		});
+		rm.getTotalPoints(game, this, new Callback<Integer>()
+		{
+
+			@Override
+			public void done(Integer result, Throwable error) {
+				totalPoints = result.intValue();
+			}
+
+		});
+		ranked = new RankedPlayer(this, totalPoints, totalRank, monthRank);
 	}
 
 	public void loadInjector() {

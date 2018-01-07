@@ -208,9 +208,9 @@ public class RealRankedManager extends RankedManager {
 		GameAPI.getAPI().getSqlDatabase().call("SELECT FIND_IN_SET( _points, (    " + 
 				"SELECT GROUP_CONCAT( _points" + 
 				"ORDER BY _points DESC ) " + 
-				"FROM " + getTempTableName(gameName)  + " )" + 
+				"FROM " + getPermanentTableName(gameName)  + " )" + 
 				") AS rank\r\n" + 
-				"FROM " + getTempTableName(gameName) +
+				"FROM " + getPermanentTableName(gameName) +
 				" WHERE playerName =  '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
 		{
 
@@ -236,13 +236,39 @@ public class RealRankedManager extends RankedManager {
 	}
 
 	@Override
+	public void getTotalPoints(String gameName, BadblockPlayer player, Callback<Integer> callback) {
+		GameAPI.getAPI().getSqlDatabase().call("SELECT _points FROM " + getPermanentTableName(gameName)  + " FROM " + getPermanentTableName(gameName) + " WHERE playerName =  '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+		{
+
+			@Override
+			public void done(ResultSet result, Throwable error) {
+				try
+				{
+					int points = 0;
+					if (result.next())
+					{
+						points = result.getInt("_points");
+					}
+					callback.done(points, null);
+					result.close();
+				}
+				catch(Exception exception)
+				{
+					exception.printStackTrace();
+				}
+			}
+
+		});
+	}
+
+	@Override
 	public void getMonthRank(String gameName, BadblockPlayer player, Callback<Integer> callback) {
 		GameAPI.getAPI().getSqlDatabase().call("SELECT FIND_IN_SET( _points, (    " + 
 				"SELECT GROUP_CONCAT( _points" + 
 				"ORDER BY _points DESC ) " + 
-				"FROM " + getPermanentTableName(gameName)  + " )" + 
+				"FROM " + getTempTableName(gameName)  + " )" + 
 				") AS rank\r\n" + 
-				"FROM " + getPermanentTableName(gameName) +
+				"FROM " + getTempTableName(gameName) +
 				" WHERE playerName =  '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
 		{
 
