@@ -66,7 +66,6 @@ import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.disguise.Disguise;
 import fr.badblock.gameapi.events.PartyJoinEvent;
-import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.fakeentities.FakeEntity.EntityViewList;
@@ -256,6 +255,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 						}
 						System.out.println("Set real name for " + GameBadblockPlayer.this.getName() + " : " + realName);
 						setRealName(realName);
+						loadRanked();
 						resultSet.close();
 						statement.close();
 						GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : GameBadblockPlayer.this.getName(), new Callback<JsonObject>() {
@@ -282,7 +282,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 								}.start();
 							}
 						});
-						loadRanked();
 					}
 					catch (Exception error)
 					{
@@ -336,6 +335,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			}
 
 		});
+		System.out.println("Loaded ranked player : " + getName());
 		ranked = new RankedPlayer(this, totalPoints, totalRank, monthRank);
 	}
 
