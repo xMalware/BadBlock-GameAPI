@@ -73,7 +73,8 @@ public class ChatListener extends BadListener {
 		}
 
 		if(player.getBadblockMode() == BadblockMode.SPECTATOR){
-			TranslatableString result = new TranslatableString("chat.spectator" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §r" : "") + player.getName(), player.getGroupPrefix(), e.getMessage(), player.getPlayerData().getLevel(), player.getGroupSuffix());
+			int points = player.getRanked() == null ? 0 : player.getRanked().getPoints();
+			TranslatableString result = new TranslatableString("chat.spectator" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §r" : "") + player.getName(), player.getGroupPrefix(), e.getMessage(), points, player.getGroupSuffix());
 			int i = new Random().nextInt(Integer.MAX_VALUE);
 			while (messages.containsKey(i)) {
 				i = new Random().nextInt(Integer.MAX_VALUE);
@@ -141,7 +142,8 @@ public class ChatListener extends BadListener {
 				i = new Random().nextInt(Integer.MAX_VALUE);
 			}
 			messages.put(i, new ChatData(player.getName(), e.getMessage()));
-			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §c" : "") + player.getName(), player.getGroupPrefix(), team, e.getMessage(), player.getPlayerData().getLevel(), player.getGroupSuffix());
+			int points = player.getRanked() == null ? 0 : player.getRanked().getPoints();
+			TranslatableString s = new TranslatableString("chat.player" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §c" : "") + player.getName(), player.getGroupPrefix(), team, e.getMessage(), points, player.getGroupSuffix());
 			TextComponent message = new TextComponent( GameAPI.i18n().get("chat.report_icon")[0] );
 			message.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/creport " + i) );
 			message.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.report_hover", player.getName())[0]).create() ) );
@@ -219,7 +221,8 @@ public class ChatListener extends BadListener {
 					message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/bab " + player.getName()) );
 					message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.bab_hover", player.getName())[0]).create() ) );
 
-					TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §c" : "") + player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace(e.getMessage().split(" ")[0], ""), player.getPlayerData().getLevel());
+					int points = player.getRanked() == null ? 0 : player.getRanked().getPoints();
+					TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §c" : "") + player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace(e.getMessage().split(" ")[0], ""), points);
 					for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
 						TextComponent textComponent = new TextComponent();
 						String text = result.get((BadblockPlayer) p)[0];
