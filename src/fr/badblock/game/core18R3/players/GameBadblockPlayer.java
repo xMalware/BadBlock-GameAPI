@@ -335,7 +335,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			}
 
 		});
-		System.out.println("Loaded ranked player : " + getName());
+		System.out.println("Loaded ranked player : " + getName() + " (" + totalPoints + ")");
 		ranked = new RankedPlayer(this, totalPoints, totalRank, monthRank);
 	}
 

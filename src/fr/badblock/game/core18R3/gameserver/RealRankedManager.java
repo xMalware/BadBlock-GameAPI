@@ -173,7 +173,7 @@ public class RealRankedManager extends RankedManager {
 			});
 		}
 	}
-	
+
 	@Override
 	public void fill(String gameName) {
 		if (!gameFields.containsKey(gameName))
@@ -205,6 +205,13 @@ public class RealRankedManager extends RankedManager {
 
 	@Override
 	public void getTotalRank(String gameName, BadblockPlayer player, Callback<Integer> callback) {
+		System.out.println("SELECT FIND_IN_SET( _points, (    " + 
+				"SELECT GROUP_CONCAT( _points" + 
+				" ORDER BY _points DESC ) " + 
+				"FROM " + getPermanentTableName(gameName)  + " )" + 
+				") AS rank" + 
+				" FROM " + getPermanentTableName(gameName) +
+				" WHERE playerName =  '" + player.getName() + "'");
 		GameAPI.getAPI().getSqlDatabase().call("SELECT FIND_IN_SET( _points, (    " + 
 				"SELECT GROUP_CONCAT( _points" + 
 				" ORDER BY _points DESC ) " + 
@@ -237,20 +244,47 @@ public class RealRankedManager extends RankedManager {
 
 	@Override
 	public void getTotalPoints(String gameName, BadblockPlayer player, Callback<Integer> callback) {
-		GameAPI.getAPI().getSqlDatabase().call("SELECT _points FROM " + getPermanentTableName(gameName) + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+		GameAPI.getAPI().getSqlDatabase().call("SELECT id FROM " + getPermanentTableName(gameName) + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
 		{
 
 			@Override
-			public void done(ResultSet result, Throwable error) {
+			public void done(ResultSet result1, Throwable error) {
 				try
 				{
-					int points = 0;
-					if (result.next())
+					if (result1.next())
 					{
-						points = result.getInt("_points");
+						int id = result1.getInt("id");
+						GameAPI.getAPI().getSqlDatabase().call("SELECT id FROM " + getPermanentTableName(gameName) + " ORDER BY _points DESC;", SQLRequestType.QUERY, new Callback<ResultSet>()
+						{
+
+							@Override
+							public void done(ResultSet result, Throwable error) {
+								try
+								{
+									int rank = 0;
+									while (result.next())
+									{
+										rank++;
+										if (result.getInt("id") == id)
+										{
+											break;
+										}
+									}
+									callback.done(rank, null);
+									result.close();
+								}
+								catch(Exception exception)
+								{
+									exception.printStackTrace();
+								}
+							}
+
+						});
 					}
-					callback.done(points, null);
-					result.close();
+					else
+					{
+						callback.done(-1, null);
+					}
 				}
 				catch(Exception exception)
 				{
@@ -263,26 +297,47 @@ public class RealRankedManager extends RankedManager {
 
 	@Override
 	public void getMonthRank(String gameName, BadblockPlayer player, Callback<Integer> callback) {
-		GameAPI.getAPI().getSqlDatabase().call("SELECT FIND_IN_SET( _points, (    " + 
-				"SELECT GROUP_CONCAT( _points" + 
-				" ORDER BY _points DESC ) " + 
-				"FROM " + getTempTableName(gameName)  + " )" + 
-				") AS rank " + 
-				"FROM " + getTempTableName(gameName) +
-				" WHERE playerName =  '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+		GameAPI.getAPI().getSqlDatabase().call("SELECT id FROM " + getTempTableName(gameName) + " WHERE playerName = '" + player.getName() + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
 		{
 
 			@Override
-			public void done(ResultSet result, Throwable error) {
+			public void done(ResultSet result1, Throwable error) {
 				try
 				{
-					int rank = -1;
-					if (result.next() && result.getInt("rank") > 0)
+					if (result1.next())
 					{
-						rank = result.getInt("rank");
+						int id = result1.getInt("id");
+						GameAPI.getAPI().getSqlDatabase().call("SELECT id FROM " + getTempTableName(gameName) + " ORDER BY _points DESC;", SQLRequestType.QUERY, new Callback<ResultSet>()
+						{
+
+							@Override
+							public void done(ResultSet result, Throwable error) {
+								try
+								{
+									int rank = 0;
+									while (result.next())
+									{
+										rank++;
+										if (result.getInt("id") == id)
+										{
+											break;
+										}
+									}
+									callback.done(rank, null);
+									result.close();
+								}
+								catch(Exception exception)
+								{
+									exception.printStackTrace();
+								}
+							}
+
+						});
 					}
-					callback.done(rank, null);
-					result.close();
+					else
+					{
+						callback.done(-1, null);
+					}
 				}
 				catch(Exception exception)
 				{
