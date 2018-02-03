@@ -484,7 +484,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 					}
 				});
 			}
-			boolean hasCustomRank = false;
 			System.out.println("CUSTOMRANK: A");
 			if (permissions != null && permissions.getParent() != null)
 			{
@@ -492,7 +491,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				if (permissions.getParent().getName().equalsIgnoreCase("gradeperso") || permissions.getAlternateGroups().containsKey("gradeperso"))
 				{
 					System.out.println("CUSTOMRANK: C");
-					hasCustomRank = true;
 					GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso, customcolor FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
 						@Override
@@ -583,6 +581,20 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				}
 			}
 		});
+	}
+
+	@Override
+	public void addShopPoints(int shopPointsToAdd)
+	{
+		String name = getRealName() != null ? getRealName() : getName();
+		GamePlugin.getInstance().getWebDatabase().call("UPDATE joueurs SET ptsboutique=ptsboutique+" + shopPointsToAdd + " WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(name) + "'", SQLRequestType.UPDATE);
+	}
+
+	@Override
+	public void removeShopPoints(int shopPointsToRemove)
+	{
+		String name = getRealName() != null ? getRealName() : getName();
+		GamePlugin.getInstance().getWebDatabase().call("UPDATE joueurs SET ptsboutique=ptsboutique-" + shopPointsToRemove + " WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(name) + "'", SQLRequestType.UPDATE);
 	}
 
 	@Override
