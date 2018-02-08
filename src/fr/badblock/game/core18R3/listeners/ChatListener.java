@@ -90,6 +90,16 @@ public class ChatListener extends BadListener {
 
 			for(Player p : e.getRecipients()){
 				BadblockPlayer bPlayer = (BadblockPlayer) p;
+				// Ignore
+				if (bPlayer.getPlayerData().getIgnoreList() != null)
+				{
+					boolean containsSearchStr = bPlayer.getPlayerData().getIgnoreList().stream().filter(s -> 
+					s.equalsIgnoreCase(player.getName())).findFirst().isPresent();
+					if (containsSearchStr)
+					{
+						continue;
+					}
+				}
 				TextComponent textComponent = new TextComponent();
 				String text = result.get((BadblockPlayer) p)[0];
 				String coloredResult = "";
@@ -155,6 +165,16 @@ public class ChatListener extends BadListener {
 			for(Player pl : e.getRecipients()) {
 				TextComponent textComponent = new TextComponent();
 				BadblockPlayer blp = (BadblockPlayer) pl;
+				// Ignore
+				if (blp.getPlayerData().getIgnoreList() != null)
+				{
+					boolean containsSearchStr = blp.getPlayerData().getIgnoreList().stream().filter(s2 -> 
+					s2.equalsIgnoreCase(player.getName())).findFirst().isPresent();
+					if (containsSearchStr)
+					{
+						continue;
+					}
+				}
 				String text = s.get(blp)[0];
 				String coloredResult = "";
 				String base = "";
@@ -224,6 +244,16 @@ public class ChatListener extends BadListener {
 					int points = player.getRanked() == null ? 0 : player.getRanked().getPoints();
 					TranslatableString result = new TranslatableString("chat.team" + (custom == null ? "" : "." + custom), (LoginListener.l.contains(player.getName()) ? "§4§l❤ §c" : "") + player.getName(), player.getGroupPrefix(), player.getTeam().getChatName(), e.getMessage().replace(e.getMessage().split(" ")[0], ""), points);
 					for(BadblockPlayer p : player.getTeam().getOnlinePlayers()){
+						// Ignore
+						if (p.getPlayerData().getIgnoreList() != null)
+						{
+							boolean containsSearchStr = p.getPlayerData().getIgnoreList().stream().filter(s2 -> 
+							s2.equalsIgnoreCase(player.getName())).findFirst().isPresent();
+							if (containsSearchStr)
+							{
+								continue;
+							}
+						}
 						TextComponent textComponent = new TextComponent();
 						String text = result.get((BadblockPlayer) p)[0];
 						String coloredResult = "";

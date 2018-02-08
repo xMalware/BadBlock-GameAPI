@@ -42,6 +42,8 @@ public class GamePlayerData implements PlayerData {
 	private int  				 						  badcoins     	   = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
+	@Setter
+	private List<String>					  		  	  ignoreList	   = new ArrayList<>();
 	@Getter@Setter
 	private boolean										  aura;
 	@Getter@Setter
@@ -81,11 +83,11 @@ public class GamePlayerData implements PlayerData {
 	public transient long								  onlyJoinWhileWaiting;
 
 	// temporary values
-	private transient int 								  addedBadcoins	   = 0;
+	private transient int 								  addedBadcoins	    = 0;
 	private transient int								  addedShopPoints  = 0;
-	private transient int								  addedLevels      = 0;
-	private transient long								  addedXP		   = 0;
-	private transient int 								  addedRankedPoints= 0;
+	private transient int								  addedLevels       = 0;
+	private transient long								  addedXP		    = 0;
+	private transient int 								  addedRankedPoints = 0;
 
 	public void setData(JsonObject data){
 		if(data.has("other")){
