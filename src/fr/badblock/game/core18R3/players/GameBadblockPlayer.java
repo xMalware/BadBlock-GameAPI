@@ -181,9 +181,9 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Getter
 	private boolean						visible;
 	@Getter
-	private Predicate<BadblockPlayer> 	visiblePredicate;
+	private Predicate<BadblockPlayer> 	visiblePredicate	= p -> true;
 	@Getter
-	private Predicate<BadblockPlayer> 	invisiblePredicate;
+	private Predicate<BadblockPlayer> 	invisiblePredicate	= p -> false;
 	@Getter@Setter
 	private String						realName;
 	@Getter@Setter
