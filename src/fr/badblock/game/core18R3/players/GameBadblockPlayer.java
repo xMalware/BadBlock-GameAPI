@@ -1185,10 +1185,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void sendPacket(BadblockOutPacket packet) {
 		try {
 			Packet<?> nmsPacket = ((GameBadblockOutPacket) packet).buildPacket(this);
-			if (getName().equals("xMalware"))
-			{
-				System.out.println(packet);
-			}
 			getHandle().playerConnection.sendPacket(nmsPacket);
 		} catch (Exception e) {
 			e.printStackTrace();
