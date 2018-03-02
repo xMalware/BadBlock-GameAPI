@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
-import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -21,7 +20,6 @@ import fr.badblock.gameapi.utils.general.JsonUtils;
 
 public class GameConfiguration implements BadConfiguration {
 	
-	private static Gson					   gson		= new Gson();
 	private JsonObject 					   handle;
 	private Map<String, GameConfiguration> subConfigurations = Maps.newConcurrentMap();
 
@@ -165,7 +163,7 @@ public class GameConfiguration implements BadConfiguration {
 	{
 		if( handle.has(key))
 		{
-			return gson.fromJson(handle.get(key).toString(), type);
+			return GameAPI.getGson().fromJson(handle.get(key).toString(), type);
 		}
 		return null;
 	}
