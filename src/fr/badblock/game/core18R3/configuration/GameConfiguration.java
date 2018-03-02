@@ -1,11 +1,13 @@
 package fr.badblock.game.core18R3.configuration;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -18,6 +20,8 @@ import fr.badblock.gameapi.configuration.values.MapValuePrimitive;
 import fr.badblock.gameapi.utils.general.JsonUtils;
 
 public class GameConfiguration implements BadConfiguration {
+	
+	private static Gson					   gson		= new Gson();
 	private JsonObject 					   handle;
 	private Map<String, GameConfiguration> subConfigurations = Maps.newConcurrentMap();
 
@@ -147,5 +151,15 @@ public class GameConfiguration implements BadConfiguration {
 	private <T extends MapValue<?>> T _c(T value){
 		value.postLoad();
 		return value;
+	}
+
+	@Override
+	public <T> T getSimpleValueList(String key, Type type)
+	{
+		if( handle.has(key))
+		{
+			return gson.fromJson(handle.get(key).toString(), type);
+		}
+		return null;
 	}
 }
