@@ -120,8 +120,8 @@ public class GameConfiguration implements BadConfiguration {
 	}
 	
 	@Override
-	public <T> void setValueSimpleList(String key, Collection<T> value) {
-		JsonElement array = GameAPI.getGson().toJsonTree(value);
+	public <T> void setValueSimpleList(String key, Collection<T> value, Type type) {
+		JsonElement array = GameAPI.getGson().toJsonTree(value, type);
 		
 		handle.add(key, array);
 	}
