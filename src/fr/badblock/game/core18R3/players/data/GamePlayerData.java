@@ -42,6 +42,8 @@ public class GamePlayerData implements PlayerData {
 	private int  				 						  badcoins     	   = 0;
 	private int  				 						  level	     	   = 1;
 	private long 										  xp		       = 0L;
+	@Getter@Setter
+	private boolean										  tempAccess	   = false;
 	@Setter
 	private List<String>					  		  	  ignoreList	   = new ArrayList<>();
 	@Getter@Setter
