@@ -149,6 +149,8 @@ import fr.badblock.gameapi.utils.reflection.Reflector;
 import fr.badblock.gameapi.utils.selections.CuboidSelection;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import fr.badblock.permissions.PermissionManager;
+import fr.toenga.common.tech.mongodb.MongoConnector;
+import fr.toenga.common.tech.mongodb.setting.MongoSettings;
 import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import lombok.NonNull;
@@ -304,7 +306,9 @@ public class GamePlugin extends GameAPI {
 			ServerConfig serverConfig = JsonUtils.load(new File(configFolder, "server.json"), ServerConfig.class);
 			SQLConfig sqlConfig = JsonUtils.load(new File(configFolder, "sql.json"), SQLConfig.class);
 			SQLConfig webConfig = JsonUtils.load(new File(configFolder, "web.json"), SQLConfig.class);
-
+			MongoSettings mongoSettings = JsonUtils.load(new File(configFolder, "mongosettings.json"), MongoSettings.class);
+			setMongoService(MongoConnector.getInstance().createService("default", mongoSettings));
+			
 			i18nFolder = serverConfig.getI18nPath();
 			if (i18nFolder == null || i18nFolder.isEmpty()) i18nFolder = getDataFolder().getAbsolutePath() + "/i18n/";
 			loadI18n();
