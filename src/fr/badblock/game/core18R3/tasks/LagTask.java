@@ -1,7 +1,5 @@
 package fr.badblock.game.core18R3.tasks;
 
-import java.util.Map.Entry;
-
 import fr.badblock.gameapi.utils.threading.TaskManager;
 
 public class LagTask implements Runnable {
@@ -11,10 +9,11 @@ public class LagTask implements Runnable {
 	}
 	
 	@Override
-	public void run() {
-		for (Entry<String, Double> entry : TaskManager.tasksTime.entrySet())
+	public void run()
+	{
+		for (Thread thread : Thread.getAllStackTraces().keySet())
 		{
-			System.out.println(entry.getKey() + " : " + entry.getValue());
+			System.out.println(thread.getId() + " : " + thread.getName() + " [" + thread.getState() + "]");
 		}
 	}
 	

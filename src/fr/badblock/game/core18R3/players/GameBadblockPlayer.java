@@ -1,23 +1,13 @@
 package fr.badblock.game.core18R3.players;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
@@ -41,7 +31,6 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Team;
 import org.bukkit.util.Vector;
 
 import com.google.common.collect.Maps;
@@ -58,19 +47,16 @@ import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
-import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
 import fr.badblock.game.core18R3.players.utils.BadblockInjector;
-import fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.OrdinaryColor;
+import fr.badblock.game.core18R3.players.utils.PlayerLoginWorkers;
+import fr.badblock.game.core18R3.players.utils.particle.AuraPlayer;
 import fr.badblock.game.core18R3.watchers.MetadataIndex;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.disguise.Disguise;
-import fr.badblock.gameapi.events.PartyJoinEvent;
-import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.fakeentities.FakeEntity;
 import fr.badblock.gameapi.fakeentities.FakeEntity.EntityViewList;
 import fr.badblock.gameapi.fakeentities.FakeEntity.Visibility;
-import fr.badblock.gameapi.game.rankeds.RankedManager;
 import fr.badblock.gameapi.game.result.Result;
 import fr.badblock.gameapi.packets.BadblockOutPacket;
 import fr.badblock.gameapi.packets.out.play.PlayBlockAction;
@@ -124,7 +110,6 @@ import io.netty.channel.Channel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -145,6 +130,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private CustomObjective 			 customObjective 	  = null;
 	@Getter
 	private GamePlayerData 				 playerData 		  = null;
+	@Getter
 	public PermissiblePlayer 			 permissions 		  = null;
 
 	@Getter
@@ -158,8 +144,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private BukkitRunnable 				 spectatorRunnable 	  = null;
 	@Getter
 	private BadblockMode 				 badblockMode 		  = BadblockMode.PLAYER;
-	@Setter
-	private boolean 					 hasJoined 			  = false;
 	@Setter@Getter
 	private boolean 					 dataFetch			  = false;
 	@Getter@Setter
@@ -168,8 +152,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private BadblockTeam				 team				  = null;
 	@Setter
 	private boolean						 adminMode			  = false;
-	@Getter
-	private JsonObject					 object				  = null;
+	@Getter@Setter
+	JsonObject					 object				  = null;
 
 	@Getter@Setter
 	private Vector3f					 firstVector, secondVector;
@@ -207,15 +191,18 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	@Getter@Setter
 	private String						customColor;
 	@Getter@Setter
-	private RankedPlayer				ranked;
+	private AuraPlayer					auraPlayer;
+	@Getter@Setter
+	private boolean						hasJoined;
 
-	// Caca aura
-	private Location locN;
-	double radius2 = 2;
-	double y = 3;
-	double x = radius2 * Math.cos(3 * y);
-	double z = radius2 * Math.sin(3 * y);
-	double y2 = 3 - y;
+	@Getter@Setter
+	private RankedPlayer				ranked;
+	@Getter@Setter
+	private int							monthRank = -1;
+	@Getter@Setter
+	private int							totalRank = -1;
+	@Getter@Setter
+	private int							totalPoints = -1;
 
 	public GameBadblockPlayer(CraftServer server, EntityPlayer entity, GameOfflinePlayer offlinePlayer) {
 		super(server, entity);
@@ -233,110 +220,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			inGameData = offlinePlayer.getInGameData();
 			return;
 		}else object = new JsonObject();
-		try
-		{
-			new Thread("loadPlayer-" + getName())
-			{
-				@Override
-				public void run()
-				{
-					try
-					{
-						Statement statement = GameAPI.getAPI().getSqlDatabase().createStatement();
-						ResultSet resultSet = statement.executeQuery("SELECT playerName FROM nick WHERE nick = '" + GameBadblockPlayer.this.getName() + "'");
-						String realName = null;
-						if (resultSet.next())
-						{
-							String playerName = resultSet.getString("playerName");
-							if (!playerName.isEmpty())
-							{
-								realName = playerName;
-							}
-						}
-						System.out.println("Set real name for " + GameBadblockPlayer.this.getName() + " : " + realName);
-						setRealName(realName);
-						loadRanked();
-						resultSet.close();
-						statement.close();
-						GameAPI.getAPI().getLadderDatabase().getPlayerData(realName != null ? realName : GameBadblockPlayer.this.getName(), new Callback<JsonObject>() {
-							@Override
-							public void done(JsonObject result, Throwable error) {
-								new Thread() {
-									@Override
-									public void run() {
-										object = result;
-										updateData(result);
-
-										while (!hasJoined)
-											try {
-												Thread.sleep(10L);
-											} catch (InterruptedException unused) {}
-
-										dataFetch = true;
-										synchronized (Bukkit.getServer()) {
-											if (playersWithHim != null && !playersWithHim.isEmpty())
-												Bukkit.getPluginManager().callEvent(new PartyJoinEvent(GameBadblockPlayer.this, getPlayersWithHim()));
-											Bukkit.getPluginManager().callEvent(new PlayerLoadedEvent(GameBadblockPlayer.this));
-										}
-									}
-								}.start();
-							}
-						});
-					}
-					catch (Exception error)
-					{
-						error.printStackTrace();
-					}
-				}
-			}.start();
-		}
-		catch (Exception error)
-		{
-			error.printStackTrace();
-		}
-	}
-
-	int monthRank = -1;
-	int totalRank = -1;
-	int totalPoints = -1;
-	
-	public void loadRanked()
-	{
-		if (!GameAPI.getAPI().getRunType().equals(RunType.GAME))
-		{
-			return;
-		}
-		RankedManager rm = RankedManager.instance;
-		String game = rm.getCurrentRankedGameName();
-		rm.getMonthRank(game, this, new Callback<Integer>()
-		{
-
-			@Override
-			public void done(Integer result, Throwable error) {
-				monthRank = result.intValue();
-			}
-
-		});
-		rm.getTotalRank(game, this, new Callback<Integer>()
-		{
-
-			@Override
-			public void done(Integer result, Throwable error) {
-				totalRank = result.intValue();
-			}
-
-		});
-		rm.getTotalPoints(game, this, new Callback<Integer>()
-		{
-
-			@Override
-			public void done(Integer result, Throwable error) {
-				totalPoints = result.intValue();
-			}
-
-		});
-		System.out.println("Loaded ranked player : " + getName() + " (" + totalPoints + ")");
-		ranked = new RankedPlayer(this, totalPoints, totalRank, monthRank);
+		// Load async
+		PlayerLoginWorkers.workAsync(this);
 	}
 
 	public void loadInjector() {
@@ -348,213 +233,79 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 	}
 
-	public void updateData(JsonObject object) {
-		// Refresh shop points
-		GameBadblockPlayer gbp = this;
+	public void updateData(JsonObject object)
+	{
+		// Refresh Shop points
 		this.refreshShopPoints();
+
 		// Game
-		if (object.has("game")) {
+		if (object.has("game"))
+		{
 			JsonObject game = object.get("game").getAsJsonObject();
 			this.object.add("game", game);
 			playerData = GameAPI.getGson().fromJson(game, GamePlayerData.class);
 			playerData.setData(game);
 			playerData.setGameBadblockPlayer(this);
 			if (object.has("onlyJoinWhileWaiting"))
+			{
 				playerData.onlyJoinWhileWaiting = object.get("onlyJoinWhileWaiting").getAsLong();
+			}
 		}
 
 		// LeaverBuster
-		if (object.has("leaves")) {
+		if (object.has("leaves"))
+		{
 			this.leaves = GameAPI.getGson().fromJson(object.get("leaves").toString(), collectType);
 			if (this.leaves == null) this.leaves = new ArrayList<>();
-		}else{
+		}
+		else
+		{
 			this.setLeaves(new ArrayList<>());
 		}
 
 		// Parties
-		if (object.has("playersWithHim")) {
-			try {
+		if (object.has("playersWithHim"))
+		{
+			try
+			{
 				List<String> playersStringWithHim = GameAPI.getGson().fromJson(object.get("playersWithHim").getAsString(), collectionType);
-				if (playersWithHim == null) {
+				if (playersWithHim == null)
+				{
 					playersWithHim = new ArrayList<>();
-				}else playersWithHim.clear();
+				}
+				else
+				{
+					playersWithHim.clear();
+				}
 				playersStringWithHim.forEach(playerString -> playersWithHim.add(UUID.fromString(playerString)));
-				if (playersStringWithHim.contains(getUniqueId().toString())) playersWithHim.clear();
-			} catch(Exception e){
+				if (playersStringWithHim.contains(getUniqueId().toString()))
+				{
+					playersWithHim.clear();
+				}
+			}
+			catch(Exception e)
+			{
 				e.printStackTrace();
 			}
 		}
 
-		if (object.has("permissions")) {
+		if (object.has("permissions"))
+		{
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getRealName() != null ? getRealName() : getName(), object);
-			// nickname not null
-			if (getRealName() != null)
-			{
-				// nothing anymore
-			}
-			else
-			{
-				GamePlugin.getInstance().getWebDatabase().call("SELECT * FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
 
-					@Override
-					public void done(ResultSet result, Throwable error) {
-						try {
-							TreeMap<Integer, String> groups = new TreeMap<>();
-							if (result.next()) {
-								int id = result.getInt("id");
-								try {
-									Statement statement = GamePlugin.getInstance().getWebDatabase().createStatement();
-									ResultSet resultSet = statement.executeQuery("SELECT * FROM boutique_buy WHERE player = '" + id + "'");
-									while (resultSet.next()) {
-										int offer = resultSet.getInt("offer");
-										Statement statement2 = GamePlugin.getInstance().getWebDatabase().createStatement();
-										ResultSet result2 = statement2.executeQuery("SELECT * FROM boutique_offers WHERE id = '" + offer + "'");
-										while (result2.next()) {
-											String displayName = result2.getString("displayName");
-											displayName = displayName.toLowerCase();
-											displayName = displayName.replace("old ", "");
-											if (displayName.contains("grade")) {
-												displayName = displayName.replace("grade", "");
-												displayName = displayName.replace(" ", "");
-												displayName = displayName.replace("-50%", "");
-												PermissibleGroup group = PermissionManager.getInstance().getGroup(displayName);
-												if (group != null) {
-													groups.put(group.getPower(), group.getName());
-												}
-											}
-										}
-										result2.close();
-									}
-									resultSet.close();
-								}catch(Exception err) {
-									err.printStackTrace();
-								}
-							}
-							result.close();
-							NavigableMap<Integer, String> map = groups.descendingMap();
-							Entry<Integer, String> entry = map.firstEntry();
-							if (entry != null) {
-								PermissibleGroup group = PermissionManager.getInstance().getGroup(entry.getValue());
-								if (!permissions.getSuperGroup().equalsIgnoreCase(entry.getValue()) && !permissions.getAlternateGroups().containsKey(entry.getValue())) {
-									if (group != null) {
-										permissions.addParent(-1, group);
-									}
-									String url = "http://" + GamePlugin.getInstance().ladderIp + ":8080/players/addGroup/";
-									URL obj = new URL(url);
-									HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-									con.setRequestMethod("POST");
-									con.setRequestProperty("User-Agent", "Mozilla/5.0");
-									con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-									String urlParameters = "name=" + getName().replace("&", "") + "&group=" + entry.getValue() + "&duration=-1";
-									con.setDoOutput(true);
-									DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-									wr.writeBytes(urlParameters);
-									wr.flush();
-									wr.close();
-									@SuppressWarnings("unused")
-									int responseCode = con.getResponseCode();
-									BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-									String inputLine;
-									StringBuffer response = new StringBuffer();
-									while ((inputLine = in.readLine()) != null) {
-										response.append(inputLine);
-									}
-								}
-							}
-							int i = 0;
-							boolean bool = false;
-							for (Entry<Integer, String> entries : map.entrySet()) {
-								i++;
-								if (i <= 1) continue;
-								System.out.println("Remove " + entries.getValue());
-								if (permissions.getSuperGroup().equalsIgnoreCase(entries.getValue()) || permissions.getAlternateGroups().containsKey(entries.getValue())) {
-									bool = true;
-									permissions.removeParent(entries.getValue());
-								}
-							}
-							if (bool) {
-								JsonObject object = new JsonObject();
-								object.add("permissions", permissions.saveAsJson());
-								GameAPI.getAPI().getLadderDatabase().updatePlayerData(GameBadblockPlayer.this, object);
-							}
-						}catch(Exception err) {
-							err.printStackTrace();
-						}
-					}
-				});
-			}
-			System.out.println("CUSTOMRANK: A");
-			if (permissions != null && permissions.getParent() != null)
-			{
-				System.out.println("CUSTOMRANK: B");
-				if (permissions.getParent().getName().equalsIgnoreCase("gradeperso") || permissions.getAlternateGroups().containsKey("gradeperso"))
-				{
-					System.out.println("CUSTOMRANK: C");
-					GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso, customcolor FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
-
-						@Override
-						public void done(ResultSet result, Throwable error) {
-							try {
-								System.out.println("CUSTOMRANK: D");
-								if (result.next()) {
-									System.out.println("CUSTOMRANK: E");
-									customRank = ChatColor.translateAlternateColorCodes('&', result.getString("gradeperso")) + " ";
-									customColor = ChatColor.translateAlternateColorCodes('&', result.getString("customcolor"));
-									// find group
-									String rank = GameScoreboard.customRankId;
-									String id = GameScoreboard.gsb.generateForId(GameScoreboard.customRanks.size()) + "";
-									rank += id;
-									GameScoreboard.customRanks.put(rank, new SimpleEntry<String, String>(customRank, getName()));
-									GameScoreboard.groups.put(rank, rank);
-
-									if (GameScoreboard.board.getTeam(rank) == null){
-										GameScoreboard.board.registerNewTeam(rank);
-									}
-
-									Team teamHandler = GameScoreboard.board.getTeam(rank);
-
-									teamHandler.setAllowFriendlyFire(true);
-									for (BadblockPlayer plo : BukkitUtils.getAllPlayers())
-									{
-										GameScoreboard.gsb.sendTeamData(rank, customRank, plo);
-									}
-									GameScoreboard.gsb.sendTeamData(rank, customRank, gbp);
-									System.out.println("CUSTOMRANK: F " + rank + " " + gbp + " " + customRank);
-									if (rank != null)
-									{
-										System.out.println("CUSTOMRANK: G " + customRank);
-										Team team = GameScoreboard.board.getEntryTeam(getName());
-										if(team != null && !team.getName().equals(rank)) {
-											team.removeEntry(getName());
-										}
-										final String ranke = rank;
-										new BukkitRunnable() {
-											@Override
-											public void run() {
-												System.out.println("CUSTOMRANK: H");
-												GameScoreboard.gsb.sendTeamData(ranke, customRank, gbp);
-												GameScoreboard.board.getTeam(ranke).addEntry(getName());
-											}
-										}.runTaskLater(GameAPI.getAPI(), 5L);
-									}
-								}
-								result.close();
-							}
-							catch (Exception error34)
-							{
-								error34.printStackTrace();
-							}
-						}
-					});
-				}
-			}
+			// Custom Rank
 		}
+
 		// Aura
+		setAuraPlayer(new AuraPlayer(this));
+
 		if (getPlayerData().isAura())
 		{
-			this.enableAura();
+			getAuraPlayer().enableAura();
 		}
+
+		// Result
 		if (getJoinTime() != -1)
 		{
 			long difference = System.currentTimeMillis() - getJoinTime();
@@ -1761,79 +1512,6 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private PlayerInfo createPlayerInfo()
 	{
 		return new PlayerInfo(getUniqueId(), getName(), getHandle().getProfile().getProperties(), getGameMode(), getPing(), getDisplayName());
-	}
-
-	public void enableAura()
-	{
-		String taskName = "aura_" + getName();
-		TaskManager.scheduleAsyncRepeatingTask(taskName, new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (!isOnline())
-				{
-					TaskManager.cancelTaskByName(taskName);
-					return;
-				}
-				if (!getPlayerData().isAura())
-				{
-					TaskManager.cancelTaskByName(taskName);
-					return;	
-				}
-				if (isSneaking())
-				{
-					return;
-				}
-				double d = 0.15;
-				Location loc = getLocation().add(0, 0.02, 0);
-				locN = loc;
-				double radius = 2;
-				y -= d;
-				if (y <= 0) {
-					y = 3;
-					return;
-				}
-				radius = y / 3;
-				x = radius * Math.cos(3 * y);
-				z = radius * Math.sin(3 * y);
-				y2 = 3 - y;
-				Location loc2 = new Location(locN.getWorld(), locN.getX() + x,
-						locN.getY() + y2, locN.getZ() + z);
-				for (int i = 0; i < 5; i++)
-				{
-					for (BadblockPlayer player : BukkitUtils.getAllPlayers())
-					{
-						if (!getPlayerData().isAuraVisible() && player.getName().equals(getName()))
-						{
-							continue;
-						}
-						fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.REDSTONE.display(player, new OrdinaryColor(getPlayerData().getAuraRed1(), getPlayerData().getAuraGreen1(), getPlayerData().getAuraBlue1()), loc2, 64);
-					}
-				}
-				radius = y / 3;
-				x = -(radius * Math.cos(3 * y));
-				z = -(radius * Math.sin(3 * y));
-				y2 = 3 - y;
-				if (y <= 0) {
-					y = 3;
-					return;
-				}
-				Location loc3 = new Location(locN.getWorld(), locN.getX() + x,
-						locN.getY() + y2, locN.getZ() + z);
-				for (int i = 0; i < 5; i++)
-				{
-					for (BadblockPlayer player : BukkitUtils.getAllPlayers())
-					{
-						if (!getPlayerData().isAuraVisible() && player.getName().equals(getName()))
-						{
-							continue;
-						}
-						fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.REDSTONE.display(player, new OrdinaryColor(getPlayerData().getAuraRed2(), getPlayerData().getAuraGreen2(), getPlayerData().getAuraBlue2()), loc3, 64);
-					}
-				}
-			}
-		}, 0, 1);
 	}
 
 }

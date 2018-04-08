@@ -58,7 +58,6 @@ public class RealRankedManager extends RankedManager {
 				") " + 
 						"COLLATE='utf8_general_ci' " + 
 						"ENGINE=InnoDB;";
-		System.out.println("[SQL Request] " + message);
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 		// Total
 		message = "CREATE TABLE IF NOT EXISTS " + getPermanentTableName(gameName) + " (" + 
@@ -73,7 +72,6 @@ public class RealRankedManager extends RankedManager {
 				") " + 
 						"COLLATE='utf8_general_ci' " + 
 						"ENGINE=InnoDB;";
-		System.out.println("[SQL Request] " + message);
 		GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 	}
 
@@ -104,18 +102,15 @@ public class RealRankedManager extends RankedManager {
 		String[] tables = new String[] { getTempTableName(gameName), getPermanentTableName(gameName) };
 		for (String table : tables)
 		{
-			System.out.println("[SQL Request] SELECT COUNT(id) AS count FROM " + table + " WHERE playerName = '" + name + "'");
 			GameAPI.getAPI().getSqlDatabase().call("SELECT COUNT(id) AS count FROM " + table + " WHERE playerName = '" + name + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
 			{
 
 				@Override
 				public void done(ResultSet result, Throwable error) {
-					System.out.println("[SQL Request] A");
 					try
 					{
 						if (result.next() && result.getInt("count") > 0)
 						{
-							System.out.println("[SQL Request] B");
 							String valuesBuilder = "";
 							Iterator<Entry<String, Long>> iterator = entry.iterator();
 							boolean points = false;
@@ -134,7 +129,6 @@ public class RealRankedManager extends RankedManager {
 							}
 							if (!points) return;
 							String message = "UPDATE " + table + " SET " + valuesBuilder + " WHERE playerName = '" + name + "'";
-							System.out.println("[SQL Request] " + message);
 							GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 						}
 						else
@@ -158,14 +152,12 @@ public class RealRankedManager extends RankedManager {
 							}
 							if (!points) return;
 							String message = "INSERT INTO " + table + "(playerName" + fieldsBuilder + ") VALUES('" + name + "'" + valuesBuilder + ")";
-							System.out.println("[SQL Request] " + message);
 							GameAPI.getAPI().getSqlDatabase().call(message, SQLRequestType.UPDATE);
 						}
 						result.close();
 					}
 					catch(Exception exception)
 					{
-						System.out.println("[SQL Request] C");
 						exception.printStackTrace();
 					}
 				}

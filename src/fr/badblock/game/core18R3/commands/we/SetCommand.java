@@ -141,7 +141,6 @@ public class SetCommand extends SelectionNeededCommand {
 
 	@Override
 	protected boolean exec(BadblockPlayer concerned, String[] args) {
-		System.out.println(formatter.format(1000032));
 		
 		if(args.length == 0)
 			return false;

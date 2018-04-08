@@ -35,10 +35,10 @@ public class AuraCommand extends AbstractCommand
 		{
 			gbp.sendTranslatedMessage(gbp.getPlayerData().isAura() ? "aura.disable" : "aura.enable");
 			gbp.getPlayerData().setAura(!gbp.getPlayerData().isAura());
-			if (gbp.getPlayerData().isAura())
+			if (gbp.getPlayerData().isAura() && gbp.getAuraPlayer() != null)
 			{
 				gbp.getPlayerData().setAuraVisible(true);
-				gbp.enableAura();
+				gbp.getAuraPlayer().enableAura();
 			}
 			gbp.saveGameData();
 		}
