@@ -57,7 +57,6 @@ public class PlayerLoginWorkers
 					realName = playerName;
 				}
 			}
-			System.out.println("Set real name for " + player.getName() + " : " + realName);
 			player.setRealName(realName);
 			resultSet.close();
 			statement.close();
@@ -103,7 +102,6 @@ public class PlayerLoginWorkers
 			}
 
 		});
-		System.out.println("Loaded ranked player : " + player.getName() + " (" + player.getTotalPoints() + " total points)");
 		player.setRanked(new RankedPlayer(player, player.getTotalPoints(), player.getTotalRank(), player.getMonthRank()));
 	}
 

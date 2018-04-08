@@ -606,7 +606,6 @@ public class GamePlayerData implements PlayerData {
 		playerValues.put(fieldName, playerValues.containsKey(fieldName) ? playerValues.get(fieldName) + data : data);
 		gameValues.put(name, playerValues);
 		realRankedManager.temp.put(gameName, gameValues);
-		System.out.println("RANKED-DATA: INCREMENT " + fieldName + " > " + data);
 	}
 	
 	@Override
@@ -621,7 +620,6 @@ public class GamePlayerData implements PlayerData {
 		playerValues.put(fieldName, data);
 		gameValues.put(name, playerValues);
 		realRankedManager.temp.put(gameName, gameValues);
-		System.out.println("RANKED-DATA: SET " + fieldName + " > " + data);
 	}
 
 }

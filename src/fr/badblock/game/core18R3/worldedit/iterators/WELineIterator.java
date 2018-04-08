@@ -158,8 +158,6 @@ public class WELineIterator implements WEBlockIterator {
 	@Override
 	public int[] getNextPosition() {
 		int[] pos = blocks.poll();
-
-		System.out.println(pos[0] + ", " + pos[1] + ", " + pos[2]);
 		
 		return new int[] {pos[0] & 15, pos[1], pos[2] & 15};
 	}

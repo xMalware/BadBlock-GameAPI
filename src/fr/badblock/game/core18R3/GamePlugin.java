@@ -95,7 +95,6 @@ import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
 import fr.badblock.game.core18R3.sql.GameSQLDatabase;
 import fr.badblock.game.core18R3.tasks.AntiAFKTask;
 import fr.badblock.game.core18R3.tasks.GameStatisticsTask;
-import fr.badblock.game.core18R3.tasks.LagTask;
 import fr.badblock.game.core18R3.technologies.RabbitSpeaker;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.PlayerBoosterRefreshListener;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.PlayerPingListener;
@@ -513,7 +512,6 @@ public class GamePlugin extends GameAPI {
 					}
 				}, 20, 20);
 				new GameStatisticsTask();
-				new LagTask();
 				new AntiAFKTask(this);
 			}
 		} catch (Throwable t){
@@ -649,18 +647,14 @@ public class GamePlugin extends GameAPI {
 
 	@Override
 	public void balanceTeams(boolean sameSize) {
-		System.out.println("balanceTeams : A : " + sameSize);
 		if(teams.size() == 0)
 			return;
-		System.out.println("balanceTeams : B : " + teams.size() + " / " + sameSize);
 
 		getOnlinePlayers().stream().filter(player -> { return player.getTeam() == null; }).forEach(player -> addPlayerInTeam(player, sameSize));
 
 		int playersByTeam = (int) Math.ceil((double) getOnlinePlayers().size() / (double)getTeams().size());
-		System.out.println("balanceTeams : C : " + teams.size() + " / " + playersByTeam);
 
 		if(sameSize) {
-			System.out.println("balanceTeams : D : " + teams.size() + " / " + playersByTeam);
 
 			// New
 			List<BadblockTeam> tooManyPlayers = getTeams().stream().filter(team -> { return team.getOnlinePlayers().size() > playersByTeam; }).collect(Collectors.toList());
