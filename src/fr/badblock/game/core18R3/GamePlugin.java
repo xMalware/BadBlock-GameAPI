@@ -89,6 +89,7 @@ import fr.badblock.game.core18R3.players.GameTeam;
 import fr.badblock.game.core18R3.players.data.GameKit;
 import fr.badblock.game.core18R3.players.listeners.GameJoinItems;
 import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
+import fr.badblock.game.core18R3.players.utils.Meteor;
 import fr.badblock.game.core18R3.signs.GameSignManager;
 import fr.badblock.game.core18R3.signs.UpdateSignListener;
 import fr.badblock.game.core18R3.sql.FakeSQLDatabase;
@@ -264,6 +265,8 @@ public class GamePlugin extends GameAPI {
 	public String						reverseDNS;
 	@Getter @Setter
 	public boolean						antiAfk;
+	@Getter
+	private Meteor						meteor;
 
 	@Override
 	public void onEnable() {
@@ -364,6 +367,8 @@ public class GamePlugin extends GameAPI {
 			joinItems = new GameJoinItems();    // Items donn� � l'arriv�e du joueur
 			chestGenerator = new GameChestGenerator();
 
+			meteor = new Meteor(new Location(Bukkit.getWorld("world"), 0, 100, 0));
+			
 			new ItemStackExtras();
 
 			GameAPI.logColor("&b[GameAPI] &aRegistering packets listeners ...");

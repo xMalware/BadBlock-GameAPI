@@ -38,6 +38,7 @@ public class PlayerLoginWorkers
 				loadNick(player);
 				loadRankeds(player);
 				loadPlayerData(player);
+				loadCustomRank(player);
 			}
 		}.start();
 	}
