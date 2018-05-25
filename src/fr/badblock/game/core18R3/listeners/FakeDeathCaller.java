@@ -54,6 +54,12 @@ public class FakeDeathCaller extends BadListener {
 			FightingDeaths type   = data.lastPvPDamage;
 			FakeDeathEvent event  = null;
 
+			if(!data.damageable && e.getCause() == DamageCause.FALL)
+			{
+				e.setCancelled(true);
+				return;
+			}
+			
 			if(player.inGameData(CommandInGameData.class).godmode){
 				e.setCancelled(true); return;
 			}
@@ -290,21 +296,28 @@ public class FakeDeathCaller extends BadListener {
 			p.getWorld().strikeLightningEffect(p.getLocation());
 		}
 
+		p.setFallDistance(0f);
+		
 		if(e.getTimeBeforeRespawn() > 0){
 			p.setBadblockMode(BadblockMode.RESPAWNING);
 			new BukkitRunnable(){
 				private int time = e.getTimeBeforeRespawn();
 				
 				@Override
-				public void run(){
-					if(!p.isOnline()){
+				public void run()
+				{
+					if(!p.isOnline())
+					{
 						cancel(); return;
 					}
 
-					if(time == 0){
+					if(time == 0)
+					{
 						respawn(p, e.getRespawnPlace());
 						cancel();
-					} else {
+					}
+					else
+					{
 						p.sendTranslatedTitle(GameMessages.respawnTitleKey(), time);
 						time--;
 					}
@@ -315,7 +328,11 @@ public class FakeDeathCaller extends BadListener {
 		}
 	}
 
-	private void respawn(BadblockPlayer player, Location location){
+	private void respawn(BadblockPlayer player, Location location)
+	{
+		player.setFallDistance(0f);
+		player.inGameData(FakeDeathData.class).damageable = false;
+
 		if(player.getBadblockMode()== BadblockMode.RESPAWNING)
 			player.setBadblockMode(BadblockMode.PLAYER);
 
@@ -328,13 +345,20 @@ public class FakeDeathCaller extends BadListener {
 		Bukkit.getPluginManager().callEvent(new PlayerFakeRespawnEvent(player, location));
 		
 		new BukkitRunnable() {
-			
 			@Override
 			public void run() {
 				player.heal();
 				player.feed();
 			}
 		}.runTaskLater(GameAPI.getAPI(), 1L);
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				player.inGameData(FakeDeathData.class).damageable = true;
+			}
+		}.runTaskLater(GameAPI.getAPI(), 40L);
+
 	}
 
 	private Entity getTrueEntity(Entity base){
@@ -359,7 +383,7 @@ public class FakeDeathCaller extends BadListener {
 
 	@NoArgsConstructor
 	public static class FakeDeathData implements InGameData {
-		long      	    lastDamage  		 = 0;
+		long      	    lastDamage   	 = 0;
 		FightingDeaths  lastPvPDamage  	 = null;
 		int			    lastDamager		 = -1;
 
@@ -368,5 +392,6 @@ public class FakeDeathCaller extends BadListener {
 		int			    alert			 = 0;
 		int				kill			 = 0;
 		Map<UUID, Long> lastKill		 = Maps.newConcurrentMap();
+		boolean			damageable		 = true;
 	}
 }
