@@ -46,6 +46,7 @@ import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
+import fr.badblock.game.core18R3.players.ingamedata.CommandInGameData;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
 import fr.badblock.game.core18R3.players.utils.BadblockInjector;
 import fr.badblock.game.core18R3.players.utils.PlayerLoginWorkers;
@@ -306,7 +307,11 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 
 		// Aura
-		setAuraPlayer(new AuraPlayer(this));
+		if(!isGhostConnect())
+		{
+			setAuraPlayer(new AuraPlayer(this));
+			inGameData(CommandInGameData.class).vanish = true;
+		}
 
 		if (getPlayerData().isAura())
 		{
@@ -894,7 +899,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void setArrowsInBody(byte amount) {
-		getHandle().getDataWatcher().watch(MetadataIndex.ARROW_COUNT.getIndex(), new Byte(amount));
+		getHandle().getDataWatcher().watch(MetadataIndex.ARROW_COUNT.getIndex(), amount);
 	}
 
 	@Override

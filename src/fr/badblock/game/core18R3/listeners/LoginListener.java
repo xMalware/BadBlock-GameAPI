@@ -32,15 +32,11 @@ import fr.badblock.game.core18R3.gameserver.threading.GameServerKeeperAliveTask;
 import fr.badblock.game.core18R3.listeners.packets.SkullExploitListener;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.ingamedata.GameOfflinePlayer;
-import fr.badblock.game.core18R3.players.utils.MojangAPI;
-import fr.badblock.game.core18R3.players.utils.Property;
-import fr.badblock.game.core18R3.players.utils.SkinFactory;
 import fr.badblock.game.core18R3.technologies.rabbitlisteners.VanishTeleportListener;
 import fr.badblock.gameapi.BadListener;
 import fr.badblock.gameapi.GameAPI;
 import fr.badblock.gameapi.databases.SQLRequestType;
 import fr.badblock.gameapi.events.PlayerGameInitEvent;
-import fr.badblock.gameapi.events.api.PlayerDataChangedEvent;
 import fr.badblock.gameapi.events.api.PlayerJoinTeamEvent.JoinReason;
 import fr.badblock.gameapi.events.api.PlayerLoadedEvent;
 import fr.badblock.gameapi.events.api.SpectatorJoinEvent;
@@ -106,6 +102,7 @@ public class LoginListener extends BadListener {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
 		}
+		/*
 		final BadblockPlayer bbPlayer = player;
 		try {
 			TaskManager.runTaskAsync(new Runnable()
@@ -128,7 +125,7 @@ public class LoginListener extends BadListener {
 		} catch (Exception exception) {
 			System.out.println("Impossible de mettre le skin au joueur : ");
 			exception.printStackTrace();
-		}
+		}*/
 	}
 
 	@EventHandler
