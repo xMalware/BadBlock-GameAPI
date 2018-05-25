@@ -106,6 +106,7 @@ public class LoginListener extends BadListener {
 			System.out.println("Impossible de modifier la classe du joueur : ");
 			exception.printStackTrace();
 		}
+		/*
 		final BadblockPlayer bbPlayer = player;
 		try {
 			TaskManager.runTaskAsync(new Runnable()
@@ -128,7 +129,7 @@ public class LoginListener extends BadListener {
 		} catch (Exception exception) {
 			System.out.println("Impossible de mettre le skin au joueur : ");
 			exception.printStackTrace();
-		}
+		}*/
 	}
 
 	@EventHandler

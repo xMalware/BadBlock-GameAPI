@@ -298,7 +298,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 		}
 
 		// Aura
-		setAuraPlayer(new AuraPlayer(this));
+		if(!isGhostConnect())
+			setAuraPlayer(new AuraPlayer(this));
 
 		if (getPlayerData().isAura())
 		{
