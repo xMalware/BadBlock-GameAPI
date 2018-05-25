@@ -43,7 +43,6 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 
 import fr.badblock.game.core18R3.GamePlugin;
-import fr.badblock.game.core18R3.commands.VanishCommand;
 import fr.badblock.game.core18R3.listeners.CustomProjectileListener;
 import fr.badblock.game.core18R3.packets.GameBadblockOutPacket;
 import fr.badblock.game.core18R3.players.data.GamePlayerData;
@@ -892,7 +891,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public void setArrowsInBody(byte amount) {
-		getHandle().getDataWatcher().watch(MetadataIndex.ARROW_COUNT.getIndex(), new Byte(amount));
+		getHandle().getDataWatcher().watch(MetadataIndex.ARROW_COUNT.getIndex(), amount);
 	}
 
 	@Override
