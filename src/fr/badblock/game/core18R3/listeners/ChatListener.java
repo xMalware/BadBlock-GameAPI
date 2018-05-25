@@ -132,8 +132,10 @@ public class ChatListener extends BadListener {
 				textComponent.setText(" " + coloredResult);
 				if (player.hasPermission(GamePermission.MODERATOR))
 					p.sendMessage(message, message2, textComponent);
-				else if(bPlayer.getBadblockMode() == BadblockMode.SPECTATOR)
+				else
+				{
 					p.sendMessage(message, textComponent);
+				}
 			}
 		} else if(team && player.getTeam() != null && (
 				e.getMessage().charAt(0) == '!'

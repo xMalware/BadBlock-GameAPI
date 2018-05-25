@@ -295,6 +295,14 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			permissions = PermissionManager.getInstance().createPlayer(getRealName() != null ? getRealName() : getName(), object);
 
 			// Custom Rank
+			new Thread("loadPlayerCustom-" + getName())
+			{
+				@Override
+				public void run()
+				{
+					PlayerLoginWorkers.loadCustomRank(GameBadblockPlayer.this);
+				}
+			}.start();
 		}
 
 		// Aura

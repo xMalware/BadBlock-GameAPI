@@ -38,7 +38,6 @@ public class PlayerLoginWorkers
 				loadNick(player);
 				loadRankeds(player);
 				loadPlayerData(player);
-				loadCustomRank(player);
 			}
 		}.start();
 	}
@@ -108,10 +107,13 @@ public class PlayerLoginWorkers
 
 	public static void loadCustomRank(GameBadblockPlayer player)
 	{
+		System.out.println(player.getName() + " : Custom Rank A");
 		if (player.getPermissions() != null && player.getPermissions().getParent() != null)
 		{
+			System.out.println(player.getName() + " : Custom Rank B");
 			if (player.getPermissions().getParent().getName().equalsIgnoreCase("gradeperso") || player.getPermissions().getAlternateGroups().containsKey("gradeperso"))
 			{
+				System.out.println(player.getName() + " : Custom Rank B");
 				GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso, customcolor FROM joueurs WHERE pseudo = '" + 
 						GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(player.getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
 				{
@@ -119,10 +121,13 @@ public class PlayerLoginWorkers
 					@Override
 					public void done(ResultSet result, Throwable error)
 					{
+						System.out.println(player.getName() + " : Custom Rank C");
 						try
 						{
+							System.out.println(player.getName() + " : Custom Rank D");
 							if (result.next())
 							{
+								System.out.println(player.getName() + " : Custom Rank E");
 								player.setCustomRank(ChatColor.translateAlternateColorCodes('&', result.getString("gradeperso")) + " ");
 								player.setCustomColor(ChatColor.translateAlternateColorCodes('&', result.getString("customcolor")));
 
@@ -147,6 +152,7 @@ public class PlayerLoginWorkers
 								GameScoreboard.gsb.sendTeamData(rank, player.getCustomRank(), player);
 								if (rank != null)
 								{
+									System.out.println(player.getName() + " : Custom Rank F");
 									Team team = GameScoreboard.board.getEntryTeam(player.getName());
 									if (team != null && !team.getName().equals(rank))
 									{
