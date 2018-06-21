@@ -222,7 +222,10 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			return;
 		}else object = new JsonObject();
 		// Load async
-		PlayerLoginWorkers.workAsync(this);
+		if (!GameAPI.getServerName().startsWith("login"))
+		{
+			PlayerLoginWorkers.workAsync(this);
+		}
 	}
 
 	public void loadInjector() {
@@ -295,6 +298,7 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			this.object.add("permissions", object.get("permissions"));
 			permissions = PermissionManager.getInstance().createPlayer(getRealName() != null ? getRealName() : getName(), object);
 
+			System.out.println("Load Custom Rank.");
 			// Custom Rank
 			new Thread("loadPlayerCustom-" + getName())
 			{
