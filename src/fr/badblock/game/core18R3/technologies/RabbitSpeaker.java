@@ -31,6 +31,7 @@ public class RabbitSpeaker implements fr.badblock.gameapi.technologies.RabbitSpe
 	public void sendAsyncUTF8Message(String queueName, String content, long ttl, boolean debug) {
 		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
 
+		
 		this.getRabbitService().sendAsyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.MESSAGE_BROKER, ttl, debug);
 	}
 
@@ -38,6 +39,7 @@ public class RabbitSpeaker implements fr.badblock.gameapi.technologies.RabbitSpe
 	public void sendAsyncUTF8Publisher(String queueName, String content, long ttl, boolean debug) {
 		System.getSecurityManager().checkPermission(new RuntimePermission("badblockDatabase"));
 
+		
 		this.getRabbitService().sendAsyncPacket(queueName, content, Encodage.UTF8, RabbitPacketType.PUBLISHER, ttl, debug);
 	}
 

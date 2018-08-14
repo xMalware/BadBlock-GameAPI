@@ -66,9 +66,9 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 	public void cancelReconnectionInvitations() {
 		type = WhileRunningConnectionTypes.SPECTATOR;
 
-		LadderSpeaker ladderSpeaker = GameAPI.getAPI().getLadderDatabase();
-
-		players.keySet().forEach(name -> ladderSpeaker.sendReconnectionInvitation(name, false));
+		players.keySet().forEach(name ->
+		GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("removeReconnectionInvitations", name.toLowerCase(),
+				10000, false));
 		players.clear();
 	}
 
@@ -78,7 +78,8 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 
 		players.entrySet().forEach(entry -> {
 			if (team.equals(entry.getValue().getTeam())) {
-				ladderSpeaker.sendReconnectionInvitation(entry.getKey(), false);
+				GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("removeReconnectionInvitations", entry.getKey().toLowerCase(),
+						10000, false);
 				players.remove(entry.getKey());
 			}
 		});
@@ -104,7 +105,9 @@ public class GameServer extends BadListener implements fr.badblock.gameapi.game.
 		GameOfflinePlayer offline = new GameOfflinePlayer((GameBadblockPlayer) player);
 		players.put(player.getName().toLowerCase(), offline);
 
-		GameAPI.getAPI().getLadderDatabase().sendReconnectionInvitation(player.getName().toLowerCase(), true);
+		GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("reconnectionInvitations", player.getName().toLowerCase() + ";" + GameAPI.getServerName(),
+				10000, true);
+		//GameAPI.getAPI().getLadderDatabase().sendReconnectionInvitation(player.getName().toLowerCase(), true);
 	}
 
 	@Override

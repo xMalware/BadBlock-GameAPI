@@ -28,6 +28,8 @@ public class DoubleJumpListener extends BadListener {
 	public Map<String, Integer> timesJumped = new HashMap<>();
 	public Map<String, Long>    lastTime    = new HashMap<>();
 
+	public static boolean disabled = false;
+	
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event)
 	{
@@ -37,6 +39,10 @@ public class DoubleJumpListener extends BadListener {
 			return;
 		}
 		if (!GamePlugin.getAPI().getGameServer().getGameState().equals(GameState.RUNNING))
+		{
+			return;
+		}
+		if (disabled)
 		{
 			return;
 		}
@@ -62,6 +68,10 @@ public class DoubleJumpListener extends BadListener {
 		{
 			return;
 		}
+		if (disabled)
+		{
+			return;
+		}
 		if (player.hasPermission("hub.doublejump"))
 		{
 			player.setAllowFlight(true);
@@ -78,6 +88,10 @@ public class DoubleJumpListener extends BadListener {
 			return;
 		}
 		if (GamePlugin.getAPI().getGameServer().getGameState().equals(GameState.RUNNING))
+		{
+			return;
+		}
+		if (disabled)
 		{
 			return;
 		}

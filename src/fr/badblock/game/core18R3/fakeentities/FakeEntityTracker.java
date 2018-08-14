@@ -20,7 +20,7 @@ import us.myles.ViaVersion.api.ViaVersion;
 
 @SuppressWarnings("deprecation")
 public class FakeEntityTracker {
-	public static final double TRACKING_RANGE = 48.0d;
+	public static final double TRACKING_RANGE = 70.0d;
 
 	private World			              trackedWorld;
 	@Getter
@@ -129,7 +129,7 @@ public class FakeEntityTracker {
 					count--;
 					if(count == 0) cancel();
 				}
-			}.runTaskTimer(GameAPI.getAPI(), 0, 5L);
+			}.runTaskTimer(GameAPI.getAPI(), 0, 2L);
 		}
 		
 		void remove(BadblockPlayer player){

@@ -1,10 +1,12 @@
 package fr.badblock.game.core18R3.players.utils.particle;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.utils.particle.ParticleEffect.OrdinaryColor;
 import fr.badblock.gameapi.players.BadblockPlayer;
+import fr.badblock.gameapi.players.BadblockPlayer.BadblockMode;
 import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.threading.TaskManager;
 import lombok.Data;
@@ -49,6 +51,14 @@ public class AuraPlayer
 					return;	
 				}
 				if (getPlayer().isSneaking())
+				{
+					return;
+				}
+				if (GameMode.SPECTATOR.equals(getPlayer().getGameMode()))
+				{
+					return;
+				}
+				if (BadblockMode.SPECTATOR.equals(getPlayer().getBadblockMode()) || BadblockMode.RESPAWNING.equals(getPlayer().getBadblockMode()))
 				{
 					return;
 				}

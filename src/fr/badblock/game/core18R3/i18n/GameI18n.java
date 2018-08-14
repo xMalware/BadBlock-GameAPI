@@ -19,6 +19,7 @@ import fr.badblock.gameapi.players.BadblockPlayer;
 import fr.badblock.gameapi.utils.i18n.I18n;
 import fr.badblock.gameapi.utils.i18n.Language;
 import fr.badblock.gameapi.utils.i18n.Locale;
+import fr.badblock.gameapi.utils.i18n.Message;
 import fr.badblock.gameapi.utils.i18n.Word.WordDeterminant;
 
 public class GameI18n implements I18n {
@@ -28,11 +29,11 @@ public class GameI18n implements I18n {
 	public GameI18n() {
 
 	}
-	
+
 	public void load(File folder){
 		if(!folder.exists())
 			folder.mkdirs();
-		
+
 		languages = Maps.newConcurrentMap();
 		GameAPI.logColor("&b[GameAPI] &aLooking for i18n languages.. (in " + folder.getAbsolutePath() + ")");
 
@@ -45,7 +46,33 @@ public class GameI18n implements I18n {
 				} else {
 					GameAPI.logColor("&b[GameAPI] &aLecture i18n ... (" + locale + ")");
 
-					languages.put(locale, new GameLanguage(locale, languageFolder));
+					GameLanguage l = new GameLanguage(locale, languageFolder);
+
+					languages.put(locale, l);
+
+					if (l.messageCount() < 10)
+					{
+						GameAPI.logColor("&b[GameAPI] &cErreur de lecture i18n ... (" + locale + ") i18n mal chargé ?");
+						Bukkit.shutdown();
+						return;
+					}
+
+					Message message = l.getMessage("working");
+					if (message == null)
+					{
+						GameAPI.logColor("&b[GameAPI] &cErreur de lecture i18n ... (" + locale + ") Message working inconnu");
+						Bukkit.shutdown();
+						return;
+					}
+
+					if (!message.useFooter())
+					{	
+						GameAPI.logColor("&b[GameAPI] &cErreur de lecture i18n ... (" + locale + ") Message working invalide");
+						Bukkit.shutdown();
+						return;
+					}
+					
+					GameAPI.logColor("&b[GameAPI] &ai18n ok (" + locale + ")");
 				}
 			}
 		}
@@ -150,7 +177,7 @@ public class GameI18n implements I18n {
 			language.save();
 		}
 	}
-	
+
 	protected Locale getLanguage(CommandSender sender) {
 		Locale locale = null;
 
@@ -165,5 +192,5 @@ public class GameI18n implements I18n {
 			locale = def;
 		return locale;
 	}
-	
+
 }

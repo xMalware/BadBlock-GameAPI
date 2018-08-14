@@ -95,6 +95,11 @@ public class GameLanguage implements Language {
 		}
 	}
 	
+	public int messageCount()
+	{
+		return messages.size();
+	}
+	
 	@Override
 	public String[] get(String key, Object... args) {
 		return formatMessage(getMessage(key), args);

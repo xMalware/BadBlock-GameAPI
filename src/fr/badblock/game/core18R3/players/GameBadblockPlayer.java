@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -89,8 +90,6 @@ import fr.badblock.gameapi.players.bossbars.BossBarStyle;
 import fr.badblock.gameapi.players.data.InGameData;
 import fr.badblock.gameapi.players.scoreboard.CustomObjective;
 import fr.badblock.gameapi.run.RunType;
-import fr.badblock.gameapi.sentry.SEntry;
-import fr.badblock.gameapi.utils.BukkitUtils;
 import fr.badblock.gameapi.utils.general.Callback;
 import fr.badblock.gameapi.utils.general.MathsUtils;
 import fr.badblock.gameapi.utils.general.StringUtils;
@@ -139,6 +138,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	private FakeEntity<WatcherWither> 	 enderdragon 		  = null;
 
+	private List<String>	tempPermissions = new ArrayList<>();
+	
 	private GameMode 					 gamemodeBefJail 	  = null;
 	private FakeEntity<?> 				 fakeJailer 		  = null;
 
@@ -153,6 +154,8 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	private BadblockTeam				 team				  = null;
 	@Setter
 	private boolean						 adminMode			  = false;
+	@Getter@Setter
+	private boolean						 onlineMode			  = false;
 	@Getter@Setter
 	JsonObject					 object				  = null;
 
@@ -236,12 +239,38 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 			error.printStackTrace();
 		}
 	}
+	
+	@Override
+	public PermissionAttachment addAttachment(Plugin plugin, String permission, boolean enable)
+	{
+		if (tempPermissions == null)
+		{
+			tempPermissions = new ArrayList<>();
+		}
+		
+		if (enable && !tempPermissions.contains(permission))
+		{
+			tempPermissions.add(permission);
+		}
+		else if (!enable && tempPermissions.contains(permission))
+		{
+			tempPermissions.remove(permission);
+		}
+		
+		return null;
+	}
 
 	public void updateData(JsonObject object)
 	{
 		// Refresh Shop points
 		this.refreshShopPoints();
 
+		// Online mode
+		if (object.has("onlineMode"))
+		{
+			this.onlineMode = object.get("onlineMode").getAsBoolean();
+		}
+		
 		// Game
 		if (object.has("game"))
 		{
@@ -496,6 +525,14 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	}
 
 	@Override
+	public void saveOnlineMode()
+	{
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("onlineMode", isOnlineMode());
+		GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, jsonObject);
+	}
+	
+	@Override
 	public void saveGameData() {
 		if (isDataFetch()) {
 			GameAPI.getAPI().getLadderDatabase().updatePlayerData(this, getPlayerData().saveData());
@@ -559,76 +596,43 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 				message2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/hub") );
 				message2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("chat.hub_hover")[0]).create() ) );
 				this.sendMessage(message, textComponent, messageAuto, textComponent2, message2);
-				GameBadblockPlayer leader = null;
+				
+				TextComponent voteMap = new TextComponent( GameAPI.i18n().get("votemap.message")[0] );
+				
+				TextComponent voteMap1 = new TextComponent( GameAPI.i18n().get("votemap.1_name")[0] );
+				voteMap1.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/votemap 1") );
+				voteMap1.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("votemap.1_lore")[0]).create() ) );
+				
+				TextComponent voteMap2 = new TextComponent( GameAPI.i18n().get("votemap.2_name")[0] );
+				voteMap2.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/votemap 2") );
+				voteMap2.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("votemap.2_lore")[0]).create() ) );
+
+				TextComponent voteMap3 = new TextComponent( GameAPI.i18n().get("votemap.3_name")[0] );
+				voteMap3.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/votemap 3") );
+				voteMap3.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("votemap.3_lore")[0]).create() ) );
+
+				TextComponent voteMap4 = new TextComponent( GameAPI.i18n().get("votemap.4_name")[0] );
+				voteMap4.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/votemap 4") );
+				voteMap4.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("votemap.4_lore")[0]).create() ) );
+
+				TextComponent voteMap5 = new TextComponent( GameAPI.i18n().get("votemap.5_name")[0] );
+				voteMap3.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/votemap 5") );
+				voteMap3.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(GameAPI.i18n().get("votemap.5_lore")[0]).create() ) );
+				
+				TextComponent voteSeparator = new TextComponent( GameAPI.i18n().get("votemap.separator")[0] );
+				voteMap.addExtra(voteMap1);
+				voteMap.addExtra(voteSeparator);
+				voteMap.addExtra(voteMap2);
+				voteMap.addExtra(voteSeparator);
+				voteMap.addExtra(voteMap3);
+				voteMap.addExtra(voteSeparator);
+				voteMap.addExtra(voteMap4);
+				voteMap.addExtra(voteSeparator);
+				voteMap.addExtra(voteMap5);
+				
+				sendMessage(voteMap);
+				
 				resultDone = true;
-				for (BadblockPlayer bpo : BukkitUtils.getAllPlayers())
-				{
-					GameBadblockPlayer player = (GameBadblockPlayer) bpo;
-					for (UUID uuid : player.getPlayersWithHim())
-					{
-						if (uuid.toString().equals(getUniqueId().toString()))
-						{
-							leader = player;
-						}
-					}
-				}
-				if (leader == null && (getPlayerData().getReplay() == null || (getPlayerData().getReplay() != null && !getPlayerData().getReplay().contains(serverTypeName))))
-				{
-					boolean autoReplay = true;
-					for (UUID uuid : getPlayersWithHim())
-					{
-						GameBadblockPlayer player = (GameBadblockPlayer) BukkitUtils.getPlayer(uuid);
-						if (player.getTeam() == null || (player.getTeam() != null && !player.getTeam().isDead()))
-						{
-							if (!player.isResultDone())
-							{
-								autoReplay = false;
-								break;
-							}
-						}
-					}
-					if (autoReplay)
-					{
-						Bukkit.getScheduler().runTaskLater(GameAPI.getAPI(), new Runnable()
-						{
-
-							@Override
-							public void run() {
-								GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.sentry.join", GameAPI.getGson().toJson(new SEntry(getName(), serverTypeName, true)), 5000, false);
-							}
-
-						}, 5);
-					}
-				}
-				else if (leader != null && (leader.getPlayerData().getReplay() == null || (leader.getPlayerData().getReplay() != null && !leader.getPlayerData().getReplay().contains(serverTypeName))))
-				{
-					boolean autoReplay = true;
-					for (UUID uuid : leader.getPlayersWithHim())
-					{
-						GameBadblockPlayer player = (GameBadblockPlayer) BukkitUtils.getPlayer(uuid);
-						if (player.getTeam() == null || (player.getTeam() != null && !player.getTeam().isDead()))
-						{
-							if (!player.isResultDone())
-							{
-								autoReplay = false;
-								break;
-							}
-						}
-					}
-					if (autoReplay)
-					{
-						final GameBadblockPlayer fLeader = leader;
-						Bukkit.getScheduler().runTaskLater(GameAPI.getAPI(), new Runnable()
-						{
-
-							@Override
-							public void run() {
-								GameAPI.getAPI().getRabbitSpeaker().sendAsyncUTF8Publisher("networkdocker.sentry.join", GameAPI.getGson().toJson(new SEntry(fLeader.getName(), serverTypeName, true)), 5000, false);
-							}
-
-						}, 5);
-					}
-				}
 			}
 
 			saveGameData();
@@ -988,14 +992,14 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 
 	@Override
 	public boolean hasPermission(GamePermission permission) {
-		return permission.getPermission() == null ? true : hasPermission(permission.getPermission());
+		return permission.getPermission() == null ? true : hasPermission(permission.getPermission()) || (tempPermissions != null && tempPermissions.contains(permission.getPermission()));
 	}
 
 	@Override
 	public boolean hasPermission(String permission) {
 		if(GameAPI.getAPI().getRunType() == RunType.DEV && permissions.hasPermission("devserver"))
 			return true;
-		return permission == null ? true : permissions.hasPermission(permission);
+		return permission == null ? true : permissions.hasPermission(permission) || (tempPermissions != null && tempPermissions.contains(permission));
 	}
 
 	@Override

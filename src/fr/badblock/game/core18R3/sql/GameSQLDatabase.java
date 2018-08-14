@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GameSQLDatabase implements SQLDatabase {
 	
-	private static final int THREADS = 2;
+	private static final int THREADS = 16;
 	private final String hostname, port, username, password, database;
 	
 	protected Connection 	  connection = null;

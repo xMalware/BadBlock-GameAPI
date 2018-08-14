@@ -54,6 +54,7 @@ import fr.badblock.permissions.PermissionManager;
 
 public class GameScoreboard extends BadListener implements BadblockScoreboard {
 	public static GameScoreboard gsb	   = null;
+	public static String map = "";
 	public static Scoreboard board 	       = Bukkit.getScoreboardManager().getNewScoreboard();
 	private Objective  tabListHealth   = null;
 	private Objective  belowNameHealth = null;
@@ -79,6 +80,19 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 			p.setVisible(false, player -> true);
 			sendTeams(p);
 			customRanks.entrySet().forEach((entry) -> {
+				if (entry.getKey() == null)
+				{
+					return;
+				}
+				if (entry.getValue() == null)
+				{
+					return;
+				}
+				
+				if (entry.getValue().getKey() == null)
+				{
+					return;
+				}
 				sendTeamData(entry.getKey(), entry.getValue().getKey(), p);
 			});
 		} else if(doTeamsPrefix){
@@ -393,6 +407,8 @@ public class GameScoreboard extends BadListener implements BadblockScoreboard {
 		voteObjective.unregister();
 		voteObjective = null;
 
+		map = getWinner().getDisplayName();
+		
 		GameAPI.i18n().broadcast("vote.end", getWinner().getDisplayName(), getVotesForWinner());
 	}
 

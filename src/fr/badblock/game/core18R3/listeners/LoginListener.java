@@ -82,7 +82,7 @@ public class LoginListener extends BadListener {
 				else e.disallow(Result.ALLOWED, "");
 			}
 		}
-		if (!GameAPI.isJoinable()) {
+		if (!GameAPI.isJoinable() && !GamePlugin.getInstance().getGameServer().getPlayers().containsKey(e.getPlayer().getName().toLowerCase())) {
 			if (!VanishTeleportListener.time.containsKey(e.getPlayer().getName().toLowerCase()) || VanishTeleportListener.time.get(e.getPlayer().getName().toLowerCase()) < System.currentTimeMillis()) {
 				GameAPI.getAPI().getGameServer().keepAlive();
 				e.disallow(Result.KICK_FULL, "§cCette partie est en cours.");
