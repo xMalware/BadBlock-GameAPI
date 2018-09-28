@@ -295,7 +295,7 @@ public class GameLadderSpeaker implements LadderSpeaker, PacketHandler {
 		for (BadblockPlayer player : GameAPI.getAPI().getOnlinePlayers())
 		{
 			GameBadblockPlayer gbp = (GameBadblockPlayer) player;
-			if (gbp.getRealName().equalsIgnoreCase(playerName))
+			if (gbp.getRealName() != null && gbp.getRealName().equalsIgnoreCase(playerName))
 			{
 				return gbp;
 			}

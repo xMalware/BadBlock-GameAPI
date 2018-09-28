@@ -9,7 +9,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Team;
 
 import com.google.gson.JsonObject;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
+import fr.badblock.api.common.tech.mongodb.MongoService;
 import fr.badblock.game.core18R3.GamePlugin;
 import fr.badblock.game.core18R3.players.GameBadblockPlayer;
 import fr.badblock.game.core18R3.players.listeners.GameScoreboard;
@@ -108,74 +114,95 @@ public class PlayerLoginWorkers
 	public static void loadCustomRank(GameBadblockPlayer player)
 	{
 		System.out.println(player.getName() + " : Custom Rank A");
+		new Thread()
+		{
+			@Override
+			public void run()
+			{
+				DB db = GameAPI.getAPI().getMongoService().getDb();
+				DBCollection collection = db.getCollection("custom_data");
+
+				BasicDBObject dbObject = new BasicDBObject();
+				dbObject.put("uniqueId", player.getUniqueId());
+
+				DBCursor cursor = collection.find(dbObject);
+				while (cursor.hasNext())
+				{
+					DBObject dob = cursor.next();
+					String prefixNew = (String) dob.get("prefixNew");
+				}
+			}
+		}.start();
 		if (player.getPermissions() != null && player.getPermissions().getParent() != null)
 		{
 			System.out.println(player.getName() + " : Custom Rank B");
 			if (player.getPermissions().getParent().getName().equalsIgnoreCase("gradeperso") || player.getPermissions().getAlternateGroups().containsKey("gradeperso"))
 			{
 				System.out.println(player.getName() + " : Custom Rank B");
-				GamePlugin.getInstance().getWebDatabase().call("SELECT gradeperso, customcolor FROM joueurs WHERE pseudo = '" + 
-						GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(player.getName()) + "'", SQLRequestType.QUERY, new Callback<ResultSet>()
+				MongoService mongoService = GamePlugin.getInstance().getMongoService();
+
+				new Thread("legendrank-" + player.getName() + "-" + System.currentTimeMillis())
 				{
-
 					@Override
-					public void done(ResultSet result, Throwable error)
+					public void run()
 					{
-						System.out.println(player.getName() + " : Custom Rank C");
-						try
+						DB db = mongoService.db();
+						DBCollection collection = db.getCollection("custom_data");
+						
+						DBObject query = new BasicDBObject();
+						query.put("uniqueId", player.getUniqueId());
+						
+						DBCursor cursor = collection.find(query);
+						while (cursor.hasNext())
 						{
-							System.out.println(player.getName() + " : Custom Rank D");
-							if (result.next())
-							{
-								System.out.println(player.getName() + " : Custom Rank E");
-								player.setCustomRank(ChatColor.translateAlternateColorCodes('&', result.getString("gradeperso")) + " ");
-								player.setCustomColor(ChatColor.translateAlternateColorCodes('&', result.getString("customcolor")));
+							DBObject dob = cursor.next();
+							String prefixNew = (String) dob.get("prefix_new");
+							String customColor = (String) dob.get("chat_color");
+							
+							player.setCustomRank(ChatColor.translateAlternateColorCodes('&', prefixNew) + " ");
+							player.setCustomColor(ChatColor.translateAlternateColorCodes('&', customColor));
 
-								// find group
-								String rank = GameScoreboard.customRankId;
-								String id = GameScoreboard.gsb.generateForId(GameScoreboard.customRanks.size()) + "";
-								rank += id;
-								GameScoreboard.customRanks.put(rank, new SimpleEntry<String, String>(player.getCustomRank(), player.getName()));
-								GameScoreboard.groups.put(rank, rank);
+							// find group
+							String rank = GameScoreboard.customRankId;
+							String id = GameScoreboard.gsb.generateForId(GameScoreboard.customRanks.size()) + "";
+							rank += id;
+							GameScoreboard.customRanks.put(rank, new SimpleEntry<String, String>(player.getCustomRank(), player.getName()));
+							GameScoreboard.groups.put(rank, rank);
 
-								if (GameScoreboard.board.getTeam(rank) == null){
-									GameScoreboard.board.registerNewTeam(rank);
-								}
-
-								Team teamHandler = GameScoreboard.board.getTeam(rank);
-
-								teamHandler.setAllowFriendlyFire(true);
-								for (BadblockPlayer plo : BukkitUtils.getAllPlayers())
-								{
-									GameScoreboard.gsb.sendTeamData(rank, player.getCustomRank(), plo);
-								}
-								GameScoreboard.gsb.sendTeamData(rank, player.getCustomRank(), player);
-								if (rank != null)
-								{
-									System.out.println(player.getName() + " : Custom Rank F");
-									Team team = GameScoreboard.board.getEntryTeam(player.getName());
-									if (team != null && !team.getName().equals(rank))
-									{
-										team.removeEntry(player.getName());
-									}
-									final String ranke = rank;
-									new BukkitRunnable() {
-										@Override
-										public void run() {
-											GameScoreboard.gsb.sendTeamData(ranke, player.getCustomRank(), player);
-											GameScoreboard.board.getTeam(ranke).addEntry(player.getName());
-										}
-									}.runTaskLater(GameAPI.getAPI(), 5L);
-								}
+							if (GameScoreboard.board.getTeam(rank) == null){
+								GameScoreboard.board.registerNewTeam(rank);
 							}
-							result.close();
-						}
-						catch (Exception error34)
-						{
-							error34.printStackTrace();
+
+							Team teamHandler = GameScoreboard.board.getTeam(rank);
+
+							teamHandler.setAllowFriendlyFire(true);
+							for (BadblockPlayer plo : BukkitUtils.getAllPlayers())
+							{
+								GameScoreboard.gsb.sendTeamData(rank, player.getCustomRank(), plo);
+							}
+							GameScoreboard.gsb.sendTeamData(rank, player.getCustomRank(), player);
+							if (rank != null)
+							{
+								System.out.println(player.getName() + " : Custom Rank F");
+								Team team = GameScoreboard.board.getEntryTeam(player.getName());
+								if (team != null && !team.getName().equals(rank))
+								{
+									team.removeEntry(player.getName());
+								}
+								final String ranke = rank;
+								new BukkitRunnable() {
+									@Override
+									public void run() {
+										GameScoreboard.gsb.sendTeamData(ranke, player.getCustomRank(), player);
+										GameScoreboard.board.getTeam(ranke).addEntry(player.getName());
+									}
+								}.runTaskLater(GameAPI.getAPI(), 5L);
+							}
+							
+							break;
 						}
 					}
-				});
+				}.start();
 			}
 		}
 	}

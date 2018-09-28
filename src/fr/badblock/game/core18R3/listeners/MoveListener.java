@@ -15,7 +15,10 @@ import fr.badblock.gameapi.portal.Portal;
 public class MoveListener extends BadListener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent e){
-
+		if (!(e.getPlayer() instanceof GameBadblockPlayer))
+		{
+			return;
+		}
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
 		if(player.getCenterJail() != null){
@@ -51,6 +54,10 @@ public class MoveListener extends BadListener {
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onTeleport(PlayerTeleportEvent e){
+		if (!(e.getPlayer() instanceof GameBadblockPlayer))
+		{
+			return;
+		}
 		GameBadblockPlayer player = (GameBadblockPlayer) e.getPlayer();
 
 		if(player.isDisguised()){
