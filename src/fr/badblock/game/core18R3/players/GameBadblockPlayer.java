@@ -364,34 +364,18 @@ public class GameBadblockPlayer extends CraftPlayer implements BadblockPlayer {
 	public void refreshShopPoints()
 	{
 		String name = getRealName() != null ? getRealName() : getName();
-		GamePlugin.getInstance().getWebDatabase().call("SELECT ptsboutique FROM joueurs WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(name) + "'", SQLRequestType.QUERY, new Callback<ResultSet>() {
-
-			@Override
-			public void done(ResultSet result, Throwable error) {
-				try {
-					if (result.next()) {
-						shopPoints = result.getInt("ptsboutique");
-					}
-					result.close();
-				}catch(Exception err) {
-					err.printStackTrace();
-				}
-			}
-		});
 	}
 
 	@Override
 	public void addShopPoints(int shopPointsToAdd)
 	{
 		String name = getRealName() != null ? getRealName() : getName();
-		GamePlugin.getInstance().getWebDatabase().call("UPDATE joueurs SET ptsboutique=ptsboutique+" + shopPointsToAdd + " WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(name) + "'", SQLRequestType.UPDATE);
 	}
 
 	@Override
 	public void removeShopPoints(int shopPointsToRemove)
 	{
 		String name = getRealName() != null ? getRealName() : getName();
-		GamePlugin.getInstance().getWebDatabase().call("UPDATE joueurs SET ptsboutique=ptsboutique-" + shopPointsToRemove + " WHERE pseudo = '" + GamePlugin.getInstance().getWebDatabase().mysql_real_escape_string(name) + "'", SQLRequestType.UPDATE);
 	}
 
 	@Override

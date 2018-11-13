@@ -201,8 +201,6 @@ public class GamePlugin extends GameAPI {
 	@Getter
 	private SQLDatabase					sqlDatabase;
 	@Getter
-	private GameSQLDatabase				webDatabase;
-	@Getter
 	private LadderSpeaker				ladderDatabase;
 	@Getter
 	private GameServerManager			gameServerManager;
@@ -339,11 +337,6 @@ public class GamePlugin extends GameAPI {
 
 				sqlDatabase = new GameSQLDatabase(sqlConfig.sqlIp, Integer.toString(sqlConfig.sqlPort), sqlConfig.sqlUser, sqlConfig.sqlPassword, sqlConfig.sqlDatabase);
 				((GameSQLDatabase) sqlDatabase).openConnection();
-
-				if(runType != RunType.DEV)
-					GameAPI.logColor("&b[GameAPI] &a=> WEB-SQL : " + webConfig.sqlIp + ":" + webConfig.sqlPort);
-				webDatabase = new GameSQLDatabase(webConfig.sqlIp, Integer.toString(webConfig.sqlPort), webConfig.sqlUser, webConfig.sqlPassword, webConfig.sqlDatabase);
-				webDatabase.openConnection();
 
 				rabbitSpeaker = new RabbitSpeaker(rabbitMQConfig);
 				new ServerForceKillListener();
